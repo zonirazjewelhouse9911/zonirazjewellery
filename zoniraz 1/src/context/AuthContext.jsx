@@ -44,34 +44,30 @@ export const AuthProvider = ({ children }) => {
     }
   }, [token]);
 
-  const login = async (identifier, password) => {
-    const res = await fetch('http://localhost:55000/api/auth/login', {
+  const login = async (email, password) => {
+    const res = await fetch('http://localhost:55000/api/userSide/user_login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ identifier, password })
+      body: JSON.stringify({ email, password })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Login failed');
+    if (!res.ok || !data.success) throw new Error(data.message || 'Login failed');
     
     localStorage.setItem('zoniraz_token', data.token);
     setToken(data.token);
-    setUser(data.user);
-    return data.user;
+    return data;
   };
 
   const signup = async (firstName, lastName, email, mobile, password) => {
-    const res = await fetch('http://localhost:55000/api/auth/register', {
+    const user_name = `${firstName} ${lastName}`.trim();
+    const res = await fetch('http://localhost:55000/api/userSide/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ firstName, lastName, email, mobile, password })
+      body: JSON.stringify({ user_name, email, password, phone_number: mobile })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Registration failed');
-
-    localStorage.setItem('zoniraz_token', data.token);
-    setToken(data.token);
-    setUser(data.user);
-    return data.user;
+    if (!res.ok || !data.success) throw new Error(data.message || 'Registration failed');
+    return data;
   };
 
   const logout = () => {
@@ -115,15 +111,38 @@ export const AuthProvider = ({ children }) => {
     return data.message;
   };
 
-  const verifyOtp = async (mobile, otp) => {
-    const res = await fetch('http://localhost:55000/api/otp/verify', {
+  const verifyOtp = async (emailOrMobile, otp) => {
+    // If it's a mobile number (only digits), it's mock passwordless OTP login
+    if (/^\d+$/.test(emailOrMobile)) {
+      const res = await fetch('http://localhost:55000/api/otp/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mobile: emailOrMobile, otp })
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Invalid OTP code');
+      setUser({
+        id: 'mock-user-123',
+        firstName: 'Valued',
+        lastName: 'Customer',
+        email: 'customer@example.com',
+        mobile: emailOrMobile
+      });
+      return true;
+    }
+
+    // Otherwise, it's the real email registration OTP verification
+    const res = await fetch('http://localhost:55000/api/userSide/verifyOtp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ mobile, otp })
+      body: JSON.stringify({ email: emailOrMobile, otp })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Invalid OTP code');
-    return true;
+    if (!res.ok || !data.success) throw new Error(data.message || 'Invalid OTP code');
+    
+    localStorage.setItem('zoniraz_token', data.token);
+    setToken(data.token);
+    return data;
   };
 
   return (

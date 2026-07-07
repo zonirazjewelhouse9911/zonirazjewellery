@@ -62,19 +62,20 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
     }
 
     try {
-      await signup(
+      const data = await signup(
         signupForm.firstName,
         signupForm.lastName,
         signupForm.email,
         signupForm.mobile,
         signupForm.password
       );
-      if (authCallback) {
-        authCallback();
-        setAuthCallback(null);
+      if (data && data.success) {
+        setOtpMobile(signupForm.email); // Use email for OTP verification
+        setOtpSent(true);
+        setActiveTab('otp');
+      } else {
+        setError(data.message || 'Registration failed');
       }
-      onSuccess?.();
-      onClose();
     } catch (err) {
       setError(err.message || 'Registration failed.');
     }
@@ -277,7 +278,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess }) {
             ) : (
               <form onSubmit={handleVerifyOtpSubmit}>
                 <div style={styles.inputGroup}>
-                  <label style={styles.label}>Enter 4-Digit OTP (Use: 1234)</label>
+                  <label style={styles.label}>Enter 4-Digit OTP (Sent to your email)</label>
                   <input
                     type="text"
                     required
