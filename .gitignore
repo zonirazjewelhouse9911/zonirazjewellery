@@ -1,0 +1,34 @@
+# Dependency directories
+node_modules/
+adminSide/node_modules/
+backend/node_modules/
+"zoniraz 1/node_modules/"
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+backend/.env
+
+# Build outputs
+dist/
+build/
+.next/
+adminSide/dist/
+"zoniraz 1/dist/"
+
+# IDE / Editor configs
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.agents/
+
+# OS metadata
+.DS_Store
+Thumbs.db
