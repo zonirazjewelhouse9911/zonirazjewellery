@@ -19,12 +19,13 @@ const subcategoryMap = {
   '5': 'Band Rings',
   '6': 'Stud Earrings',
   '7': 'Hoop Earrings',
-  '8': 'Drop Earrings'
+  '8': 'Drop Earrings',
+  '9': 'Diamond'
 };
 
 const genderMap = {
-  '1': 'Men',
-  '2': 'Women',
+  '1': 'Male',
+  '2': 'Female',
   '3': 'Unisex',
   '4': 'Kids'
 };
@@ -111,6 +112,14 @@ class ProductService {
       throw new Error('Product ID is already in use.');
     }
 
+    if (productData.product_title) {
+      productData.name = productData.product_title;
+    }
+
+    if (productData.product_slug) {
+      productData.slug = productData.product_slug;
+    }
+
     if (productData.category_id) {
       productData.product_category = await getCategoryName(productData.category_id);
     }
@@ -153,6 +162,14 @@ class ProductService {
       if (existing) {
         throw new Error('Target Product ID is already allocated to another item.');
       }
+    }
+
+    if (updateData.product_title) {
+      updateData.name = updateData.product_title;
+    }
+
+    if (updateData.product_slug) {
+      updateData.slug = updateData.product_slug;
     }
 
     if (updateData.category_id) {

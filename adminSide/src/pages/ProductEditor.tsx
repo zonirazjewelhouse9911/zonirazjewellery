@@ -41,8 +41,8 @@ const DIAMOND_QUALITIES = [
 ];
 
 const GENDERS = [
-  { id: '1', name: 'Men' },
-  { id: '2', name: 'Women' },
+  { id: '1', name: 'Male' },
+  { id: '2', name: 'Female' },
   { id: '3', name: 'Unisex' },
   { id: '4', name: 'Kids' }
 ];
@@ -65,7 +65,8 @@ const SUBCATEGORIES = [
   { id: '5', name: 'Band Rings' },
   { id: '6', name: 'Stud Earrings' },
   { id: '7', name: 'Hoop Earrings' },
-  { id: '8', name: 'Drop Earrings' }
+  { id: '8', name: 'Drop Earrings' },
+  { id: '9', name: 'Diamond' }
 ];
 
 const SIZES = Array.from({ length: 30 }, (_, i) => (i + 1).toString());
@@ -102,7 +103,9 @@ interface ProductFormData {
   noof_gem: number;
   gold_weight: number;
   diamond_weight: number;
+  diamond_count: number;
   solitaires_weight: number;
+  solitaires_price: number;
   solitaires_quality: string;
   product_weight: number;
   center_diamond_weight: number | null;
@@ -117,6 +120,8 @@ interface ProductFormData {
   meta_title: string;
   meta_keyword: string;
   meta_description: string;
+  making_charges: number;
+  makingCharges: number;
 }
 
 export default function ProductEditor({ productId, onBack, onSaveSuccess }: ProductEditorProps) {
@@ -162,7 +167,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     noof_gem: 0,
     gold_weight: 0,
     diamond_weight: 0,
+    diamond_count: 0,
     solitaires_weight: 0,
+    solitaires_price: 0,
     solitaires_quality: '0',
     product_weight: 0,
     center_diamond_weight: null,
@@ -176,7 +183,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     sessional: '0',
     meta_title: '',
     meta_keyword: '',
-    meta_description: ''
+    meta_description: '',
+    making_charges: 0,
+    makingCharges: 0
   });
 
   useEffect(() => {
@@ -210,12 +219,16 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             noof_gem: Number(product.noof_gem || 0),
             gold_weight: Number(product.gold_weight || 0),
             diamond_weight: Number(product.diamond_weight || 0),
+            diamond_count: Number(product.diamond_count || 0),
             solitaires_weight: Number(product.solitaires_weight || 0),
+            solitaires_price: Number(product.solitaires_price || 0),
             product_weight: Number(product.product_weight || 0),
             center_diamond_weight: product.center_diamond_weight !== null ? Number(product.center_diamond_weight) : null,
             center_diamond_price: product.center_diamond_price !== null ? Number(product.center_diamond_price) : null,
             gemstone_weight: Number(product.gemstone_weight || 0),
-            gallery: parsedGallery
+            gallery: parsedGallery,
+            making_charges: Number(product.making_charges || 0),
+            makingCharges: Number(product.makingCharges || 0)
           });
         } else {
           setError('Failed to load product data.');
@@ -241,10 +254,45 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     const computedProductId = formData.product_id || `PROD-${Date.now()}`;
 
     // Validation
-    if (!formData.product_title || !formData.product_slug || !formData.category_id || !formData.product_code) {
-      setError('Title, Slug, Code, and Category are mandatory.');
-      setSaving(false);
-      return;
+    const requiredFields = [
+      { key: 'category_id', label: 'Select Category Name' },
+      { key: 'subcategory_id', label: 'Select Subcategory' },
+      { key: 'product_title', label: 'Enter Product Title' },
+      { key: 'product_code', label: 'Enter Product Code' },
+      { key: 'hsn_code', label: 'Enter Product HSN Code' },
+      { key: 'product_type', label: 'Product Type' },
+      { key: 'description', label: 'Enter Product Description' },
+      { key: 'gender', label: 'Select Gender' },
+      { key: 'karat_id', label: 'Select Karat' },
+    ];
+
+    for (const f of requiredFields) {
+      const val = formData[f.key as keyof ProductFormData];
+      if (val === undefined || val === null || String(val).trim() === '') {
+        setError(`${f.label} is required.`);
+        setSaving(false);
+        return;
+      }
+    }
+
+    const numberFields = [
+      { key: 'discount', label: 'Enter Discount' },
+      { key: 'stock', label: 'Enter Stock' },
+      { key: 'height', label: 'Height (mm)' },
+      { key: 'width', label: 'Width (mm)' },
+      { key: 'noof_gem', label: 'Total Number Of GEM' },
+      { key: 'product_weight', label: 'Product Weight' },
+      { key: 'diamond_weight', label: 'Diamond Weight' },
+      { key: 'gold_weight', label: 'Gold Weight (14k)' },
+    ];
+
+    for (const f of numberFields) {
+      const val = formData[f.key as keyof ProductFormData];
+      if (val === undefined || val === null || val === '' || isNaN(Number(val))) {
+        setError(`${f.label} must be a valid number.`);
+        setSaving(false);
+        return;
+      }
     }
 
     const payload = {
@@ -290,12 +338,16 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             noof_gem: Number(data.data.noof_gem || 0),
             gold_weight: Number(data.data.gold_weight || 0),
             diamond_weight: Number(data.data.diamond_weight || 0),
+            diamond_count: Number(data.data.diamond_count || 0),
             solitaires_weight: Number(data.data.solitaires_weight || 0),
+            solitaires_price: Number(data.data.solitaires_price || 0),
             product_weight: Number(data.data.product_weight || 0),
             center_diamond_weight: data.data.center_diamond_weight !== null ? Number(data.data.center_diamond_weight) : null,
             center_diamond_price: data.data.center_diamond_price !== null ? Number(data.data.center_diamond_price) : null,
             gemstone_weight: Number(data.data.gemstone_weight || 0),
-            gallery: parsedGallery
+            gallery: parsedGallery,
+            making_charges: Number(data.data.making_charges || 0),
+            makingCharges: Number(data.data.makingCharges || 0)
           });
         }
       } else {
@@ -458,7 +510,33 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
           <div className="bg-white border border-slate-200/80 rounded-[40px] p-10 space-y-10 shadow-sm transition-all">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Masterpiece Title</label>
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Select Category Name*</label>
+                <select 
+                  value={formData.category_id}
+                  onChange={(e) => setFormData({...formData, category_id: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
+                >
+                  <option value="">Select Category</option>
+                  {CATEGORIES.map(c => (
+                    <option key={c.id} value={c.id}>{c.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Select Subcategory*</label>
+                <select 
+                  value={formData.subcategory_id}
+                  onChange={(e) => setFormData({...formData, subcategory_id: e.target.value})}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
+                >
+                  <option value="">Select Subcategory</option>
+                  {SUBCATEGORIES.map(s => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Enter Product Title*</label>
                 <input 
                   type="text" 
                   value={formData.product_title}
@@ -476,7 +554,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 />
               </div>
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Product Code</label>
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Enter Product Code*</label>
                 <input 
                   type="text" 
                   value={formData.product_code}
@@ -485,7 +563,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 />
               </div>
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">HSN Code</label>
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Enter Product HSN Code*</label>
                 <input 
                   type="text" 
                   value={formData.hsn_code}
@@ -494,7 +572,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 />
               </div>
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Product Type</label>
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Product Type*</label>
                 <select 
                   value={formData.product_type}
                   onChange={(e) => setFormData({...formData, product_type: e.target.value})}
@@ -507,7 +585,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 </select>
               </div>
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Gender Selection</label>
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Select Gender*</label>
                 <select 
                   value={formData.gender}
                   onChange={(e) => setFormData({...formData, gender: e.target.value})}
@@ -554,7 +632,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   </button>
                 </div>
               </div>
-
+ 
               {/* Marketing Toggles */}
               <div className="space-y-4 col-span-1 md:col-span-2 grid grid-cols-3 gap-6 pt-4 border-t border-slate-200/80">
                 <div className="space-y-2">
@@ -592,9 +670,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 </div>
               </div>
             </div>
-
+ 
             <div className="space-y-4">
-              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">The Story (Description)</label>
+              <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Enter Product Description*</label>
               <textarea 
                 rows={6}
                 value={formData.description}
@@ -607,7 +685,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
 
         {activeTab === 'pricing' && (
           <div className="bg-white border border-slate-200/80 rounded-[40px] p-10 space-y-10 shadow-sm">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Price (₹)</label>
                 <input 
@@ -642,6 +720,18 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   step="0.01"
                   value={formData.product_weight || ''}
                   onChange={(e) => setFormData({...formData, product_weight: parseFloat(e.target.value) || 0})}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] font-bold text-[#12100e] transition-all shadow-inner"
+                />
+              </div>
+              <div className="space-y-4">
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Making Charges (₹)</label>
+                <input 
+                  type="number" 
+                  value={formData.making_charges || ''}
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value) || 0;
+                    setFormData({...formData, making_charges: val, makingCharges: val});
+                  }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] font-bold text-[#12100e] transition-all shadow-inner"
                 />
               </div>
@@ -698,7 +788,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Total Product Weight (g)</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Product Weight *</label>
                   <input 
                     type="number" 
                     step="0.01"
@@ -708,7 +798,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Gold Weight (g)</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Gold Weight (14k) *</label>
                   <input 
                     type="number" 
                     step="0.01"
@@ -718,12 +808,21 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Diamond Weight (ct)</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Diamond Weight *</label>
                   <input 
                     type="number" 
                     step="0.01"
                     value={formData.diamond_weight || ''}
                     onChange={(e) => setFormData({...formData, diamond_weight: parseFloat(e.target.value) || 0})}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Diamond Count *</label>
+                  <input 
+                    type="number" 
+                    value={formData.diamond_count || ''}
+                    onChange={(e) => setFormData({...formData, diamond_count: parseInt(e.target.value) || 0})}
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                   />
                 </div>
@@ -734,6 +833,15 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                     step="0.01"
                     value={formData.solitaires_weight || ''}
                     onChange={(e) => setFormData({...formData, solitaires_weight: parseFloat(e.target.value) || 0})}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                  />
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Price (₹)</label>
+                  <input 
+                    type="number" 
+                    value={formData.solitaires_price || ''}
+                    onChange={(e) => setFormData({...formData, solitaires_price: parseFloat(e.target.value) || 0})}
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                   />
                 </div>
@@ -787,7 +895,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Number of Gems</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Total Number Of GEM *</label>
                   <input 
                     type="number" 
                     value={formData.noof_gem || ''}
@@ -796,7 +904,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Height (mm)</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Height (mm) *</label>
                   <input 
                     type="number" 
                     step="0.01"
@@ -806,7 +914,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   />
                 </div>
                 <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Width (mm)</label>
+                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Width (mm) *</label>
                   <input 
                     type="number" 
                     step="0.01"
@@ -814,6 +922,29 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                     onChange={(e) => setFormData({...formData, width: parseFloat(e.target.value) || 0})}
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                   />
+                </div>
+                <div className="space-y-3 col-span-1 md:col-span-3 pt-6 border-t border-slate-200/80">
+                  <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Select Karat *</label>
+                  <div className="flex flex-wrap gap-4 mt-2">
+                    {KARATS.map(karat => {
+                      const isChecked = activeKarats.includes(karat.id);
+                      return (
+                        <button
+                          key={karat.id}
+                          type="button"
+                          onClick={() => handleKaratToggle(karat.id)}
+                          className={cn(
+                            'flex items-center justify-center px-6 py-3 rounded-xl border text-center transition-all duration-300 cursor-pointer text-[12px] font-bold uppercase tracking-wider',
+                            isChecked 
+                              ? 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c]'
+                              : 'bg-slate-50 border border-slate-200 text-[#12100e]/60'
+                          )}
+                        >
+                          {karat.name}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>

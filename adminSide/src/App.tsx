@@ -8,6 +8,7 @@ import Coupons from './pages/Coupons';
 import ExchangeInquiries from './pages/ExchangeInquiries';
 import SellGoldInquiries from './pages/SellGoldInquiries';
 import Banners from './pages/Banners';
+import PricingSettings from './pages/PricingSettings';
 import { resolveProductImage } from './lib/imageResolver';
 import { 
   Grid, 
@@ -46,6 +47,7 @@ const MENU_ITEMS = [
   { id: 'franchiseleads', label: 'Franchise Leads', icon: Building2 },
   { id: 'exchange', label: 'Exchange Leads', icon: RefreshCw },
   { id: 'sellgold', label: 'Sell Gold Leads', icon: Coins },
+  { id: 'pricing', label: 'Daily Pricing', icon: SlidersHorizontal },
 ];
 
 const CATEGORIES = [
@@ -363,6 +365,8 @@ function App() {
             <SellGoldInquiries />
           ) : activeMenu === 'banners' ? (
             <Banners />
+          ) : activeMenu === 'pricing' ? (
+            <PricingSettings />
           ) : (
             <div className="py-24 text-center">
               <span className="text-xs uppercase tracking-[0.4em] font-black text-slate-400">Atelier Admin Panel</span>

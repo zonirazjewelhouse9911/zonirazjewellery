@@ -42,10 +42,28 @@ const productSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  name: {
+    type: String
+  },
+  slug: {
+    type: String
+  },
   description: {
     type: String
   },
   price: {
+    type: Number,
+    default: 0
+  },
+  basePrice: {
+    type: Number,
+    default: 0
+  },
+  making_charges: {
+    type: Number,
+    default: 0
+  },
+  makingCharges: {
     type: Number,
     default: 0
   },
@@ -98,10 +116,19 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  diamond_count: {
+    type: Number,
+    default: 0
+  },
   solitaires_weight: {
     type: Number,
     default: 0
   },
+  solitaires_price: {
+    type: Number,
+    default: 0
+  },
+
   solitaires_quality: {
     type: String
   },

@@ -16,15 +16,70 @@ const diamondOptions = ['FG-SI', 'EF-VS', 'GH-SI', 'IJ-SI'];
 
 export default function ProductDetailPage({ product, products: propProducts = [], wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(product?.size || 12);
+  const [selectedSize, setSelectedSize] = useState(12);
   const [selectedMetal, setSelectedMetal] = useState('14 KT Yellow');
-  const [selectedDiamond, setSelectedDiamond] = useState('FG-SI');
+  const [selectedDiamond, setSelectedDiamond] = useState('IJ-SI');
   const [pincode, setPincode] = useState('');
   const [pincodeMsg, setPincodeMsg] = useState('');
   const [activeTab, setActiveTab] = useState('details'); // 'details' | 'price'
   const [stickyVisible, setStickyVisible] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+
+  const [pricingDetails, setPricingDetails] = useState({
+    price: product?.price || 0,
+    goldCost: Math.round((product?.price || 0) * 0.65),
+    diamondCost: Math.round((product?.price || 0) * 0.25),
+    gemstoneCost: 0,
+    makingCharges: 0,
+    gst: 0,
+    subtotal: product?.price || 0,
+    goldWeight: product?.gold_weight || 0
+  });
+
+  useEffect(() => {
+    let active = true;
+    const fetchCalculatedPrice = async () => {
+      try {
+        const prodId = product?._id || product?.id;
+        if (!prodId) return;
+
+        const response = await fetch('http://localhost:55000/api/jewellery-pricing/calculate', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            product_id: prodId,
+            size: selectedSize,
+            metal: selectedMetal,
+            diamond: selectedDiamond
+          })
+        });
+        const data = await response.json();
+        if (data.success && active) {
+          setPricingDetails({
+            price: data.price,
+            goldCost: Math.round(data.goldCost || 0),
+            diamondCost: Math.round(data.diamondCost || 0),
+            gemstoneCost: Math.round(data.gemstoneCost || 0),
+            makingCharges: Math.round(data.makingCharges || 0),
+            gst: Math.round(data.gst || 0),
+            subtotal: Math.round(data.subtotal || 0),
+            goldWeight: data.goldWeight || product?.gold_weight || 0
+          });
+        }
+      } catch (err) {
+        console.error('Failed to calculate price:', err);
+      }
+    };
+    if (product?._id || product?.id) {
+      fetchCalculatedPrice();
+    }
+    return () => {
+      active = false;
+    };
+  }, [selectedSize, selectedMetal, selectedDiamond, product?._id, product?.id]);
 
   // Try at Home Modal
   const [tryHomeOpen, setTryHomeOpen] = useState(false);
@@ -71,9 +126,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
   const isWishlisted = wishlist[product.id];
   const inCart = (cart[product.id] || 0) > 0;
-  const savings = product.originalPrice - product.price;
-  const savingsPct = product.originalPrice > 0 ? Math.round((savings / product.originalPrice) * 100) : 0;
-  const xPoints = Math.round(product.price * 0.03);
+  const currentPrice = pricingDetails.price;
+  const discountPct = product.discount || 0;
+  const originalPrice = discountPct > 0 ? Math.round(currentPrice / (1 - discountPct / 100)) : (product.originalPrice || currentPrice);
+  const savings = originalPrice - currentPrice;
+  const savingsPct = discountPct > 0 ? discountPct : (product.originalPrice > 0 ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100) : 0);
+  const xPoints = Math.round(currentPrice * 0.03);
   const metalAccentMap = {
     '14 KT Yellow': '#d9a441',
     '14 KT Rose': '#bf7b6b',
@@ -83,8 +141,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
   };
   const currentMetalAccent = metalAccentMap[selectedMetal] || '#634d40';
 
-  // All gallery images: product images + lifestyle images
-  const allImages = [...(product.images || [product.image]), ...lifestyleImages];
+  // All gallery images: product images only
+  const allImages = product.images && product.images.length > 0 ? product.images : [product.image];
 
   const { addToCart } = useContext(CartContext);
 
@@ -1167,7 +1225,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
         <img src={product.image} alt="" className="pdp-sticky-product-img" />
         <div>
           <div className="pdp-sticky-name">{product.name}</div>
-          <div className="pdp-sticky-price">₹{product.price.toLocaleString('en-IN')}</div>
+          <div className="pdp-sticky-price">₹{currentPrice.toLocaleString('en-IN')}</div>
         </div>
         <div className="pdp-sticky-sep" />
         <select
@@ -1231,23 +1289,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
               <div className="pdp-main-zoom-icon" title="Zoom image">⛶</div>
             </div>
           </div>
-
-          {/* Lifestyle mosaic */}
-          <div className="pdp-lifestyle-grid">
-            {lifestyleImages.map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                alt={`Lifestyle ${i + 1}`}
-                className="pdp-lifestyle-img"
-                onClick={() => setSelectedImage(product.images.length + i)}
-              />
-            ))}
-          </div>
-
-          <button className="pdp-show-more-btn">
-            <span>▼</span> SHOW MORE
-          </button>
+          {/* Lifestyle mosaic removed since we only show backend images */}
         </div>
 
         {/* RIGHT: Product Info */}
@@ -1267,8 +1309,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
           {/* Price */}
           <div className="pdp-price-row">
-            <span className="pdp-current-price">₹{product.price.toLocaleString('en-IN')}</span>
-            <span className="pdp-original-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
+            <span className="pdp-current-price">₹{currentPrice.toLocaleString('en-IN')}</span>
+            {originalPrice > currentPrice && (
+              <span className="pdp-original-price">₹{originalPrice.toLocaleString('en-IN')}</span>
+            )}
           </div>
           <div className="pdp-tax-note">(MRP Inclusive of all taxes)</div>
 
@@ -1467,89 +1511,96 @@ export default function ProductDetailPage({ product, products: propProducts = []
           </button>
         </div>
 
-        {activeTab === 'details' && (
-          <div className="pdp-details-grid">
-            <div className="pdp-detail-group">
-              <div className="pdp-detail-group-title">
-                <span>💛</span> Gold
+        {activeTab === 'details' && (() => {
+          const netWeight = pricingDetails.goldWeight || product.gold_weight || product.weight || 0;
+          const grossWeight = netWeight + ((product.diamond_weight || 0) + (product.gemstone_weight || 0)) * 0.2;
+          const displayKarat = selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : `${selectedMetal.split(' ')[0]} KT`);
+          const displayColor = selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : (selectedMetal.includes('Yellow') ? 'Yellow' : selectedMetal.includes('Rose') ? 'Rose' : 'White'));
+          
+          return (
+            <div className="pdp-details-grid">
+              <div className="pdp-detail-group">
+                <div className="pdp-detail-group-title">
+                  <span>💛</span> Gold
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Karat</span>
+                  <span className="pdp-detail-val">{displayKarat}</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Colour</span>
+                  <span className="pdp-detail-val">{displayColor}</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Net Weight</span>
+                  <span className="pdp-detail-val">{netWeight.toFixed(3)} g</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Gross Weight</span>
+                  <span className="pdp-detail-val">{grossWeight.toFixed(3)} g</span>
+                </div>
               </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Karat</span>
-                <span className="pdp-detail-val">{selectedMetal.split(' ')[0]} KT</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Colour</span>
-                <span className="pdp-detail-val">{selectedMetal.includes('Yellow') ? 'Yellow' : selectedMetal.includes('Rose') ? 'Rose' : 'White'}</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Net Weight</span>
-                <span className="pdp-detail-val">{product.weight} g</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Gross Weight</span>
-                <span className="pdp-detail-val">{(product.weight * 1.02).toFixed(2)} g</span>
-              </div>
-            </div>
 
-            <div className="pdp-detail-group">
-              <div className="pdp-detail-group-title">
-                <span>💎</span> Diamond
+              <div className="pdp-detail-group">
+                <div className="pdp-detail-group-title">
+                  <span>💎</span> Diamond
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Quality</span>
+                  <span className="pdp-detail-val">{selectedDiamond}</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Total Weight</span>
+                  <span className="pdp-detail-val">{product.diamond_weight || 0} ct</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Setting</span>
+                  <span className="pdp-detail-val">Hand Setting</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Number</span>
+                  <span className="pdp-detail-val">{product.noof_gem || 0} Diamonds</span>
+                </div>
               </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Quality</span>
-                <span className="pdp-detail-val">{selectedDiamond}</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Total Weight</span>
-                <span className="pdp-detail-val">0.098 ct</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Setting</span>
-                <span className="pdp-detail-val">Hand Setting</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Number</span>
-                <span className="pdp-detail-val">19 Diamonds</span>
-              </div>
-            </div>
 
-            <div className="pdp-detail-group">
-              <div className="pdp-detail-group-title">
-                <span>📐</span> Dimensions
+              <div className="pdp-detail-group">
+                <div className="pdp-detail-group-title">
+                  <span>📐</span> Dimensions
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Ring Size</span>
+                  <span className="pdp-detail-val">{selectedSize}</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Width</span>
+                  <span className="pdp-detail-val">{product.width ? `${product.width} mm` : 'N/A'}</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Height</span>
+                  <span className="pdp-detail-val">{product.height ? `${product.height} mm` : 'N/A'}</span>
+                </div>
               </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Ring Size</span>
-                <span className="pdp-detail-val">{selectedSize}</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Width</span>
-                <span className="pdp-detail-val">6 mm</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Height</span>
-                <span className="pdp-detail-val">5.6 mm</span>
-              </div>
-            </div>
 
-            <div className="pdp-detail-group">
-              <div className="pdp-detail-group-title">
-                <span>ℹ️</span> About
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">SKU</span>
-                <span className="pdp-detail-val">ZNR-{product.id.toString().padStart(5, '0')}</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Material</span>
-                <span className="pdp-detail-val">{product.material}</span>
-              </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Manufacturer</span>
-                <span className="pdp-detail-val">Zoniraz Pvt. Ltd.</span>
+              <div className="pdp-detail-group">
+                <div className="pdp-detail-group-title">
+                  <span>ℹ️</span> About
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">SKU</span>
+                  <span className="pdp-detail-val">ZNR-{product.product_code || product._id || product.id}</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Material</span>
+                  <span className="pdp-detail-val">{product.material || product.product_type || 'Gold & Diamond'}</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Manufacturer</span>
+                  <span className="pdp-detail-val">Zoniraz Pvt. Ltd.</span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {activeTab === 'price' && (
           <div className="pdp-details-grid">
@@ -1557,19 +1608,31 @@ export default function ProductDetailPage({ product, products: propProducts = []
               <div className="pdp-detail-group-title">Price Breakup</div>
               <div className="pdp-detail-row">
                 <span className="pdp-detail-key">Gold Value</span>
-                <span className="pdp-detail-val">₹{Math.round(product.price * 0.65).toLocaleString('en-IN')}</span>
+                <span className="pdp-detail-val">₹{pricingDetails.goldCost.toLocaleString('en-IN')}</span>
               </div>
               <div className="pdp-detail-row">
                 <span className="pdp-detail-key">Diamond Value</span>
-                <span className="pdp-detail-val">₹{Math.round(product.price * 0.25).toLocaleString('en-IN')}</span>
+                <span className="pdp-detail-val">₹{pricingDetails.diamondCost.toLocaleString('en-IN')}</span>
               </div>
+              {pricingDetails.gemstoneCost > 0 && (
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Gemstone Value</span>
+                  <span className="pdp-detail-val">₹{pricingDetails.gemstoneCost.toLocaleString('en-IN')}</span>
+                </div>
+              )}
               <div className="pdp-detail-row">
                 <span className="pdp-detail-key">Making Charges</span>
-                <span className="pdp-detail-val" style={{ color: '#2e7d32' }}>FREE (Saved ₹{Math.round(product.price * 0.10).toLocaleString('en-IN')})</span>
+                <span className="pdp-detail-val">₹{pricingDetails.makingCharges.toLocaleString('en-IN')}</span>
               </div>
+              {pricingDetails.gst > 0 && (
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">GST / Taxes</span>
+                  <span className="pdp-detail-val">₹{pricingDetails.gst.toLocaleString('en-IN')}</span>
+                </div>
+              )}
               <div className="pdp-detail-row" style={{ borderTop: '1px solid #f0edf5', paddingTop: 10, marginTop: 4 }}>
                 <span className="pdp-detail-key" style={{ fontWeight: 700, color: '#231535' }}>Total</span>
-                <span className="pdp-detail-val">₹{product.price.toLocaleString('en-IN')}</span>
+                <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>₹{pricingDetails.price.toLocaleString('en-IN')}</span>
               </div>
             </div>
           </div>
