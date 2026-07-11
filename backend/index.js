@@ -136,6 +136,18 @@ app.use('/api/userSide', customisionRoutes);
 const frontendRoutes = require('./src/routes/userSide/frontendRoutes');
 app.use('/api', frontendRoutes);
 
+// productPricing
+const productPricingRoutes = require('./src/routes/productPriceCalculation');
+app.use('/api', productPricingRoutes);
+
+// jewelleryPricing
+const jewelleryPricingRoutes = require('./src/routes/jewelleryPricing');
+app.use('/api', jewelleryPricingRoutes);
+
+// basePricing
+const basePricingRoutes = require('./src/routes/basePricing');
+app.use('/api', basePricingRoutes);
+
 // Setup Socket.IO using the utility
 // const server = http.createServer(app);
 // const socketUtil = require('./socket');

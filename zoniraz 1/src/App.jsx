@@ -105,24 +105,68 @@ function AppContent() {
 
             // Get gender
             let genderList = [];
-            if (p.gender) genderList.push(p.gender);
-            if (p.specs && p.specs.gender) genderList.push(p.specs.gender);
+            if (p.gender) {
+              const gLower = p.gender.toLowerCase();
+              genderList.push(gLower);
+              if (gLower === 'female' || gLower === 'women') {
+                genderList.push('women', 'female');
+              }
+              if (gLower === 'male' || gLower === 'men') {
+                genderList.push('men', 'male');
+              }
+            }
+            if (p.specs && p.specs.gender) {
+              const gLower = p.specs.gender.toLowerCase();
+              genderList.push(gLower);
+              if (gLower === 'female' || gLower === 'women') {
+                genderList.push('women', 'female');
+              }
+              if (gLower === 'male' || gLower === 'men') {
+                genderList.push('men', 'male');
+              }
+            }
             if (p.tags && Array.isArray(p.tags)) {
-              if (p.tags.includes('women')) genderList.push('women');
-              if (p.tags.includes('men')) genderList.push('men');
+              if (p.tags.includes('women')) genderList.push('women', 'female');
+              if (p.tags.includes('men')) genderList.push('men', 'male');
               if (p.tags.includes('kids')) genderList.push('kids');
             }
             const gender = [...new Set(genderList.map(s => s.toLowerCase()))].join(', ');
 
-            // Get images array
-            let images = [];
-            if (p.gallery) {
-              if (Array.isArray(p.gallery)) images = p.gallery;
-              else if (typeof p.gallery === 'string') images = p.gallery.split(',').map(s => s.trim());
-            } else if (p.images) {
-              if (Array.isArray(p.images)) images = p.images;
-              else if (typeof p.images === 'string') images = p.images.split(',').map(s => s.trim());
-            }
+             // Get images array
+             let images = [];
+             if (p.gallery) {
+               if (Array.isArray(p.gallery)) {
+                 images = p.gallery;
+               } else if (typeof p.gallery === 'object' && p.gallery !== null) {
+                 Object.values(p.gallery).forEach(val => {
+                   if (Array.isArray(val)) {
+                     images.push(...val);
+                   } else if (typeof val === 'string') {
+                     images.push(val);
+                   }
+                 });
+               } else if (typeof p.gallery === 'string') {
+                 try {
+                   const parsed = JSON.parse(p.gallery);
+                   if (Array.isArray(parsed)) {
+                     images = parsed;
+                   } else if (typeof parsed === 'object' && parsed !== null) {
+                     Object.values(parsed).forEach(val => {
+                       if (Array.isArray(val)) {
+                         images.push(...val);
+                       } else if (typeof val === 'string') {
+                         images.push(val);
+                       }
+                     });
+                   }
+                 } catch (e) {
+                   images = p.gallery.split(',').map(s => s.trim());
+                 }
+               }
+             } else if (p.images) {
+               if (Array.isArray(p.images)) images = p.images;
+               else if (typeof p.images === 'string') images = p.images.split(',').map(s => s.trim());
+             }
 
             const size = p.size_id || (p.specs && p.specs.size) || 'Free Size';
 
@@ -173,6 +217,8 @@ function AppContent() {
           const mapImgUrl = (url, name) => {
             if (!url) return 'https://placehold.co/600x600?text=' + encodeURIComponent(name);
             if (url.startsWith('http')) return url;
+            if (url.startsWith('/uploads/')) return `http://localhost:55000${url}`;
+            if (url.startsWith('/')) return `http://localhost:55000${url}`;
             return `http://localhost:55000/uploads/${url}`;
           };
 

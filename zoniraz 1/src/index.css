@@ -4011,7 +4011,6 @@ button {
   color: #2b221d !important;
 }
 
-<<<<<<< HEAD
 /* ==========================================================================
    Antigravity Responsive Helper Classes and Media Queries
    ========================================================================== */
@@ -4301,7 +4300,9 @@ button {
   .footer-legal-links {
     justify-content: center !important;
     gap: 15px !important;
-=======
+  }
+}
+
 /* ===== All Collections Page Styles ===== */
 .collections-page-wrapper {
   background-color: #efe7e5;
@@ -4543,6 +4544,5 @@ button {
   to {
     opacity: 1;
     transform: translateY(0) rotateX(0);
->>>>>>> 22a13f3cd13d70c37fd622cd095488b49d88040d
   }
 }
