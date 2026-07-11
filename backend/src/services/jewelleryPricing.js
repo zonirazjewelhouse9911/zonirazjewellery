@@ -98,14 +98,16 @@ class JewelleryPricingService {
       }
 
       let makingCharges = 0;
+      const baseCost = goldCost + diamondCost + gemstoneCost + solitaireCost;
+      
       if (product.making_charges || product.makingCharges) {
-        makingCharges = product.making_charges || product.makingCharges || 0;
+        const mcPercent = product.making_charges || product.makingCharges || 0;
+        makingCharges = baseCost * (mcPercent / 100);
       } else if (category && category.config && category.config.makingCharges) {
         const mc = category.config.makingCharges;
         if (mc.type === "fixed") {
           makingCharges = mc.value || 0;
         } else if (mc.type === "percentage") {
-          const baseCost = goldCost + diamondCost + gemstoneCost;
           makingCharges = baseCost * ((mc.value || 0) / 100);
         }
       }
@@ -229,14 +231,16 @@ class JewelleryPricingService {
     }
 
     let makingCharges = 0;
+    const baseCost = goldCost + diamondCost + gemstoneCost + solitaireCost;
+
     if (product.making_charges || product.makingCharges) {
-      makingCharges = product.making_charges || product.makingCharges || 0;
+      const mcPercent = product.making_charges || product.makingCharges || 0;
+      makingCharges = baseCost * (mcPercent / 100);
     } else if (category && category.config && category.config.makingCharges) {
       const mc = category.config.makingCharges;
       if (mc.type === "fixed") {
         makingCharges = mc.value || 0;
       } else if (mc.type === "percentage") {
-        const baseCost = goldCost + diamondCost + gemstoneCost;
         makingCharges = baseCost * ((mc.value || 0) / 100);
       }
     }

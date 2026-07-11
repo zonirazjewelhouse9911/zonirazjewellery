@@ -69,7 +69,8 @@ const SUBCATEGORIES = [
   { id: '9', name: 'Diamond' }
 ];
 
-const SIZES = Array.from({ length: 30 }, (_, i) => (i + 1).toString());
+const RING_SIZES = Array.from({ length: 30 }, (_, i) => (i + 1).toString());
+const BANGLE_SIZES = ['2.2', '2.4', '2.6', '2.8', '2.10', '3.0'];
 
 interface ProductEditorProps {
   productId?: string;
@@ -140,6 +141,10 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
   const [activeTab, setActiveTab] = useState('basic');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const [includeSolitaire, setIncludeSolitaire] = useState(false);
+  const [includeDiamond, setIncludeDiamond] = useState(false);
+  const [includeGemstone, setIncludeGemstone] = useState(false);
 
   // Form State matching productModel.js fields
   const [formData, setFormData] = useState<ProductFormData>({
@@ -230,6 +235,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             making_charges: Number(product.making_charges || 0),
             makingCharges: Number(product.makingCharges || 0)
           });
+          setIncludeSolitaire(Number(product.solitaires_price || 0) > 0);
+          setIncludeDiamond(Number(product.diamond_weight || 0) > 0 || Number(product.diamond_count || 0) > 0);
+          setIncludeGemstone(Number(product.gemstone_weight || 0) > 0 || Number(product.noof_gem || 0) > 0);
         } else {
           setError('Failed to load product data.');
         }
@@ -276,15 +284,29 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     }
 
     const numberFields = [
+      { key: 'price', label: 'Price' },
       { key: 'discount', label: 'Enter Discount' },
       { key: 'stock', label: 'Enter Stock' },
       { key: 'height', label: 'Height (mm)' },
       { key: 'width', label: 'Width (mm)' },
-      { key: 'noof_gem', label: 'Total Number Of GEM' },
       { key: 'product_weight', label: 'Product Weight' },
-      { key: 'diamond_weight', label: 'Diamond Weight' },
       { key: 'gold_weight', label: 'Gold Weight (14k)' },
+      { key: 'making_charges', label: 'Making Charges' }
     ];
+
+    if (includeDiamond) {
+      numberFields.push({ key: 'diamond_weight', label: 'Diamond Weight' });
+      numberFields.push({ key: 'diamond_count', label: 'Diamond Count' });
+    }
+
+    if (includeGemstone) {
+      numberFields.push({ key: 'gemstone_weight', label: 'Gemstone Weight' });
+      numberFields.push({ key: 'noof_gem', label: 'Total Number Of GEM' });
+    }
+
+    if (includeSolitaire) {
+      numberFields.push({ key: 'solitaires_price', label: 'Solitaire Price' });
+    }
 
     for (const f of numberFields) {
       const val = formData[f.key as keyof ProductFormData];
@@ -295,9 +317,33 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       }
     }
 
+    // Clean up category size values if sizing not applicable
+    const isRing = formData.category_id === '1';
+    const isBangleOrBracelet = formData.category_id === '4' || formData.category_id === '5';
+    const cleanSizeId = (isRing || isBangleOrBracelet) ? formData.size_id : '';
+    const cleanBangleSizeId = (isRing || isBangleOrBracelet) ? formData.banglesize_id : '0';
+
     const payload = {
       ...formData,
-      product_id: computedProductId
+      product_id: computedProductId,
+      size_id: cleanSizeId,
+      banglesize_id: cleanBangleSizeId,
+      // Handle solitaire presence
+      solitaires_price: includeSolitaire ? Number(formData.solitaires_price || 0) : 0,
+      solitaires_quality: includeSolitaire ? formData.solitaires_quality : '0',
+      solitaires_weight: 0,
+      // Handle diamond presence
+      diamond_weight: includeDiamond ? Number(formData.diamond_weight || 0) : 0,
+      diamond_count: includeDiamond ? Number(formData.diamond_count || 0) : 0,
+      diamond_quality: includeDiamond ? formData.diamond_quality : '',
+      // Handle gemstone presence
+      gemstone_weight: includeGemstone ? Number(formData.gemstone_weight || 0) : 0,
+      color_stone: includeGemstone ? formData.color_stone : null,
+      noof_gem: includeGemstone ? Number(formData.noof_gem || 0) : 0,
+      // Remove other deprecated fields
+      custom_type: '0',
+      center_diamond_weight: null,
+      center_diamond_price: null
     };
 
     try {
@@ -349,6 +395,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             making_charges: Number(data.data.making_charges || 0),
             makingCharges: Number(data.data.makingCharges || 0)
           });
+          setIncludeSolitaire(Number(data.data.solitaires_price || 0) > 0);
+          setIncludeDiamond(Number(data.data.diamond_weight || 0) > 0 || Number(data.data.diamond_count || 0) > 0);
+          setIncludeGemstone(Number(data.data.gemstone_weight || 0) > 0 || Number(data.data.noof_gem || 0) > 0);
         }
       } else {
         setError(data.message || 'The vault rejected the update.');
@@ -786,7 +835,41 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             <div className="space-y-6">
               <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Jewellery Weights & Specifications</label>
               
+              {/* Dynamic Feature Inclusion Toggles */}
+              <div className="bg-[#5d463c]/5 border border-[#5d463c]/15 rounded-3xl p-6 flex flex-wrap gap-8 justify-around">
+                <label className="flex items-center space-x-3 cursor-pointer select-none">
+                  <input 
+                    type="checkbox" 
+                    checked={includeDiamond}
+                    onChange={(e) => setIncludeDiamond(e.target.checked)}
+                    className="w-5 h-5 accent-[#5d463c] rounded"
+                  />
+                  <span className="text-[12px] uppercase tracking-wider font-bold text-[#12100e]">Includes Diamonds</span>
+                </label>
+
+                <label className="flex items-center space-x-3 cursor-pointer select-none">
+                  <input 
+                    type="checkbox" 
+                    checked={includeSolitaire}
+                    onChange={(e) => setIncludeSolitaire(e.target.checked)}
+                    className="w-5 h-5 accent-[#5d463c] rounded"
+                  />
+                  <span className="text-[12px] uppercase tracking-wider font-bold text-[#12100e]">Includes Solitaires</span>
+                </label>
+
+                <label className="flex items-center space-x-3 cursor-pointer select-none">
+                  <input 
+                    type="checkbox" 
+                    checked={includeGemstone}
+                    onChange={(e) => setIncludeGemstone(e.target.checked)}
+                    className="w-5 h-5 accent-[#5d463c] rounded"
+                  />
+                  <span className="text-[12px] uppercase tracking-wider font-bold text-[#12100e]">Includes Gemstones</span>
+                </label>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Core Specifications */}
                 <div className="space-y-3">
                   <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Product Weight *</label>
                   <input 
@@ -804,102 +887,6 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                     step="0.01"
                     value={formData.gold_weight || ''}
                     onChange={(e) => setFormData({...formData, gold_weight: parseFloat(e.target.value) || 0})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Diamond Weight *</label>
-                  <input 
-                    type="number" 
-                    step="0.01"
-                    value={formData.diamond_weight || ''}
-                    onChange={(e) => setFormData({...formData, diamond_weight: parseFloat(e.target.value) || 0})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Diamond Count *</label>
-                  <input 
-                    type="number" 
-                    value={formData.diamond_count || ''}
-                    onChange={(e) => setFormData({...formData, diamond_count: parseInt(e.target.value) || 0})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Weight (ct)</label>
-                  <input 
-                    type="number" 
-                    step="0.01"
-                    value={formData.solitaires_weight || ''}
-                    onChange={(e) => setFormData({...formData, solitaires_weight: parseFloat(e.target.value) || 0})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Price (₹)</label>
-                  <input 
-                    type="number" 
-                    value={formData.solitaires_price || ''}
-                    onChange={(e) => setFormData({...formData, solitaires_price: parseFloat(e.target.value) || 0})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Quality</label>
-                  <input 
-                    type="text" 
-                    value={formData.solitaires_quality}
-                    onChange={(e) => setFormData({...formData, solitaires_quality: e.target.value})}
-                    placeholder="e.g. VVS1-F"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Center Diamond Weight (ct)</label>
-                  <input 
-                    type="number" 
-                    step="0.01"
-                    value={formData.center_diamond_weight ?? ''}
-                    onChange={(e) => setFormData({...formData, center_diamond_weight: e.target.value ? parseFloat(e.target.value) : null})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Center Diamond Price (₹)</label>
-                  <input 
-                    type="number" 
-                    value={formData.center_diamond_price ?? ''}
-                    onChange={(e) => setFormData({...formData, center_diamond_price: e.target.value ? parseFloat(e.target.value) : null})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Color Stone Info</label>
-                  <input 
-                    type="text" 
-                    value={formData.color_stone ?? ''}
-                    onChange={(e) => setFormData({...formData, color_stone: e.target.value || null})}
-                    placeholder="e.g. Ruby, Emerald"
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Gemstone Weight (ct)</label>
-                  <input 
-                    type="number" 
-                    step="0.01"
-                    value={formData.gemstone_weight || ''}
-                    onChange={(e) => setFormData({...formData, gemstone_weight: parseFloat(e.target.value) || 0})}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Total Number Of GEM *</label>
-                  <input 
-                    type="number" 
-                    value={formData.noof_gem || ''}
-                    onChange={(e) => setFormData({...formData, noof_gem: parseInt(e.target.value) || 0})}
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                   />
                 </div>
@@ -923,6 +910,101 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                   />
                 </div>
+
+                {/* Conditional Diamond Requirements */}
+                {includeDiamond && (
+                  <div className="space-y-6 pt-6 border-t border-slate-200/60 col-span-1 md:col-span-3">
+                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Diamond Requirements</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Diamond Weight *</label>
+                        <input 
+                          type="number" 
+                          step="0.01"
+                          value={formData.diamond_weight || ''}
+                          onChange={(e) => setFormData({...formData, diamond_weight: parseFloat(e.target.value) || 0})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Diamond Count *</label>
+                        <input 
+                          type="number" 
+                          value={formData.diamond_count || ''}
+                          onChange={(e) => setFormData({...formData, diamond_count: parseInt(e.target.value) || 0})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Conditional Solitaire Requirements */}
+                {includeSolitaire && (
+                  <div className="space-y-6 pt-6 border-t border-slate-200/60 col-span-1 md:col-span-3">
+                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Solitaire Requirements</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Price (₹)</label>
+                        <input 
+                          type="number" 
+                          value={formData.solitaires_price || ''}
+                          onChange={(e) => setFormData({...formData, solitaires_price: parseFloat(e.target.value) || 0})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Quality</label>
+                        <input 
+                          type="text" 
+                          value={formData.solitaires_quality}
+                          onChange={(e) => setFormData({...formData, solitaires_quality: e.target.value})}
+                          placeholder="e.g. VVS1-F"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Conditional Gemstone Requirements */}
+                {includeGemstone && (
+                  <div className="space-y-6 pt-6 border-t border-slate-200/60 col-span-1 md:col-span-3">
+                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Gemstone / Color Stone Requirements</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Color Stone Info</label>
+                        <input 
+                          type="text" 
+                          value={formData.color_stone ?? ''}
+                          onChange={(e) => setFormData({...formData, color_stone: e.target.value || null})}
+                          placeholder="e.g. Ruby, Emerald"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Gemstone Weight (ct)</label>
+                        <input 
+                          type="number" 
+                          step="0.01"
+                          value={formData.gemstone_weight || ''}
+                          onChange={(e) => setFormData({...formData, gemstone_weight: parseFloat(e.target.value) || 0})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Total Number Of GEM *</label>
+                        <input 
+                          type="number" 
+                          value={formData.noof_gem || ''}
+                          onChange={(e) => setFormData({...formData, noof_gem: parseInt(e.target.value) || 0})}
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
                 <div className="space-y-3 col-span-1 md:col-span-3 pt-6 border-t border-slate-200/80">
                   <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Select Karat *</label>
                   <div className="flex flex-wrap gap-4 mt-2">
@@ -1063,45 +1145,46 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             </div>
 
             {/* Size Configurations */}
-            <div className="space-y-6 pt-10 border-t border-slate-200/80">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-serif font-bold text-[#12100e]">Sizes Whitelist</h3>
-                <span className="text-[9px] uppercase tracking-widest text-[#5d463c] font-bold">
-                  {activeSizes.length} Selected
-                </span>
-              </div>
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-10 gap-3">
-                {SIZES.map(sz => {
-                  const isChecked = activeSizes.includes(sz);
-                  return (
-                    <button
-                      key={sz}
-                      onClick={() => handleSizeToggle(sz)}
-                      className={cn(
-                        'flex items-center justify-center py-3 rounded-xl border text-center transition-all duration-205 text-[11px] font-bold cursor-pointer',
-                        isChecked 
-                          ? 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c]'
-                          : 'bg-slate-50 border border-slate-200 text-[#12100e]/50 hover:border-[#5d463c]/30'
-                      )}
-                    >
-                      {sz}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Bangle Size configuration */}
-            <div className="space-y-3 pt-10 border-t border-slate-200/80">
-              <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Bangle Size ID</label>
-              <input 
-                type="text" 
-                value={formData.banglesize_id}
-                onChange={(e) => setFormData({...formData, banglesize_id: e.target.value})}
-                placeholder="e.g. 2.4, 2.6 or 0"
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
-              />
-            </div>
+            {(() => {
+              const isRing = formData.category_id === '1';
+              const isBangleOrBracelet = formData.category_id === '4' || formData.category_id === '5';
+              const showSizing = isRing || isBangleOrBracelet;
+              
+              if (!showSizing) return null;
+              
+              return (
+                <div className="space-y-6 pt-10 border-t border-slate-200/80">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-serif font-bold text-[#12100e]">
+                      {isRing ? 'Ring Sizes Whitelist' : 'Bangle/Bracelet Sizes Whitelist'}
+                    </h3>
+                    <span className="text-[9px] uppercase tracking-widest text-[#5d463c] font-bold">
+                      {activeSizes.length} Selected
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-10 gap-3">
+                    {(isRing ? RING_SIZES : BANGLE_SIZES).map(sz => {
+                      const isChecked = activeSizes.includes(sz);
+                      return (
+                        <button
+                          key={sz}
+                          type="button"
+                          onClick={() => handleSizeToggle(sz)}
+                          className={cn(
+                            'flex items-center justify-center py-3 rounded-xl border text-center transition-all duration-205 text-[11px] font-bold cursor-pointer',
+                            isChecked 
+                              ? 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c]'
+                              : 'bg-slate-50 border border-slate-200 text-[#12100e]/50 hover:border-[#5d463c]/30'
+                          )}
+                        >
+                          {sz}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
           </div>
         )}
 
