@@ -133,8 +133,12 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
           color: #2e7d32;
         }
         .btn-purple {
-          background-color: #ede2f7;
-          color: #8E24AA;
+          background-color: #634d40;
+          color: #ffffff;
+          transition: background-color 0.2s ease;
+        }
+        .btn-purple:hover {
+          background-color: #4a3830;
         }
 
         /* Grid */
@@ -169,7 +173,7 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
           height: 30px;
           border-radius: 50%;
           background: #fff;
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -276,9 +280,9 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
           color: #fff;
         }
         .wishlist-delivery-btn {
-          border: 1px solid #8E24AA;
+          border: 1px solid #634d40;
           background: transparent;
-          color: #8E24AA;
+          color: #634d40;
           padding: 8px;
           border-radius: 6px;
           font-size: 12px;
@@ -287,7 +291,7 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
           text-transform: uppercase;
         }
         .wishlist-delivery-btn:hover {
-          background-color: #ede2f7;
+          background-color: #efe7e5;
         }
 
         /* Empty state */
@@ -350,18 +354,18 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
         .modal-input {
           width: 100%;
           padding: 10px 14px;
-          border: 1px solid #d4c8e3;
+          border: 1px solid #dbcfcb;
           border-radius: 6px;
           font-size: 14px;
           outline: none;
           margin-bottom: 12px;
         }
         .modal-input:focus {
-          border-color: #8E24AA;
+          border-color: #634d40;
         }
         .modal-btn {
           width: 100%;
-          background-color: #8E24AA;
+          background-color: #634d40;
           color: #fff;
           border: none;
           padding: 12px;
@@ -428,7 +432,7 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
         <div className="wishlist-header-row">
           <div className="wishlist-title-area">
             <div className="wishlist-breadcrumb">
-              <a href="#">Home</a> &gt; <span style={{ color: '#8E24AA', fontWeight: '600' }}>Wishlist</span>
+              <a href="#">Home</a> &gt; <span style={{ color: '#634d40', fontWeight: '600' }}>Wishlist</span>
             </div>
             <h1 className="wishlist-title">Your Wishlist</h1>
           </div>
@@ -630,7 +634,7 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
                 value={deliveryPincode}
                 onChange={(e) => setDeliveryPincode(e.target.value.replace(/\D/g, ''))}
               />
-              <button type="submit" className="modal-submit-btn" style={{ backgroundColor: '#8E24AA', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Check</button>
+              <button type="submit" className="modal-submit-btn" style={{ backgroundColor: '#634d40', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Check</button>
             </form>
             {deliveryMessage && (
               <div className="delivery-response" style={{ marginTop: '12px', fontSize: '13px', color: '#2e7d32', fontWeight: '600' }}>

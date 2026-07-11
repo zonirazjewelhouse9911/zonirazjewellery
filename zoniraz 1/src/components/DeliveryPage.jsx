@@ -323,7 +323,7 @@ export default function DeliveryPage({ initialCategory = 'delivery' }) {
         .help-sidebar {
           background-color: #ffffff;
           border-radius: 20px;
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           overflow: hidden;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
           position: sticky;
@@ -382,7 +382,7 @@ export default function DeliveryPage({ initialCategory = 'delivery' }) {
         .need-help-box {
           background-color: #ffffff;
           border-radius: 20px;
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           padding: 28px 24px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
           margin-top: 20px;
@@ -434,7 +434,7 @@ export default function DeliveryPage({ initialCategory = 'delivery' }) {
         .faq-panel {
           background-color: #ffffff;
           border-radius: 20px;
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
           overflow: hidden;
         }
@@ -578,7 +578,7 @@ export default function DeliveryPage({ initialCategory = 'delivery' }) {
             {/* Need more help? box */}
             <div className="need-help-box">
               <h4>Need more help?</h4>
-              <div className="need-help-phone">97848 36060</div>
+              <div className="need-help-phone">97848 36080</div>
               <div className="need-help-hours">10 AM – 8 PM (Mon–Sat)</div>
               <button className="contact-support-btn" onClick={() => { window.location.hash = 'contact'; }}>
                 Contact Us

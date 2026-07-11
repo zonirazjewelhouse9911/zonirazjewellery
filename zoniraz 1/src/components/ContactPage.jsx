@@ -137,7 +137,7 @@ export default function ContactPage() {
         .split-contact-box {
           background-color: #ffffff;
           border-radius: 24px;
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           display: grid;
           grid-template-columns: 1fr 1fr 1fr;
           overflow: hidden;
@@ -164,8 +164,8 @@ export default function ContactPage() {
 
         .split-half.center-email {
           background-color: #ebdcd0;
-          border-left: 1px solid #e1d8ea;
-          border-right: 1px solid #e1d8ea;
+          border-left: 1px solid #dbcfcb;
+          border-right: 1px solid #dbcfcb;
         }
         .split-half.right-address {
           background-color: #ffffff;
@@ -174,11 +174,11 @@ export default function ContactPage() {
           .split-half.center-email {
             border-left: none;
             border-right: none;
-            border-top: 1px solid #e1d8ea;
-            border-bottom: 1px solid #e1d8ea;
+            border-top: 1px solid #dbcfcb;
+            border-bottom: 1px solid #dbcfcb;
           }
           .split-half.right-address {
-            border-top: 1px solid #e1d8ea;
+            border-top: 1px solid #dbcfcb;
           }
         }
 
@@ -239,7 +239,7 @@ export default function ContactPage() {
           border-radius: 24px;
           padding: 50px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           margin-top: 40px;
         }
 
@@ -381,19 +381,23 @@ export default function ContactPage() {
               </svg>
             </div>
             <h4>Call Us At</h4>
-            <div className="contact-value">97848 36060</div>
+            <div className="contact-value">
+              <a href="tel:+919784836080" style={{ textDecoration: 'none', color: 'inherit' }}>97848 36080</a>
+            </div>
             <p className="timing-text">Mon-Sat: 10AM - 8PM, Sun: Closed</p>
           </div>
 
           {/* Write to Us */}
           <div className="split-half center-email">
-            <div className="icon-circle">
-              <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-              </svg>
-            </div>
-            <h4>Write to Us</h4>
-            <div className="contact-value" style={{ fontSize: '15px' }}>zonirazjewelhouse@gmail.com</div>
+            <a href="mailto:zonirazjewelhose@gmail.com" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div className="icon-circle" style={{ cursor: 'pointer' }}>
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h4>Write to Us</h4>
+              <div className="contact-value" style={{ fontSize: '15px', color: '#c5a880', textDecoration: 'underline', cursor: 'pointer' }}>zonirazjewelhose@gmail.com</div>
+            </a>
           </div>
 
           {/* Visit Us At */}

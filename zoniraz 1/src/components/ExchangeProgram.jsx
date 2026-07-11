@@ -67,6 +67,17 @@ export default function ExchangeProgram() {
             <h4 className="ep-feature-title">Lifetime Maintenance</h4>
           </div>
         </div>
+
+        {/* Banner Cards Row */}
+        <div className="ep-banner-cards-row">
+          <div className="ep-banner-card">
+            <img src="/zoniraz banner 5.jpg.jpeg" alt="Exchange Program Banner 1" className="ep-banner-img" />
+          </div>
+          <div className="ep-banner-card">
+            <img src="/gold banner .jpg.jpeg" alt="Exchange Program Banner 2" className="ep-banner-img" />
+          </div>
+        </div>
+
       </div>
     </section>
   );

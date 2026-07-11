@@ -62,7 +62,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
     return (
       <div style={{ padding: '80px 24px', textAlign: 'center' }}>
         <h2>Product not found</h2>
-        <button onClick={onBack} style={{ marginTop: 16, padding: '10px 20px', background: '#8E24AA', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
+        <button onClick={onBack} style={{ marginTop: 16, padding: '10px 20px', background: '#634d40', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
           Go Back
         </button>
       </div>
@@ -238,7 +238,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
           bottom: 12px;
           right: 12px;
           background: rgba(255,255,255,0.85);
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           border-radius: 4px;
           padding: 5px 7px;
           font-size: 14px;
@@ -284,7 +284,16 @@ export default function ProductDetailPage({ product, products: propProducts = []
         /* RIGHT: Product Info Panel */
         .pdp-info-col {
           position: sticky;
-          top: 80px;
+          top: 175px;
+          max-height: calc(100vh - 200px);
+          overflow-y: auto;
+        }
+        .pdp-info-col::-webkit-scrollbar {
+          width: 4px;
+        }
+        .pdp-info-col::-webkit-scrollbar-thumb {
+          background: #d4c5bd;
+          border-radius: 2px;
         }
 
         .pdp-popular-tag {
@@ -1141,6 +1150,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
           }
           .pdp-info-col {
             position: static;
+            max-height: none;
+            overflow-y: visible;
           }
           .pdp-related-grid {
             grid-template-columns: repeat(2, 1fr);

@@ -47,7 +47,7 @@ export default function AboutPage() {
           text-align: center;
           margin-bottom: 40px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           position: relative;
         }
 
@@ -82,7 +82,7 @@ export default function AboutPage() {
           border-radius: 24px;
           padding: 50px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           margin-bottom: 40px;
         }
 
@@ -137,7 +137,7 @@ export default function AboutPage() {
           border-radius: 20px;
           padding: 30px;
           text-align: center;
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
 
@@ -183,7 +183,7 @@ export default function AboutPage() {
           background-color: #ffffff;
           border-radius: 20px;
           overflow: hidden;
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
           text-align: center;
           transition: transform 0.3s ease;
@@ -233,7 +233,7 @@ export default function AboutPage() {
           border-radius: 24px;
           padding: 50px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           margin-bottom: 40px;
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -342,7 +342,7 @@ export default function AboutPage() {
           background-color: #ffffff;
           border-radius: 20px;
           padding: 40px;
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
         }
 
@@ -527,7 +527,9 @@ export default function AboutPage() {
               </svg>
               <div>
                 <h5>Customer Helpline</h5>
-                <p style={{ fontWeight: '700' }}>97848 36060</p>
+                <p style={{ fontWeight: '700' }}>
+                  <a href="tel:+919784836080" style={{ textDecoration: 'none', color: 'inherit' }}>97848 36080</a>
+                </p>
               </div>
             </div>
           </div>

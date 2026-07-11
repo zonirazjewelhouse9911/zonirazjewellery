@@ -702,12 +702,12 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
             <div className="empty-illustration">
               {/* Delivery Person SVG vector carrying a box */}
               <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <circle cx="50" cy="24" r="7" stroke="#3b1954" strokeWidth="2" />
-                <path d="M50 31c-8 0-14 4-14 11v18h28V42c0-7-6-11-14-11z" fill="#ede2f7" stroke="#3b1954" strokeWidth="2" />
-                <path d="M43 60v22m14-22v22" stroke="#3b1954" strokeWidth="2" />
+                <circle cx="50" cy="24" r="7" stroke="#634d40" strokeWidth="2" />
+                <path d="M50 31c-8 0-14 4-14 11v18h28V42c0-7-6-11-14-11z" fill="#efe7e5" stroke="#634d40" strokeWidth="2" />
+                <path d="M43 60v22m14-22v22" stroke="#634d40" strokeWidth="2" />
                 <rect x="34" y="44" width="32" height="15" rx="2" fill="#ffe0b2" stroke="#e65100" strokeWidth="1.5" />
                 <line x1="50" y1="44" x2="50" y2="59" stroke="#e65100" strokeDasharray="2" />
-                <path d="M28 42c0 0 6 3 8 0M72 42c0 0-6 3-8 0" stroke="#3b1954" strokeWidth="2" />
+                <path d="M28 42c0 0 6 3 8 0M72 42c0 0-6 3-8 0" stroke="#634d40" strokeWidth="2" />
               </svg>
             </div>
             <h2 className="empty-title">There is nothing here!</h2>
@@ -791,7 +791,7 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
               <div className="frequently-bought-card">
                 <h4 className="fbt-title">
                   <span>Frequently Bought Together</span>
-                  <span style={{ fontSize: '12px', color: '#8E24AA', cursor: 'pointer' }}>▲</span>
+                  <span style={{ fontSize: '12px', color: '#634d40', cursor: 'pointer' }}>▲</span>
                 </h4>
                 <div className="fbt-grid">
                   {frequentlyBoughtItems.map(item => (
@@ -959,7 +959,7 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
                 value={deliveryPincode}
                 onChange={(e) => setDeliveryPincode(e.target.value.replace(/\D/g, ''))}
               />
-              <button type="submit" className="modal-submit-btn" style={{ backgroundColor: '#8E24AA', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Check</button>
+              <button type="submit" className="modal-submit-btn" style={{ backgroundColor: '#634d40', color: '#fff', border: 'none', padding: '10px 18px', borderRadius: '6px', cursor: 'pointer', fontWeight: '600' }}>Check</button>
             </form>
             {deliveryMessage && (
               <div className="delivery-response" style={{ marginTop: '12px', fontSize: '13px', color: '#2e7d32', fontWeight: '600' }}>

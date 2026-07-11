@@ -62,8 +62,13 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
             // Get images array
             let images = [];
             if (p.gallery) {
-              if (Array.isArray(p.gallery)) images = p.gallery;
-              else if (typeof p.gallery === 'string') images = p.gallery.split(',').map(s => s.trim());
+              if (Array.isArray(p.gallery)) {
+                images = p.gallery;
+              } else if (typeof p.gallery === 'object' && p.gallery !== null) {
+                images = Object.values(p.gallery).flat();
+              } else if (typeof p.gallery === 'string') {
+                images = p.gallery.split(',').map(s => s.trim());
+              }
             } else if (p.images) {
               if (Array.isArray(p.images)) images = p.images;
               else if (typeof p.images === 'string') images = p.images.split(',').map(s => s.trim());
@@ -117,6 +122,8 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
           const mapImgUrl = (url, name) => {
             if (!url) return 'https://placehold.co/600x600?text=' + encodeURIComponent(name);
             if (url.startsWith('http')) return url;
+            if (url.startsWith('/uploads/')) return `http://localhost:55000${url}`;
+            if (url.startsWith('uploads/')) return `http://localhost:55000/${url}`;
             return `http://localhost:55000/uploads/${url}`;
           };
 
@@ -466,7 +473,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   if (loading) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '16px' }}>
-        <div style={{ width: '40px', height: '40px', border: '3px solid #f3e6de', borderTop: '3px solid #8e24aa', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
+        <div style={{ width: '40px', height: '40px', border: '3px solid #f3e6de', borderTop: '3px solid #634d40', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
         <p style={{ color: '#8c7365', fontSize: '14px', fontWeight: '500' }}>Loading products...</p>
         <style>{`
           @keyframes spin {
@@ -663,6 +670,41 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
           flex-shrink: 0;
           border-right: 1px solid #d4c5bd;
           padding-right: 20px;
+          position: sticky;
+          top: 175px;
+          max-height: calc(100vh - 200px);
+          overflow-y: auto;
+        }
+        .filters-sidebar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .filters-sidebar::-webkit-scrollbar-thumb {
+          background: #d4c5bd;
+          border-radius: 2px;
+        }
+        .sidebar-filters-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #d4c5bd;
+          margin-bottom: 12px;
+        }
+        .sidebar-active-badges {
+          display: flex;
+          gap: 8px;
+          flex-wrap: wrap;
+          align-items: center;
+          margin-bottom: 16px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #d4c5bd;
+        }
+        .products-header-row {
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          margin-bottom: 20px;
+          width: 100%;
         }
         .filter-section {
           border-bottom: 1px solid #d4c5bd;
@@ -1186,6 +1228,9 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
             border-bottom: 1px solid #d4c5bd;
             padding-right: 0;
             padding-bottom: 20px;
+            position: static;
+            max-height: none;
+            overflow-y: visible;
           }
         }
         @media (max-width: 600px) {
@@ -1221,17 +1266,21 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
           ))}
         </div>
 
-        {/* Filter Action & Badges Bar */}
-        <div className="filters-action-row">
-          <div className="filters-left">
-            <span className="filters-label">
-              Filters
-              {totalActiveFilters > 0 && <span className="filters-count-badge">{totalActiveFilters}</span>}
-            </span>
-            <button className="clear-all-btn" onClick={clearAllFilters}>CLEAR ALL</button>
+        {/* Outer Layout wrapper */}
+        <div className="rings-layout">
+          {/* Sidebar */}
+          <aside className="filters-sidebar">
+            {/* Filter Action Header */}
+            <div className="sidebar-filters-header">
+              <span className="filters-label">
+                Filters
+                {totalActiveFilters > 0 && <span className="filters-count-badge">{totalActiveFilters}</span>}
+              </span>
+              <button className="clear-all-btn" onClick={clearAllFilters}>CLEAR ALL</button>
+            </div>
 
-            {/* Badges */}
-            <div className="active-badges">
+            {/* Badges Stack */}
+            <div className="sidebar-active-badges">
               <span className="badge-chip">
                 {category}
                 <button disabled>✕</button>
@@ -1267,27 +1316,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                 </span>
               ))}
             </div>
-          </div>
-
-          <div className="sort-select-wrapper">
-            <span className="sort-label">Sort By:</span>
-            <select 
-              className="sort-dropdown"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-            >
-              <option value="Featured">Featured</option>
-              <option value="Price: Low to High">Price: Low to High</option>
-              <option value="Price: High to Low">Price: High to Low</option>
-              <option value="Discounts: High to Low">Discounts: High to Low</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Outer Layout wrapper */}
-        <div className="rings-layout">
-          {/* Sidebar */}
-          <aside className="filters-sidebar">
             
             {/* Size Accordion */}
             <div className="filter-section">
@@ -1416,6 +1444,23 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
           {/* Product Grid Area */}
           <main className="products-grid-container">
+            {/* Sort Dropdown Header Row */}
+            <div className="products-header-row">
+              <div className="sort-select-wrapper">
+                <span className="sort-label">Sort By:</span>
+                <select 
+                  className="sort-dropdown"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="Featured">Featured</option>
+                  <option value="Price: Low to High">Price: Low to High</option>
+                  <option value="Price: High to Low">Price: High to Low</option>
+                  <option value="Discounts: High to Low">Discounts: High to Low</option>
+                </select>
+              </div>
+            </div>
+
             {sortedProducts.length === 0 ? (
               <div className="empty-results">
                 <h3>No designs match your criteria</h3>
@@ -1583,7 +1628,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
               <button type="submit" className="modal-submit-btn">Check</button>
             </form>
             {deliveryMessage && (
-              <div className="delivery-response" style={{ color: deliveryMessage.includes('Express') ? '#2e7d32' : '#8e24aa' }}>
+              <div className="delivery-response" style={{ color: deliveryMessage.includes('Express') ? '#2e7d32' : '#634d40' }}>
                 {deliveryMessage}
               </div>
             )}

@@ -34,7 +34,7 @@ export default function TestimonialSection() {
 
         <div className="testimonial-grid">
           <article className="testimonial-feature-card">
-            <img src={heroModelImg} alt="Happy customer wearing stylish jewellery" />
+            <img src="/WhatsApp Image 2026-07-09 at 12.56.20 PM (2).jpeg" alt="Happy customer wearing stylish jewellery" />
             <div className="testimonial-feature-body">
               <div className="testimonial-stars">★★★★★</div>
               <p>

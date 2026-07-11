@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import AuthModal from './AuthModal';
@@ -51,6 +51,38 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [disabledDropdown, setDisabledDropdown] = useState(null);
+  const headerRef = useRef(null);
+  const [headerHeight, setHeaderHeight] = useState(145);
+
+  // Measure header height dynamically
+  useEffect(() => {
+    const updateHeight = () => {
+      if (headerRef.current) {
+        setHeaderHeight(headerRef.current.getBoundingClientRect().height);
+      }
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    window.addEventListener('scroll', updateHeight);
+    return () => {
+      window.removeEventListener('resize', updateHeight);
+      window.removeEventListener('scroll', updateHeight);
+    };
+  }, []);
+
+  const handleDropdownLinkClick = (categorySlug) => {
+    setDisabledDropdown(categorySlug);
+    setTimeout(() => {
+      setDisabledDropdown(null);
+    }, 600);
+  };
+
+  const handleCategoryTriggerClick = (categorySlug) => {
+    setDisabledDropdown(categorySlug);
+    setTimeout(() => {
+      setDisabledDropdown(null);
+    }, 400);
+  };
 
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(false);
@@ -60,15 +92,15 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
     fetch('http://localhost:55000/api/userSide/GetNavbar')
       .then(res => res.json())
       .then(resData => {
-        if (resData.success && Array.isArray(resData.data) && resData.data.length > 0) {
+        if (resData.success && Array.isArray(resData.data)) {
           setCategories(resData.data);
         } else {
-          setCategories(fallbackCategories);
+          setCategories([]);
         }
       })
       .catch(err => {
         console.error('Error fetching navbar categories:', err);
-        setCategories(fallbackCategories);
+        setCategories([]);
       })
       .finally(() => setLoadingCategories(false));
   }, []);
@@ -109,21 +141,10 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
 
   return (
     <>
-      <header className={`jaypore-header ${scrolled ? 'scrolled' : ''}`}>
+      <header ref={headerRef} className={`jaypore-header ${scrolled ? 'scrolled' : ''}`}>
       {/* Top Bar matching Candere style */}
       <div className="header-top-bar desktop-only-util">
         <div className="top-bar-left">
-          <a href="#orders" className="top-bar-link" onClick={(e) => { if (token || user) { window.location.hash = 'profile'; } else { e.preventDefault(); setShowAuthModal(true); } }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="top-bar-icon">
-              <rect x="1" y="3" width="15" height="13" rx="2" ry="2"></rect>
-              <circle cx="16" cy="8" r="2"></circle>
-              <circle cx="20" cy="8" r="2"></circle>
-              <line x1="6" y1="21" x2="6" y2="16"></line>
-              <line x1="10" y1="21" x2="10" y2="16"></line>
-            </svg>
-            ORDER TRACKING
-          </a>
-          <span className="divider-dot">•</span>
           <a href="#digital-gold" className="top-bar-link" onClick={(e) => { e.preventDefault(); setGoldModalOpen(true); setGoldActiveTab('menu'); }}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="top-bar-icon">
               <circle cx="12" cy="12" r="10"></circle>
@@ -201,13 +222,6 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
           </div>
 
           <div className="icon-actions">
-            {/* Store locator */}
-            <a href="#delivery-stores" className="action-link-icon store-icon-link" aria-label="Stores">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-              </svg>
-            </a>
 
             {/* Profile Dropdown */}
             <div className="nav-item-container nav-profile-wrapper">
@@ -322,7 +336,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
       {/* Bottom Tier: Category Links */}
       <div className="header-nav-row">
         <nav className="bottom-category-nav">
-          {(categories.length > 0 ? categories : fallbackCategories)
+          {categories
             .filter(cat => {
               const name = (cat.categoryName || '').toLowerCase().trim();
               return name !== "men's jewellery" &&
@@ -334,7 +348,11 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
             })
             .map((cat, idx) => {
               const displayName = cat.categoryName || 'Collection';
-              const categorySlug = displayName.toLowerCase().replace(/ /g, '-');
+              // Sanitize slug: strip special chars like & so #necklaces-pendants routes correctly
+              const categorySlug = displayName.toLowerCase()
+                .replace(/[^a-z0-9\s-]/g, '')
+                .trim()
+                .replace(/\s+/g, '-');
 
               // Extract unique subcategories
               const subcategories = [...new Set((cat.products || [])
@@ -353,14 +371,12 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
               return (
                 <div 
                   key={idx} 
-                  className="nav-item-container" 
-                  onMouseEnter={() => setDisabledDropdown(null)}
-                  onMouseLeave={() => setDisabledDropdown(null)}
+                  className="nav-item-container"
                 >
-                  <a href={`#${categorySlug}`} className="nav-item-trigger" onClick={() => setDisabledDropdown(categorySlug)}>
+                  <a href={`#${categorySlug}`} className="nav-item-trigger" onClick={() => handleCategoryTriggerClick(categorySlug)}>
                     {displayName}
                   </a>
-                  <div className={`mega-dropdown ${disabledDropdown === categorySlug ? 'force-hide' : ''}`}>
+                  <div className={`mega-dropdown ${disabledDropdown === categorySlug ? 'force-hide' : ''}`} style={{ top: `${headerHeight}px` }}>
                     <div className="mega-dropdown-inner">
                       {/* Column 1: Subcategories */}
                       <div className="mega-column">
@@ -369,7 +385,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                           <li>
                             <a 
                               href={`#${categorySlug}`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               All {displayName}
                             </a>
@@ -380,7 +396,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                               <li key={sIdx}>
                                 <a 
                                   href={`#${categorySlug}?subcategory=${subSlug}`} 
-                                  onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                                  onClick={() => handleDropdownLinkClick(categorySlug)}
                                 >
                                   {sub}
                                 </a>
@@ -398,7 +414,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                             <span className="dot dot-diamond"></span>
                             <a 
                               href={`#${categorySlug}?stone=diamond`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               Diamond
                             </a>
@@ -407,7 +423,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                             <span className="dot dot-gold"></span>
                             <a 
                               href={`#${categorySlug}?metal=gold`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               Gold
                             </a>
@@ -416,7 +432,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                             <span className="dot dot-rose-gold"></span>
                             <a 
                               href={`#${categorySlug}?metal=rose-gold`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               Rose Gold
                             </a>
@@ -425,7 +441,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                             <span className="dot dot-yellow-gold"></span>
                             <a 
                               href={`#${categorySlug}?metal=yellow-gold`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               Yellow Gold
                             </a>
@@ -434,7 +450,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                             <span className="dot dot-white-gold"></span>
                             <a 
                               href={`#${categorySlug}?metal=white-gold`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               White Gold
                             </a>
@@ -443,7 +459,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                             <span className="dot dot-platinum"></span>
                             <a 
                               href={`#${categorySlug}?metal=platinum`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               Platinum
                             </a>
@@ -458,7 +474,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                           <li>
                             <a 
                               href={`#${categorySlug}?maxPrice=10000`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               Under ₹ 10k
                             </a>
@@ -466,7 +482,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                           <li>
                             <a 
                               href={`#${categorySlug}?minPrice=10000&maxPrice=20000`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               ₹ 10k - ₹ 20k
                             </a>
@@ -474,7 +490,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                           <li>
                             <a 
                               href={`#${categorySlug}?minPrice=20000&maxPrice=30000`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               ₹ 20k - ₹ 30k
                             </a>
@@ -482,7 +498,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                           <li>
                             <a 
                               href={`#${categorySlug}?minPrice=30000&maxPrice=50000`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               ₹ 30k - ₹ 50k
                             </a>
@@ -490,7 +506,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                           <li>
                             <a 
                               href={`#${categorySlug}?minPrice=50000`} 
-                              onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
                             >
                               ₹ 50k & Above
                             </a>
@@ -517,7 +533,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                             href={`#${categorySlug}?gender=women`} 
                             className="footer-pill-btn" 
                             style={{ paddingRight: '20px', borderRight: '1.5px solid #d4c5bd', textDecoration: 'none', color: '#8c7365' }} 
-                            onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                            onClick={() => handleDropdownLinkClick(categorySlug)}
                           >
                             For Women
                           </a>
@@ -525,7 +541,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                             href={`#${categorySlug}?gender=men`} 
                             className="footer-pill-btn" 
                             style={{ paddingLeft: '20px', paddingRight: '20px', borderRight: '1.5px solid #d4c5bd', textDecoration: 'none', color: '#8c7365' }} 
-                            onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                            onClick={() => handleDropdownLinkClick(categorySlug)}
                           >
                             For Men
                           </a>
@@ -533,7 +549,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                             href={`#${categorySlug}?gender=kids`} 
                             className="footer-pill-btn" 
                             style={{ paddingLeft: '20px', textDecoration: 'none', color: '#8c7365' }} 
-                            onClick={() => setTimeout(() => setDisabledDropdown(categorySlug), 150)}
+                            onClick={() => handleDropdownLinkClick(categorySlug)}
                           >
                             For Kids
                           </a>
@@ -706,9 +722,12 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
               ))}
 
               {/* OUR STORY & Auth Buttons moved directly under Trending button */}
-              <div className="drawer-inline-footer">
+              <div className="drawer-inline-footer" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginBottom: '15px' }}>
                 <a href="#our-story" className="drawer-story-link" onClick={() => setMobileMenuOpen(false)}>
                   OUR STORY
+                </a>
+                <a href="#franchise" className="drawer-story-link" onClick={() => setMobileMenuOpen(false)}>
+                  FRANCHISE
                 </a>
                 <div className="drawer-auth-buttons">
                   {user ? (

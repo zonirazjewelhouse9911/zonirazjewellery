@@ -25,6 +25,7 @@ import DeliveryPage from './components/DeliveryPage';
 import UserDashboard from './components/UserDashboard';
 import CheckoutPage from './components/CheckoutPage';
 import AllCollectionsPage from './components/AllCollectionsPage';
+import FranchisePage from './components/FranchisePage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import AuthModal from './components/AuthModal';
@@ -117,8 +118,13 @@ function AppContent() {
             // Get images array
             let images = [];
             if (p.gallery) {
-              if (Array.isArray(p.gallery)) images = p.gallery;
-              else if (typeof p.gallery === 'string') images = p.gallery.split(',').map(s => s.trim());
+              if (Array.isArray(p.gallery)) {
+                images = p.gallery;
+              } else if (typeof p.gallery === 'object' && p.gallery !== null) {
+                images = Object.values(p.gallery).flat();
+              } else if (typeof p.gallery === 'string') {
+                images = p.gallery.split(',').map(s => s.trim());
+              }
             } else if (p.images) {
               if (Array.isArray(p.images)) images = p.images;
               else if (typeof p.images === 'string') images = p.images.split(',').map(s => s.trim());
@@ -173,6 +179,8 @@ function AppContent() {
           const mapImgUrl = (url, name) => {
             if (!url) return 'https://placehold.co/600x600?text=' + encodeURIComponent(name);
             if (url.startsWith('http')) return url;
+            if (url.startsWith('/uploads/')) return `http://localhost:55000${url}`;
+            if (url.startsWith('uploads/')) return `http://localhost:55000/${url}`;
             return `http://localhost:55000/uploads/${url}`;
           };
 
@@ -229,6 +237,9 @@ function AppContent() {
       } else if (hash === 'about') {
         setCurrentView('about');
         window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (hash === 'franchise' || hash === 'franchise-enquiry') {
+        setCurrentView('franchise');
+        window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash === 'delivery' || hash === 'delivery-information') {
         setHelpCategory('delivery');
         setCurrentView('delivery');
@@ -260,6 +271,13 @@ function AppContent() {
           cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanHash
         );
         if (!matchedCategory) {
+          // Try prefix match for compound names like "necklaces-pendants" → "Necklaces"
+          matchedCategory = knownCategories.find(cat =>
+            cleanHash.startsWith(cat.toLowerCase().replace(/[^a-z0-9]/g, ''))
+          );
+        }
+        if (!matchedCategory) {
+          // Fallback: title-case the hash
           matchedCategory = hash.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         }
         setSelectedCategoryName(matchedCategory);
@@ -299,6 +317,8 @@ function AppContent() {
         <BlogPage />
       ) : currentView === 'about' ? (
         <AboutPage />
+      ) : currentView === 'franchise' ? (
+        <FranchisePage />
       ) : currentView === 'delivery' ? (
         <DeliveryPage initialCategory={helpCategory} />
       ) : currentView === 'wishlist' ? (
@@ -330,6 +350,32 @@ function AppContent() {
       )}
       <Footer />
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+
+      {/* Floating WhatsApp and Call widgets */}
+      <div className="floating-contact-widgets">
+        <a 
+          href="https://wa.me/919784836080" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          className="floating-widget whatsapp-widget"
+          data-tooltip="Chat on WhatsApp"
+          aria-label="Chat on WhatsApp"
+        >
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.717-1.458L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436.002 9.858-4.419 9.86-9.86.001-2.636-1.02-5.115-2.876-6.973-1.857-1.859-4.335-2.88-6.97-2.882-5.437 0-9.863 4.42-9.866 9.861-.001 1.639.429 3.238 1.248 4.636L1.879 21.6l4.768-1.246zm11.758-5.326c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.669.149-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.074-.297-.15-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414-.074-.124-.272-.198-.57-.347z"/>
+          </svg>
+        </a>
+        <a 
+          href="tel:+919784836080" 
+          className="floating-widget call-widget"
+          data-tooltip="Call Us: +91 97848 36080"
+          aria-label="Call Us"
+        >
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20.01 15.38c-1.23 0-2.42-.2-3.53-.56a.977.977 0 00-1.01.24l-2.2 2.2a15.045 15.045 0 01-6.59-6.59l2.2-2.21c.28-.26.36-.67.25-1.02A11.36 11.36 0 018.5 4c0-.55-.45-1-1-1H4.01c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.49c0-.55-.45-1-1-1z"/>
+          </svg>
+        </a>
+      </div>
     </>
   );
 }

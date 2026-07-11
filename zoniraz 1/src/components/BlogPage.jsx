@@ -126,7 +126,7 @@ export default function BlogPage() {
           text-align: center;
           margin-bottom: 40px;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           position: relative;
           overflow: hidden;
         }
@@ -209,7 +209,7 @@ export default function BlogPage() {
           border-radius: 20px;
           overflow: hidden;
           box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-          border: 1px solid #e1d8ea;
+          border: 1px solid #dbcfcb;
           transition: transform 0.3s ease, box-shadow 0.3s ease;
           display: flex;
           flex-direction: column;

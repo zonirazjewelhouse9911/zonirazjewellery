@@ -197,7 +197,7 @@ export default function UserDashboard() {
 
         <div className="dashboard-main-grid" style={{ gap: '30px', alignItems: 'start', gridTemplateColumns: undefined }}>
           {/* SIDEBAR TABS */}
-          <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #e1d8ea', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+          <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #dbcfcb', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
             <button onClick={() => setActiveTab('profile')} style={{ ...tabBtnStyle, ...(activeTab === 'profile' ? activeTabStyle : {}) }}>👤 My Profile</button>
             <button onClick={() => setActiveTab('addresses')} style={{ ...tabBtnStyle, ...(activeTab === 'addresses' ? activeTabStyle : {}) }}>📍 Saved Addresses</button>
             <button onClick={() => setActiveTab('orders')} style={{ ...tabBtnStyle, ...(activeTab === 'orders' ? activeTabStyle : {}) }}>📦 Order History</button>
@@ -206,7 +206,7 @@ export default function UserDashboard() {
           </div>
 
           {/* MAIN PANEL CONTENT */}
-          <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #e1d8ea', padding: '36px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+          <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #dbcfcb', padding: '36px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
             
             {/* PROFILE TAB */}
             {activeTab === 'profile' && (
@@ -319,7 +319,7 @@ export default function UserDashboard() {
                 ) : (
                   <div className="address-grid" style={{ gap: '20px', gridTemplateColumns: undefined }}>
                     {addresses.map(addr => (
-                      <div key={addr.id} style={{ border: '1px solid #e1d8ea', borderRadius: '16px', padding: '20px', position: 'relative', backgroundColor: addr.isDefault ? '#faf7f5' : '#ffffff' }}>
+                      <div key={addr.id} style={{ border: '1px solid #dbcfcb', borderRadius: '16px', padding: '20px', position: 'relative', backgroundColor: addr.isDefault ? '#faf7f5' : '#ffffff' }}>
                         {addr.isDefault && (
                           <span style={{ position: 'absolute', top: '15px', right: '15px', fontSize: '10px', backgroundColor: '#2b221d', color: '#fff', padding: '3px 8px', borderRadius: '10px', fontWeight: '600' }}>DEFAULT</span>
                         )}
@@ -352,9 +352,9 @@ export default function UserDashboard() {
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                     {orders.map(order => (
-                      <div key={order.id} style={{ border: '1px solid #e1d8ea', borderRadius: '16px', overflow: 'hidden' }}>
+                      <div key={order.id} style={{ border: '1px solid #dbcfcb', borderRadius: '16px', overflow: 'hidden' }}>
                         {/* Order Header Summary */}
-                        <div style={{ backgroundColor: '#faf7f5', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #e1d8ea', fontSize: '13px', color: '#746380' }}>
+                        <div style={{ backgroundColor: '#faf7f5', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #dbcfcb', fontSize: '13px', color: '#746380' }}>
                           <div>
                             <span>ORDER ID: <strong>{order.orderId}</strong></span>
                             <span style={{ margin: '0 15px', color: '#d4c5bd' }}>|</span>

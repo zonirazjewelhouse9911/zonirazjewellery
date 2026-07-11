@@ -4,7 +4,7 @@ import { CartContext } from '../context/CartContext';
 import AuthModal from './AuthModal';
 
 const stores = [
-  { id: 1, name: "Alwar Kabir Colony Showroom", address: "Tilak Market, 7, Hanuman Burj, Kabir Colony, Alwar, Rajasthan 301001", phone: "97848 36060", timing: "10 AM - 8 PM" },
+  { id: 1, name: "Alwar Kabir Colony Showroom", address: "Tilak Market, 7, Hanuman Burj, Kabir Colony, Alwar, Rajasthan 301001", phone: "97848 36080", timing: "10 AM - 8 PM" },
   { id: 2, name: "Jaipur Palace Showroom", address: "M.I. Road, Opposite Palace Hall, Jaipur, Rajasthan 302001", phone: "98290 12345", timing: "10:30 AM - 8:30 PM" }
 ];
 
@@ -235,7 +235,7 @@ export default function CheckoutPage() {
         <div className="checkout-main-grid" style={{ gap: '30px', alignItems: 'start', gridTemplateColumns: step === 6 ? '1fr' : undefined }}>
           
           {/* LEFT SECTION: MAIN STEPS */}
-          <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #e1d8ea', padding: '36px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+          <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #dbcfcb', padding: '36px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
             
             {/* STEP 1: AUTHENTICATION MODAL */}
             {step === 1 && (
@@ -274,7 +274,7 @@ export default function CheckoutPage() {
                           display: 'flex', 
                           justifyContent: 'space-between', 
                           alignItems: 'center', 
-                          border: '1px solid #e1d8ea', 
+                          border: '1px solid #dbcfcb', 
                           padding: '18px 24px', 
                           borderRadius: '16px', 
                           backgroundColor: selectedAddressId === addr.id ? '#faf7f5' : '#fff', 
@@ -306,7 +306,7 @@ export default function CheckoutPage() {
                       </div>
                     ))}
                     
-                    <label style={{ display: 'flex', gap: '12px', border: '1px solid #e1d8ea', padding: '16px', borderRadius: '12px', cursor: 'pointer', backgroundColor: selectedAddressId === null ? '#faf7f5' : '#fff' }}>
+                    <label style={{ display: 'flex', gap: '12px', border: '1px solid #dbcfcb', padding: '16px', borderRadius: '12px', cursor: 'pointer', backgroundColor: selectedAddressId === null ? '#faf7f5' : '#fff' }}>
                       <input type="radio" name="address" checked={selectedAddressId === null} onChange={() => setSelectedAddressId(null)} style={{ accentColor: '#c5a880', marginTop: '3px' }} />
                       <span style={{ fontSize: '13.5px', color: '#2b221d', fontWeight: '600' }}>Use a new shipping address</span>
                     </label>
@@ -314,7 +314,7 @@ export default function CheckoutPage() {
                 )}
 
                 {(selectedAddressId === null || addresses.length === 0) && (
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', border: '1px solid #e1d8ea', padding: '24px', borderRadius: '16px', backgroundColor: '#faf7f5', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', border: '1px solid #dbcfcb', padding: '24px', borderRadius: '16px', backgroundColor: '#faf7f5', marginBottom: '24px' }}>
                     <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '16px', color: '#2b221d', margin: '0 0 10px 0' }}>Enter New Address Details</h3>
                     <div className="form-flex-row" style={{ display: 'flex', gap: '15px' }}>
                       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -396,7 +396,7 @@ export default function CheckoutPage() {
                 </div>
 
                 {deliveryMethod === 'delivery' ? (
-                  <div style={{ border: '1px solid #e1d8ea', padding: '24px', borderRadius: '16px', backgroundColor: '#faf7f5' }}>
+                  <div style={{ border: '1px solid #dbcfcb', padding: '24px', borderRadius: '16px', backgroundColor: '#faf7f5' }}>
                     <h4 style={{ margin: '0 0 8px 0', color: '#2b221d', fontSize: '15px', fontWeight: '600' }}>Standard Home Delivery</h4>
                     <p style={{ margin: '0', fontSize: '13px', color: '#746380', lineHeight: '1.6' }}>
                       Your package will be delivered fully insured to your doorstep within <strong>5-7 business days</strong>.<br />
@@ -418,7 +418,7 @@ export default function CheckoutPage() {
                     {(() => {
                       const store = stores.find(s => s.id === selectedStoreId);
                       return (
-                        <div style={{ border: '1px solid #e1d8ea', padding: '20px', borderRadius: '16px', backgroundColor: '#faf7f5', fontSize: '13px', color: '#746380' }}>
+                        <div style={{ border: '1px solid #dbcfcb', padding: '20px', borderRadius: '16px', backgroundColor: '#faf7f5', fontSize: '13px', color: '#746380' }}>
                           <p style={{ margin: '0 0 8px 0' }}><strong>Address:</strong> {store.address}</p>
                           <p style={{ margin: '0 0 8px 0' }}><strong>Phone:</strong> {store.phone}</p>
                           <p style={{ margin: '0' }}><strong>Timings:</strong> {store.timing}</p>
@@ -459,7 +459,7 @@ export default function CheckoutPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '30px' }}>
                   {cartList.map(item => (
                     <div key={item.id} style={{ display: 'flex', gap: '20px', paddingBottom: '16px', borderBottom: '1px solid #f2ebe8' }}>
-                      <img src={item.image} alt={item.name} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #e1d8ea' }} />
+                      <img src={item.image} alt={item.name} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #dbcfcb' }} />
                       <div style={{ flex: 1 }}>
                         <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#2b221d', fontWeight: '600' }}>{item.name}</h4>
                         <p style={{ margin: '0', fontSize: '12.5px', color: '#8c7365' }}>Purity: {item.selectedPurity || '18KT'}</p>
@@ -520,7 +520,7 @@ export default function CheckoutPage() {
                   Your Order ID is <strong>{completedOrderDetails.orderId}</strong>. A confirmation message and invoice details have been emailed.
                 </p>
 
-                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: '14px', border: '1px solid #e1d8ea', borderRadius: '16px', padding: '24px', backgroundColor: '#faf7f5', textAlign: 'left', minWidth: '320px', marginBottom: '40px' }}>
+                <div style={{ display: 'inline-flex', flexDirection: 'column', gap: '14px', border: '1px solid #dbcfcb', borderRadius: '16px', padding: '24px', backgroundColor: '#faf7f5', textAlign: 'left', minWidth: '320px', marginBottom: '40px' }}>
                   <h4 style={{ margin: '0 0 10px 0', borderBottom: '1px solid #d4c5bd', paddingBottom: '8px', color: '#2b221d' }}>Order Summary</h4>
                   <div style={summaryRowStyle}>
                     <span>Payment Status</span>
@@ -554,7 +554,7 @@ export default function CheckoutPage() {
 
           {/* RIGHT SIDEBAR: ORDER PRICING SUMMARY CARD (SKIP IF STEP 6) */}
           {step < 6 && (
-            <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #e1d8ea', padding: '28px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
+            <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #dbcfcb', padding: '28px', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
               <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '18px', color: '#2b221d', margin: '0 0 18px 0', borderBottom: '1px solid #f2ebe8', paddingBottom: '12px' }}>
                 Price Details
               </h3>
@@ -743,7 +743,7 @@ const paymentLabelStyle = (active) => ({
   display: 'flex',
   alignItems: 'center',
   gap: '12px',
-  border: '1px solid #e1d8ea',
+  border: '1px solid #dbcfcb',
   padding: '16px',
   borderRadius: '12px',
   cursor: 'pointer',
@@ -797,7 +797,7 @@ const modalOverlayStyle = {
 const modalCardStyle = {
   backgroundColor: '#ffffff',
   borderRadius: '20px',
-  border: '1px solid #e1d8ea',
+  border: '1px solid #dbcfcb',
   padding: '40px',
   width: '580px',
   maxWidth: '90%',

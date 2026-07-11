@@ -7,6 +7,7 @@ const slides = [
   { id: 1, type: 'video', src: heroVideo },
   { id: 2, type: 'image', src: banner1 },
   { id: 3, type: 'image', src: banner2 },
+  { id: 4, type: 'custom' },
 ];
 
 export default function Hero() {
@@ -24,12 +25,36 @@ export default function Hero() {
     setCurrent(index);
   };
 
-  // Auto-advance logic: Timer only for images; videos use onEnded event
+  // Rotating texts for the 4th custom slide
+  const rotatingTexts = [
+    "A Symphony of Brilliance and Elegance",
+    "Handcrafted Masterpieces Tailored for You",
+    "Exchange Your Gold for Infinite Value",
+    "Lifetime Maintenance & Complete Transparency"
+  ];
+  const [textIndex, setTextIndex] = useState(0);
+  const [textFade, setTextFade] = useState(true);
+
   useEffect(() => {
-    if (slides[current].type === 'image') {
+    let textTimer;
+    if (slides[current].type === 'custom') {
+      textTimer = setInterval(() => {
+        setTextFade(false);
+        setTimeout(() => {
+          setTextIndex((prev) => (prev + 1) % rotatingTexts.length);
+          setTextFade(true);
+        }, 500); // Wait for fade-out transition
+      }, 4000); // Rotate text every 4 seconds
+    }
+    return () => clearInterval(textTimer);
+  }, [current]);
+
+  // Auto-advance logic: Timer only for non-video slides
+  useEffect(() => {
+    if (slides[current].type !== 'video') {
       const timer = setTimeout(() => {
         goNext();
-      }, 5500);
+      }, slides[current].type === 'custom' ? 16000 : 5500);
       return () => clearTimeout(timer);
     }
   }, [current]);
@@ -43,7 +68,7 @@ export default function Hero() {
         overflow: 'hidden'
       }}
     >
-      {/* Background Media (Video / Image) */}
+      {/* Background Media (Video / Image / Custom) */}
       <div 
         style={{
           position: 'absolute',
@@ -51,8 +76,7 @@ export default function Hero() {
           left: 0,
           width: '100%',
           height: '100%',
-          zIndex: 1,
-          pointerEvents: 'none'
+          zIndex: 1
         }}
       >
         {slides[current].type === 'video' ? (
@@ -62,23 +86,38 @@ export default function Hero() {
             autoPlay
             muted
             playsInline
-            onEnded={goNext} // Automatically advance to the next slide when the video ends
+            onEnded={goNext}
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'cover'
+              objectFit: 'cover',
+              pointerEvents: 'none'
             }}
           />
-        ) : (
+        ) : slides[current].type === 'image' ? (
           <img
             src={slides[current].src}
             alt="Zoniraz Jewellery Banner"
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'cover'
+              objectFit: 'cover',
+              pointerEvents: 'none'
             }}
           />
+        ) : (
+          <div className="hero-custom-slide">
+            <div className="hero-wave-bg-1" />
+            <div className="hero-wave-bg-2" />
+            <div className="hero-custom-text-container">
+              <span className="hero-custom-tag">ZONIRAZ JEWELS</span>
+              <h2 className={`hero-custom-text ${textFade ? 'active' : ''}`}>
+                {rotatingTexts[textIndex]}
+              </h2>
+              <p className="hero-custom-desc">Curating elegance for every precious milestone</p>
+              <a href="#collections" className="hero-custom-btn">EXPLORE COLLECTIONS &rarr;</a>
+            </div>
+          </div>
         )}
       </div>
 
@@ -122,3 +161,4 @@ export default function Hero() {
     </main>
   );
 }
+
