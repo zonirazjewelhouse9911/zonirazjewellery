@@ -26,6 +26,8 @@ import UserDashboard from './components/UserDashboard';
 import CheckoutPage from './components/CheckoutPage';
 import AllCollectionsPage from './components/AllCollectionsPage';
 import FranchisePage from './components/FranchisePage';
+import TermsPage from './components/TermsPage';
+import PrivacyPage from './components/PrivacyPage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import AuthModal from './components/AuthModal';
@@ -76,6 +78,7 @@ function AppContent() {
   const [selectedProductId, setSelectedProductId] = React.useState(null);
   const [helpCategory, setHelpCategory] = React.useState('delivery');
   const [selectedCategoryName, setSelectedCategoryName] = React.useState('Rings');
+  const [termsTab, setTermsTab] = React.useState('terms');
 
   const [allProducts, setAllProducts] = React.useState([]);
 
@@ -298,6 +301,12 @@ function AppContent() {
         setHelpCategory('giftcards');
         setCurrentView('delivery');
         window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (hash === 'terms' || hash === 'terms-conditions') {
+        setCurrentView('terms');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (hash === 'privacy' || hash === 'privacy-policy') {
+        setCurrentView('privacy');
+        window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash) {
         const cleanHash = hash.toLowerCase().replace(/[^a-z0-9]/g, '');
         const knownCategories = [
@@ -359,6 +368,10 @@ function AppContent() {
         <FranchisePage />
       ) : currentView === 'delivery' ? (
         <DeliveryPage initialCategory={helpCategory} />
+      ) : currentView === 'terms' ? (
+        <TermsPage />
+      ) : currentView === 'privacy' ? (
+        <PrivacyPage />
       ) : currentView === 'wishlist' ? (
         <WishlistPage products={allProducts} wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} />
       ) : currentView === 'cart' ? (

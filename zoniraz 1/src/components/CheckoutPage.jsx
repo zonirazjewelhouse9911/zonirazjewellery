@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import AuthModal from './AuthModal';
+import { ChevronRight, MapPin, Truck, Eye, CreditCard } from 'lucide-react';
 
 const stores = [
   { id: 1, name: "Alwar Kabir Colony Showroom", address: "Tilak Market, 7, Hanuman Burj, Kabir Colony, Alwar, Rajasthan 301001", phone: "97848 36080", timing: "10 AM - 8 PM" },
@@ -220,14 +221,88 @@ export default function CheckoutPage() {
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         
         {/* Checkout Header Wizard Tracker */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px', paddingBottom: '16px', borderBottom: '1px solid #d4c5bd' }}>
+        <style>{`
+          .checkout-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #d4c5bd;
+          }
+          .checkout-wizard {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12.5px;
+            font-weight: 600;
+            color: #a39084;
+          }
+          .checkout-step {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+          }
+          .checkout-step.active {
+            color: #2b221d;
+          }
+          .checkout-step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 1.5px solid currentColor;
+            font-size: 10px;
+            font-weight: 700;
+          }
+          .checkout-chevron {
+            color: #d4c5bd;
+          }
+          @media (max-width: 768px) {
+            .checkout-header-row {
+              flex-direction: column;
+              align-items: flex-start;
+              gap: 15px;
+            }
+            .checkout-wizard {
+              width: 100%;
+              overflow-x: auto;
+              white-space: nowrap;
+              padding-bottom: 8px;
+              -webkit-overflow-scrolling: touch;
+              gap: 10px;
+            }
+            .checkout-step {
+              flex-shrink: 0;
+            }
+          }
+        `}</style>
+
+        {/* Checkout Header Wizard Tracker */}
+        <div className="checkout-header-row">
           <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '24px', fontWeight: '500', color: '#2b221d', margin: 0 }}>Secure Checkout</h1>
           {step < 6 && (
-            <div style={{ display: 'flex', gap: '15px', fontSize: '12px', fontWeight: '600', color: '#8c7365' }}>
-              <span style={step >= 2 ? { color: '#2b221d' } : {}}>1. Shipping</span> &rsaquo;
-              <span style={step >= 3 ? { color: '#2b221d' } : {}}>2. Delivery</span> &rsaquo;
-              <span style={step >= 4 ? { color: '#2b221d' } : {}}>3. Review</span> &rsaquo;
-              <span style={step >= 5 ? { color: '#2b221d' } : {}}>4. Payment</span>
+            <div className="checkout-wizard">
+              <span className={`checkout-step ${step >= 2 ? 'active' : ''}`}>
+                <span className="checkout-step-num"><MapPin size={11} /></span> Shipping
+              </span>
+              <ChevronRight size={14} className="checkout-chevron" />
+              
+              <span className={`checkout-step ${step >= 3 ? 'active' : ''}`}>
+                <span className="checkout-step-num"><Truck size={11} /></span> Delivery
+              </span>
+              <ChevronRight size={14} className="checkout-chevron" />
+              
+              <span className={`checkout-step ${step >= 4 ? 'active' : ''}`}>
+                <span className="checkout-step-num"><Eye size={11} /></span> Review
+              </span>
+              <ChevronRight size={14} className="checkout-chevron" />
+              
+              <span className={`checkout-step ${step >= 5 ? 'active' : ''}`}>
+                <span className="checkout-step-num"><CreditCard size={11} /></span> Payment
+              </span>
             </div>
           )}
         </div>
@@ -469,6 +544,43 @@ export default function CheckoutPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+
+                {/* Shipping / Delivery Details Preview */}
+                <div className="checkout-address-preview-block" style={{ border: '1px solid #dbcfcb', borderRadius: '16px', padding: '20px', backgroundColor: '#faf7f5', marginBottom: '30px', fontSize: '13.5px', lineHeight: '1.6' }}>
+                  <h4 style={{ margin: '0 0 10px 0', fontFamily: "'Playfair Display', serif", fontSize: '15px', color: '#2b221d', borderBottom: '1px solid #d4c5bd', paddingBottom: '6px', fontWeight: '600' }}>
+                    {deliveryMethod === 'pickup' ? '🏪 Store Pickup Details' : '🏠 Shipping Address'}
+                  </h4>
+                  {deliveryMethod === 'pickup' ? (
+                    (() => {
+                      const store = stores.find(s => s.id === selectedStoreId);
+                      return (
+                        <div>
+                          <p style={{ margin: '0 0 4px 0', color: '#2b221d' }}><strong>Store:</strong> {store ? store.name : ''}</p>
+                          <p style={{ margin: '0 0 4px 0', color: '#746380' }}><strong>Address:</strong> {store ? store.address : ''}</p>
+                          <p style={{ margin: '0 0 4px 0', color: '#746380' }}><strong>Date:</strong> {pickupDate || 'Not selected'}</p>
+                          <p style={{ margin: '0', color: '#746380' }}><strong>Time Slot:</strong> {pickupTime}</p>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    (() => {
+                      const addr = selectedAddressId 
+                        ? addresses.find(a => a.id === selectedAddressId)
+                        : newAddressForm;
+                      if (!addr || (!addr.fullName && !addr.streetAddress)) {
+                        return <p style={{ margin: '0', color: '#8c7365', fontStyle: 'italic' }}>No address selected</p>;
+                      }
+                      return (
+                        <div>
+                          <p style={{ margin: '0 0 4px 0', color: '#2b221d' }}><strong>{addr.fullName}</strong></p>
+                          <p style={{ margin: '0 0 4px 0', color: '#746380' }}>{addr.flatNumber ? `${addr.flatNumber}, ` : ''}{addr.streetAddress}, {addr.area}</p>
+                          <p style={{ margin: '0 0 4px 0', color: '#746380' }}>{addr.city}, {addr.state} - {addr.pincode}</p>
+                          <p style={{ margin: '0', color: '#746380' }}><strong>Phone:</strong> {addr.mobile || addr.phone}</p>
+                        </div>
+                      );
+                    })()
+                  )}
                 </div>
 
                 <div className="flex-wrap-row" style={{ display: 'flex', gap: '15px' }}>

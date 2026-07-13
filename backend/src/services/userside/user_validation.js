@@ -45,7 +45,7 @@ exports.register = async (req, res) => {
         const otp = Math.floor(1000 + Math.random() * 9000).toString();
         const otpExpiry = Date.now() + 3600000; // 1 hour
         if (existingUser) {
-            const delet_user = await user_model.deleteMany({ email });
+            const delet_user = await user_model.deleteMany({ $or: [{ email }, { phone_number }] });
             const newUser = new user_model({
                 user_name,
                 email,

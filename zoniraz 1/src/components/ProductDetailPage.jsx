@@ -1,6 +1,29 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { products } from '../data/products';
 import { CartContext } from '../context/CartContext';
+import { 
+  Star, 
+  Sparkles, 
+  Heart, 
+  Share2, 
+  MapPin, 
+  Calendar, 
+  Store, 
+  ShieldCheck, 
+  RotateCcw, 
+  Repeat, 
+  Shield, 
+  Coins, 
+  Gem, 
+  Ruler, 
+  Info, 
+  Award, 
+  Maximize2,
+  X,
+  Mic,
+  PhoneOff,
+  ChevronRight
+} from 'lucide-react';
 
 // Lifestyle / model images from Unsplash (free to use)
 const lifestyleImages = [
@@ -25,6 +48,15 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const [stickyVisible, setStickyVisible] = useState(false);
   const [addedToCart, setAddedToCart] = useState(false);
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+  const [isZoomed, setIsZoomed] = useState(false);
+
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomPos({ x, y });
+  };
 
   const [pricingDetails, setPricingDetails] = useState({
     price: product?.price || 0,
@@ -89,6 +121,24 @@ export default function ProductDetailPage({ product, products: propProducts = []
   // Video Call Modal
   const [videoOpen, setVideoOpen] = useState(false);
   const [callConnected, setCallConnected] = useState(false);
+  const [hoveredRelatedId, setHoveredRelatedId] = useState(null);
+  const [relatedCardImageIndexes, setRelatedCardImageIndexes] = useState({});
+
+  const nextRelatedCardImage = (e, productId, totalImages) => {
+    e.stopPropagation();
+    setRelatedCardImageIndexes(prev => {
+      const current = prev[productId] || 0;
+      return { ...prev, [productId]: (current + 1) % totalImages };
+    });
+  };
+
+  const prevRelatedCardImage = (e, productId, totalImages) => {
+    e.stopPropagation();
+    setRelatedCardImageIndexes(prev => {
+      const current = prev[productId] || 0;
+      return { ...prev, [productId]: (current - 1 + totalImages) % totalImages };
+    });
+  };
 
   // Rating & Reviews Mock
   const rating = 4.9;
@@ -187,37 +237,38 @@ export default function ProductDetailPage({ product, products: propProducts = []
   return (
     <div className="pdp-wrapper" ref={topRef}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
         .pdp-wrapper {
-          background: #efe7e5;
-          font-family: 'Inter', sans-serif;
-          color: #634d40;
+          background: #FAF8F6;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          color: #2C2520;
           min-height: 100vh;
+          letter-spacing: -0.01em;
         }
 
         /* Breadcrumb */
         .pdp-breadcrumb {
           max-width: 1280px;
           margin: 0 auto;
-          padding: 12px 24px;
+          padding: 20px 24px;
           font-size: 11px;
-          color: #8a6a58;
+          color: #8C827A;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 1px;
           display: flex;
           align-items: center;
-          gap: 6px;
+          gap: 8px;
         }
-        .pdp-breadcrumb span { cursor: pointer; }
-        .pdp-breadcrumb span:hover { color: #634d40; }
-        .pdp-breadcrumb .active { color: #634d40; font-weight: 600; }
+        .pdp-breadcrumb span { cursor: pointer; transition: color 0.2s; }
+        .pdp-breadcrumb span:hover { color: #A98E73; }
+        .pdp-breadcrumb .active { color: #2C2520; font-weight: 600; }
 
         /* Main grid layout */
         .pdp-main-grid {
           max-width: 1280px;
           margin: 0 auto;
-          padding: 0 24px 60px;
+          padding: 0 24px 80px;
           display: grid;
           grid-template-columns: 1fr 420px;
           gap: 40px;
@@ -230,138 +281,140 @@ export default function ProductDetailPage({ product, products: propProducts = []
         }
         .pdp-images-layout {
           display: flex;
-          gap: 12px;
+          gap: 16px;
         }
 
         /* Vertical thumbnails */
         .pdp-thumbs {
           display: flex;
           flex-direction: column;
-          gap: 8px;
-          width: 72px;
+          gap: 12px;
+          width: 80px;
           flex-shrink: 0;
         }
         .pdp-thumb {
-          width: 72px;
-          height: 72px;
-          border-radius: 6px;
-          border: 2px solid transparent;
+          width: 80px;
+          height: 80px;
+          border-radius: 8px;
+          border: 1px solid #EAE5E0;
           cursor: pointer;
           overflow: hidden;
-          transition: border-color 0.2s;
-          background: #f7f0ee;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          background: #FFFFFF;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .pdp-thumb:hover {
+          border-color: #A98E73;
+          transform: translateY(-2px);
         }
         .pdp-thumb.active {
-          border-color: #634d40;
+          border-color: #A98E73;
+          border-width: 2px;
+          box-shadow: 0 4px 12px rgba(169, 142, 115, 0.15);
         }
         .pdp-thumb img {
           width: 100%;
           height: 100%;
           object-fit: contain;
-          padding: 4px;
+          padding: 6px;
+          transition: transform 0.3s;
+        }
+        .pdp-thumb:hover img {
+          transform: scale(1.05);
         }
 
         /* Main image display */
         .pdp-main-img-wrap {
           flex-grow: 1;
           position: relative;
-          background: #f7f0ee;
-          border-radius: 10px;
+          background: #FFFFFF;
+          border-radius: 16px;
           overflow: hidden;
           aspect-ratio: 1;
           display: flex;
           align-items: center;
           justify-content: center;
+          border: 1px solid #EAE5E0;
+          box-shadow: 0 10px 40px rgba(44, 37, 32, 0.03);
+          transition: box-shadow 0.3s;
+        }
+        .pdp-main-img-wrap:hover {
+          box-shadow: 0 15px 50px rgba(44, 37, 32, 0.06);
         }
         .pdp-main-img {
           width: 100%;
           height: 100%;
           object-fit: contain;
-          padding: 20px;
+          padding: 30px;
+          transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .pdp-main-img-wrap:hover .pdp-main-img {
+          transform: scale(1.03);
         }
         .pdp-popular-badge {
           position: absolute;
-          top: 14px;
-          left: 14px;
-          background: rgba(255,243,224,0.95);
-          color: #e65100;
+          top: 20px;
+          left: 20px;
+          background: rgba(44, 37, 32, 0.9);
+          backdrop-filter: blur(4px);
+          color: #FAF8F6;
           font-size: 11px;
-          font-weight: 700;
-          padding: 4px 10px;
-          border-radius: 4px;
-          border: 1px solid #ffe0b2;
+          font-weight: 600;
+          padding: 6px 14px;
+          border-radius: 30px;
+          letter-spacing: 0.5px;
         }
         .pdp-main-zoom-icon {
           position: absolute;
-          bottom: 12px;
-          right: 12px;
-          background: rgba(255,255,255,0.85);
-          border: 1px solid #dbcfcb;
-          border-radius: 4px;
-          padding: 5px 7px;
-          font-size: 14px;
-          cursor: pointer;
-        }
-
-        /* Lifestyle mosaic grid */
-        .pdp-lifestyle-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 8px;
-          margin-top: 12px;
-        }
-        .pdp-lifestyle-img {
-          border-radius: 8px;
-          width: 100%;
-          height: 240px;
-          object-fit: cover;
-        }
-        .pdp-lifestyle-img:first-child {
-          grid-column: 1 / -1;
-          height: 340px;
-        }
-
-        /* Show More */
-        .pdp-show-more-btn {
-          width: 100%;
-          padding: 10px;
-          border: 1px solid #d4c8e3;
-          border-radius: 6px;
-          background: #fff;
-          color: #3b1954;
-          font-size: 13px;
-          font-weight: 600;
-          cursor: pointer;
-          margin-top: 12px;
+          bottom: 20px;
+          right: 20px;
+          background: #FFFFFF;
+          border: 1px solid #EAE5E0;
+          color: #2C2520;
+          border-radius: 50%;
+          width: 40px;
+          height: 40px;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 6px;
+          font-size: 16px;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+          transition: all 0.3s;
+        }
+        .pdp-main-zoom-icon:hover {
+          background: #2C2520;
+          color: #FFFFFF;
+          border-color: #2C2520;
+          transform: scale(1.05);
         }
 
         /* RIGHT: Product Info Panel */
         .pdp-info-col {
           position: sticky;
-          top: 175px;
-          max-height: calc(100vh - 200px);
+          top: 100px;
+          max-height: calc(100vh - 120px);
           overflow-y: auto;
+          padding-right: 8px;
         }
         .pdp-info-col::-webkit-scrollbar {
           width: 4px;
         }
         .pdp-info-col::-webkit-scrollbar-thumb {
-          background: #d4c5bd;
-          border-radius: 2px;
+          background: #EAE5E0;
+          border-radius: 4px;
         }
 
         .pdp-popular-tag {
-          color: #634d40;
-          font-size: 11px;
+          color: #A98E73;
+          font-size: 12px;
           font-weight: 700;
           display: flex;
           align-items: center;
-          gap: 4px;
-          margin-bottom: 8px;
+          gap: 6px;
+          margin-bottom: 12px;
+          letter-spacing: 1px;
+          text-transform: uppercase;
         }
 
         /* Rating Row */
@@ -369,145 +422,153 @@ export default function ProductDetailPage({ product, products: propProducts = []
           display: flex;
           align-items: center;
           gap: 8px;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
         }
         .pdp-rating-pill {
-          background: #f7f0ee;
-          border: 1px solid #d4c5bd;
-          border-radius: 20px;
-          padding: 4px 10px;
-          font-size: 13px;
+          background: #FFFFFF;
+          border: 1px solid #EAE5E0;
+          border-radius: 30px;
+          padding: 6px 14px;
+          font-size: 12px;
           font-weight: 600;
-          color: #634d40;
+          color: #2C2520;
           display: flex;
           align-items: center;
-          gap: 4px;
+          gap: 6px;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.01);
         }
-        .pdp-star-icon { color: #634d40; }
+        .pdp-star-icon { color: #A98E73; }
 
         /* Price */
         .pdp-price-row {
-          margin-bottom: 4px;
+          margin-bottom: 6px;
           display: flex;
           align-items: baseline;
-          gap: 8px;
+          gap: 12px;
           flex-wrap: wrap;
         }
         .pdp-current-price {
-          font-size: 24px;
-          font-weight: 800;
-          color: #634d40;
+          font-size: 32px;
+          font-weight: 700;
+          color: #2C2520;
         }
         .pdp-original-price {
-          font-size: 16px;
+          font-size: 20px;
           text-decoration: line-through;
-          color: #b09585;
+          color: #8C827A;
           font-weight: 400;
         }
         .pdp-tax-note {
-          font-size: 11px;
-          color: #b09585;
-          margin-bottom: 10px;
+          font-size: 12px;
+          color: #8C827A;
+          margin-bottom: 16px;
         }
         .pdp-product-name {
-          font-size: 16px;
+          font-family: 'Playfair Display', serif;
+          font-size: 24px;
           font-weight: 600;
-          color: #634d40;
-          margin-bottom: 8px;
+          color: #2C2520;
+          line-height: 1.3;
+          margin-bottom: 12px;
         }
         .pdp-offer-tag {
           font-size: 13px;
           font-weight: 700;
-          color: #634d40;
-          margin-bottom: 16px;
+          color: #A98E73;
+          margin-bottom: 24px;
+          letter-spacing: 0.5px;
         }
 
         /* Customise Box */
         .pdp-customise-box {
-          border: 1px solid #d7c4b9;
+          border: 1px solid #EAE5E0;
           border-radius: 12px;
           display: flex;
-          gap: 0;
-          margin-bottom: 10px;
+          margin-bottom: 16px;
           overflow: hidden;
-          background: #fcf7f4;
+          background: #FFFFFF;
+          box-shadow: 0 4px 20px rgba(44, 37, 32, 0.02);
         }
         .pdp-custom-item {
           flex: 1;
-          padding: 10px;
-          border-right: 1px solid #c4aa9f;
+          padding: 12px;
+          border-right: 1px solid #EAE5E0;
           display: flex;
           flex-direction: column;
-          align-items: center;
-          gap: 2px;
+          align-items: flex-start;
+          gap: 4px;
         }
         .pdp-custom-item:last-child {
           border-right: none;
         }
         .pdp-custom-label {
-          font-size: 9px;
+          font-size: 10px;
           font-weight: 600;
-          color: #837890;
+          color: #8C827A;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 0.8px;
         }
         .pdp-custom-select {
           border: none;
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 700;
-          color: #634d40;
+          color: #2C2520;
           background: transparent;
           cursor: pointer;
           outline: none;
-          text-align: center;
           width: 100%;
+          padding: 2px 0;
         }
         .pdp-customise-btn {
-          background: #634d40;
-          color: #fff;
+          background: #2C2520;
+          color: #FFFFFF;
           border: none;
-          padding: 10px 16px;
-          font-weight: 800;
+          padding: 12px 20px;
+          font-weight: 700;
           font-size: 11px;
           cursor: pointer;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
-          min-width: 96px;
-          transition: background 0.2s ease;
+          letter-spacing: 1px;
+          min-width: 105px;
+          transition: all 0.3s ease;
+        }
+        .pdp-customise-btn:hover {
+          background: #A98E73;
         }
         .pdp-customise-btn.active {
-          background: #a7774d;
+          background: #A98E73;
         }
         .pdp-customise-card {
-          margin-bottom: 14px;
-          border: 1px solid #ead7cc;
+          margin-bottom: 20px;
+          border: 1px solid #EAE5E0;
           border-radius: 14px;
-          padding: 14px;
-          background: linear-gradient(135deg, #fffaf7 0%, #f7ece6 100%);
-          box-shadow: 0 10px 24px rgba(99, 77, 64, 0.08);
+          padding: 20px;
+          background: #FFFFFF;
+          box-shadow: 0 10px 30px rgba(44, 37, 32, 0.04);
         }
         .pdp-customise-card-header {
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
           gap: 10px;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
         }
         .pdp-customise-card-title {
-          font-size: 14px;
-          font-weight: 800;
-          color: #634d40;
+          font-size: 15px;
+          font-weight: 700;
+          color: #2C2520;
         }
         .pdp-customise-card-subtitle {
           font-size: 12px;
-          color: #8a6a58;
-          margin-top: 3px;
+          color: #8C827A;
+          margin-top: 4px;
         }
         .pdp-customise-pill {
-          background: #634d40;
-          color: #fff;
-          padding: 6px 10px;
-          border-radius: 999px;
+          background: #FAF8F6;
+          border: 1px solid #EAE5E0;
+          color: #8C827A;
+          padding: 6px 12px;
+          border-radius: 30px;
           font-size: 10px;
           font-weight: 700;
           text-transform: uppercase;
@@ -516,48 +577,57 @@ export default function ProductDetailPage({ product, products: propProducts = []
         .pdp-customise-preview {
           display: flex;
           align-items: center;
-          gap: 14px;
-          margin-bottom: 10px;
+          gap: 20px;
+          margin-bottom: 16px;
+          background: #FAF8F6;
+          padding: 16px;
+          border-radius: 10px;
+          border: 1px solid #EAE5E0;
         }
         .pdp-customise-preview-ring {
-          width: 78px;
-          height: 78px;
+          width: 80px;
+          height: 80px;
           border-radius: 50%;
-          border: 3px solid #634d40;
+          border: 3px solid #2C2520;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: radial-gradient(circle at 30% 30%, #fff, #f7ebe4);
+          background: radial-gradient(circle at 30% 30%, #fff, #FAF8F6);
           flex-shrink: 0;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
         .pdp-customise-preview-stone {
-          width: 34px;
-          height: 34px;
+          width: 32px;
+          height: 32px;
           border-radius: 50%;
-          background: #634d40;
-          box-shadow: inset 0 2px 4px rgba(255,255,255,0.35);
+          background: #2C2520;
+          box-shadow: inset 0 2px 4px rgba(255,255,255,0.4);
         }
         .pdp-customise-summary {
           flex: 1;
           display: grid;
-          gap: 8px;
+          gap: 10px;
         }
         .pdp-customise-summary > div {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-size: 12px;
-          color: #634d40;
-          border-bottom: 1px dashed #e4d4ca;
+          font-size: 13px;
+          color: #2C2520;
+          border-bottom: 1px solid #EAE5E0;
           padding-bottom: 6px;
         }
+        .pdp-customise-summary > div:last-child {
+          border-bottom: none;
+          padding-bottom: 0;
+        }
         .pdp-customise-summary strong {
-          color: #8a6a58;
-          font-weight: 700;
+          color: #8C827A;
+          font-weight: 500;
         }
         .pdp-customise-note {
           font-size: 11px;
-          color: #8a6a58;
+          color: #8C827A;
           line-height: 1.5;
         }
 
@@ -566,119 +636,136 @@ export default function ProductDetailPage({ product, products: propProducts = []
           display: flex;
           justify-content: space-between;
           align-items: center;
-          font-size: 12px;
-          color: #634d40;
-          margin-bottom: 16px;
-          padding: 8px 12px;
-          background: #f7f0ee;
-          border-radius: 6px;
+          font-size: 13px;
+          color: #2C2520;
+          margin-bottom: 20px;
+          padding: 12px 16px;
+          background: #FFFFFF;
+          border-radius: 10px;
+          border: 1px solid #EAE5E0;
         }
         .pdp-learn-how-link {
-          color: #634d40;
+          color: #A98E73;
           font-weight: 700;
           cursor: pointer;
           display: flex;
           align-items: center;
           gap: 4px;
+          transition: color 0.2s;
+        }
+        .pdp-learn-how-link:hover {
+          color: #2C2520;
         }
 
         /* CTA Buttons Row */
         .pdp-cta-row {
           display: flex;
           align-items: center;
-          gap: 10px;
-          margin-bottom: 20px;
+          gap: 12px;
+          margin-bottom: 24px;
         }
         .pdp-add-to-bag-btn {
           flex-grow: 1;
-          background: #634d40;
-          color: #fff;
+          background: #2C2520;
+          color: #FFFFFF;
           border: none;
-          padding: 14px;
-          border-radius: 8px;
+          padding: 16px;
+          border-radius: 10px;
           font-size: 14px;
           font-weight: 700;
           cursor: pointer;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
-          box-shadow: 0 4px 14px rgba(99,77,64,0.3);
-          transition: all 0.2s;
+          letter-spacing: 1px;
+          box-shadow: 0 4px 15px rgba(44, 37, 32, 0.15);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .pdp-add-to-bag-btn:hover {
-          background: #4a3830;
+          background: #A98E73;
           transform: translateY(-2px);
-          box-shadow: 0 6px 18px rgba(99,77,64,0.4);
+          box-shadow: 0 6px 20px rgba(169, 142, 115, 0.3);
         }
         .pdp-add-to-bag-btn.success {
-          background: #4a3830;
+          background: #4B7955;
+          box-shadow: 0 4px 15px rgba(75, 121, 85, 0.2);
         }
         .pdp-icon-btn {
-          width: 44px;
-          height: 44px;
+          width: 50px;
+          height: 50px;
           border-radius: 50%;
-          border: 1px solid #d4c8e3;
-          background: #fff;
+          border: 1px solid #EAE5E0;
+          background: #FFFFFF;
+          color: #2C2520;
           cursor: pointer;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 18px;
-          transition: all 0.2s;
+          font-size: 20px;
+          transition: all 0.3s;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
         .pdp-icon-btn:hover {
-          border-color: #634d40;
-          background: #f7f0ee;
+          border-color: #2C2520;
+          background: #FAF8F6;
+          transform: scale(1.05);
         }
         .pdp-icon-btn.wishlisted {
-          background: #f7f0ee;
-          border-color: #634d40;
-          color: #634d40;
+          background: #FAF8F6;
+          border-color: #A98E73;
+          color: #A98E73;
         }
 
         /* Divider */
         .pdp-divider {
           height: 1px;
-          background: #f0edf5;
-          margin: 16px 0;
+          background: #EAE5E0;
+          margin: 24px 0;
         }
 
         /* Delivery Section */
         .pdp-section-title {
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 700;
-          color: #634d40;
-          margin-bottom: 12px;
+          color: #2C2520;
+          margin-bottom: 16px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
         .pdp-pincode-row {
           display: flex;
-          gap: 8px;
-          margin-bottom: 8px;
+          gap: 12px;
+          margin-bottom: 12px;
         }
         .pdp-pincode-input {
           flex-grow: 1;
-          padding: 8px 12px;
-          border: 1px solid #d4c8e3;
-          border-radius: 6px;
+          padding: 12px 16px;
+          border: 1px solid #EAE5E0;
+          border-radius: 8px;
           font-size: 13px;
           outline: none;
+          background: #FFFFFF;
+          transition: border-color 0.3s;
         }
-        .pdp-pincode-input:focus { border-color: #634d40; }
+        .pdp-pincode-input:focus { border-color: #A98E73; }
         .pdp-locate-btn {
           background: transparent;
           border: none;
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 700;
-          color: #634d40;
+          color: #2C2520;
           cursor: pointer;
           white-space: nowrap;
+          transition: color 0.2s;
+        }
+        .pdp-locate-btn:hover {
+          color: #A98E73;
         }
         .pdp-pincode-msg {
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 600;
-          margin-bottom: 10px;
-          color: #634d40;
+          margin-bottom: 14px;
+          color: #4B7955;
         }
-        .pdp-pincode-msg.error { color: #a05030; }
+        .pdp-pincode-msg.error { color: #C85A5A; }
 
         /* Delivery date row */
         .pdp-delivery-info-row {
@@ -686,326 +773,327 @@ export default function ProductDetailPage({ product, products: propProducts = []
           align-items: center;
           gap: 8px;
           font-size: 12px;
-          color: #8a6a58;
-          margin-bottom: 12px;
+          color: #8C827A;
+          margin-bottom: 16px;
         }
 
         /* Try at Home + Store Availability cards */
         .pdp-trial-store-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          margin-bottom: 14px;
+          gap: 12px;
+          margin-bottom: 20px;
         }
         .pdp-service-card {
-          border: 1px solid #c4aa9f;
-          border-radius: 8px;
-          padding: 12px;
+          border: 1px solid #EAE5E0;
+          border-radius: 12px;
+          padding: 16px;
           display: flex;
           flex-direction: column;
-          gap: 4px;
-          background: #fff;
+          gap: 6px;
+          background: #FFFFFF;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.01);
+          transition: all 0.3s;
         }
-        .pdp-service-icon { font-size: 18px; margin-bottom: 4px; }
+        .pdp-service-card:hover {
+          box-shadow: 0 8px 24px rgba(44,37,32,0.04);
+          transform: translateY(-2px);
+        }
+        .pdp-service-icon { font-size: 20px; margin-bottom: 4px; }
         .pdp-service-title {
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 700;
-          color: #634d40;
+          color: #2C2520;
         }
         .pdp-service-sub {
-          font-size: 11px;
-          color: #8a6a58;
-          margin-bottom: 8px;
+          font-size: 12px;
+          color: #8C827A;
+          margin-bottom: 12px;
           flex-grow: 1;
         }
         .pdp-service-btn {
-          padding: 7px 10px;
-          border-radius: 6px;
-          font-size: 11px;
+          padding: 10px 16px;
+          border-radius: 8px;
+          font-size: 12px;
           font-weight: 700;
           cursor: pointer;
           text-align: center;
           border: none;
-          transition: all 0.2s;
-        }
-        .pdp-service-btn.green-outline {
-          border: 1px solid #634d40;
-          background: transparent;
-          color: #634d40;
-        }
-        .pdp-service-btn.green-outline:hover {
-          background: #634d40;
-          color: #fff;
+          transition: all 0.3s;
+          letter-spacing: 0.5px;
         }
         .pdp-service-btn.orange-outline {
-          border: 1px solid #634d40;
+          border: 1px solid #2C2520;
           background: transparent;
-          color: #634d40;
+          color: #2C2520;
         }
         .pdp-service-btn.orange-outline:hover {
-          background: #634d40;
-          color: #fff;
-        }
-
-        /* Video Call Banner */
-        .pdp-video-call-banner {
-          border: 1px solid #c4aa9f;
-          background: #f7f0ee;
-          border-radius: 8px;
-          padding: 12px 14px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          margin-bottom: 14px;
-          cursor: pointer;
-          transition: box-shadow 0.2s;
-        }
-        .pdp-video-call-banner:hover {
-          box-shadow: 0 4px 12px rgba(99,77,64,0.15);
-        }
-        .pdp-video-thumbnail {
-          width: 64px;
-          height: 52px;
-          border-radius: 6px;
-          object-fit: cover;
-          flex-shrink: 0;
-        }
-        .pdp-video-call-info { flex-grow: 1; }
-        .pdp-video-call-title {
-          font-size: 13px;
-          font-weight: 700;
-          color: #634d40;
-          margin-bottom: 2px;
-        }
-        .pdp-video-call-sub {
-          font-size: 11px;
-          color: #8a6a58;
-          line-height: 1.3;
-        }
-        .pdp-schedule-link {
-          font-size: 12px;
-          font-weight: 700;
-          color: #634d40;
-          background: #fff;
-          border: 1px solid #634d40;
-          padding: 6px 12px;
-          border-radius: 4px;
-          cursor: pointer;
-          flex-shrink: 0;
-          white-space: nowrap;
+          background: #2C2520;
+          color: #FFFFFF;
         }
 
         /* Trust Icons Strip */
         .pdp-trust-strip {
           display: flex;
           justify-content: space-around;
-          margin-bottom: 16px;
-          border: 1px solid #c4aa9f;
-          border-radius: 8px;
-          padding: 12px 8px;
-          background: #f7f0ee;
+          margin-bottom: 24px;
+          border: 1px solid #EAE5E0;
+          border-radius: 12px;
+          padding: 16px 12px;
+          background: #FFFFFF;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.01);
         }
         .pdp-trust-item {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 5px;
+          gap: 6px;
         }
-        .pdp-trust-icon { font-size: 22px; }
+        .pdp-trust-icon { font-size: 24px; }
         .pdp-trust-label {
-          font-size: 9px;
+          font-size: 10px;
           font-weight: 700;
-          color: #8a6a58;
+          color: #2C2520;
           text-align: center;
-          max-width: 56px;
+          max-width: 70px;
           line-height: 1.3;
         }
 
         /* xCLusive points */
         .pdp-xclusive-banner {
-          background: linear-gradient(135deg, #f7f0ee, #efe7e5);
-          border: 1px solid #c4aa9f;
-          border-radius: 8px;
-          padding: 12px 16px;
+          background: linear-gradient(135deg, #2C2520, #1F1A17);
+          border-radius: 12px;
+          padding: 16px 20px;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 16px;
+          margin-bottom: 20px;
+          box-shadow: 0 8px 24px rgba(44, 37, 32, 0.15);
         }
         .pdp-xclusive-text {
-          font-size: 12px;
-          font-weight: 600;
-          color: #634d40;
-          line-height: 1.4;
+          font-size: 13px;
+          font-weight: 500;
+          color: #FAF8F6;
+          line-height: 1.5;
         }
-        .pdp-xclusive-text strong { color: #634d40; }
-        .pdp-xclusive-coin { font-size: 28px; }
+        .pdp-xclusive-text strong { color: #A98E73; }
+        .pdp-xclusive-coin { font-size: 32px; }
 
         /* Product Details Tabs */
         .pdp-details-tabs {
-          margin-top: 0;
           max-width: 1280px;
-          margin-left: auto;
-          margin-right: auto;
-          padding: 40px 24px 60px;
-          background: #efe7e5;
+          margin: 0 auto;
+          padding: 60px 24px 80px;
+          background: #FAF8F6;
         }
         .pdp-tab-row {
           display: flex;
-          border-bottom: 2px solid #f0edf5;
-          margin-bottom: 20px;
+          border-bottom: 1px solid #EAE5E0;
+          margin-bottom: 30px;
+          gap: 16px;
         }
         .pdp-tab-btn {
-          padding: 12px 24px;
+          padding: 14px 28px;
           font-size: 13px;
           font-weight: 700;
-          color: #8a6a58;
+          color: #8C827A;
           background: none;
           border: none;
           cursor: pointer;
           position: relative;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 1px;
+          transition: color 0.3s;
+        }
+        .pdp-tab-btn:hover {
+          color: #2C2520;
         }
         .pdp-tab-btn.active {
-          color: #634d40;
+          color: #2C2520;
         }
         .pdp-tab-btn.active::after {
           content: '';
           position: absolute;
-          bottom: -2px;
+          bottom: -1px;
           left: 0;
           right: 0;
-          height: 3px;
-          background: #634d40;
-          border-radius: 2px 2px 0 0;
+          height: 2px;
+          background: #2C2520;
         }
 
         .pdp-details-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 30px;
+          gap: 40px;
         }
         .pdp-detail-group {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 14px;
+          background: #FFFFFF;
+          padding: 24px;
+          border-radius: 12px;
+          border: 1px solid #EAE5E0;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.01);
         }
         .pdp-detail-group-title {
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 700;
-          color: #634d40;
+          color: #2C2520;
           text-transform: uppercase;
-          letter-spacing: 0.8px;
+          letter-spacing: 1px;
           display: flex;
           align-items: center;
-          gap: 6px;
-          padding-bottom: 6px;
-          border-bottom: 1px solid #e8ddd9;
+          gap: 8px;
+          padding-bottom: 12px;
+          border-bottom: 1px solid #EAE5E0;
         }
         .pdp-detail-row {
           display: flex;
           justify-content: space-between;
-          font-size: 13px;
+          font-size: 14px;
         }
-        .pdp-detail-key { color: #8a6a58; }
-        .pdp-detail-val { font-weight: 600; color: #634d40; }
+        .pdp-detail-key { color: #8C827A; }
+        .pdp-detail-val { font-weight: 600; color: #2C2520; }
 
         /* Certification logos */
         .pdp-cert-strip {
           display: flex;
-          gap: 24px;
+          gap: 30px;
           align-items: center;
-          margin-top: 24px;
-          padding-top: 24px;
-          border-top: 1px solid #f0edf5;
+          margin-top: 40px;
+          padding-top: 30px;
+          border-top: 1px solid #EAE5E0;
         }
         .pdp-cert-item {
           display: flex;
           flex-direction: column;
           align-items: center;
-          gap: 4px;
+          gap: 6px;
         }
-        .pdp-cert-icon { font-size: 28px; }
+        .pdp-cert-icon { font-size: 32px; }
         .pdp-cert-name {
-          font-size: 10px;
+          font-size: 11px;
           font-weight: 700;
-          color: #634d40;
+          color: #2C2520;
           text-align: center;
         }
         .pdp-cert-sub {
-          font-size: 9px;
-          color: #8a6a58;
+          font-size: 10px;
+          color: #8C827A;
           text-align: center;
         }
 
         /* Related Products */
         .pdp-related-section {
-          background: #f7f0ee;
-          padding: 40px 24px;
+          background: #FFFFFF;
+          padding: 60px 24px;
+          border-top: 1px solid #EAE5E0;
         }
         .pdp-related-inner {
           max-width: 1280px;
           margin: 0 auto;
         }
         .pdp-related-title {
-          font-size: 18px;
+          font-family: 'Playfair Display', serif;
+          font-size: 22px;
           font-weight: 700;
-          color: #634d40;
-          margin-bottom: 24px;
+          color: #2C2520;
+          margin-bottom: 30px;
           text-transform: uppercase;
-          letter-spacing: 0.5px;
+          letter-spacing: 1px;
         }
         .pdp-related-grid {
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          gap: 16px;
+          gap: 20px;
         }
         .pdp-related-card {
-          background: #fff;
-          border-radius: 8px;
-          border: 1px solid #d4c5bd;
+          background: #FFFFFF;
+          border-radius: 12px;
+          border: 1px solid #EAE5E0;
           overflow: hidden;
           cursor: pointer;
-          transition: transform 0.2s, box-shadow 0.2s;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          box-shadow: 0 4px 15px rgba(0,0,0,0.01);
         }
         .pdp-related-card:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 6px 20px rgba(99,77,64,0.15);
+          transform: translateY(-4px);
+          box-shadow: 0 12px 30px rgba(44, 37, 32, 0.08);
+          border-color: #A98E73;
+        }
+        .pdp-related-img-wrapper {
+          position: relative;
+          overflow: hidden;
+          height: 180px;
+          background: #FAF8F6;
         }
         .pdp-related-img {
           width: 100%;
-          height: 160px;
-          object-fit: contain;
-          background: #f7f0ee;
-          padding: 12px;
+          height: 100%;
+          object-fit: cover;
+          padding: 0;
+          transition: transform 0.3s;
+        }
+        .pdp-related-img-wrapper:hover .card-arrow-overlay {
+          opacity: 1;
+        }
+        .card-arrow-overlay {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 100%;
+          display: flex;
+          justify-content: space-between;
+          padding: 0 10px;
+          opacity: 0;
+          transition: opacity 0.2s;
+          z-index: 3;
+        }
+        .card-slider-arrow {
+          background: rgba(255,255,255,0.9);
+          border-radius: 50%;
+          width: 28px;
+          height: 28px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+          font-weight: bold;
+          font-size: 14px;
+          color: #634d40;
+          border: none;
+          cursor: pointer;
+        }
+        .pdp-related-card:hover .pdp-related-img {
+          transform: scale(1.02);
         }
         .pdp-related-info {
-          padding: 10px 12px;
+          padding: 16px;
         }
         .pdp-related-name {
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 600;
-          color: #634d40;
-          margin-bottom: 4px;
+          color: #2C2520;
+          margin-bottom: 6px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
         .pdp-related-prices {
           display: flex;
-          gap: 6px;
+          gap: 8px;
           align-items: baseline;
         }
         .pdp-related-price {
-          font-size: 13px;
+          font-size: 14px;
           font-weight: 700;
-          color: #634d40;
+          color: #2C2520;
         }
         .pdp-related-old-price {
-          font-size: 10px;
+          font-size: 11px;
           text-decoration: line-through;
-          color: #b09585;
+          color: #8C827A;
         }
 
         /* Sticky bottom bar on scroll */
@@ -1014,157 +1102,175 @@ export default function ProductDetailPage({ product, products: propProducts = []
           top: 0;
           left: 0;
           right: 0;
-          background: #fff;
-          border-bottom: 1px solid #d4c5bd;
-          padding: 10px 24px;
+          background: #FFFFFF;
+          border-bottom: 1px solid #EAE5E0;
+          padding: 12px 24px;
           display: flex;
           align-items: center;
-          gap: 16px;
+          gap: 20px;
           z-index: 9000;
           transform: translateY(-100%);
           transition: transform 0.3s;
-          box-shadow: 0 2px 8px rgba(99,77,64,0.1);
+          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
         }
         .pdp-sticky-bar.visible {
           transform: translateY(0);
         }
         .pdp-sticky-product-img {
-          width: 36px;
-          height: 36px;
+          width: 44px;
+          height: 44px;
           object-fit: contain;
-          border-radius: 4px;
-          background: #f7f0ee;
-          border: 1px solid #d4c5bd;
+          border-radius: 6px;
+          background: #FAF8F6;
+          border: 1px solid #EAE5E0;
         }
         .pdp-sticky-name {
-          font-size: 12px;
+          font-size: 13px;
           font-weight: 600;
-          color: #634d40;
+          color: #2C2520;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          max-width: 200px;
+          max-width: 250px;
         }
         .pdp-sticky-price {
-          font-size: 14px;
+          font-size: 15px;
           font-weight: 700;
-          color: #634d40;
+          color: #2C2520;
         }
         .pdp-sticky-sep { flex-grow: 1; }
         .pdp-sticky-size-sel {
-          border: 1px solid #d4c5bd;
-          border-radius: 4px;
-          padding: 5px 8px;
-          font-size: 12px;
+          border: 1px solid #EAE5E0;
+          border-radius: 6px;
+          padding: 8px 12px;
+          font-size: 13px;
           font-weight: 600;
-          color: #634d40;
+          color: #2C2520;
           outline: none;
           cursor: pointer;
+          background: #FFFFFF;
         }
         .pdp-sticky-add-btn {
-          background: #634d40;
-          color: #fff;
+          background: #2C2520;
+          color: #FFFFFF;
           border: none;
-          padding: 8px 20px;
-          border-radius: 6px;
+          padding: 10px 24px;
+          border-radius: 8px;
           font-size: 13px;
           font-weight: 700;
           cursor: pointer;
           white-space: nowrap;
+          transition: background 0.3s;
         }
-        .pdp-sticky-add-btn:hover { background: #4a3830; }
+        .pdp-sticky-add-btn:hover { background: #A98E73; }
 
         /* Modal */
         .pdp-modal-overlay {
           position: fixed;
           inset: 0;
-          background: rgba(35,21,53,0.6);
+          background: rgba(44,37,32,0.4);
+          backdrop-filter: blur(4px);
           display: flex;
           align-items: center;
           justify-content: center;
           z-index: 10000;
         }
         .pdp-modal-box {
-          background: #fff;
-          border-radius: 12px;
-          padding: 24px;
+          background: #FFFFFF;
+          border-radius: 16px;
+          padding: 30px;
           width: 90%;
           max-width: 480px;
           position: relative;
-          animation: pdpModalIn 0.25s cubic-bezier(0.175,0.885,0.32,1.275);
+          box-shadow: 0 20px 50px rgba(44, 37, 32, 0.15);
+          animation: pdpModalIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .pdp-modal-close {
           position: absolute;
-          top: 14px;
-          right: 16px;
-          font-size: 18px;
-          color: #8a6a58;
+          top: 20px;
+          right: 20px;
+          font-size: 20px;
+          color: #8C827A;
           cursor: pointer;
           background: none;
           border: none;
           line-height: 1;
+          transition: color 0.2s;
         }
+        .pdp-modal-close:hover { color: #2C2520; }
         .pdp-modal-title {
-          font-size: 17px;
+          font-family: 'Playfair Display', serif;
+          font-size: 20px;
           font-weight: 700;
-          color: #634d40;
-          margin-bottom: 6px;
+          color: #2C2520;
+          margin-bottom: 8px;
         }
         .pdp-modal-sub {
           font-size: 13px;
-          color: #8a6a58;
-          margin-bottom: 16px;
-          line-height: 1.4;
+          color: #8C827A;
+          margin-bottom: 20px;
+          line-height: 1.5;
         }
         .pdp-modal-input {
           width: 100%;
-          padding: 10px 14px;
-          border: 1px solid #d4c8e3;
-          border-radius: 6px;
+          padding: 12px 16px;
+          border: 1px solid #EAE5E0;
+          border-radius: 8px;
           font-size: 14px;
           outline: none;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
           box-sizing: border-box;
+          background: #FAF8F6;
+          transition: border-color 0.3s;
         }
-        .pdp-modal-input:focus { border-color: #634d40; }
+        .pdp-modal-input:focus { border-color: #A98E73; }
         .pdp-modal-label {
           font-size: 11px;
           font-weight: 600;
-          color: #634d40;
+          color: #2C2520;
           display: block;
-          margin-bottom: 4px;
+          margin-bottom: 6px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
         .pdp-modal-submit {
           width: 100%;
-          background: #634d40;
-          color: #fff;
+          background: #2C2520;
+          color: #FFFFFF;
           border: none;
-          padding: 12px;
-          border-radius: 6px;
+          padding: 14px;
+          border-radius: 8px;
           font-size: 14px;
           font-weight: 700;
           cursor: pointer;
-          margin-top: 4px;
+          margin-top: 8px;
+          box-shadow: 0 4px 12px rgba(44,37,32,0.15);
+          transition: all 0.3s;
+        }
+        .pdp-modal-submit:hover {
+          background: #A98E73;
+          box-shadow: 0 6px 18px rgba(169, 142, 115, 0.25);
         }
         .pdp-modal-success {
           text-align: center;
-          padding: 20px 0;
-          color: #634d40;
-          font-size: 14px;
+          padding: 30px 0;
+          color: #4B7955;
+          font-size: 15px;
           font-weight: 600;
         }
 
         /* Video call */
         .pdp-video-screen {
-          background: #1a0f26;
-          border-radius: 8px;
-          height: 220px;
+          background: #1F1A17;
+          border-radius: 12px;
+          height: 240px;
           display: flex;
           align-items: center;
           justify-content: center;
           position: relative;
           overflow: hidden;
-          margin-bottom: 12px;
+          margin-bottom: 16px;
+          box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
         }
         .pdp-video-feed {
           width: 100%;
@@ -1172,30 +1278,36 @@ export default function ProductDetailPage({ product, products: propProducts = []
           object-fit: cover;
         }
         .pdp-spinner {
-          border: 3px solid rgba(255,255,255,0.2);
-          border-top-color: #de3581;
+          border: 3px solid rgba(255,255,255,0.1);
+          border-top-color: #A98E73;
           border-radius: 50%;
-          width: 36px;
-          height: 36px;
+          width: 40px;
+          height: 40px;
           animation: pdpSpin 1s linear infinite;
         }
         .pdp-call-controls {
           display: flex;
           justify-content: center;
-          gap: 14px;
+          gap: 16px;
         }
         .pdp-ctrl-btn {
-          width: 42px;
-          height: 42px;
+          width: 46px;
+          height: 46px;
           border-radius: 50%;
           border: none;
           cursor: pointer;
-          color: #fff;
-          font-size: 16px;
+          color: #FFFFFF;
+          font-size: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          transition: transform 0.2s;
         }
+        .pdp-ctrl-btn:hover { transform: scale(1.05); }
 
         @keyframes pdpModalIn {
-          from { transform: scale(0.92); opacity: 0; }
+          from { transform: scale(0.95); opacity: 0; }
           to { transform: scale(1); opacity: 1; }
         }
         @keyframes pdpSpin {
@@ -1205,11 +1317,13 @@ export default function ProductDetailPage({ product, products: propProducts = []
         @media (max-width: 1000px) {
           .pdp-main-grid {
             grid-template-columns: 1fr;
+            gap: 40px;
           }
           .pdp-info-col {
             position: static;
             max-height: none;
             overflow-y: visible;
+            padding-right: 0;
           }
           .pdp-related-grid {
             grid-template-columns: repeat(2, 1fr);
@@ -1243,19 +1357,19 @@ export default function ProductDetailPage({ product, products: propProducts = []
       {/* Breadcrumb */}
       <div className="pdp-breadcrumb">
         <span onClick={() => { window.location.hash = ''; }}>Home</span>
-        <span>›</span>
+        <ChevronRight size={10} style={{ color: '#8C827A' }} />
         <span onClick={() => { window.location.hash = '#' + (product.category || 'rings').toLowerCase().replace(/ /g, '-'); }}>
           {product.category || 'Rings'}
         </span>
         {product.subcategory && (
           <>
-            <span>›</span>
+            <ChevronRight size={10} style={{ color: '#8C827A' }} />
             <span onClick={() => { window.location.hash = '#' + (product.category || 'rings').toLowerCase().replace(/ /g, '-') + '?subcategory=' + product.subcategory.toLowerCase().replace(/ /g, '-'); }}>
               {product.subcategory}
             </span>
           </>
         )}
-        <span>›</span>
+        <ChevronRight size={10} style={{ color: '#8C827A' }} />
         <span className="active">{product.name}</span>
       </div>
 
@@ -1279,14 +1393,31 @@ export default function ProductDetailPage({ product, products: propProducts = []
             </div>
 
             {/* Main image */}
-            <div className="pdp-main-img-wrap">
+            <div 
+              className="pdp-main-img-wrap"
+              onMouseEnter={() => setIsZoomed(true)}
+              onMouseLeave={() => setIsZoomed(false)}
+              onMouseMove={handleMouseMove}
+              style={{ overflow: 'hidden', position: 'relative' }}
+            >
               <img
                 src={allImages[selectedImage]}
                 alt={product.name}
                 className="pdp-main-img"
+                style={{
+                  transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
+                  transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                  transition: isZoomed ? 'none' : 'transform 0.3s ease, transform-origin 0.3s ease',
+                  cursor: 'zoom-in'
+                }}
               />
-              <div className="pdp-popular-badge">★ 9k+ bought this</div>
-              <div className="pdp-main-zoom-icon" title="Zoom image">⛶</div>
+              <div className="pdp-popular-badge">
+                <Star size={11} style={{ display: 'inline', verticalAlign: '-1px', fill: 'currentColor', marginRight: '4px' }} />
+                9k+ bought this
+              </div>
+              <div className="pdp-main-zoom-icon" title="Zoom image">
+                <Maximize2 size={16} />
+              </div>
             </div>
           </div>
           {/* Lifestyle mosaic removed since we only show backend images */}
@@ -1296,13 +1427,14 @@ export default function ProductDetailPage({ product, products: propProducts = []
         <div className="pdp-info-col">
           {/* Popular badge */}
           <div className="pdp-popular-tag">
-            <span>★</span> 9k+ bought this
+            <Star size={12} style={{ display: 'inline', fill: 'currentColor', verticalAlign: 'middle', marginRight: '4px' }} />
+            9k+ bought this
           </div>
 
           {/* Rating */}
           <div className="pdp-rating-row">
             <div className="pdp-rating-pill">
-              <span className="pdp-star-icon">★</span>
+              <Star size={14} className="pdp-star-icon" style={{ fill: 'currentColor' }} />
               {rating} &nbsp;|&nbsp; {reviews.toLocaleString('en-IN')} Ratings
             </div>
           </div>
@@ -1317,7 +1449,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
           <div className="pdp-tax-note">(MRP Inclusive of all taxes)</div>
 
           <div className="pdp-product-name">{product.name}</div>
-          <div className="pdp-offer-tag">✦ Flat {savingsPct}% off on Making Charges</div>
+          <div className="pdp-offer-tag">
+            <Sparkles size={14} style={{ display: 'inline', color: '#A98E73', verticalAlign: '-2px', marginRight: '4px' }} />
+            Flat {savingsPct}% off on Making Charges
+          </div>
 
           {/* Customise selectors */}
           <div className="pdp-customise-box">
@@ -1405,10 +1540,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
               onClick={handleWishlist}
               title={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
             >
-              {isWishlisted ? '♥' : '♡'}
+              {isWishlisted ? <Heart size={20} style={{ fill: '#A98E73', color: '#A98E73' }} /> : <Heart size={20} />}
             </button>
             <button className="pdp-icon-btn" title="Share">
-              ↗
+              <Share2 size={20} />
             </button>
           </div>
 
@@ -1432,7 +1567,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 setPincode('110001');
                 setPincodeMsg('✅ Delivery by Tomorrow | Free Shipping');
               }}>
-                📍 Locate Me
+                <MapPin size={14} style={{ display: 'inline', verticalAlign: '-2px', marginRight: '4px' }} />
+                Locate Me
               </button>
             </div>
           </form>
@@ -1444,14 +1580,16 @@ export default function ProductDetailPage({ product, products: propProducts = []
           )}
 
           <div className="pdp-delivery-info-row">
-            <span>📅</span>
+            <Calendar size={14} style={{ color: '#8C827A' }} />
             <span>Expected Delivery Date — Enter pincode to check</span>
           </div>
 
           {/* Service Cards */}
           <div className="pdp-trial-store-grid" style={{ gridTemplateColumns: '1fr' }}>
             <div className="pdp-service-card">
-              <div className="pdp-service-icon">🏪</div>
+              <div className="pdp-service-icon">
+                <Store size={22} style={{ color: '#A98E73' }} />
+              </div>
               <div className="pdp-service-title">Store Availability</div>
               <div className="pdp-service-sub">Find designs in store</div>
               <button
@@ -1466,19 +1604,27 @@ export default function ProductDetailPage({ product, products: propProducts = []
           {/* Trust Strip */}
           <div className="pdp-trust-strip">
             <div className="pdp-trust-item">
-              <div className="pdp-trust-icon">✔️</div>
+              <div className="pdp-trust-icon">
+                <ShieldCheck size={26} style={{ color: '#A98E73' }} />
+              </div>
               <div className="pdp-trust-label">100% Certified</div>
             </div>
             <div className="pdp-trust-item">
-              <div className="pdp-trust-icon">🔄</div>
+              <div className="pdp-trust-icon">
+                <RotateCcw size={26} style={{ color: '#A98E73' }} />
+              </div>
               <div className="pdp-trust-label">15 Day Money-Back</div>
             </div>
             <div className="pdp-trust-item">
-              <div className="pdp-trust-icon">🤝</div>
+              <div className="pdp-trust-icon">
+                <Repeat size={26} style={{ color: '#A98E73' }} />
+              </div>
               <div className="pdp-trust-label">Lifetime Exchange</div>
             </div>
             <div className="pdp-trust-item">
-              <div className="pdp-trust-icon">🛡️</div>
+              <div className="pdp-trust-icon">
+                <Shield size={26} style={{ color: '#A98E73' }} />
+              </div>
               <div className="pdp-trust-label">One Year Warranty</div>
             </div>
           </div>
@@ -1489,7 +1635,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
               Earn <strong>{xPoints} xCLusive points</strong> with this order<br />
               <span style={{ fontSize: '10px', color: '#837890' }}>1 xCLusive point = ₹1</span>
             </div>
-            <div className="pdp-xclusive-coin">🪙</div>
+            <div className="pdp-xclusive-coin">
+              <Coins size={28} style={{ color: '#A98E73' }} />
+            </div>
           </div>
         </div>
       </div>
@@ -1521,7 +1669,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             <div className="pdp-details-grid">
               <div className="pdp-detail-group">
                 <div className="pdp-detail-group-title">
-                  <span>💛</span> Gold
+                  <Sparkles size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Gold
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Karat</span>
@@ -1543,7 +1691,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
               <div className="pdp-detail-group">
                 <div className="pdp-detail-group-title">
-                  <span>💎</span> Diamond
+                  <Gem size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Diamond
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Quality</span>
@@ -1565,7 +1713,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
               <div className="pdp-detail-group">
                 <div className="pdp-detail-group-title">
-                  <span>📐</span> Dimensions
+                  <Ruler size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Dimensions
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Ring Size</span>
@@ -1583,7 +1731,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
               <div className="pdp-detail-group">
                 <div className="pdp-detail-group-title">
-                  <span>ℹ️</span> About
+                  <Info size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> About
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">SKU</span>
@@ -1641,19 +1789,17 @@ export default function ProductDetailPage({ product, products: propProducts = []
         {/* Certification Strip */}
         <div className="pdp-cert-strip">
           <div className="pdp-cert-item">
-            <div className="pdp-cert-icon">🏅</div>
+            <div className="pdp-cert-icon">
+              <Award size={26} style={{ color: '#A98E73' }} />
+            </div>
             <div className="pdp-cert-name">BIS*</div>
             <div className="pdp-cert-sub">Hallmarked Jewellery</div>
           </div>
           <div className="pdp-cert-item">
-            <div className="pdp-cert-icon">🏢</div>
-            <div className="pdp-cert-name">TATA Certified</div>
-            <div className="pdp-cert-sub">Spirit of Trust</div>
-          </div>
-          <div className="pdp-cert-item">
-            <div className="pdp-cert-icon">✅</div>
-            <div className="pdp-cert-name">100% Certified</div>
-            <div className="pdp-cert-sub">Quality Assured</div>
+            <div className="pdp-cert-icon">
+              <ShieldCheck size={26} style={{ color: '#A98E73' }} />
+            </div>
+            <div className="pdp-cert-name">100% certified by zoniraz</div>
           </div>
         </div>
       </div>
@@ -1663,24 +1809,52 @@ export default function ProductDetailPage({ product, products: propProducts = []
         <div className="pdp-related-inner">
           <h2 className="pdp-related-title">You Might Also Like</h2>
           <div className="pdp-related-grid">
-            {relatedProducts.map(p => (
-              <div
-                key={p.id}
-                className="pdp-related-card"
-                onClick={() => {
-                  window.location.hash = `product-${p.id}`;
-                }}
-              >
-                <img src={p.image} alt={p.name} className="pdp-related-img" />
-                <div className="pdp-related-info">
-                  <div className="pdp-related-name">{p.name}</div>
-                  <div className="pdp-related-prices">
-                    <span className="pdp-related-price">₹{p.price.toLocaleString('en-IN')}</span>
-                    <span className="pdp-related-old-price">₹{p.originalPrice.toLocaleString('en-IN')}</span>
+            {relatedProducts.map(p => {
+              const activeImgIndex = relatedCardImageIndexes[p.id] || 0;
+              return (
+                <div
+                  key={p.id}
+                  className="pdp-related-card"
+                  onClick={() => {
+                    window.location.hash = `product-${p.id}`;
+                  }}
+                >
+                  <div className="pdp-related-img-wrapper">
+                    <img 
+                      src={(p.images && p.images.length > 0) ? p.images[activeImgIndex] : p.image} 
+                      alt={p.name} 
+                      className="pdp-related-img" 
+                    />
+                    
+                    {p.images && p.images.length > 1 && (
+                      <div className="card-arrow-overlay" onClick={e => e.stopPropagation()}>
+                        <button 
+                          className="card-slider-arrow" 
+                          onClick={(e) => prevRelatedCardImage(e, p.id, p.images.length)}
+                          aria-label="Previous image"
+                        >
+                          ‹
+                        </button>
+                        <button 
+                          className="card-slider-arrow" 
+                          onClick={(e) => nextRelatedCardImage(e, p.id, p.images.length)}
+                          aria-label="Next image"
+                        >
+                          ›
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="pdp-related-info">
+                    <div className="pdp-related-name">{p.name}</div>
+                    <div className="pdp-related-prices">
+                      <span className="pdp-related-price">₹{p.price.toLocaleString('en-IN')}</span>
+                      <span className="pdp-related-old-price">₹{p.originalPrice.toLocaleString('en-IN')}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
@@ -1689,7 +1863,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
       {tryHomeOpen && (
         <div className="pdp-modal-overlay" onClick={() => setTryHomeOpen(false)}>
           <div className="pdp-modal-box" onClick={e => e.stopPropagation()}>
-            <button className="pdp-modal-close" onClick={() => setTryHomeOpen(false)}>✕</button>
+            <button className="pdp-modal-close" onClick={() => setTryHomeOpen(false)}>
+              <X size={20} />
+            </button>
             <h3 className="pdp-modal-title">Book Free Try at Home</h3>
             <p className="pdp-modal-sub">
               Try <strong>{product.name}</strong> in the comfort of your home — absolutely free!
@@ -1737,7 +1913,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
       {videoOpen && (
         <div className="pdp-modal-overlay" onClick={() => setVideoOpen(false)}>
           <div className="pdp-modal-box" style={{ maxWidth: 500 }} onClick={e => e.stopPropagation()}>
-            <button className="pdp-modal-close" onClick={() => setVideoOpen(false)}>✕</button>
+            <button className="pdp-modal-close" onClick={() => setVideoOpen(false)}>
+              <X size={20} />
+            </button>
             <h3 className="pdp-modal-title">Live Video Consultation</h3>
             <p className="pdp-modal-sub">Connect with our designer at the showroom to see this piece live!</p>
             <div className="pdp-video-screen">
@@ -1755,8 +1933,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
               )}
             </div>
             <div className="pdp-call-controls">
-              <button className="pdp-ctrl-btn" style={{ background: '#5c4b6e' }} onClick={() => alert('Muted')}>🎙</button>
-              <button className="pdp-ctrl-btn" style={{ background: '#f44336' }} onClick={() => setVideoOpen(false)}>🛑</button>
+              <button className="pdp-ctrl-btn" style={{ background: '#5c4b6e', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => alert('Muted')}>
+                <Mic size={18} />
+              </button>
+              <button className="pdp-ctrl-btn" style={{ background: '#f44336', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setVideoOpen(false)}>
+                <PhoneOff size={18} />
+              </button>
             </div>
           </div>
         </div>

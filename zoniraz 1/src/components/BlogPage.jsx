@@ -10,6 +10,7 @@ import layeredNecklacesImg from '../assets/layered-necklaces.png';
 import caratlaneIconicsImg from '../assets/caratlane-iconics.png';
 import infinityDiamondRingImg from '../assets/infinity_diamond_ring.png';
 import meshClusterRingImg from '../assets/mesh_cluster_ring.png';
+import weddingBanner from '../assets/WEDDING BANNER.png';
 
 const blogArticles = [
   {
@@ -120,15 +121,18 @@ export default function BlogPage() {
 
         /* Title / Hero Banner */
         .blog-hero {
-          background-color: #ffffff;
           border-radius: 24px;
-          padding: 60px 40px;
+          padding: 80px 40px;
           text-align: center;
           margin-bottom: 40px;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
+          box-shadow: 0 8px 32px rgba(43, 34, 29, 0.15);
           border: 1px solid #dbcfcb;
           position: relative;
           overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
         }
 
         .blog-hero-label {
@@ -136,25 +140,31 @@ export default function BlogPage() {
           letter-spacing: 4px;
           text-transform: uppercase;
           color: #c5a880;
-          font-weight: 600;
+          font-weight: 700;
           margin-bottom: 12px;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+          z-index: 2;
         }
 
         .blog-hero-title {
           font-family: 'Playfair Display', serif;
-          font-size: 40px;
-          font-weight: 500;
-          color: #2b221d;
+          font-size: 44px;
+          font-weight: 600;
+          color: #ffffff;
           margin: 0 0 16px 0;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+          z-index: 2;
         }
 
         .blog-hero-subtitle {
-          font-size: 14px;
-          color: #746380;
+          font-size: 15px;
+          color: rgba(255, 255, 255, 0.9);
           letter-spacing: 1px;
           margin: 0 auto;
           max-width: 600px;
           line-height: 1.6;
+          text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+          z-index: 2;
         }
 
         /* Tag Filters Bar */
@@ -327,11 +337,15 @@ export default function BlogPage() {
         </div>
 
         {/* Hero Banner */}
-        <div className="blog-hero">
-          <div className="blog-hero-label">Zoniraz Journal</div>
-          <h1 className="blog-hero-title">Wedding Statement Jewels</h1>
-          <p className="blog-hero-subtitle">Crafted for your most precious moments</p>
-        </div>
+        <div 
+          className="blog-hero"
+          style={{
+            backgroundImage: `url(${weddingBanner})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            minHeight: '320px'
+          }}
+        />
 
         {/* Categories Bar */}
         <div className="blog-tags-bar">

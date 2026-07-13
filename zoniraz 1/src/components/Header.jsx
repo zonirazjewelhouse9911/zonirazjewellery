@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import AuthModal from './AuthModal';
+import { Coins, TrendingDown, RefreshCw, X, ArrowLeft } from 'lucide-react';
 import messageBandsImg from '../assets/message-bands.png';
 import postcardsBannerImg from '../assets/postcards-banner.png';
 import switchEarringsImg from '../assets/switch-earrings.png';
@@ -568,7 +569,9 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
       {goldModalOpen && (
         <div className="gold-modal-overlay">
           <div className="gold-modal-container">
-            <button className="gold-modal-close" onClick={() => setGoldModalOpen(false)}>×</button>
+            <button className="gold-modal-close" onClick={() => setGoldModalOpen(false)}>
+              <X size={18} />
+            </button>
 
             {goldActiveTab === 'menu' && (
               <div className="gold-menu-view">
@@ -576,19 +579,25 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                 <p className="gold-subtitle">Invest, liquidate, or upgrade your gold securely in real-time.</p>
                 <div className="gold-options-grid">
                   <div className="gold-option-card">
-                    <div className="gold-icon-wrapper">🪙</div>
+                    <div className="gold-icon-wrapper">
+                      <Coins size={24} style={{ color: '#A98E73' }} />
+                    </div>
                     <h4>Buy Gold</h4>
                     <p>Purchase 24KT pure gold starting from just ₹100.</p>
                     <button className="gold-action-btn" onClick={() => setGoldActiveTab('buy')}>Buy Gold</button>
                   </div>
                   <div className="gold-option-card">
-                    <div className="gold-icon-wrapper">📉</div>
+                    <div className="gold-icon-wrapper">
+                      <TrendingDown size={24} style={{ color: '#A98E73' }} />
+                    </div>
                     <h4>Sell Gold</h4>
                     <p>Sell your stored gold balance instantly at real-time rates.</p>
                     <button className="gold-action-btn" onClick={() => setGoldActiveTab('sell')}>Sell Gold</button>
                   </div>
                   <div className="gold-option-card">
-                    <div className="gold-icon-wrapper">🔄</div>
+                    <div className="gold-icon-wrapper">
+                      <RefreshCw size={24} style={{ color: '#A98E73' }} />
+                    </div>
                     <h4>Exchange Old Gold</h4>
                     <p>Convert your physical old gold ornaments into pure digital gold credits.</p>
                     <button className="gold-action-btn" onClick={() => setGoldActiveTab('exchange')}>Exchange Gold</button>
@@ -599,7 +608,9 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
 
             {goldActiveTab === 'buy' && (
               <div className="gold-tab-view">
-                <button className="gold-back-btn" onClick={() => setGoldActiveTab('menu')}>← Back</button>
+                <button className="gold-back-btn" onClick={() => setGoldActiveTab('menu')} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <ArrowLeft size={14} /> Back
+                </button>
                 <h3>Buy Gold</h3>
                 <p className="gold-rate-ticker">Live buying rate: <strong>₹7,345/gm</strong> (inclusive of GST)</p>
                 <form className="gold-portal-form" onSubmit={(e) => { e.preventDefault(); alert('Gold purchased successfully!'); setGoldModalOpen(false); }}>
@@ -619,7 +630,9 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
 
             {goldActiveTab === 'sell' && (
               <div className="gold-tab-view">
-                <button className="gold-back-btn" onClick={() => setGoldActiveTab('menu')}>← Back</button>
+                <button className="gold-back-btn" onClick={() => setGoldActiveTab('menu')} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <ArrowLeft size={14} /> Back
+                </button>
                 <h3>Sell Gold</h3>
                 <p className="gold-rate-ticker">Live selling rate: <strong>₹7,120/gm</strong></p>
                 <form className="gold-portal-form" onSubmit={(e) => { e.preventDefault(); alert('Gold sold successfully!'); setGoldModalOpen(false); }}>
@@ -634,7 +647,9 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
 
             {goldActiveTab === 'exchange' && (
               <div className="gold-tab-view">
-                <button className="gold-back-btn" onClick={() => setGoldActiveTab('menu')}>← Back</button>
+                <button className="gold-back-btn" onClick={() => setGoldActiveTab('menu')} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <ArrowLeft size={14} /> Back
+                </button>
                 <h3>Exchange Old Gold</h3>
                 <p className="gold-rate-ticker">Estimated exchange valuation rate: <strong>₹6,980/gm</strong></p>
                 <form className="gold-portal-form" onSubmit={(e) => { e.preventDefault(); alert('Exchange query submitted! Visit nearest store.'); setGoldModalOpen(false); }}>

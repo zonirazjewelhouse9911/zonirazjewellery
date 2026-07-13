@@ -639,7 +639,7 @@ export default function FranchisePage() {
               </button>
 
               <div className="privacy-disclaimer">
-                By submitting this form, you agree to our franchise partnership terms & privacy policy
+                By submitting this form, you agree to our <a href="#terms" style={{ textDecoration: 'underline', color: 'inherit' }}>franchise partnership terms</a> &amp; <a href="#privacy" style={{ textDecoration: 'underline', color: 'inherit' }}>privacy policy</a>
               </div>
             </form>
           </div>

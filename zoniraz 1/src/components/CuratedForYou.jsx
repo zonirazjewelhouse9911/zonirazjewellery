@@ -1,7 +1,7 @@
 import React from 'react';
-import womenImg from '../assets/hero-model.png';
-import menImg from '../assets/mens-platinum.png';
-import kidsImg from '../assets/gifts-for-mom.png';
+import womenImg from '../assets/women.png';
+import menImg from '../assets/mens.png';
+import kidsImg from '../assets/kids.png';
 
 const genderCards = [
   { id: 'women', label: 'Women Jewellery', image: womenImg, href: '#women' },

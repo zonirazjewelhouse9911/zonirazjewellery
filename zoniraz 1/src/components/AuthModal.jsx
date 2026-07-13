@@ -742,7 +742,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'lo
                     className="auth-checkbox"
                   />
                   <label htmlFor="agree" className="auth-checkbox-label">
-                    I agree to the Terms & Privacy Policy
+                    I agree to the <a href="#terms" onClick={onClose} style={{ textDecoration: 'underline', color: 'inherit' }}>Terms</a> &amp; <a href="#privacy" onClick={onClose} style={{ textDecoration: 'underline', color: 'inherit' }}>Privacy Policy</a>
                   </label>
                 </div>
 
