@@ -2011,10 +2011,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
               );
             })}
-                  </div>
-                </div>
-              );
-            })}
           </div>
         </div>
       </div>
