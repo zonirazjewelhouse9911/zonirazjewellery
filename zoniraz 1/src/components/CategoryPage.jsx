@@ -24,14 +24,26 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
   useEffect(() => {
     setLoading(true);
-    fetch('http://localhost:55000/api/admin/products')
-      .then(res => res.json())
-      .then(resData => {
+    Promise.all([
+      fetch('http://localhost:55000/api/admin/products').then(res => res.json()),
+      fetch('http://localhost:55000/api/productBasePricing').then(res => res.json()).catch(() => null)
+    ])
+      .then(([resData, pricingData]) => {
         if (resData.success) {
+          const pricingMap = {};
+          if (pricingData && pricingData.success && Array.isArray(pricingData.data)) {
+            pricingData.data.forEach(item => {
+              const idKey = item._id || item.product_id;
+              if (idKey) {
+                pricingMap[idKey] = item.base_price_withGST;
+              }
+            });
+          }
+
           const mapped = (resData.data || []).map(p => {
             const id = p._id || p.product_id;
             const name = p.product_title || p.name || 'Jewellery Item';
-            const price = Number(p.price) || Number(p.basePrice) || 0;
+            const price = pricingMap[p._id] || pricingMap[p.product_id] || Number(p.price) || Number(p.basePrice) || 0;
             const discount = Number(p.discount) || 0;
             
             // Get category name

@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const jewelleryPricingSchema = new mongoose.Schema({
-  gold_rate_14k: {
+  gold_rate_24k: {
     type: Number,
     required: true,
     default: 0

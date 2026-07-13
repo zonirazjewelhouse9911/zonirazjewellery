@@ -33,6 +33,7 @@ const staticCategories = [
 
 export default function FindPerfectMatch({ products = [] }) {
   const scrollRef = useRef(null);
+  const [categories, setCategories] = React.useState([]);
 
   const scroll = (dir) => {
     if (scrollRef.current) {
@@ -40,51 +41,41 @@ export default function FindPerfectMatch({ products = [] }) {
     }
   };
 
-  // Dynamically extract categories from real backend products
-  let categories = staticCategories;
-  if (products && products.length > 0) {
-    const categoriesMap = {};
-    products.forEach(p => {
-      if (!p.category) return;
-      const catName = String(p.category).trim();
-      const cleanName = catName.toLowerCase();
+  React.useEffect(() => {
+    fetch('http://localhost:55000/api/admin/categories')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.data)) {
+          const mapped = data.data.map(cat => {
+            let catImg = cat.image || '';
+            if (catImg) {
+              if (catImg.startsWith('/')) {
+                catImg = `http://localhost:55000${catImg}`;
+              } else if (catImg.startsWith('uploads/')) {
+                catImg = `http://localhost:55000/${catImg}`;
+              } else if (!catImg.startsWith('http')) {
+                catImg = `http://localhost:55000/uploads/${catImg}`;
+              }
+            } else {
+              const cleanId = String(cat.slug || cat.name || '').toLowerCase().replace(/ /g, '-');
+              catImg = defaultImages[cleanId] || defaultImages['rings'];
+            }
 
-      // Exclude demographics
-      if (
-        cleanName === "men's jewellery" ||
-        cleanName === "women's jewellery" ||
-        cleanName === "kids jewellery" ||
-        cleanName === "men" ||
-        cleanName === "women" ||
-        cleanName === "kids"
-      ) {
-        return;
-      }
-
-      const id = cleanName.replace(/ /g, '-');
-      if (!categoriesMap[cleanName]) {
-        categoriesMap[cleanName] = {
-          id,
-          label: catName.toUpperCase(),
-          image: p.image || p.images?.[0] || ''
-        };
-      } else {
-        if (!categoriesMap[cleanName].image && p.image) {
-          categoriesMap[cleanName].image = p.image;
+            return {
+              id: String(cat.slug || cat.name || '').toLowerCase().replace(/ /g, '-'),
+              label: String(cat.name || '').toUpperCase(),
+              image: catImg
+            };
+          });
+          setCategories(mapped);
         }
-      }
-    });
-
-    const parsed = Object.values(categoriesMap);
-    if (parsed.length > 0) {
-      categories = parsed.map(cat => {
-        if (!cat.image || cat.image.includes('placehold.co')) {
-          cat.image = defaultImages[cat.id] || defaultImages['rings'];
-        }
-        return cat;
+      })
+      .catch(err => {
+        console.error('Failed to load categories:', err);
+        // Fallback to static if backend fails
+        setCategories(staticCategories);
       });
-    }
-  }
+  }, []);
 
   return (
     <section className="fpm-section">

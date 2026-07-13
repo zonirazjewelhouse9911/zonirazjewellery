@@ -24,6 +24,7 @@ import {
   PhoneOff,
   ChevronRight
 } from 'lucide-react';
+import ringVideo from '../assets/videos/zoniraz ring .mp4';
 
 // Lifestyle / model images from Unsplash (free to use)
 const lifestyleImages = [
@@ -38,8 +39,33 @@ const metalOptions = ['14 KT Yellow', '14 KT Rose', '18 KT Yellow', '18 KT White
 const diamondOptions = ['FG-SI', 'EF-VS', 'GH-SI', 'IJ-SI'];
 
 export default function ProductDetailPage({ product, products: propProducts = [], wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
+  const categoryName = (product?.product_category || product?.category || '').toLowerCase();
+  const isRing = categoryName === 'rings' || categoryName === 'ring';
+  const isBangleOrBracelet = categoryName === 'bangles' || categoryName === 'bangle' || categoryName === 'bracelets' || categoryName === 'bracelet';
+  const showSizing = isRing || isBangleOrBracelet;
+
+  const getProductSizes = () => {
+    if (!product) return [];
+    if (product.size_id) {
+      return product.size_id.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    if (isRing) {
+      return [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map(String);
+    }
+    if (isBangleOrBracelet) {
+      return ['2.2', '2.4', '2.6', '2.8', '2.10', '3.0'];
+    }
+    return [];
+  };
+
+  const activeSizes = getProductSizes();
+
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState(12);
+  const [selectedSize, setSelectedSize] = useState(
+    isBangleOrBracelet
+      ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
+      : 12
+  );
   const [selectedMetal, setSelectedMetal] = useState('14 KT Yellow');
   const [selectedDiamond, setSelectedDiamond] = useState('IJ-SI');
   const [pincode, setPincode] = useState('');
@@ -50,6 +76,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
   const [isZoomed, setIsZoomed] = useState(false);
+  const [sizingVideoOpen, setSizingVideoOpen] = useState(false);
+  const { addToCart } = useContext(CartContext);
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -71,43 +99,162 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
   useEffect(() => {
     let active = true;
-    const fetchCalculatedPrice = async () => {
+    const fetchBasePricing = async () => {
       try {
         const prodId = product?._id || product?.id;
         if (!prodId) return;
 
-        const response = await fetch('http://localhost:55000/api/jewellery-pricing/calculate', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            product_id: prodId,
-            size: selectedSize,
-            metal: selectedMetal,
-            diamond: selectedDiamond
-          })
-        });
+        const response = await fetch('http://localhost:55000/api/productBasePricing');
         const data = await response.json();
-        if (data.success && active) {
-          setPricingDetails({
-            price: data.price,
-            goldCost: Math.round(data.goldCost || 0),
-            diamondCost: Math.round(data.diamondCost || 0),
-            gemstoneCost: Math.round(data.gemstoneCost || 0),
-            makingCharges: Math.round(data.makingCharges || 0),
-            gst: Math.round(data.gst || 0),
-            subtotal: Math.round(data.subtotal || 0),
-            goldWeight: data.goldWeight || product?.gold_weight || 0
-          });
+        if (data.success && active && Array.isArray(data.data)) {
+          const matched = data.data.find(item => String(item._id) === String(prodId) || String(item.product_id) === String(prodId));
+          if (matched) {
+            const price = matched.base_price_withGST;
+            const goldCost = matched.gold_price || 0;
+            const diamondCost = matched.diamond_price || 0;
+            
+            const gemstoneCost = (product.gemstone_weight || 0) * 1500;
+            const makingCharges = product.making_charges || 0;
+            const subtotal = goldCost + diamondCost + gemstoneCost + makingCharges;
+            const gst = price - subtotal;
+
+            setPricingDetails({
+              price: price,
+              goldCost: goldCost,
+              diamondCost: diamondCost,
+              gemstoneCost: gemstoneCost,
+              makingCharges: makingCharges,
+              gst: Math.max(0, gst),
+              subtotal: subtotal,
+              goldWeight: product?.gold_weight || 0
+            });
+          }
         }
       } catch (err) {
-        console.error('Failed to calculate price:', err);
+        console.error('Failed to load base pricing:', err);
       }
     };
     if (product?._id || product?.id) {
-      fetchCalculatedPrice();
+      fetchBasePricing();
     }
+    return () => {
+      active = false;
+    };
+  }, [product?._id, product?.id]);
+
+  useEffect(() => {
+    let active = true;
+    const defaultSize = isBangleOrBracelet
+      ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
+      : 12;
+    const isCustomized = selectedSize !== defaultSize || selectedMetal !== '14 KT Yellow' || selectedDiamond !== 'IJ-SI';
+
+    if (!isCustomized) {
+      if (product?._id || product?.id) {
+        const prodId = product?._id || product?.id;
+        fetch('http://localhost:55000/api/productBasePricing')
+          .then(res => res.json())
+          .then(data => {
+            if (data.success && active && Array.isArray(data.data)) {
+              const matched = data.data.find(item => String(item._id) === String(prodId) || String(item.product_id) === String(prodId));
+              if (matched) {
+                const price = matched.base_price_withGST;
+                const goldCost = matched.gold_price || 0;
+                const diamondCost = matched.diamond_price || 0;
+                const gemstoneCost = (product.gemstone_weight || 0) * 1500;
+                const makingCharges = product.making_charges || 0;
+                const subtotal = goldCost + diamondCost + gemstoneCost + makingCharges;
+                const gst = price - subtotal;
+
+                setPricingDetails({
+                  price: price,
+                  goldCost: goldCost,
+                  diamondCost: diamondCost,
+                  gemstoneCost: gemstoneCost,
+                  makingCharges: makingCharges,
+                  gst: Math.max(0, gst),
+                  subtotal: subtotal,
+                  goldWeight: product?.gold_weight || 0
+                });
+              }
+            }
+          })
+          .catch(err => console.error('Failed to restore base pricing:', err));
+      }
+      return;
+    }
+
+    const fetchCustomPricing = async () => {
+      try {
+        const prodId = product?._id || product?.id;
+        if (!prodId) return;
+
+        let metalKey = "14k";
+        if (selectedMetal.includes("18")) metalKey = "18k";
+        else if (selectedMetal.includes("9")) metalKey = "9k";
+        else if (selectedMetal.includes("22")) metalKey = "22k";
+        else if (selectedMetal.includes("24")) metalKey = "24k";
+
+        let diamondKey = selectedDiamond;
+        if (selectedDiamond === "EF-VS") diamondKey = "EF-VVS";
+
+        const [priceRes, ratesRes] = await Promise.all([
+          fetch('http://localhost:55000/api/productPricing', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              product_id: prodId,
+              size: selectedSize,
+              metal: metalKey,
+              diamond: diamondKey
+            })
+          }),
+          fetch('http://localhost:55000/api/jewellery-pricing').catch(() => null)
+        ]);
+
+        const data = await priceRes.json();
+        const ratesData = ratesRes ? await ratesRes.json().catch(() => null) : null;
+
+        if (data.success && active) {
+          const rates = (ratesData && ratesData.success) ? ratesData.data : { gold_rate_24k: 5200, gst_percent: 3 };
+          const price = data.price || pricingDetails.price;
+
+          // Compute gold rate based on karat
+          let goldRate = rates.gold_rate_14k || 3033;
+          if (metalKey === "18k") goldRate = rates.gold_rate_24k * 18 / 24;
+          else if (metalKey === "9k") goldRate = rates.gold_rate_24k * 9 / 24;
+          else if (metalKey === "22k") goldRate = rates.gold_rate_24k * 22 / 24;
+          else if (metalKey === "24k") goldRate = rates.gold_rate_24k * 24 / 24;
+
+          const goldCost = Math.round((data.gold_weight || 0) * goldRate);
+          const diamondCost = Math.round((data.diamond_weight || 0) * (data.diamond_rate_used || rates.diamond_rate || 85000));
+          const gemstoneCost = (product.gemstone_weight || 0) * (rates.gemstone_rate || 1500);
+          const makingCharges = product.making_charges || 0;
+          const solitaireCost = product.solitaires_price || 0;
+
+          const subtotal = goldCost + diamondCost + gemstoneCost + makingCharges + solitaireCost;
+          const gst = price - subtotal;
+
+          setPricingDetails({
+            price: price,
+            goldCost: goldCost,
+            diamondCost: diamondCost,
+            gemstoneCost: gemstoneCost,
+            makingCharges: makingCharges,
+            gst: Math.max(0, gst),
+            subtotal: subtotal,
+            goldWeight: data.gold_weight || product?.gold_weight || 0
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load custom pricing:', err);
+      }
+    };
+
+    fetchCustomPricing();
+
     return () => {
       active = false;
     };
@@ -194,7 +341,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
   // All gallery images: product images only
   const allImages = product.images && product.images.length > 0 ? product.images : [product.image];
 
-  const { addToCart } = useContext(CartContext);
 
   const handleAddToCart = () => {
     addToCart(product, 1, selectedMetal);
@@ -1341,14 +1487,18 @@ export default function ProductDetailPage({ product, products: propProducts = []
           <div className="pdp-sticky-name">{product.name}</div>
           <div className="pdp-sticky-price">₹{currentPrice.toLocaleString('en-IN')}</div>
         </div>
-        <div className="pdp-sticky-sep" />
-        <select
-          className="pdp-sticky-size-sel"
-          value={selectedSize}
-          onChange={e => setSelectedSize(Number(e.target.value))}
-        >
-          {sizeOptions.map(s => <option key={s} value={s}>{s}</option>)}
-        </select>
+        {showSizing && (
+          <>
+            <div className="pdp-sticky-sep" />
+            <select
+              className="pdp-sticky-size-sel"
+              value={selectedSize}
+              onChange={e => setSelectedSize(e.target.value)}
+            >
+              {activeSizes.map(s => <option key={s} value={s}>{s}</option>)}
+            </select>
+          </>
+        )}
         <button className="pdp-sticky-add-btn" onClick={handleAddToCart}>
           ADD TO BAG
         </button>
@@ -1456,16 +1606,18 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
           {/* Customise selectors */}
           <div className="pdp-customise-box">
-            <div className="pdp-custom-item">
-              <span className="pdp-custom-label">Size</span>
-              <select
-                className="pdp-custom-select"
-                value={selectedSize}
-                onChange={e => setSelectedSize(Number(e.target.value))}
-              >
-                {sizeOptions.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
+            {showSizing && (
+              <div className="pdp-custom-item">
+                <span className="pdp-custom-label">Size</span>
+                <select
+                  className="pdp-custom-select"
+                  value={selectedSize}
+                  onChange={e => setSelectedSize(e.target.value)}
+                >
+                  {activeSizes.map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
+              </div>
+            )}
             <div className="pdp-custom-item">
               <span className="pdp-custom-label">Metal</span>
               <select
@@ -1521,11 +1673,13 @@ export default function ProductDetailPage({ product, products: propProducts = []
             </div>
           )}
 
-          {/* Ring size guide */}
-          <div className="pdp-ring-size-row">
-            <span>Not sure about your ring size?</span>
-            <span className="pdp-learn-how-link">LEARN HOW ▶</span>
-          </div>
+          {/* Sizing guide */}
+          {showSizing && (
+            <div className="pdp-ring-size-row">
+              <span>{isRing ? 'Not sure about your ring size?' : 'Not sure about your bangle size?'}</span>
+              <span className="pdp-learn-how-link" onClick={() => setSizingVideoOpen(true)} style={{ cursor: 'pointer' }}>LEARN HOW ▶</span>
+            </div>
+          )}
 
           {/* CTA Buttons */}
           <div className="pdp-cta-row">
@@ -1848,9 +2002,15 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   <div className="pdp-related-info">
                     <div className="pdp-related-name">{p.name}</div>
                     <div className="pdp-related-prices">
-                      <span className="pdp-related-price">₹{p.price.toLocaleString('en-IN')}</span>
-                      <span className="pdp-related-old-price">₹{p.originalPrice.toLocaleString('en-IN')}</span>
+                      <span className="pdp-related-price">₹{Number(p.price || 0).toLocaleString('en-IN')}</span>
+                      {Number(p.originalPrice || 0) > Number(p.price || 0) && (
+                        <span className="pdp-related-old-price">₹{Number(p.originalPrice || 0).toLocaleString('en-IN')}</span>
+                      )}
                     </div>
+                  </div>
+                </div>
+              );
+            })}
                   </div>
                 </div>
               );
@@ -1939,6 +2099,38 @@ export default function ProductDetailPage({ product, products: propProducts = []
               <button className="pdp-ctrl-btn" style={{ background: '#f44336', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setVideoOpen(false)}>
                 <PhoneOff size={18} />
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Sizing Video Modal */}
+      {sizingVideoOpen && (
+        <div className="pdp-modal-overlay" onClick={() => setSizingVideoOpen(false)}>
+          <div 
+            className="pdp-modal-box" 
+            style={{ 
+              width: '1470px', 
+              maxWidth: '95vw', 
+              height: '1000px', 
+              maxHeight: '90vh', 
+              padding: '24px', 
+              display: 'flex', 
+              flexDirection: 'column',
+              boxSizing: 'border-box'
+            }} 
+            onClick={e => e.stopPropagation()}
+          >
+            <button className="pdp-modal-close" onClick={() => setSizingVideoOpen(false)}>✕</button>
+            <h3 className="pdp-modal-title" style={{ marginBottom: 12 }}>How to Measure Your Size</h3>
+            <div style={{ flex: 1, position: 'relative', width: '100%', borderRadius: 8, overflow: 'hidden', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <video
+                src={ringVideo}
+                autoPlay
+                loop
+                playsInline
+                style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
+              />
             </div>
           </div>
         </div>

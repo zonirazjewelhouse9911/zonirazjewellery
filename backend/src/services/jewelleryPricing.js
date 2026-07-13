@@ -21,14 +21,20 @@ class JewelleryPricingService {
     let rates = await JewelleryPricing.findOne().sort({ updatedAt: -1 });
     if (!rates) {
       // Return default rates if none found
-      rates = {
+      return {
+        gold_rate_24k: 0,
         gold_rate_14k: 0,
         diamond_rate: 0,
         gemstone_rate: 0,
         gst_percent: 3
       };
     }
-    return rates;
+    const ratesObj = rates.toObject ? rates.toObject() : rates;
+    const g24 = ratesObj.gold_rate_24k || 0;
+    const g14 = ratesObj.gold_rate_14k || 0;
+    ratesObj.gold_rate_24k = g24 > 0 ? g24 : Math.round(g14 * 24 / 14);
+    ratesObj.gold_rate_14k = g14 > 0 ? g14 : Math.round(g24 * 14 / 24);
+    return ratesObj;
   }
 
   /**

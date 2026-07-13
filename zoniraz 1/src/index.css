@@ -392,7 +392,8 @@ button {
   height: 100%;
   padding: 0 16px;
   cursor: pointer;
-  position: relative; /* CRITICAL: anchors the mega-dropdown absolutely */
+  position: relative;
+  /* CRITICAL: anchors the mega-dropdown absolutely */
 }
 
 /* Full-height trigger link so entire button area is clickable */
@@ -879,11 +880,14 @@ button {
   grid-template-columns: 1.15fr 1fr;
   gap: 16px;
   max-height: 600px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 /* Large left card — spans full height */
 .collection-card-large {
   height: 600px;
+  width: 100%;
 }
 
 /* Right side 2x2 grid */
@@ -896,10 +900,17 @@ button {
 
 .collection-card-small {
   height: 100%;
+
 }
+
+/* .collection-card .collection-card-small {
+  width: 150%;
+
+} */
 
 /* Base card style */
 .collection-card {
+  /* width: 80%; */
   display: block;
   position: relative;
   border-radius: 16px;
@@ -914,6 +925,10 @@ button {
   object-fit: cover;
   display: block;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.collection-card-large .collection-card-img {
+  object-position: center 15%;
 }
 
 .collection-card:hover .collection-card-img {
@@ -3461,8 +3476,9 @@ button {
 
   /* Shop By Collection Grid Adaptations */
   .shop-collection-grid {
+    justify-content: space-around;
     grid-template-columns: 1fr !important;
-    gap: 16px !important;
+    /* gap: 16px !important; */
     max-height: none !important;
   }
 
@@ -4125,6 +4141,7 @@ button {
     gap: 12px !important;
   }
 }
+
 @media (max-width: 480px) {
   .shop-collection-right {
     grid-template-columns: 1fr !important;
@@ -4140,6 +4157,7 @@ button {
     padding: 8px 16px !important;
     gap: 8px !important;
   }
+
   .header-brand {
     order: 1 !important;
     display: flex !important;
@@ -4150,6 +4168,7 @@ button {
     margin: 0 !important;
     flex: 0 0 auto !important;
   }
+
   .header-brand-logo-img {
     height: 84px !important;
     max-width: 142px !important;
@@ -4158,6 +4177,7 @@ button {
     left: auto !important;
     transform: none !important;
   }
+
   .header-right-actions {
     order: 2 !important;
     display: flex !important;
@@ -4167,16 +4187,20 @@ button {
     margin-right: 0 !important;
     flex-shrink: 0 !important;
   }
+
   .mobile-menu-toggle-btn {
     order: 3 !important;
     display: flex !important;
     margin-left: 8px !important;
-    color: #5d463c !important; /* Cocoa brown hamburger icon */
+    color: #5d463c !important;
+    /* Cocoa brown hamburger icon */
     padding: 6px 0 !important;
     flex-shrink: 0 !important;
   }
+
   .action-link-icon {
-    color: #5d463c !important; /* Cocoa brown header icons */
+    color: #5d463c !important;
+    /* Cocoa brown header icons */
   }
 }
 
@@ -4185,6 +4209,7 @@ button {
   display: grid;
   grid-template-columns: 1fr 360px;
 }
+
 @media (max-width: 950px) {
   .checkout-main-grid {
     grid-template-columns: 1fr !important;
@@ -4197,6 +4222,7 @@ button {
   display: grid;
   grid-template-columns: 260px 1fr;
 }
+
 @media (max-width: 850px) {
   .dashboard-main-grid {
     grid-template-columns: 1fr !important;
@@ -4210,6 +4236,7 @@ button {
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
+
 @media (max-width: 650px) {
   .address-grid {
     grid-template-columns: 1fr !important;
@@ -4222,12 +4249,14 @@ button {
   display: flex;
   gap: 15px;
 }
+
 @media (max-width: 600px) {
   .form-flex-row {
     flex-direction: column !important;
     gap: 12px !important;
   }
-  .form-flex-row > div {
+
+  .form-flex-row>div {
     width: 100% !important;
   }
 }
@@ -4238,6 +4267,7 @@ button {
     flex-direction: column !important;
     gap: 12px !important;
   }
+
   .flex-wrap-row button {
     width: 100% !important;
   }
@@ -4251,6 +4281,7 @@ button {
     gap: 12px !important;
     padding: 16px !important;
   }
+
   .checkout-address-card button {
     width: 100% !important;
     text-align: center !important;
@@ -4262,17 +4293,21 @@ button {
   .za-story-carousel-container {
     height: 440px !important;
   }
+
   .za-story-cards-wrapper {
     width: 280px !important;
     height: 400px !important;
   }
+
   .za-card-far-left,
   .za-card-far-right {
     display: none !important;
   }
+
   .za-card-left {
     transform: translate3d(-130px, 0, -80px) rotateY(15deg) scale(0.85) !important;
   }
+
   .za-card-right {
     transform: translate3d(130px, 0, -80px) rotateY(-15deg) scale(0.85) !important;
   }
@@ -4282,14 +4317,18 @@ button {
   .za-story-carousel-container {
     height: 380px !important;
   }
+
   .za-story-cards-wrapper {
     width: 230px !important;
     height: 340px !important;
   }
+
   .za-card-left,
   .za-card-right {
-    display: none !important; /* Only show active card on narrow mobile */
+    display: none !important;
+    /* Only show active card on narrow mobile */
   }
+
   .za-card-active {
     transform: translate3d(0, 0, 0) scale(1) !important;
   }
@@ -4303,28 +4342,33 @@ button {
     min-height: 250px !important;
   }
 }
+
 @media (max-width: 768px) {
   .ep-features-grid {
     grid-template-columns: repeat(2, 1fr) !important;
     gap: 20px !important;
   }
+
   .ep-banner-cards-row {
     flex-direction: column !important;
     align-items: center !important;
     gap: 20px !important;
     margin-top: 35px !important;
   }
+
   .ep-banner-card {
     width: 100% !important;
     max-width: 585px !important;
     height: 320px !important;
   }
 }
+
 @media (max-width: 480px) {
   .ep-features-grid {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
+
   .ep-banner-card {
     height: 240px !important;
   }
@@ -4336,6 +4380,7 @@ button {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
   }
+
   .ze-card-img-wrap {
     height: 280px !important;
   }
@@ -4347,6 +4392,7 @@ button {
     grid-template-columns: 1fr !important;
     gap: 16px !important;
   }
+
   .zw-card-featured {
     height: 320px !important;
   }
@@ -4358,10 +4404,12 @@ button {
     grid-template-columns: 1fr !important;
     gap: 20px !important;
   }
+
   .ge-card {
     padding: 30px 24px !important;
     min-height: auto !important;
   }
+
   .ge-card-title {
     font-size: 24px !important;
     max-width: 100% !important;
@@ -4389,38 +4437,48 @@ button {
   .main-footer {
     padding: 50px 8% 30px !important;
   }
+
   .footer-top-row {
     grid-template-columns: 1fr !important;
     gap: 40px !important;
     text-align: center !important;
   }
+
   .footer-col {
     align-items: center !important;
     text-align: center !important;
   }
+
   .brand-col {
     padding-right: 0 !important;
   }
+
   .footer-brand-logo img {
-    margin: 0 auto !important; /* Centered footer logo */
+    margin: 0 auto !important;
+    /* Centered footer logo */
   }
+
   .footer-contact-actions {
     justify-content: center !important;
   }
+
   .contact-info-list li {
     justify-content: center !important;
   }
+
   .footer-social-wrapper {
     justify-content: center !important;
     flex-wrap: wrap !important;
     gap: 15px !important;
   }
+
   .footer-meta-wrapper {
     flex-direction: column !important;
     gap: 12px !important;
     align-items: center !important;
     text-align: center !important;
   }
+
   .footer-legal-links {
     justify-content: center !important;
     gap: 15px !important;
@@ -4739,7 +4797,7 @@ button {
   visibility: hidden;
   transition: opacity 0.3s, visibility 0.3s;
   pointer-events: none;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .floating-widget:hover::before {
@@ -4753,14 +4811,17 @@ button {
     right: 20px;
     gap: 12px;
   }
+
   .floating-widget {
     width: 48px;
     height: 48px;
   }
+
   .floating-widget svg {
     width: 22px;
     height: 22px;
   }
+
   .floating-widget::before {
     display: none;
   }
@@ -4834,7 +4895,8 @@ button {
   line-height: 1.3;
   margin: 0;
   color: #efe7e5;
-  min-height: 110px; /* Prevent layout jump */
+  min-height: 110px;
+  /* Prevent layout jump */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4882,6 +4944,7 @@ button {
     font-size: 26px;
     min-height: 90px;
   }
+
   .hero-custom-desc {
     font-size: 12px;
   }
@@ -4892,6 +4955,7 @@ button {
   .nav-item-container {
     padding: 0 10px !important;
   }
+
   .bottom-category-nav a {
     font-size: 12.5px !important;
   }
@@ -4901,6 +4965,7 @@ button {
   .nav-item-container {
     padding: 0 6px !important;
   }
+
   .bottom-category-nav a {
     font-size: 11.5px !important;
   }

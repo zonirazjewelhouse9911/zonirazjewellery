@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import collectionBanner from '../assets/collection-banner-1.png';
 
 const labelMap = {
   'bridal': 'SIGNATURE',
@@ -59,15 +60,16 @@ export default function AllCollectionsPage({ products = [] }) {
 
   return (
     <div className="collections-page-wrapper">
-      <div className="collections-page-hero">
-        <div className="collections-page-hero-overlay" />
-        <div className="collections-page-hero-content">
-          <span className="collections-subtitle">EXQUISITE CRAFTSMANSHIP</span>
-          <h1 className="collections-title">Our Collections</h1>
-          <p className="collections-desc">
-            Explore curated design collections tailored for life's unforgettable moments, from bold everyday statement pieces to classic heritage bridal jewellery.
-          </p>
-        </div>
+      <div 
+        className="collections-page-hero"
+        style={{
+          backgroundImage: `url(${collectionBanner})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          height: '380px'
+        }}
+      >
+        <div className="collections-page-hero-overlay" style={{ background: 'transparent' }} />
       </div>
 
       <div className="collections-grid-container">
