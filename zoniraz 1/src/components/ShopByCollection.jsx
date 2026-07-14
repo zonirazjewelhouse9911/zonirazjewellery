@@ -1,44 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import bridalImg from '../assets/hero-model.png';
-import everydayImg from '../assets/gulnaara.png';
-import officeImg from '../assets/silver-necklaces.png';
-import solitaireImg from '../assets/solitaire-sets.png';
-import heritageImg from '../assets/nine-kt.png';
+import bridalVideo from '../assets/videos/1.mp4';
+import everydayVideo from '../assets/videos/daleywear.mp4';
+import officeVideo from '../assets/videos/officewear.mp4';
+import solitaireVideo from '../assets/videos/d92d747b23c8205d85da43cb7d302733.mp4';
+import heritageVideo from '../assets/videos/gold.mp4';
 
 const staticCollections = [
   {
     id: 'bridal',
     label: 'SIGNATURE',
     title: 'Bridal Collection',
-    image: bridalImg,
+    video: bridalVideo,
     href: '#bridal',
   },
   {
     id: 'everyday',
     label: 'LIFESTYLE',
     title: 'Everyday Wear',
-    image: everydayImg,
+    video: everydayVideo,
     href: '#everyday',
   },
   {
     id: 'office',
     label: 'ELEGANT',
     title: 'Office Wear',
-    image: officeImg,
+    video: officeVideo,
     href: '#office',
   },
   {
     id: 'solitaire',
     label: 'FINE JEWELLERY',
     title: 'Solitaire Dream',
-    image: solitaireImg,
+    video: solitaireVideo,
     href: '#solitaire',
   },
   {
     id: 'heritage',
     label: 'CLASSIC',
     title: 'Heritage Gold',
-    image: heritageImg,
+    video: heritageVideo,
     href: '#heritage',
   },
 ];
@@ -52,11 +52,11 @@ const labelMap = {
 };
 
 const defaultImages = {
-  'bridal': bridalImg,
-  'everyday': everydayImg,
-  'office': officeImg,
-  'solitaire': solitaireImg,
-  'heritage': heritageImg
+  'bridal': null,
+  'everyday': null,
+  'office': null,
+  'solitaire': null,
+  'heritage': null
 };
 
 export default function ShopByCollection({ products = [] }) {
@@ -86,17 +86,20 @@ export default function ShopByCollection({ products = [] }) {
               if (matchingProducts.length > 0 && matchingProducts[0].image) {
                 image = matchingProducts[0].image;
               } else {
-                image = defaultImages[col.slug] || bridalImg;
+                image = defaultImages[col.slug] || null;
               }
             } else if (!image.startsWith('http') && !image.startsWith('/images/')) {
               image = `http://localhost:55000/uploads/${image}`;
             }
+
+            const video = col.slug === 'bridal' ? bridalVideo : (col.slug === 'everyday' ? everydayVideo : (col.slug === 'office' ? officeVideo : (col.slug === 'solitaire' ? solitaireVideo : (col.slug === 'heritage' ? heritageVideo : null))));
 
             return {
               id,
               label,
               title: col.name,
               image,
+              video,
               href: `#${id}`
             };
           });
@@ -121,7 +124,18 @@ export default function ShopByCollection({ products = [] }) {
       <div className="shop-collection-grid">
         {/* Large left card */}
         <a href={displayed[0].href} className="collection-card collection-card-large">
-          <img src={displayed[0].image} alt={displayed[0].title} className="collection-card-img" />
+          {displayed[0].video ? (
+            <video
+              src={displayed[0].video}
+              autoPlay
+              loop
+              muted
+              playsInline
+              className="collection-card-img"
+            />
+          ) : (
+            <img src={displayed[0].image} alt={displayed[0].title} className="collection-card-img" />
+          )}
           <div className="collection-card-overlay">
             <span className="collection-card-label">{displayed[0].label}</span>
             <h3 className="collection-card-name">{displayed[0].title}</h3>
@@ -133,7 +147,19 @@ export default function ShopByCollection({ products = [] }) {
         <div className="shop-collection-right">
           {displayed.slice(1).map((col) => (
             <a key={col.id} href={col.href} className="collection-card collection-card-small">
-              <img src={col.image} alt={col.title} className="collection-card-img" />
+              {col.video ? (
+                <video
+                  src={col.video}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="collection-card-img"
+                  style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
+                />
+              ) : (
+                <img src={col.image} alt={col.title} className="collection-card-img" />
+              )}
               <div className="collection-card-overlay">
                 <span className="collection-card-label">{col.label}</span>
                 <h3 className="collection-card-name">{col.title}</h3>

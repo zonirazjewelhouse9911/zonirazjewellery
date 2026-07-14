@@ -1,5 +1,5 @@
 import React from 'react';
-import giftingVideo from '../assets/videos/da1f961c1a1ef3530f612f9fac7b2dfa.mp4';
+import giftingVideo from '../assets/videos/9.mp4';
 import origamiVideo from '../assets/videos/4.mp4';
 import AuspiciousOccasion from '../assets/videos/neck.mp4'
 

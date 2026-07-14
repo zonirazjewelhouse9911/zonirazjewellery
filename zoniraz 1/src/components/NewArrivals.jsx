@@ -1,7 +1,5 @@
 import React from 'react';
 import rightBgImg from '../assets/nine-kt.png';
-import silverIdolsImg from '../assets/silver-bracelets.png';
-import mangalsutraImg from '../assets/trendy-mangalsutras.png';
 
 export default function NewArrivals() {
   return (
@@ -19,29 +17,12 @@ export default function NewArrivals() {
           <div className="na-title-row">
             <h2 className="na-title">New Arrivals</h2>
           </div>
-        <p className="na-description">
-          New Arrivals Dropping Daily, Monday through Friday.<br />
-          Explore the Latest Launches Now!
-        </p>
+          <p className="na-description">
+            New Arrivals Dropping Daily, Monday through Friday.<br />
+            Explore the Latest Launches Now!
+          </p>
+        </div>
       </div>
-    </div>
-
-      {/* Floating Overlapping Cards */ }
-  <div className="na-cards-row">
-    <a href="#silver-idols" className="na-card">
-      <div className="na-card-img-wrap">
-        <img src={silverIdolsImg} alt="Silver Idols" className="na-card-img" />
-      </div>
-      <div className="na-card-label">Silver Idols</div>
-    </a>
-
-    <a href="#station-mangalsutra" className="na-card">
-      <div className="na-card-img-wrap">
-        <img src={mangalsutraImg} alt="Station Mangalsutra" className="na-card-img" />
-      </div>
-      <div className="na-card-label">Station Mangalsutra</div>
-    </a>
-  </div>
-    </section >
+    </section>
   );
 }

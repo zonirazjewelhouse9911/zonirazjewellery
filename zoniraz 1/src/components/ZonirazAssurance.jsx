@@ -4,6 +4,11 @@ import ethicalImg from '../assets/shaya-diamonds.png';
 import transparencyImg from '../assets/solitaire-sets.png';
 import warrantyImg from '../assets/dancing-hoops.png';
 import buybackImg from '../assets/gulnaara.png';
+import craftsmanshipVideo from '../assets/videos/1.mp4';
+import ethicallyVideo from '../assets/videos/3.mp4';
+import transparencyVideo from '../assets/videos/5.mp4';
+import warrantyVideo from '../assets/videos/6.mp4';
+import buybackVideo from '../assets/videos/4.mp4';
 
 const stories = [
   {
@@ -11,7 +16,7 @@ const stories = [
     title: 'Quality Craftsmanship',
     subtitle: 'Meticulously crafted jewelry for lasting brilliance.',
     image: craftsmanshipImg,
-    video: '/Zoniraz Bangle Collection.mp4',
+    video: craftsmanshipVideo,
     tag: 'Signature Quality',
     tagSub: '18KT & 22KT Pure Gold'
   },
@@ -20,7 +25,7 @@ const stories = [
     title: 'Ethically Sourced',
     subtitle: 'Responsibly selected gems, honoring earth and humanity.',
     image: ethicalImg,
-    video: '/ZONIRAZ Burma Ruby.mp4',
+    video: ethicallyVideo,
     tag: 'Conflict-Free Stones',
     tagSub: '100% Certified Origins'
   },
@@ -29,7 +34,7 @@ const stories = [
     title: '100% Transparency',
     subtitle: 'No hidden costs. Full breakdown of gold weights and stone values.',
     image: transparencyImg,
-    video: '/Zoniraz Final.mp4',
+    video: transparencyVideo,
     tag: 'Certified Purity',
     tagSub: 'SGL & IGI Hallmarked'
   },
@@ -38,7 +43,7 @@ const stories = [
     title: 'Lifetime Warranty',
     subtitle: 'Enjoy free polishing, repair support, and quality checks.',
     image: warrantyImg,
-    video: '/Zoniraz 10+1.mp4',
+    video: warrantyVideo,
     tag: 'Lifetime Care',
     tagSub: 'Free Maintenance Support'
   },
@@ -47,7 +52,7 @@ const stories = [
     title: 'Assured Buyback',
     subtitle: 'Secure the best value with our transparent buyback policies.',
     image: buybackImg,
-    video: '/Zoniraz Franchise.mp4',
+    video: buybackVideo,
     tag: 'Easy Buyback',
     tagSub: '100% Gold Value Return'
   }
@@ -58,7 +63,6 @@ export default function ZonirazAssurance() {
   const [isMuted, setIsMuted] = useState(true);
   const [isPaused, setIsPaused] = useState(false); // Start playing by default
   const [isExpanded, setIsExpanded] = useState(false);
-
   const videoRefs = useRef([]);
 
   // Sync video elements play/mute state

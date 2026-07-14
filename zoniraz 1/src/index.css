@@ -8,7 +8,12 @@
   font-family: 'Inter', sans-serif;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: 'Playfair Display', serif;
 }
 
@@ -903,11 +908,6 @@ button {
 
 }
 
-/* .collection-card .collection-card-small {
-  width: 150%;
-
-} */
-
 /* Base card style */
 .collection-card {
   /* width: 80%; */
@@ -927,7 +927,7 @@ button {
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.collection-card-large .collection-card-img {
+.collection-card-large img.collection-card-img {
   object-position: center 15%;
 }
 
@@ -1379,7 +1379,7 @@ button {
 /* Cards row overlapping the banner bottom */
 .na-cards-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 20px;
   padding: 0 4%;
   margin-top: 20px;
@@ -1391,7 +1391,7 @@ button {
   border-radius: 16px;
   overflow: hidden;
   position: relative;
-  height: 220px;
+  height: 520px;
   box-shadow: 0 4px 18px rgba(93, 70, 60, 0.12);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -1417,6 +1417,7 @@ button {
 .na-card:hover .na-card-img {
   transform: scale(1.05);
 }
+
 
 .na-card-label {
   position: absolute;

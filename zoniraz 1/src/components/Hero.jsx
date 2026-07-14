@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import banner1 from '../assets/ten-off.jpg.jpeg';
 import banner2 from '../assets/ZONIRAZ.png';
-import heroVideo from '../assets/vs-p_v2.mp4';
 
 const slides = [
-  { id: 1, type: 'video', src: heroVideo },
-  { id: 2, type: 'image', src: banner1 },
-  { id: 3, type: 'image', src: banner2 },
+  { id: 1, type: 'image', src: banner2 },
+  { id: 3, type: 'image', src: banner1 },
   { id: 4, type: 'custom' },
 ];
 
@@ -69,7 +67,7 @@ export default function Hero() {
       }}
     >
       {/* Background Media (Video / Image / Custom) */}
-      <div 
+      <div
         style={{
           position: 'absolute',
           top: 0,
@@ -122,28 +120,28 @@ export default function Hero() {
       </div>
 
       {/* Prev Arrow */}
-      <button 
-        className="carousel-arrow carousel-arrow-prev" 
-        onClick={goPrev} 
+      <button
+        className="carousel-arrow carousel-arrow-prev"
+        onClick={goPrev}
         aria-label="Previous slide"
         style={{ zIndex: 10 }}
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <line x1="19" y1="12" x2="5" y2="12"/>
-          <polyline points="12 19 5 12 12 5"/>
+          <line x1="19" y1="12" x2="5" y2="12" />
+          <polyline points="12 19 5 12 12 5" />
         </svg>
       </button>
 
       {/* Next Arrow */}
-      <button 
-        className="carousel-arrow carousel-arrow-next" 
-        onClick={goNext} 
+      <button
+        className="carousel-arrow carousel-arrow-next"
+        onClick={goNext}
         aria-label="Next slide"
         style={{ zIndex: 10 }}
       >
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          <line x1="5" y1="12" x2="19" y2="12"/>
-          <polyline points="12 5 19 12 12 19"/>
+          <line x1="5" y1="12" x2="19" y2="12" />
+          <polyline points="12 5 19 12 12 19" />
         </svg>
       </button>
 

@@ -12,7 +12,7 @@ import watchCharmsImg from '../assets/watch-charms.png';
 import solitaireSetsImg from '../assets/solitaire-sets.png';
 import gulnaaraImg from '../assets/gulnaara.png';
 import mangalsutraEarringsImg from '../assets/mangalsutra-earrings.png';
-import trendyMangalsutrasImg from '../assets/trendy-mangalsutras.png';
+import trendyMangalsutrasImg from '../assets/trendy-mangalsutras.webp';
 import layeredNecklacesImg from '../assets/layered-necklaces.png';
 import infinityNecklacesImg from '../assets/infinity-necklaces.png';
 import silverEarringsImg from '../assets/silver-earrings.png';
@@ -39,6 +39,41 @@ const fallbackCategories = [
   { categoryName: 'Silver', products: [] },
   { categoryName: 'Gifting', products: [] }
 ];
+
+function getCategoryBanners(categoryName) {
+  const cat = String(categoryName || '').toLowerCase();
+  
+  if (cat.includes('pendant') || cat.includes('necklace')) {
+    return [layeredNecklacesImg, infinityNecklacesImg];
+  }
+  if (cat.includes('ring')) {
+    return [silverRingsImg, messageBandsImg];
+  }
+  if (cat.includes('earring')) {
+    return [silverEarringsImg, switchEarringsImg];
+  }
+  if (cat.includes('solitaire')) {
+    return [solitaireSetsImg, silverRingsImg];
+  }
+  if (cat.includes('chain')) {
+    return [silverNecklacesImg, layeredNecklacesImg];
+  }
+  if (cat.includes('mangalsutra')) {
+    return [trendyMangalsutrasImg, mangalsutraEarringsImg];
+  }
+  if (cat.includes('nose')) {
+    return [solitaireSetsImg, switchEarringsImg];
+  }
+  if (cat.includes('bangle') || cat.includes('bracelet') || cat.includes('bangles')) {
+    return [stretchableBanglesImg, silverBraceletsImg];
+  }
+  if (cat.includes('zodic') || cat.includes('zodiac')) {
+    return [postcardsBannerImg, wearYourWinsImg];
+  }
+  
+  // Fallbacks
+  return [customerFavouritesImg, caratlaneIconicsImg];
+}
 
 export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart }) {
   const { user, token, logout } = useContext(AuthContext);
@@ -365,9 +400,8 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                 .map(p => p.productgender)
                 .filter(Boolean))];
 
-              // Pick two distinct banners
-              const banner1 = bannerImages[idx % bannerImages.length];
-              const banner2 = bannerImages[(idx + 1) % bannerImages.length];
+              // Pick two distinct banners matching the hovered category name
+              const [banner1, banner2] = getCategoryBanners(displayName);
 
               return (
                 <div 

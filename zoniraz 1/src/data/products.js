@@ -12,7 +12,7 @@ import silverBraceletsImg from '../assets/silver-bracelets.png';
 import watchCharmsImg from '../assets/watch-charms.png';
 import solitaireSetsImg from '../assets/solitaire-sets.png';
 import gulnaaraImg from '../assets/gulnaara.png';
-import trendyMangalsutrasImg from '../assets/trendy-mangalsutras.png';
+import trendyMangalsutrasImg from '../assets/trendy-mangalsutras.webp';
 import mangalsutraEarringsImg from '../assets/mangalsutra-earrings.png';
 import layeredNecklacesImg from '../assets/layered-necklaces.png';
 import infinityNecklacesImg from '../assets/infinity-necklaces.png';
