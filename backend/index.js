@@ -17,10 +17,10 @@ const app = express();
 
 // CORS configuration
 const allowedOrigins = [
-  'zoniraj.in',
-  'www.zoniraj.in',
-  'https://zoniraj.in',
-  'https://www.zoniraj.in',
+  'zoniraz.in',
+  'www.zoniraz.in',
+  'https://zoniraz.in',
+  'https://www.zoniraz.in',
   'http://localhost:5173',
   'http://localhost:5174',
   'http://localhost:5175',
