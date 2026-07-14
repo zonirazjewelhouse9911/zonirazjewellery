@@ -1,9 +1,9 @@
 // Base URL for the backend API
-export const API_BASE_URL = 
-  import.meta.env.VITE_API_URL || 
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
   (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
-    ? 'http://localhost:55000' 
-    : 'https://zoniraj.in');
+    ? 'http://localhost:55000'
+    : 'https://zoniraz.in');
 
 /**
  * Formats a given file path or URL to point to the backend's upload or public folder.
