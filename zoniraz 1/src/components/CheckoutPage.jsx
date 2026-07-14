@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import AuthModal from './AuthModal';
@@ -36,8 +37,8 @@ export default function CheckoutPage() {
     try {
       const method = addressModalType === 'add' ? 'POST' : 'PUT';
       const url = addressModalType === 'add' 
-        ? 'http://localhost:55000/api/addresses'
-        : `http://localhost:55000/api/addresses/${addressForm.id}`;
+        ? `${API_BASE_URL}/api/addresses`
+        : `${API_BASE_URL}/api/addresses/${addressForm.id}`;
 
       const res = await fetch(url, {
         method,
@@ -50,7 +51,7 @@ export default function CheckoutPage() {
       const data = await res.json();
       if (res.ok) {
         // Refetch addresses
-        const listRes = await fetch('http://localhost:55000/api/addresses', {
+        const listRes = await fetch(`${API_BASE_URL}/api/addresses`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const listData = await listRes.json();
@@ -83,7 +84,7 @@ export default function CheckoutPage() {
   // Load addresses on step 2 if logged in
   useEffect(() => {
     if (token && step === 2) {
-      fetch('http://localhost:55000/api/addresses', {
+      fetch(`${API_BASE_URL}/api/addresses`, {
         headers: { 'Authorization': `Bearer ${token}` }
       })
       .then(res => res.json())
@@ -132,7 +133,7 @@ export default function CheckoutPage() {
     // Save new address if checked
     if (saveAddressToDb && token) {
       try {
-        const res = await fetch('http://localhost:55000/api/addresses', {
+        const res = await fetch(`${API_BASE_URL}/api/addresses`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -175,7 +176,7 @@ export default function CheckoutPage() {
     };
 
     try {
-      const res = await fetch('http://localhost:55000/api/orders', {
+      const res = await fetch(`${API_BASE_URL}/api/orders`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

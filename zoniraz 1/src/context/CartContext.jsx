@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import { AuthContext } from './AuthContext';
+import { API_BASE_URL } from '../config';
 
 export const CartContext = createContext();
 
@@ -72,7 +73,7 @@ export const CartProvider = ({ children }) => {
   };
 
   const applyCoupon = async (code) => {
-    const res = await fetch('http://localhost:5000/api/coupons/verify', {
+    const res = await fetch(`${API_BASE_URL}/api/coupons/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ code })

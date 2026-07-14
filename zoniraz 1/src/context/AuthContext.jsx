@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
+import { API_BASE_URL } from '../config';
 
 export const AuthContext = createContext();
 
@@ -21,7 +22,7 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (token) {
       // Validate token and get user profile
-      fetch('http://localhost:55000/api/userSide/me', {
+      fetch(`${API_BASE_URL}/api/userSide/me`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -58,7 +59,7 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   const login = async (email, password) => {
-    const res = await fetch('http://localhost:55000/api/userSide/user_login', {
+    const res = await fetch(`${API_BASE_URL}/api/userSide/user_login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
@@ -73,7 +74,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (firstName, lastName, email, mobile, password) => {
     const user_name = `${firstName} ${lastName}`.trim();
-    const res = await fetch('http://localhost:55000/api/userSide/register', {
+    const res = await fetch(`${API_BASE_URL}/api/userSide/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_name, email, password, phone_number: mobile })
@@ -91,7 +92,7 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = async (fields) => {
     const user_name = `${fields.firstName} ${fields.lastName}`.trim();
-    const res = await fetch('http://localhost:55000/api/userSide/userID', {
+    const res = await fetch(`${API_BASE_URL}/api/userSide/userID`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -119,7 +120,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const sendOtp = async (mobile) => {
-    const res = await fetch('http://localhost:55000/api/otp/send', {
+    const res = await fetch(`${API_BASE_URL}/api/otp/send`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ mobile })
@@ -132,7 +133,7 @@ export const AuthProvider = ({ children }) => {
   const verifyOtp = async (emailOrMobile, otp) => {
     // If it's a mobile number (only digits), it's mock passwordless OTP login
     if (/^\d+$/.test(emailOrMobile)) {
-      const res = await fetch('http://localhost:55000/api/otp/verify', {
+      const res = await fetch(`${API_BASE_URL}/api/otp/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ mobile: emailOrMobile, otp })
@@ -150,7 +151,7 @@ export const AuthProvider = ({ children }) => {
     }
 
     // Otherwise, it's the real email registration OTP verification
-    const res = await fetch('http://localhost:55000/api/userSide/verifyOtp', {
+    const res = await fetch(`${API_BASE_URL}/api/userSide/verifyOtp`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: emailOrMobile, otp })

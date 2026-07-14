@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { API_BASE_URL, getUploadsUrl } from '../config';
 import earringsImg from '../assets/silver-earrings.png';
 import necklacesImg from '../assets/silver-necklaces.png';
 import braceletsImg from '../assets/silver-bracelets.png';
@@ -42,20 +43,14 @@ export default function FindPerfectMatch({ products = [] }) {
   };
 
   React.useEffect(() => {
-    fetch('http://localhost:55000/api/admin/categories')
+    fetch(`${API_BASE_URL}/api/admin/categories`)
       .then(res => res.json())
       .then(data => {
         if (data.success && Array.isArray(data.data)) {
           const mapped = data.data.map(cat => {
             let catImg = cat.image || '';
             if (catImg) {
-              if (catImg.startsWith('/')) {
-                catImg = `http://localhost:55000${catImg}`;
-              } else if (catImg.startsWith('uploads/')) {
-                catImg = `http://localhost:55000/${catImg}`;
-              } else if (!catImg.startsWith('http')) {
-                catImg = `http://localhost:55000/uploads/${catImg}`;
-              }
+              catImg = getUploadsUrl(catImg);
             } else {
               const cleanId = String(cat.slug || cat.name || '').toLowerCase().replace(/ /g, '-');
               catImg = defaultImages[cleanId] || defaultImages['rings'];

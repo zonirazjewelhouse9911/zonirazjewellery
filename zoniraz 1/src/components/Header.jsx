@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
+import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import AuthModal from './AuthModal';
@@ -125,7 +126,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
 
   useEffect(() => {
     setLoadingCategories(true);
-    fetch('http://localhost:55000/api/userSide/GetNavbar')
+    fetch(`${API_BASE_URL}/api/userSide/GetNavbar`)
       .then(res => res.json())
       .then(resData => {
         if (resData.success && Array.isArray(resData.data)) {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
+import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 
 export default function UserDashboard() {
@@ -35,7 +36,7 @@ export default function UserDashboard() {
   const fetchAddresses = async () => {
     setLoadingAddresses(true);
     try {
-      const res = await fetch('http://localhost:55000/api/userSide/user_address_manager', {
+      const res = await fetch(`${API_BASE_URL}/api/userSide/user_address_manager`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -66,7 +67,7 @@ export default function UserDashboard() {
   const fetchOrders = async () => {
     setLoadingOrders(true);
     try {
-      const res = await fetch('http://localhost:55000/api/orders', {
+      const res = await fetch(`${API_BASE_URL}/api/orders`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       const data = await res.json();
@@ -111,8 +112,8 @@ export default function UserDashboard() {
     try {
       const isEdit = !!editingAddressId;
       const url = isEdit 
-        ? `http://localhost:55000/api/userSide/user_address_manager_update?_id=${editingAddressId}` 
-        : 'http://localhost:55000/api/userSide/user_address_add';
+        ? `${API_BASE_URL}/api/userSide/user_address_manager_update?_id=${editingAddressId}` 
+        : `${API_BASE_URL}/api/userSide/user_address_add`;
 
       const payload = {
         name: addressForm.fullName,
@@ -155,7 +156,7 @@ export default function UserDashboard() {
   const handleDeleteAddress = async (id) => {
     if (window.confirm("Delete this address?")) {
       try {
-        const res = await fetch(`http://localhost:55000/api/userSide/user_address_manager_delete?_id=${id}`, {
+        const res = await fetch(`${API_BASE_URL}/api/userSide/user_address_manager_delete?_id=${id}`, {
           method: 'DELETE',
           headers: { 'Authorization': `Bearer ${token}` }
         });

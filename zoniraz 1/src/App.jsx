@@ -1,4 +1,5 @@
 import React, { useContext } from 'react';
+import { API_BASE_URL, getUploadsUrl } from './config';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import ShopByCollection from './components/ShopByCollection';
@@ -84,8 +85,8 @@ function AppContent() {
 
   React.useEffect(() => {
     Promise.all([
-      fetch('http://localhost:55000/api/admin/products').then(res => res.json()),
-      fetch('http://localhost:55000/api/productBasePricing').then(res => res.json()).catch(() => null)
+      fetch(`${API_BASE_URL}/api/admin/products`).then(res => res.json()),
+      fetch(`${API_BASE_URL}/api/productBasePricing`).then(res => res.json()).catch(() => null)
     ])
       .then(([resData, pricingData]) => {
         if (resData.success) {
@@ -231,10 +232,7 @@ function AppContent() {
 
           const mapImgUrl = (url, name) => {
             if (!url) return 'https://placehold.co/600x600?text=' + encodeURIComponent(name);
-            if (url.startsWith('http')) return url;
-            if (url.startsWith('/')) return `http://localhost:55000${url}`;
-            if (url.startsWith('uploads/')) return `http://localhost:55000/${url}`;
-            return `http://localhost:55000/uploads/${url}`;
+            return getUploadsUrl(url);
           };
 
           const fullyMapped = mapped.map(item => {

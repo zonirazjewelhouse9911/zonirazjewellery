@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL, getUploadsUrl } from '../config';
 import collectionBanner from '../assets/collection-banner-1.png';
 
 const labelMap = {
@@ -14,7 +15,7 @@ export default function AllCollectionsPage({ products = [] }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('http://localhost:55000/api/userSide/getCollection')
+    fetch(`${API_BASE_URL}/api/userSide/getCollection`)
       .then(res => res.json())
       .then(resData => {
         if (resData.success && resData.data) {
@@ -36,10 +37,10 @@ export default function AllCollectionsPage({ products = [] }) {
               if (matchingProducts.length > 0 && matchingProducts[0].image) {
                 image = matchingProducts[0].image;
               } else {
-                image = `http://localhost:55000/uploads/zoni.png`;
+                image = getUploadsUrl('zoni.png');
               }
             } else if (!image.startsWith('http') && !image.startsWith('/images/')) {
-              image = `http://localhost:55000/uploads/${image}`;
+              image = getUploadsUrl(image);
             }
 
             return {

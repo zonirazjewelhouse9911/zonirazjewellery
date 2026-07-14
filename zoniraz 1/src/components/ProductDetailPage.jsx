@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
+import { API_BASE_URL } from '../config';
 import { products } from '../data/products';
 import { CartContext } from '../context/CartContext';
 import { 
@@ -104,7 +105,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
         const prodId = product?._id || product?.id;
         if (!prodId) return;
 
-        const response = await fetch('http://localhost:55000/api/productBasePricing');
+        const response = await fetch(`${API_BASE_URL}/api/productBasePricing`);
         const data = await response.json();
         if (data.success && active && Array.isArray(data.data)) {
           const matched = data.data.find(item => String(item._id) === String(prodId) || String(item.product_id) === String(prodId));
@@ -152,7 +153,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
     if (!isCustomized) {
       if (product?._id || product?.id) {
         const prodId = product?._id || product?.id;
-        fetch('http://localhost:55000/api/productBasePricing')
+        fetch(`${API_BASE_URL}/api/productBasePricing`)
           .then(res => res.json())
           .then(data => {
             if (data.success && active && Array.isArray(data.data)) {
@@ -199,7 +200,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
         if (selectedDiamond === "EF-VS") diamondKey = "EF-VVS";
 
         const [priceRes, ratesRes] = await Promise.all([
-          fetch('http://localhost:55000/api/productPricing', {
+          fetch(`${API_BASE_URL}/api/productPricing`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -211,7 +212,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
               diamond: diamondKey
             })
           }),
-          fetch('http://localhost:55000/api/jewellery-pricing').catch(() => null)
+          fetch(`${API_BASE_URL}/api/jewellery-pricing`).catch(() => null)
         ]);
 
         const data = await priceRes.json();

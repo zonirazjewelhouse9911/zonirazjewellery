@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { API_BASE_URL, getUploadsUrl } from '../config';
 import bridalVideo from '../assets/videos/1.mp4';
 import everydayVideo from '../assets/videos/daleywear.mp4';
 import officeVideo from '../assets/videos/officewear.mp4';
@@ -63,7 +64,7 @@ export default function ShopByCollection({ products = [] }) {
   const [collections, setCollections] = useState(staticCollections);
 
   useEffect(() => {
-    fetch('http://localhost:55000/api/userSide/getCollection')
+    fetch(`${API_BASE_URL}/api/userSide/getCollection`)
       .then(res => res.json())
       .then(resData => {
         if (resData.success && resData.data && resData.data.length > 0) {
@@ -89,7 +90,7 @@ export default function ShopByCollection({ products = [] }) {
                 image = defaultImages[col.slug] || null;
               }
             } else if (!image.startsWith('http') && !image.startsWith('/images/')) {
-              image = `http://localhost:55000/uploads/${image}`;
+              image = getUploadsUrl(image);
             }
 
             const video = col.slug === 'bridal' ? bridalVideo : (col.slug === 'everyday' ? everydayVideo : (col.slug === 'office' ? officeVideo : (col.slug === 'solitaire' ? solitaireVideo : (col.slug === 'heritage' ? heritageVideo : null))));
