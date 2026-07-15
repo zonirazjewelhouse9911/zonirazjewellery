@@ -47,7 +47,7 @@ const GENDERS = [
   { id: '4', name: 'Kids' }
 ];
 
-const CATEGORIES = [
+export const CATEGORIES = [
   { id: '1', name: 'Rings' },
   { id: '2', name: 'Earrings' },
   { id: '3', name: 'Necklaces' },
@@ -57,7 +57,7 @@ const CATEGORIES = [
   { id: '7', name: 'Chains' }
 ];
 
-const SUBCATEGORIES = [
+export const SUBCATEGORIES = [
   { id: '1', name: 'Engagement Rings' },
   { id: '2', name: 'Solitaire Rings' },
   { id: '3', name: 'Casual Rings' },
@@ -319,8 +319,11 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     }
 
     // Clean up category size values if sizing not applicable
-    const isRing = formData.category_id === '1';
-    const isBangleOrBracelet = formData.category_id === '4' || formData.category_id === '5';
+    const categoryLower = (formData.category_id || '').toLowerCase();
+    const isRing = formData.category_id === '1' || categoryLower === 'rings' || categoryLower === 'ring';
+    const isBangleOrBracelet = formData.category_id === '4' || formData.category_id === '5' || 
+                               categoryLower === 'bracelets' || categoryLower === 'bangles' || 
+                               categoryLower === 'bracelet' || categoryLower === 'bangle';
     const cleanSizeId = (isRing || isBangleOrBracelet) ? formData.size_id : '';
     const cleanBangleSizeId = (isRing || isBangleOrBracelet) ? formData.banglesize_id : '0';
 
@@ -561,29 +564,23 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Select Category Name*</label>
-                <select
+                <input
+                  type="text"
+                  placeholder="Enter Category Name (e.g. Rings, Earrings)"
                   value={formData.category_id}
                   onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
-                >
-                  <option value="">Select Category</option>
-                  {CATEGORIES.map(c => (
-                    <option key={c.id} value={c.id}>{c.name}</option>
-                  ))}
-                </select>
+                />
               </div>
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Select Subcategory*</label>
-                <select
+                <input
+                  type="text"
+                  placeholder="Enter Subcategory Name"
                   value={formData.subcategory_id}
                   onChange={(e) => setFormData({ ...formData, subcategory_id: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
-                >
-                  <option value="">Select Subcategory</option>
-                  {SUBCATEGORIES.map(s => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
+                />
               </div>
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Enter Product Title*</label>
@@ -1043,29 +1040,23 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-3">
                   <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Category</label>
-                  <select
+                  <input
+                    type="text"
+                    placeholder="Enter Category Name"
                     value={formData.category_id}
                     onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e]"
-                  >
-                    <option value="">Select Category</option>
-                    {CATEGORIES.map(c => (
-                      <option key={c.id} value={c.id}>{c.name}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
                 <div className="space-y-3">
                   <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Subcategory</label>
-                  <select
+                  <input
+                    type="text"
+                    placeholder="Enter Subcategory Name"
                     value={formData.subcategory_id}
                     onChange={(e) => setFormData({ ...formData, subcategory_id: e.target.value })}
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e]"
-                  >
-                    <option value="">Select Subcategory</option>
-                    {SUBCATEGORIES.map(s => (
-                      <option key={s.id} value={s.id}>{s.name}</option>
-                    ))}
-                  </select>
+                  />
                 </div>
               </div>
             </div>
@@ -1147,8 +1138,11 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
 
             {/* Size Configurations */}
             {(() => {
-              const isRing = formData.category_id === '1';
-              const isBangleOrBracelet = formData.category_id === '4' || formData.category_id === '5';
+              const categoryLower = (formData.category_id || '').toLowerCase();
+              const isRing = formData.category_id === '1' || categoryLower === 'rings' || categoryLower === 'ring';
+              const isBangleOrBracelet = formData.category_id === '4' || formData.category_id === '5' || 
+                                         categoryLower === 'bracelets' || categoryLower === 'bangles' || 
+                                         categoryLower === 'bracelet' || categoryLower === 'bangle';
               const showSizing = isRing || isBangleOrBracelet;
 
               if (!showSizing) return null;
