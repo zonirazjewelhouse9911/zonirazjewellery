@@ -17,6 +17,7 @@ const app = express();
 
 // CORS configuration
 const allowedOrigins = [
+  'https://admin.zoniraz.in',
   'http://zoniraz.in',
   'https://zoniraz.com',
   'https://www.zoniraz.com',
