@@ -32,11 +32,18 @@ export const resolveProductImage = (imageName: any): string => {
     trimmed.startsWith('/uploads/') ||
     trimmed.startsWith('uploads/')
   ) {
+    let resolved = trimmed;
     // If it doesn't start with / but starts with uploads/, prefix it
     if (trimmed.startsWith('uploads/')) {
-      return `/${trimmed}`;
+      resolved = `/${trimmed}`;
     }
-    return trimmed;
+    
+    // Prefix legacy local uploads with production Render backend URL in production
+    const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+    if (!isLocalhost && resolved.startsWith('/uploads/')) {
+      return `https://zonirazjewellery.onrender.com${resolved}`;
+    }
+    return resolved;
   }
 
   // 3. Handle already resolved paths (starting with /)
