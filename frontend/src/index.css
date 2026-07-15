@@ -4971,3 +4971,40 @@ button {
     font-size: 11.5px !important;
   }
 }
+
+/* --- Additional Mobile Responsiveness Overrides --- */
+
+/* Curated For You (cfy) Section Grid Collapse */
+@media (max-width: 768px) {
+  .cfy-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 0 16px !important;
+  }
+}
+
+/* Trending Now Section Grid Collapse */
+@media (max-width: 768px) {
+  .trending-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+    padding: 0 16px !important;
+  }
+}
+
+/* Digital Gold Option Cards Grid Collapse */
+@media (max-width: 768px) {
+  .gold-options-grid {
+    grid-template-columns: 1fr !important;
+    gap: 15px !important;
+  }
+}
+
+/* Zoniraz Assurance Expanded Cards Mobile Fix */
+@media (max-width: 600px) {
+  .za-story-cards-wrapper.expanded-mode {
+    width: 100% !important;
+    max-width: 290px !important;
+    height: 480px !important;
+  }
+}
