@@ -19,6 +19,7 @@ const app = express();
 const allowedOrigins = [
   'http://zoniraz.in',
   'https://zoniraz.com',
+  'https://www.zoniraz.com',
   'zoniraz.in',
   'www.zoniraz.in',
   'https://zoniraz.in',
