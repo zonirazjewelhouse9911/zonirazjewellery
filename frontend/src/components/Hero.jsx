@@ -61,7 +61,6 @@ export default function Hero() {
     <main
       className="hero-container hero-carousel"
       style={{
-        minHeight: '480px',
         position: 'relative',
         overflow: 'hidden'
       }}
@@ -85,10 +84,10 @@ export default function Hero() {
             muted
             playsInline
             onEnded={goNext}
+            className="hero-slide-media"
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
               pointerEvents: 'none'
             }}
           />
@@ -96,10 +95,10 @@ export default function Hero() {
           <img
             src={slides[current].src}
             alt="Zoniraz Jewellery Banner"
+            className="hero-slide-media"
             style={{
               width: '100%',
               height: '100%',
-              objectFit: 'cover',
               pointerEvents: 'none'
             }}
           />

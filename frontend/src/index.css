@@ -529,7 +529,7 @@ button {
 .hero-container {
   display: flex;
   align-items: center;
-  min-height: 450px;
+  height: 480px;
   overflow: hidden;
   position: relative;
   border-radius: 20px;
@@ -539,6 +539,10 @@ button {
 
 .hero-carousel {
   justify-content: flex-start;
+}
+
+.hero-slide-media {
+  object-fit: cover;
 }
 
 /* Slide content */
@@ -5006,5 +5010,68 @@ button {
     width: 100% !important;
     max-width: 290px !important;
     height: 480px !important;
+  }
+}
+
+/* Hero Carousel Mobile Optimization for Full Banner Images (No Zoom/Cut) */
+@media (max-width: 768px) {
+  .hero-container {
+    height: 38vw !important;
+    min-height: 140px !important;
+    max-height: 280px !important;
+    border-radius: 12px !important;
+    margin: 10px 2% !important;
+  }
+
+  .hero-slide-media {
+    object-fit: cover !important;
+  }
+
+  /* Custom Slide Content Compression to fit shorter height */
+  .hero-custom-text-container {
+    padding: 10px !important;
+    gap: 8px !important;
+  }
+
+  .hero-custom-tag {
+    font-size: 8px !important;
+    letter-spacing: 2px !important;
+  }
+
+  .hero-custom-text {
+    font-size: 16px !important;
+    min-height: auto !important;
+    line-height: 1.2 !important;
+    margin-bottom: 4px !important;
+  }
+
+  .hero-custom-desc {
+    display: none !important;
+  }
+
+  .hero-custom-btn {
+    padding: 6px 16px !important;
+    font-size: 9px !important;
+    letter-spacing: 1px !important;
+  }
+
+  /* Carousel Navigation Adjustments */
+  .carousel-arrow {
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  .carousel-arrow svg {
+    width: 12px !important;
+    height: 12px !important;
+  }
+
+  .carousel-dots {
+    bottom: 6px !important;
+  }
+
+  .carousel-dot {
+    width: 6px !important;
+    height: 6px !important;
   }
 }
