@@ -3512,27 +3512,22 @@ button {
   }
 
 
-  /* Swipeable Horizontal Scroll for Trending Section on Mobile */
+  /* Stack Trending Section on Mobile vertically like Curated For You */
   .trending-grid {
-    display: flex !important;
-    overflow-x: auto !important;
-    gap: 16px !important;
-    padding: 8px 4px 16px 4px !important;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-
-  .trending-grid::-webkit-scrollbar {
-    display: none;
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+    padding: 0 16px !important;
+    overflow-x: visible !important;
   }
 
   .trending-card {
-    flex: 0 0 240px !important;
-    scroll-snap-align: start;
-    box-shadow: 0 4px 12px rgba(93, 70, 60, 0.06);
-    border-radius: 8px;
-    background: #ffffff;
-    padding: 10px;
+    width: 100% !important;
+    flex: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    padding: 0 !important;
   }
 
   /* Hero Adaptations */
