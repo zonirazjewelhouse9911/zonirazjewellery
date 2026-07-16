@@ -342,6 +342,17 @@ export default function ProductDetailPage({ product, products: propProducts = []
   // All gallery images: product images only
   const allImages = product.images && product.images.length > 0 ? product.images : [product.image];
 
+  const handleMobileScroll = (e) => {
+    const scrollLeft = e.target.scrollLeft;
+    const width = e.target.clientWidth;
+    if (width > 0) {
+      const newIndex = Math.round(scrollLeft / width);
+      if (newIndex !== selectedImage && newIndex >= 0 && newIndex < allImages.length) {
+        setSelectedImage(newIndex);
+      }
+    }
+  };
+
 
   const handleAddToCart = () => {
     addToCart(product, 1, selectedMetal);
@@ -1461,6 +1472,13 @@ export default function ProductDetailPage({ product, products: propProducts = []
           to { transform: rotate(360deg); }
         }
 
+        .pdp-desktop-gallery {
+          display: flex;
+        }
+        .pdp-mobile-gallery {
+          display: none;
+        }
+
         @media (max-width: 1000px) {
           .pdp-main-grid {
             grid-template-columns: 1fr;
@@ -1477,6 +1495,69 @@ export default function ProductDetailPage({ product, products: propProducts = []
           }
           .pdp-details-grid {
             grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .pdp-desktop-gallery {
+            display: none !important;
+          }
+          .pdp-mobile-gallery {
+            display: block !important;
+            position: relative;
+            width: calc(100% + 48px);
+            margin-left: -24px;
+            margin-right: -24px;
+            overflow: hidden;
+          }
+          .pdp-mobile-slider {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+          }
+          .pdp-mobile-slider::-webkit-scrollbar {
+            display: none;
+          }
+          .pdp-mobile-slide {
+            flex: 0 0 100%;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            scroll-snap-align: start;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #FFFFFF;
+            border-bottom: 1px solid #EAE5E0;
+          }
+          .pdp-mobile-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 16px;
+          }
+          .pdp-mobile-dots {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            position: absolute;
+            bottom: 16px;
+            left: 0;
+            right: 0;
+            z-index: 10;
+          }
+          .pdp-mobile-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: rgba(44, 37, 32, 0.2);
+            transition: all 0.3s ease;
+          }
+          .pdp-mobile-dot.active {
+            background: #A98E73;
+            width: 16px;
+            border-radius: 3px;
           }
         }
       `}</style>
@@ -1529,7 +1610,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
         {/* LEFT: Images */}
         <div className="pdp-images-col">
-          <div className="pdp-images-layout">
+          {/* Desktop/Tablet Gallery */}
+          <div className="pdp-images-layout pdp-desktop-gallery">
             {/* Thumbnails column */}
             <div className="pdp-thumbs">
               {allImages.map((img, i) => (
@@ -1571,7 +1653,28 @@ export default function ProductDetailPage({ product, products: propProducts = []
               </div>
             </div>
           </div>
-          {/* Lifestyle mosaic removed since we only show backend images */}
+
+          {/* Mobile Image Slider */}
+          <div className="pdp-mobile-gallery">
+            <div className="pdp-mobile-slider" onScroll={handleMobileScroll}>
+              {allImages.map((img, i) => (
+                <div key={i} className="pdp-mobile-slide">
+                  <img src={img} alt={`${product.name} ${i + 1}`} />
+                </div>
+              ))}
+            </div>
+            {/* Navigation Dots */}
+            {allImages.length > 1 && (
+              <div className="pdp-mobile-dots">
+                {allImages.map((_, i) => (
+                  <div 
+                    key={i} 
+                    className={`pdp-mobile-dot ${selectedImage === i ? 'active' : ''}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* RIGHT: Product Info */}
