@@ -619,7 +619,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                     </div>
                     <h4>Buy Gold</h4>
                     <p>Purchase 24KT pure gold starting from just ₹100.</p>
-                    <button className="gold-action-btn" onClick={() => setGoldActiveTab('buy')}>Buy Gold</button>
+                    <button className="gold-action-btn" onClick={() => { setGoldModalOpen(false); window.location.hash = 'buy-gold'; }}>Buy Gold</button>
                   </div>
                   <div className="gold-option-card">
                     <div className="gold-icon-wrapper">

@@ -30,6 +30,7 @@ import FranchisePage from './components/FranchisePage';
 import TermsPage from './components/TermsPage';
 import PrivacyPage from './components/PrivacyPage';
 import SellGoldPage from './components/SellGoldPage';
+import BuyGoldPage from './components/BuyGoldPage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import AuthModal from './components/AuthModal';
@@ -311,6 +312,9 @@ function AppContent() {
       } else if (hash === 'sell-gold') {
         setCurrentView('sell-gold');
         window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (hash === 'buy-gold') {
+        setCurrentView('buy-gold');
+        window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash === 'delivery' || hash === 'delivery-information') {
         setHelpCategory('delivery');
         setCurrentView('delivery');
@@ -414,6 +418,8 @@ function AppContent() {
         <CheckoutPage />
       ) : currentView === 'sell-gold' ? (
         <SellGoldPage onBack={() => { window.location.hash = ''; }} />
+      ) : currentView === 'buy-gold' ? (
+        <BuyGoldPage onBack={() => { window.location.hash = ''; }} />
       ) : (
         <>
           <Hero />
