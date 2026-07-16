@@ -37,7 +37,7 @@ const lifestyleImages = [
 
 const sizeOptions = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
 const metalOptions = ['14 KT Yellow', '14 KT Rose', '18 KT Yellow', '18 KT White', 'Platinum'];
-const diamondOptions = ['FG-SI', 'EF-VS', 'GH-SI', 'IJ-SI'];
+const diamondOptions = ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
 
 export default function ProductDetailPage({ product, products: propProducts = [], wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
   const categoryName = (product?.product_category || product?.category || '').toLowerCase();

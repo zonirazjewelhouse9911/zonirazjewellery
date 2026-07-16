@@ -5,9 +5,9 @@ const livePrice = require('../models/jewelleryPricingModel');
 // rate fields on the livePrice document.
 const DIAMOND_RATE_FIELD_BY_GRADE = {
     "IJ-SI": "diamond_rate_ij_si",
-    "GH-SI": "diamond_rate_gh_si",
-    "FG-SI": "diamond_rate_fg_si",
+    "GH-VS": "diamond_rate_gh_vs",
     "EF-VVS": "diamond_rate_ef_vvs",
+    "FG-SI": "diamond_rate_fg_si",
 };
 
 exports.productPricing = async (req, res) => {

@@ -34,10 +34,10 @@ const KARATS = [
 ];
 
 const DIAMOND_QUALITIES = [
-  { id: '1', name: 'VVS-EF' },
-  { id: '2', name: 'SI-GH' },
-  { id: '3', name: 'VS-GH' },
-  { id: '4', name: 'I-JK' }
+  { id: '1', name: 'IJ-SI' },
+  { id: '2', name: 'GH-VS' },
+  { id: '3', name: 'EF-VVS' },
+  { id: '4', name: 'FG-SI' }
 ];
 
 const GENDERS = [
