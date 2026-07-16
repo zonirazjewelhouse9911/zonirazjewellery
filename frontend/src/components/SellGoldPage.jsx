@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { API_BASE_URL } from '../config';
+import { AuthContext } from '../context/AuthContext';
 import { ArrowLeft, HelpCircle, Shield, TrendingDown, Coins, ChevronDown, ChevronUp, AlertCircle, Clock } from 'lucide-react';
 
 export default function SellGoldPage({ onBack }) {
+  const { requireAuth } = useContext(AuthContext);
   const [liveRate14k, setLiveRate14k] = useState(4200); // 14k rate default
   const [amount, setAmount] = useState('');
   const [grams, setGrams] = useState('');
@@ -72,9 +74,12 @@ export default function SellGoldPage({ onBack }) {
   const handleProceed = (e) => {
     e.preventDefault();
     if (!amount || parseFloat(amount) <= 0) return;
-    alert(`Sell Order Confirmed!\nSelling Weight: ${grams} gms\nProceeds: ₹${parseFloat(amount).toLocaleString('en-IN')} will be credited to your linked bank account.`);
-    if (onBack) onBack();
-    else window.location.hash = '';
+
+    requireAuth(() => {
+      alert(`Sell Order Confirmed!\nSelling Weight: ${grams} gms\nProceeds: ₹${parseFloat(amount).toLocaleString('en-IN')} will be credited to your linked bank account.`);
+      if (onBack) onBack();
+      else window.location.hash = '';
+    });
   };
 
   const toggleFaq = (index) => {
