@@ -3493,12 +3493,10 @@ button {
     height: auto !important;
   }
 
-  .collection-card-large {
-    height: 280px !important;
-  }
-
+  .collection-card-large,
   .collection-card-small {
-    height: 200px !important;
+    aspect-ratio: 1 / 1.05 !important;
+    height: auto !important;
   }
 
   /* Stack footer columns on mobile viewports */
