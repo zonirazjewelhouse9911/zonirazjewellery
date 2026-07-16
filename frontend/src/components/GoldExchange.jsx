@@ -21,8 +21,8 @@ export default function GoldExchange() {
           </p>
           <p className="ge-card-fineprint">* ALWAR BRANCH ONLY</p>
 
-          <a href="#book-valuation" className="ge-card-btn">
-            BOOK VALUATION &rarr;
+          <a href="#sell-gold" className="ge-card-btn">
+            SELL GOLD &rarr;
           </a>
 
           {/* Faint background decorative arrow */}
