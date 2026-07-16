@@ -175,6 +175,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
               gender,
               diamond_weight: p.diamond_weight,
               noof_gem: p.noof_gem,
+              diamond_count: p.diamond_count,
               width: p.width,
               height: p.height,
               gold_weight: p.gold_weight,

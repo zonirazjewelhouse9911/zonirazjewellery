@@ -1965,7 +1965,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Number</span>
-                  <span className="pdp-detail-val">{product.noof_gem || 0} Diamonds</span>
+                  <span className="pdp-detail-val">{product.diamond_count || product.noof_gem || 0} Diamonds</span>
                 </div>
               </div>
 
