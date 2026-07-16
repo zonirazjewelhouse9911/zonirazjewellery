@@ -172,7 +172,17 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
               storePickup,
               tryAtHome: true,
               subcategory,
-              gender
+              gender,
+              diamond_weight: p.diamond_weight,
+              noof_gem: p.noof_gem,
+              width: p.width,
+              height: p.height,
+              gold_weight: p.gold_weight,
+              gemstone_weight: p.gemstone_weight,
+              gemstone_price: p.gemstone_price,
+              making_charges: p.making_charges,
+              solitaires_price: p.solitaires_price,
+              product_code: p.product_code
             };
           });
           
