@@ -312,7 +312,7 @@ function AppContent() {
       } else if (hash === 'sell-gold') {
         setCurrentView('sell-gold');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'buy-gold') {
+      } else if (hash === 'buy-gold' || hash === 'digital-gold') {
         setCurrentView('buy-gold');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash === 'delivery' || hash === 'delivery-information') {

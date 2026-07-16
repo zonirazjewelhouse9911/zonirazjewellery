@@ -122,7 +122,7 @@ export default function SellGoldPage({ onBack }) {
           <span>eGold <small>by ZONIRAZ</small></span>
         </div>
         <div className="gold-nav-links">
-          <a href="#digital-gold" className="gold-nav-link">BUY GOLD</a>
+          <a href="#buy-gold" className="gold-nav-link">BUY GOLD</a>
           <a href="#delivery" className="gold-nav-link">GIFT CARD</a>
           <a href="#delivery" className="gold-nav-link">GIFT CARD CLAIM</a>
           <a href="#delivery" className="gold-nav-link">EXCHANGE / REDEEM</a>
@@ -211,7 +211,7 @@ export default function SellGoldPage({ onBack }) {
         {/* Quick Links */}
         <div className="sellgold-quick-links">
           <a href="#profile" className="quick-lnk">Check Sell History →</a>
-          <a href="#digital-gold" className="quick-lnk">Redeem Gold →</a>
+          <a href="#buy-gold" className="quick-lnk">Redeem Gold →</a>
         </div>
 
         {/* FAQ Accordion Section */}
