@@ -93,33 +93,38 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
             // Get images array
             let images = [];
             if (p.gallery) {
-              if (Array.isArray(p.gallery)) {
-                images = p.gallery;
-              } else if (typeof p.gallery === 'object' && p.gallery !== null) {
-                Object.values(p.gallery).forEach(val => {
-                  if (Array.isArray(val)) {
-                    images.push(...val);
-                  } else if (typeof val === 'string') {
-                    images.push(val);
+              let parsed = p.gallery;
+              if (typeof p.gallery === 'string') {
+                try {
+                  parsed = JSON.parse(p.gallery);
+                } catch (e) {
+                  parsed = p.gallery.split(',').map(s => s.trim());
+                }
+              }
+
+              if (Array.isArray(parsed)) {
+                images = parsed;
+              } else if (typeof parsed === 'object' && parsed !== null) {
+                // Prioritize Yellow Gold (key '2' or equivalent name) first
+                const yellowKeys = ['2', 'yellow', 'yellow gold', 'yellow-gold'];
+                const yellowGoldImages = [];
+                yellowKeys.forEach(k => {
+                  const val = parsed[k];
+                  if (Array.isArray(val)) yellowGoldImages.push(...val);
+                  else if (typeof val === 'string') yellowGoldImages.push(val);
+                });
+
+                // Get other metals
+                const otherImages = [];
+                Object.keys(parsed).forEach(key => {
+                  if (!yellowKeys.includes(key)) {
+                    const val = parsed[key];
+                    if (Array.isArray(val)) otherImages.push(...val);
+                    else if (typeof val === 'string') otherImages.push(val);
                   }
                 });
-              } else if (typeof p.gallery === 'string') {
-                try {
-                  const parsed = JSON.parse(p.gallery);
-                  if (Array.isArray(parsed)) {
-                    images = parsed;
-                  } else if (typeof parsed === 'object' && parsed !== null) {
-                    Object.values(parsed).forEach(val => {
-                      if (Array.isArray(val)) {
-                        images.push(...val);
-                      } else if (typeof val === 'string') {
-                        images.push(val);
-                      }
-                    });
-                  }
-                } catch (e) {
-                  images = p.gallery.split(',').map(s => s.trim());
-                }
+
+                images = [...yellowGoldImages, ...otherImages];
               }
             } else if (p.images) {
               if (Array.isArray(p.images)) images = p.images;
