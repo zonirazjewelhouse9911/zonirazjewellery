@@ -29,6 +29,7 @@ import AllCollectionsPage from './components/AllCollectionsPage';
 import FranchisePage from './components/FranchisePage';
 import TermsPage from './components/TermsPage';
 import PrivacyPage from './components/PrivacyPage';
+import SellGoldPage from './components/SellGoldPage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import AuthModal from './components/AuthModal';
@@ -307,6 +308,9 @@ function AppContent() {
       } else if (hash === 'franchise' || hash === 'franchise-enquiry') {
         setCurrentView('franchise');
         window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (hash === 'sell-gold') {
+        setCurrentView('sell-gold');
+        window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash === 'delivery' || hash === 'delivery-information') {
         setHelpCategory('delivery');
         setCurrentView('delivery');
@@ -408,6 +412,8 @@ function AppContent() {
         <AllCollectionsPage products={allProducts} />
       ) : currentView === 'checkout' ? (
         <CheckoutPage />
+      ) : currentView === 'sell-gold' ? (
+        <SellGoldPage onBack={() => { window.location.hash = ''; }} />
       ) : (
         <>
           <Hero />

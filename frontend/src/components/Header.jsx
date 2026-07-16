@@ -627,7 +627,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                     </div>
                     <h4>Sell Gold</h4>
                     <p>Sell your stored gold balance instantly at real-time rates.</p>
-                    <button className="gold-action-btn" onClick={() => setGoldActiveTab('sell')}>Sell Gold</button>
+                    <button className="gold-action-btn" onClick={() => { setGoldModalOpen(false); window.location.hash = 'sell-gold'; }}>Sell Gold</button>
                   </div>
                   <div className="gold-option-card">
                     <div className="gold-icon-wrapper">
