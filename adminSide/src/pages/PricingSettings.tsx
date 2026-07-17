@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Loader2, TrendingUp, Sparkles, Receipt, RefreshCw } from 'lucide-react';
 
 interface RatesData {
-  gold_rate_14k: number;
+  gold_rate_24k: number;
   diamond_rate: number;
   diamond_rate_ij_si: number;
   diamond_rate_gh_vs: number;
@@ -14,7 +14,7 @@ interface RatesData {
 
 const PricingSettings: React.FC = () => {
   const [rates, setRates] = useState<RatesData>({
-    gold_rate_14k: 0,
+    gold_rate_24k: 0,
     diamond_rate: 0,
     diamond_rate_ij_si: 0,
     diamond_rate_gh_vs: 0,
@@ -36,7 +36,7 @@ const PricingSettings: React.FC = () => {
       const data = await res.json();
       if (data.success && data.data) {
         setRates({
-          gold_rate_14k: data.data.gold_rate_14k || 0,
+          gold_rate_24k: data.data.gold_rate_24k || 0,
           diamond_rate: data.data.diamond_rate || 0,
           diamond_rate_ij_si: data.data.diamond_rate_ij_si || 0,
           diamond_rate_gh_vs: data.data.diamond_rate_gh_vs || 0,
@@ -137,7 +137,7 @@ const PricingSettings: React.FC = () => {
               {/* Gold Rate Input */}
               <div className="space-y-2">
                 <label className="text-[10px] uppercase tracking-widest font-black text-slate-400 block">
-                  14K Gold Rate (₹ / Gram) *
+                  24K Gold Rate (₹ / Gram) *
                 </label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">₹</span>
@@ -147,8 +147,8 @@ const PricingSettings: React.FC = () => {
                     min="0"
                     step="0.01"
                     placeholder="0.00"
-                    value={rates.gold_rate_14k || ''}
-                    onChange={e => handleInputChange('gold_rate_14k', e.target.value)}
+                    value={rates.gold_rate_24k || ''}
+                    onChange={e => handleInputChange('gold_rate_24k', e.target.value)}
                     className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-8 pr-6 text-sm text-slate-800 font-bold transition-all"
                   />
                 </div>

@@ -46,8 +46,12 @@ class JewelleryPricingService {
    */
   async updateRates(rateData) {
     let rates = await JewelleryPricing.findOne();
+    const gold_rate_24k = Number(rateData.gold_rate_24k) || 0;
+    const gold_rate_14k = Math.round(gold_rate_24k * 14 / 24);
+
     if (rates) {
-      rates.gold_rate_14k = Number(rateData.gold_rate_14k) || 0;
+      rates.gold_rate_24k = gold_rate_24k;
+      rates.gold_rate_14k = gold_rate_14k;
       rates.diamond_rate = Number(rateData.diamond_rate) || 0;
       rates.diamond_rate_ij_si = Number(rateData.diamond_rate_ij_si) || 0;
       rates.diamond_rate_gh_vs = Number(rateData.diamond_rate_gh_vs) || 0;
@@ -58,7 +62,8 @@ class JewelleryPricingService {
       await rates.save();
     } else {
       rates = new JewelleryPricing({
-        gold_rate_14k: Number(rateData.gold_rate_14k) || 0,
+        gold_rate_24k,
+        gold_rate_14k,
         diamond_rate: Number(rateData.diamond_rate) || 0,
         diamond_rate_ij_si: Number(rateData.diamond_rate_ij_si) || 0,
         diamond_rate_gh_vs: Number(rateData.diamond_rate_gh_vs) || 0,
