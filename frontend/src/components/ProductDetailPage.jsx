@@ -339,8 +339,38 @@ export default function ProductDetailPage({ product, products: propProducts = []
   };
   const currentMetalAccent = metalAccentMap[selectedMetal] || '#634d40';
 
-  // All gallery images: product images only
-  const allImages = product.images && product.images.length > 0 ? product.images : [product.image];
+  // Reset selected image when metal color changes
+  useEffect(() => {
+    setSelectedImage(0);
+  }, [selectedMetal]);
+
+  // Resolve gallery images dynamically based on selected metal color
+  let colorGalleryImages = null;
+  if (product.gallery) {
+    let galleryObj = {};
+    if (typeof product.gallery === 'string') {
+      try {
+        galleryObj = JSON.parse(product.gallery);
+      } catch (e) {
+        console.error("Failed to parse product gallery string", e);
+      }
+    } else {
+      galleryObj = product.gallery;
+    }
+
+    const metalLower = (selectedMetal || '').toLowerCase();
+    if (metalLower.includes('white')) {
+      colorGalleryImages = galleryObj['1'] || galleryObj['white'];
+    } else if (metalLower.includes('yellow')) {
+      colorGalleryImages = galleryObj['2'] || galleryObj['yellow'];
+    } else if (metalLower.includes('rose')) {
+      colorGalleryImages = galleryObj['3'] || galleryObj['rose'];
+    }
+  }
+
+  const allImages = colorGalleryImages && colorGalleryImages.length > 0
+    ? colorGalleryImages
+    : (product.images && product.images.length > 0 ? product.images : [product.image]);
 
   const handleMobileScroll = (e) => {
     const scrollLeft = e.target.scrollLeft;
