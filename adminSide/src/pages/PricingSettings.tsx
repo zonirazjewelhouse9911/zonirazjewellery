@@ -154,45 +154,6 @@ const PricingSettings: React.FC = () => {
                 </div>
               </div>
 
-              {/* Diamond Rate Input */}
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest font-black text-slate-400 block">
-                  Base Diamond Rate (₹ / Carat) *
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">₹</span>
-                  <input
-                    type="number"
-                    required
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={rates.diamond_rate || ''}
-                    onChange={e => handleInputChange('diamond_rate', e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-8 pr-6 text-sm text-slate-800 font-bold transition-all"
-                  />
-                </div>
-              </div>
-
-              {/* Gemstone Rate Input */}
-              <div className="space-y-2">
-                <label className="text-[10px] uppercase tracking-widest font-black text-slate-400 block">
-                  Base Gemstone Rate (₹ / Carat)
-                </label>
-                <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">₹</span>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    placeholder="0.00"
-                    value={rates.gemstone_rate || ''}
-                    onChange={e => handleInputChange('gemstone_rate', e.target.value)}
-                    className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-8 pr-6 text-sm text-slate-800 font-bold transition-all"
-                  />
-                </div>
-              </div>
-
               {/* GST Percent Input */}
               <div className="space-y-2">
                 <label className="text-[10px] uppercase tracking-widest font-black text-slate-400 block">

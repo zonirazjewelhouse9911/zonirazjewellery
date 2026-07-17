@@ -8,7 +8,6 @@ const jewelleryPricingSchema = new mongoose.Schema({
   },
   diamond_rate: {
     type: Number,
-    required: true,
     default: 0
   },
   diamond_rate_ij_si: {

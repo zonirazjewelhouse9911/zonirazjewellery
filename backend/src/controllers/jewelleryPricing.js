@@ -38,10 +38,10 @@ class JewelleryPricingController {
         gst_percent 
       } = req.body;
       
-      if (gold_rate_14k === undefined || diamond_rate === undefined) {
+      if (gold_rate_14k === undefined) {
         return res.status(400).json({
           success: false,
-          message: "14k gold rate and diamond rate are required"
+          message: "14k gold rate is required"
         });
       }
 
