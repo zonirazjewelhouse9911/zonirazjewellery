@@ -232,7 +232,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
           const goldCost = Math.round((data.gold_weight || 0) * goldRate);
           const diamondCost = Math.round((data.diamond_weight || 0) * (data.diamond_rate_used || rates.diamond_rate || 85000));
           const gemstoneCost = (product.gemstone_weight || 0) * (rates.gemstone_rate || 1500);
-          const makingCharges = product.making_charges || 0;
+          const makingCharges = data.making_charges !== undefined ? data.making_charges : (product.making_charges || 0);
           const solitaireCost = product.solitaires_price || 0;
 
           const subtotal = goldCost + diamondCost + gemstoneCost + makingCharges + solitaireCost;

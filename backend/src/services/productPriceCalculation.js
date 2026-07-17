@@ -31,6 +31,7 @@ exports.productPricing = async (req, res) => {
         let item_diamond_price = 0;
         let item_base_price = 0;
         let item_base_price_withGST = 0;
+        let item_making_charges = 0;
 
         const product_data = await Product.findById(product_id);
         if (!product_data) {
@@ -79,23 +80,23 @@ exports.productPricing = async (req, res) => {
                 ? product_data.gold_weight
                 : product_data.gold_weight + (size - 12) * weight_differenceINsize_g;
 
-                // diamond rate calculation for castum
-                switch (rawDiamond) {
-                    case "IJ-SI":
-                        diamond_rate = current_price.diamond_rate_ij_si;
-                        break;
-                    case "GH-VS":
-                        diamond_rate = current_price.diamond_rate_gh_vs;
-                        break;
-                    case "EF-VVS":
-                        diamond_rate = current_price.diamond_rate_ef_vvs;
-                        break;
-                    case "FG-SI":
-                        diamond_rate = current_price.diamond_rate_fg_si;
-                        break;
-                    default:
-                        diamond_rate = current_price.diamond_rate_ij_si;
-                }
+            // diamond rate calculation for castum
+            switch (rawDiamond) {
+                case "IJ-SI":
+                    diamond_rate = current_price.diamond_rate_ij_si;
+                    break;
+                case "GH-VS":
+                    diamond_rate = current_price.diamond_rate_gh_vs;
+                    break;
+                case "EF-VVS":
+                    diamond_rate = current_price.diamond_rate_ef_vvs;
+                    break;
+                case "FG-SI":
+                    diamond_rate = current_price.diamond_rate_fg_si;
+                    break;
+                default:
+                    diamond_rate = current_price.diamond_rate_ij_si;
+            }
 
             // 14k is the base weight reference; convert weight + rate for the selected karat
             switch (rawMetal) {
@@ -139,7 +140,10 @@ exports.productPricing = async (req, res) => {
             // }
 
             item_diamond_price = total_diamond_weight * diamond_rate;
-            item_base_price = item_gold_price + item_diamond_price + makingCharges + solitaire_price + gemstone_price;
+            const materials_cost = item_gold_price + item_diamond_price + solitaire_price + gemstone_price;
+            const making_charges_amount = materials_cost * (product_data.making_charges || 0) / 100;
+            
+            item_base_price = materials_cost + making_charges_amount;
             item_base_price_withGST = Math.round(item_base_price + (item_base_price * gst_percent / 100));
             console.log(item_base_price_withGST, "base_price_withGST");
 
@@ -160,6 +164,7 @@ exports.productPricing = async (req, res) => {
             diamond_weight: real_diamond_weight,
             diamond_rate_used: diamond_rate,
             diamond_grade: rawDiamond || null,
+            making_charges: Math.round(making_charges_amount)
         });
 
     } catch (error) {
