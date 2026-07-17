@@ -115,7 +115,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             const diamondCost = matched.diamond_price || 0;
             
             const gemstoneCost = (product.gemstone_weight || 0) * 1500;
-            const makingCharges = product.making_charges || 0;
+            const makingCharges = matched.making_charges !== undefined ? matched.making_charges : (product.making_charges || 0);
             const subtotal = goldCost + diamondCost + gemstoneCost + makingCharges;
             const gst = price - subtotal;
 
@@ -163,7 +163,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 const goldCost = matched.gold_price || 0;
                 const diamondCost = matched.diamond_price || 0;
                 const gemstoneCost = (product.gemstone_weight || 0) * 1500;
-                const makingCharges = product.making_charges || 0;
+                const makingCharges = matched.making_charges !== undefined ? matched.making_charges : (product.making_charges || 0);
                 const subtotal = goldCost + diamondCost + gemstoneCost + makingCharges;
                 const gst = price - subtotal;
 

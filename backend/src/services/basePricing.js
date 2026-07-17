@@ -52,16 +52,27 @@ exports.productBasePricing = async (req, res) => {
                 const gold_rate_14k = current_price.gold_rate_24k * 14 / 24;
                 item_gold_price = gold_weight * gold_rate_14k;
                 item_diamond_price = total_diamond_weight * current_price.diamond_rate;
-                item_base_price = item_gold_price + item_diamond_price + makingCharges + solitaire_price + gemstone_price;
+                
+                const materials_cost = item_gold_price + item_diamond_price + solitaire_price + gemstone_price;
+                const making_charges_amount = materials_cost * makingCharges / 100;
+                item_base_price = materials_cost + making_charges_amount;
                 item_base_price_withGST = item_base_price + (item_base_price * gst_percent / 100);
                 console.log(item_base_price_withGST, "base_price_withGST");
             } else {
                 const gold_rate_18kt = current_price.gold_rate_24k * 18 / 24;
                 item_gold_price = gold_weight * gold_rate_18kt;
-                item_base_price = item_gold_price + makingCharges;
+                
+                const materials_cost = item_gold_price;
+                const making_charges_amount = materials_cost * makingCharges / 100;
+                item_base_price = materials_cost + making_charges_amount;
                 item_base_price_withGST = item_base_price + (item_base_price * gst_percent / 100);
                 console.log(item_base_price_withGST, "base_price_withGST");
             }
+
+            const materials_total = item.product_type && item.product_type.toLowerCase() === "diamond" 
+                ? (item_gold_price + item_diamond_price + solitaire_price + gemstone_price)
+                : item_gold_price;
+            const final_making_charges = materials_total * makingCharges / 100;
 
             return {
                 _id: item._id,
@@ -70,8 +81,8 @@ exports.productBasePricing = async (req, res) => {
                 product_type: item.product_type,
                 gold_price: Math.round(item_gold_price),
                 diamond_price: Math.round(item_diamond_price),
+                making_charges: Math.round(final_making_charges),
                 base_price_withGST: Math.round(item_base_price_withGST),
-
             };
         });
 
