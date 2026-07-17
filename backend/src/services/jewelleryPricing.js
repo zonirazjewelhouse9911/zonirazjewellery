@@ -25,6 +25,10 @@ class JewelleryPricingService {
         gold_rate_24k: 0,
         gold_rate_14k: 0,
         diamond_rate: 0,
+        diamond_rate_ij_si: 0,
+        diamond_rate_gh_vs: 0,
+        diamond_rate_ef_vvs: 0,
+        diamond_rate_fg_si: 0,
         gemstone_rate: 0,
         gst_percent: 3
       };
@@ -45,6 +49,10 @@ class JewelleryPricingService {
     if (rates) {
       rates.gold_rate_14k = Number(rateData.gold_rate_14k) || 0;
       rates.diamond_rate = Number(rateData.diamond_rate) || 0;
+      rates.diamond_rate_ij_si = Number(rateData.diamond_rate_ij_si) || 0;
+      rates.diamond_rate_gh_vs = Number(rateData.diamond_rate_gh_vs) || 0;
+      rates.diamond_rate_ef_vvs = Number(rateData.diamond_rate_ef_vvs) || 0;
+      rates.diamond_rate_fg_si = Number(rateData.diamond_rate_fg_si) || 0;
       rates.gemstone_rate = Number(rateData.gemstone_rate) || 0;
       rates.gst_percent = Number(rateData.gst_percent) ?? 3;
       await rates.save();
@@ -52,6 +60,10 @@ class JewelleryPricingService {
       rates = new JewelleryPricing({
         gold_rate_14k: Number(rateData.gold_rate_14k) || 0,
         diamond_rate: Number(rateData.diamond_rate) || 0,
+        diamond_rate_ij_si: Number(rateData.diamond_rate_ij_si) || 0,
+        diamond_rate_gh_vs: Number(rateData.diamond_rate_gh_vs) || 0,
+        diamond_rate_ef_vvs: Number(rateData.diamond_rate_ef_vvs) || 0,
+        diamond_rate_fg_si: Number(rateData.diamond_rate_fg_si) || 0,
         gemstone_rate: Number(rateData.gemstone_rate) || 0,
         gst_percent: Number(rateData.gst_percent) ?? 3
       });

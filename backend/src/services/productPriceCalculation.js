@@ -78,6 +78,7 @@ exports.productPricing = async (req, res) => {
             real_gold_weight = (isNaN(size) || size === 12)
                 ? product_data.gold_weight
                 : product_data.gold_weight + (size - 12) * weight_differenceINsize_g;
+                
 
             // 14k is the base weight reference; convert weight + rate for the selected karat
             switch (rawMetal) {

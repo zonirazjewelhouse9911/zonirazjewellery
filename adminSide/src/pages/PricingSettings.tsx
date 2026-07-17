@@ -4,6 +4,10 @@ import { Loader2, TrendingUp, Sparkles, Receipt, RefreshCw } from 'lucide-react'
 interface RatesData {
   gold_rate_14k: number;
   diamond_rate: number;
+  diamond_rate_ij_si: number;
+  diamond_rate_gh_vs: number;
+  diamond_rate_ef_vvs: number;
+  diamond_rate_fg_si: number;
   gemstone_rate: number;
   gst_percent: number;
 }
@@ -12,6 +16,10 @@ const PricingSettings: React.FC = () => {
   const [rates, setRates] = useState<RatesData>({
     gold_rate_14k: 0,
     diamond_rate: 0,
+    diamond_rate_ij_si: 0,
+    diamond_rate_gh_vs: 0,
+    diamond_rate_ef_vvs: 0,
+    diamond_rate_fg_si: 0,
     gemstone_rate: 0,
     gst_percent: 3
   });
@@ -30,6 +38,10 @@ const PricingSettings: React.FC = () => {
         setRates({
           gold_rate_14k: data.data.gold_rate_14k || 0,
           diamond_rate: data.data.diamond_rate || 0,
+          diamond_rate_ij_si: data.data.diamond_rate_ij_si || 0,
+          diamond_rate_gh_vs: data.data.diamond_rate_gh_vs || 0,
+          diamond_rate_ef_vvs: data.data.diamond_rate_ef_vvs || 0,
+          diamond_rate_fg_si: data.data.diamond_rate_fg_si || 0,
           gemstone_rate: data.data.gemstone_rate || 0,
           gst_percent: data.data.gst_percent !== undefined ? data.data.gst_percent : 3
         });
@@ -198,6 +210,88 @@ const PricingSettings: React.FC = () => {
                     onChange={e => handleInputChange('gst_percent', e.target.value)}
                     className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-6 pr-10 text-sm text-slate-800 font-bold transition-all"
                   />
+                </div>
+              </div>
+            </div>
+
+            {/* Individual Diamond Quality Rates */}
+            <div className="border-t border-slate-100 pt-6">
+              <h3 className="text-xs uppercase tracking-widest font-black text-slate-500 mb-4">Individual Diamond Quality Rates (₹ / Carat)</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* IJ-SI Rate Input */}
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest font-black text-slate-400 block">
+                    IJ-SI Rate
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={rates.diamond_rate_ij_si || ''}
+                      onChange={e => handleInputChange('diamond_rate_ij_si', e.target.value)}
+                      className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-8 pr-6 text-sm text-slate-800 font-bold transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* GH-VS Rate Input */}
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest font-black text-slate-400 block">
+                    GH-VS Rate
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={rates.diamond_rate_gh_vs || ''}
+                      onChange={e => handleInputChange('diamond_rate_gh_vs', e.target.value)}
+                      className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-8 pr-6 text-sm text-slate-800 font-bold transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* EF-VVS Rate Input */}
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest font-black text-slate-400 block">
+                    EF-VVS Rate
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={rates.diamond_rate_ef_vvs || ''}
+                      onChange={e => handleInputChange('diamond_rate_ef_vvs', e.target.value)}
+                      className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-8 pr-6 text-sm text-slate-800 font-bold transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* FG-SI Rate Input */}
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase tracking-widest font-black text-slate-400 block">
+                    FG-SI Rate
+                  </label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      placeholder="0.00"
+                      value={rates.diamond_rate_fg_si || ''}
+                      onChange={e => handleInputChange('diamond_rate_fg_si', e.target.value)}
+                      className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-8 pr-6 text-sm text-slate-800 font-bold transition-all"
+                    />
+                  </div>
                 </div>
               </div>
             </div>

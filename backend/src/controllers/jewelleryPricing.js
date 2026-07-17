@@ -27,7 +27,16 @@ class JewelleryPricingController {
    */
   updateRates = async (req, res) => {
     try {
-      const { gold_rate_14k, diamond_rate, gemstone_rate, gst_percent } = req.body;
+      const { 
+        gold_rate_14k, 
+        diamond_rate, 
+        diamond_rate_ij_si,
+        diamond_rate_gh_vs,
+        diamond_rate_ef_vvs,
+        diamond_rate_fg_si,
+        gemstone_rate, 
+        gst_percent 
+      } = req.body;
       
       if (gold_rate_14k === undefined || diamond_rate === undefined) {
         return res.status(400).json({
@@ -40,6 +49,10 @@ class JewelleryPricingController {
       const rates = await jewelleryPricingService.updateRates({
         gold_rate_14k,
         diamond_rate,
+        diamond_rate_ij_si,
+        diamond_rate_gh_vs,
+        diamond_rate_ef_vvs,
+        diamond_rate_fg_si,
         gemstone_rate,
         gst_percent
       });
