@@ -80,6 +80,11 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const [sizingVideoOpen, setSizingVideoOpen] = useState(false);
   const { addToCart } = useContext(CartContext);
 
+  // Reset selected image when metal color changes
+  useEffect(() => {
+    setSelectedImage(0);
+  }, [selectedMetal]);
+
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
@@ -338,11 +343,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
     Platinum: '#8d97a2',
   };
   const currentMetalAccent = metalAccentMap[selectedMetal] || '#634d40';
-
-  // Reset selected image when metal color changes
-  useEffect(() => {
-    setSelectedImage(0);
-  }, [selectedMetal]);
 
   // Resolve gallery images dynamically based on selected metal color
   let colorGalleryImages = null;
