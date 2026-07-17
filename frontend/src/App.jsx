@@ -244,7 +244,8 @@ function AppContent() {
               gemstone_price: p.gemstone_price,
               making_charges: p.making_charges,
               solitaires_price: p.solitaires_price,
-              product_code: p.product_code
+              product_code: p.product_code,
+              gallery: p.gallery
             };
           });
 

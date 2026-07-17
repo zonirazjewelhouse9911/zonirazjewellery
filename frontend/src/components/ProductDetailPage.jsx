@@ -359,12 +359,21 @@ export default function ProductDetailPage({ product, products: propProducts = []
     }
 
     const metalLower = (selectedMetal || '').toLowerCase();
+    let rawList = [];
     if (metalLower.includes('white')) {
-      colorGalleryImages = galleryObj['1'] || galleryObj['white'];
+      rawList = galleryObj['1'] || galleryObj['white'] || [];
     } else if (metalLower.includes('yellow')) {
-      colorGalleryImages = galleryObj['2'] || galleryObj['yellow'];
+      rawList = galleryObj['2'] || galleryObj['yellow'] || [];
     } else if (metalLower.includes('rose')) {
-      colorGalleryImages = galleryObj['3'] || galleryObj['rose'];
+      rawList = galleryObj['3'] || galleryObj['rose'] || [];
+    }
+
+    if (Array.isArray(rawList) && rawList.length > 0) {
+      colorGalleryImages = rawList.map(path => {
+        if (!path) return '';
+        if (path.startsWith('http://') || path.startsWith('https://')) return path;
+        return `${API_BASE_URL}${path}`;
+      }).filter(Boolean);
     }
   }
 
