@@ -78,7 +78,24 @@ exports.productPricing = async (req, res) => {
             real_gold_weight = (isNaN(size) || size === 12)
                 ? product_data.gold_weight
                 : product_data.gold_weight + (size - 12) * weight_differenceINsize_g;
-                
+
+                // diamond rate calculation for castum
+                switch (rawDiamond) {
+                    case "IJ-SI":
+                        diamond_rate = current_price.diamond_rate_ij_si;
+                        break;
+                    case "GH-VS":
+                        diamond_rate = current_price.diamond_rate_gh_vs;
+                        break;
+                    case "EF-VVS":
+                        diamond_rate = current_price.diamond_rate_ef_vvs;
+                        break;
+                    case "FG-SI":
+                        diamond_rate = current_price.diamond_rate_fg_si;
+                        break;
+                    default:
+                        diamond_rate = current_price.diamond_rate_ij_si;
+                }
 
             // 14k is the base weight reference; convert weight + rate for the selected karat
             switch (rawMetal) {

@@ -1915,6 +1915,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
           >
             Price Breakup
           </button>
+          <button
+            className={`pdp-tab-btn ${activeTab === 'weight' ? 'active' : ''}`}
+            onClick={() => setActiveTab('weight')}
+          >
+            Weight Breakup
+          </button>
         </div>
 
         {activeTab === 'details' && (() => {
@@ -2043,6 +2049,56 @@ export default function ProductDetailPage({ product, products: propProducts = []
             </div>
           </div>
         )}
+
+        {activeTab === 'weight' && (() => {
+          const goldW = pricingDetails.goldWeight || product.gold_weight || product.weight || 0;
+          const grossW = product.gold_weight || product.weight || 0;
+          
+          const diamondW_ct = product.diamond_weight || 0;
+          const diamondW_g = diamondW_ct * 0.2;
+          
+          const gemstoneW_ct = product.gemstone_weight || 0;
+          const gemstoneW_g = gemstoneW_ct * 0.2;
+          
+          const netW = goldW + diamondW_g + gemstoneW_g;
+
+          return (
+            <div className="pdp-details-grid animate-in fade-in duration-300">
+              <div className="pdp-detail-group">
+                <div className="pdp-detail-group-title text-[#231535]">Weight Breakup</div>
+                
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Gross Weight</span>
+                  <span className="pdp-detail-val">{grossW.toFixed(3)} g</span>
+                </div>
+                
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Gold Weight</span>
+                  <span className="pdp-detail-val">{goldW.toFixed(3)} g</span>
+                </div>
+                
+                {diamondW_ct > 0 && (
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Diamond Weight</span>
+                    <span className="pdp-detail-val">{diamondW_ct.toFixed(2)} ct ({diamondW_g.toFixed(3)} g)</span>
+                  </div>
+                )}
+                
+                {gemstoneW_ct > 0 && (
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Gemstone Weight</span>
+                    <span className="pdp-detail-val">{gemstoneW_ct.toFixed(2)} ct ({gemstoneW_g.toFixed(3)} g)</span>
+                  </div>
+                )}
+                
+                <div className="pdp-detail-row" style={{ borderTop: '1px solid #f0edf5', paddingTop: 10, marginTop: 4 }}>
+                  <span className="pdp-detail-key" style={{ fontWeight: 700, color: '#231535' }}>Net Weight</span>
+                  <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>{netW.toFixed(3)} g</span>
+                </div>
+              </div>
+            </div>
+          );
+        })()}
 
         {/* Certification Strip */}
         <div className="pdp-cert-strip">
