@@ -32,6 +32,7 @@ exports.productPricing = async (req, res) => {
         let item_base_price = 0;
         let item_base_price_withGST = 0;
         let item_making_charges = 0;
+        let making_charges_amount = 0;
 
         const product_data = await Product.findById(product_id);
         if (!product_data) {
@@ -141,7 +142,7 @@ exports.productPricing = async (req, res) => {
 
             item_diamond_price = total_diamond_weight * diamond_rate;
             const materials_cost = item_gold_price + item_diamond_price + solitaire_price + gemstone_price;
-            const making_charges_amount = materials_cost * (product_data.making_charges || 0) / 100;
+            making_charges_amount = materials_cost * (product_data.making_charges || 0) / 100;
             
             item_base_price = materials_cost + making_charges_amount;
             item_base_price_withGST = Math.round(item_base_price + (item_base_price * gst_percent / 100));

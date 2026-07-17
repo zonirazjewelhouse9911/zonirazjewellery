@@ -83,6 +83,7 @@ exports.productBasePricing = async (req, res) => {
                 diamond_price: Math.round(item_diamond_price),
                 making_charges: Math.round(final_making_charges),
                 base_price_withGST: Math.round(item_base_price_withGST),
+                gold_weight: gold_weight
             };
         });
 

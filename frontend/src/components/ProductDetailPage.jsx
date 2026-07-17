@@ -132,7 +132,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
               makingCharges: makingCharges,
               gst: Math.max(0, gst),
               subtotal: subtotal,
-              goldWeight: product?.gold_weight || 0
+              goldWeight: matched.gold_weight !== undefined ? matched.gold_weight : (product?.gold_weight || 0)
             });
           }
         }
@@ -180,7 +180,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   makingCharges: makingCharges,
                   gst: Math.max(0, gst),
                   subtotal: subtotal,
-                  goldWeight: product?.gold_weight || 0
+                  goldWeight: matched.gold_weight !== undefined ? matched.gold_weight : (product?.gold_weight || 0)
                 });
               }
             }
