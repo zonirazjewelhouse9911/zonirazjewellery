@@ -39,7 +39,7 @@ exports.productBasePricing = async (req, res) => {
             const solitaire_price = item.solitaires_price || 0;
             const gemstone_price = item.gemstone_price || 0;
 
-            if (item.product_type === "Diamond") {
+            if (item.product_type && item.product_type.toLowerCase() === "diamond") {
                 const total_diamond_weight = (item.diamond_weight || 0) * (item.diamond_count || 1);
                 console.log(total_diamond_weight, "total_diamond_weight");
 
