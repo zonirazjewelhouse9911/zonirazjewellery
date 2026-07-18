@@ -504,7 +504,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                       </div>
 
                       {/* Column 3: By Price */}
-                      <div className="mega-column">
+                      <div className="mega-column mega-column-price">
                         <h4>By Price</h4>
                         <ul>
                           <li>

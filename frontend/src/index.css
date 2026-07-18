@@ -2663,6 +2663,10 @@ button {
   padding-left: 3px;
 }
 
+.mega-column-price ul li a {
+  font-family: var(--font-sans) !important;
+}
+
 /* Metal & Stone List with Dots */
 .metal-stone-list li {
   display: flex;

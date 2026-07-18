@@ -4,7 +4,7 @@ import bridalVideo from '../assets/videos/1.mp4';
 import everydayVideo from '../assets/videos/daleywear.mp4';
 import officeVideo from '../assets/videos/officewear.mp4';
 import solitaireVideo from '../assets/videos/d92d747b23c8205d85da43cb7d302733.mp4';
-import heritageVideo from '../assets/videos/gold.mp4';
+// import heritageVideo from '../assets/videos/gold.mp4';
 
 const staticCollections = [
   {
@@ -39,7 +39,7 @@ const staticCollections = [
     id: 'heritage',
     label: 'CLASSIC',
     title: 'Heritage Gold',
-    video: heritageVideo,
+    video: bridalVideo,
     href: '#heritage',
   },
 ];
@@ -71,7 +71,7 @@ export default function ShopByCollection({ products = [] }) {
           const mapped = resData.data.map(col => {
             const id = col.slug || col._id;
             const label = col.tags?.[0]?.toUpperCase() || labelMap[col.slug] || 'COLLECTION';
-            
+
             // Search products to find real product image as fallback
             const cleanSlug = String(col.slug || '').toLowerCase();
             const matchingProducts = products.filter(p => {
