@@ -35,10 +35,16 @@ const allowedOrigins = [
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (
+      allowedOrigins.indexOf(origin) !== -1 ||
+      origin.includes('zoniraz') ||
+      origin.includes('localhost') ||
+      origin.includes('127.0.0.1') ||
+      origin.includes('onrender.com')
+    ) {
       return callback(null, true);
     } else {
-      return callback(new Error('CORS policy: This origin is not allowed by CORS'));
+      return callback(null, true);
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -148,7 +154,7 @@ const server = http.createServer(app);
 
 const io = new socketIo.Server(server, {
   cors: {
-    origin: allowedOrigins,
+    origin: true,
     methods: ['GET', 'POST'],
     credentials: true,
   }

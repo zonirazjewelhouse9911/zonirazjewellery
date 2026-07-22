@@ -3,8 +3,12 @@ import { io, Socket } from 'socket.io-client';
 import SimplePeer from 'simple-peer/simplepeer.min.js';
 import { Video, VideoOff, Mic, MicOff, PhoneOff, PhoneCall, Radio } from 'lucide-react';
 
-// Backend URL for Socket.IO connection
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:55000';
+// Backend URL for Socket.IO connection (local vs production fallback)
+const BACKEND_URL =
+  import.meta.env.VITE_API_URL ||
+  (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+    ? 'http://localhost:55000'
+    : 'https://zonirazjewellery.onrender.com');
 
 interface IncomingCall {
   from: string;
