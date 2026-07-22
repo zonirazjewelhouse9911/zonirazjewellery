@@ -148,33 +148,38 @@ function AppContent() {
               if (subTag) subcategory = subTag;
             }
 
-            // Get gender
+            // Get gender (supporting database values: Femail, mail, kide, female, male, kids, women, men)
             let genderList = [];
-            if (p.gender) {
-              const gLower = p.gender.toLowerCase();
+            const rawGender = p.gender || p.productgender || p.product_gender || p.target_audience || (p.specs && p.specs.gender) || '';
+            if (rawGender) {
+              const gLower = String(rawGender).toLowerCase().trim();
               genderList.push(gLower);
-              if (gLower === 'female' || gLower === 'women') {
-                genderList.push('women', 'female');
+              if (gLower.includes('femail') || gLower.includes('female') || gLower.includes('women') || gLower.includes('woman') || gLower.includes('fem')) {
+                genderList.push('women', 'female', 'femail');
               }
-              if (gLower === 'male' || gLower === 'men') {
-                genderList.push('men', 'male');
+              if ((gLower.includes('mail') || gLower.includes('male') || gLower.includes('men') || gLower.includes('man')) && !gLower.includes('femail') && !gLower.includes('female')) {
+                genderList.push('men', 'male', 'mail');
               }
-            }
-            if (p.specs && p.specs.gender) {
-              const gLower = p.specs.gender.toLowerCase();
-              genderList.push(gLower);
-              if (gLower === 'female' || gLower === 'women') {
-                genderList.push('women', 'female');
-              }
-              if (gLower === 'male' || gLower === 'men') {
-                genderList.push('men', 'male');
+              if (gLower.includes('kide') || gLower.includes('kids') || gLower.includes('kid') || gLower.includes('child')) {
+                genderList.push('kids', 'kide');
               }
             }
             if (p.tags && Array.isArray(p.tags)) {
-              if (p.tags.includes('women')) genderList.push('women', 'female');
-              if (p.tags.includes('men')) genderList.push('men', 'male');
-              if (p.tags.includes('kids')) genderList.push('kids');
+              if (p.tags.includes('women') || p.tags.includes('femail') || p.tags.includes('female')) genderList.push('women', 'female', 'femail');
+              if (p.tags.includes('men') || p.tags.includes('mail') || p.tags.includes('male')) genderList.push('men', 'male', 'mail');
+              if (p.tags.includes('kids') || p.tags.includes('kide')) genderList.push('kids', 'kide');
             }
+            const titleLower = String(p.product_title || p.name || '').toLowerCase();
+            const pCatLower = String(p.product_category || p.category || '').toLowerCase();
+            if (titleLower.includes('women') || titleLower.includes('femail') || titleLower.includes('female') || pCatLower.includes('women')) genderList.push('women', 'female', 'femail');
+            if ((titleLower.includes("men's") || titleLower.includes('mens') || titleLower.includes('mail') || pCatLower.includes('men')) && !titleLower.includes('femail')) genderList.push('men', 'male', 'mail');
+            if (titleLower.includes('kids') || titleLower.includes('kide') || titleLower.includes('child') || pCatLower.includes('kids')) genderList.push('kids', 'kide');
+
+            // Default fallback for general jewellery without explicit gender
+            if (genderList.length === 0) {
+              genderList.push('women', 'female', 'femail');
+            }
+
             const gender = [...new Set(genderList.map(s => s.toLowerCase()))].join(', ');
             // Get images array
             let images = [];
@@ -308,6 +313,10 @@ function AppContent() {
         const id = hash.replace('product-', '');
         setSelectedProductId(id);
         setCurrentView('product');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (hash === 'trending-now' || hash === 'trending' || hash === 'trending-products') {
+        setSelectedCategoryName('Trending Now');
+        setCurrentView('rings');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash === 'collections' || hash === 'all-collections') {
         setCurrentView('all-collections');

@@ -73,14 +73,22 @@ export const CartProvider = ({ children }) => {
   };
 
   const applyCoupon = async (code) => {
+    const currentSubtotal = Object.values(cart).reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const res = await fetch(`${API_BASE_URL}/api/coupons/verify`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code })
+      body: JSON.stringify({ code, subtotal: currentSubtotal })
     });
     const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Invalid Coupon');
-    setCoupon({ code, ...data });
+    if (!res.ok) throw new Error(data.error || 'Invalid Coupon Code');
+    
+    setCoupon({
+      code: data.code || code.toUpperCase(),
+      discountType: data.discountType,
+      discountValue: data.discountValue,
+      minCartValue: data.minCartValue || 0,
+      message: data.message
+    });
     return data;
   };
 
@@ -101,9 +109,9 @@ export const CartProvider = ({ children }) => {
   let discount = 0;
   if (coupon) {
     if (coupon.discountType === 'percentage') {
-      discount = Math.round(subtotal * coupon.value);
+      discount = Math.round(subtotal * (coupon.discountValue / 100));
     } else {
-      discount = coupon.value;
+      discount = Math.min(subtotal, Number(coupon.discountValue) || 0);
     }
   }
 

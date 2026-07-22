@@ -109,11 +109,26 @@ export default function CheckoutPage() {
     }
   }, [step, user]);
 
-  const handleApplyPromo = async (e) => {
-    e.preventDefault();
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/userSide/available-coupons`)
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success && Array.isArray(resData.data)) {
+          setAvailableCoupons(resData.data);
+        }
+      })
+      .catch(console.error);
+  }, []);
+
+  const handleApplyPromo = async (e, codeOverride) => {
+    if (e) e.preventDefault();
+    const codeToApply = codeOverride || couponCode;
+    if (!codeToApply) return;
     setCouponError('');
     try {
-      await applyCoupon(couponCode);
+      await applyCoupon(codeToApply);
       setCouponCode('');
     } catch (err) {
       setCouponError(err.message || 'Invalid Coupon Code');
@@ -696,16 +711,41 @@ export default function CheckoutPage() {
               {/* Promo code form */}
               {coupon ? (
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#eaffea', border: '1px solid #ccffcc', padding: '10px 14px', borderRadius: '10px', marginBottom: '20px' }}>
-                  <span style={{ fontSize: '12.5px', color: 'green', fontWeight: '600' }}>🎁 {coupon.code} Applied</span>
-                  <button onClick={removeCoupon} style={{ background: 'none', border: 'none', color: '#ff4d4f', fontSize: '11px', cursor: 'pointer', fontWeight: '700' }}>REMOVE</button>
+                  <div>
+                    <div style={{ fontSize: '12.5px', color: '#2e7d32', fontWeight: '700' }}>🎁 {coupon.code} APPLIED</div>
+                    <div style={{ fontSize: '11px', color: '#388e3c' }}>You saved ₹{discount.toLocaleString('en-IN')}!</div>
+                  </div>
+                  <button onClick={removeCoupon} style={{ background: 'none', border: 'none', color: '#ff4d4f', fontSize: '11px', cursor: 'pointer', fontWeight: '800' }}>REMOVE</button>
                 </div>
               ) : (
-                <form onSubmit={handleApplyPromo} style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
-                  <input type="text" placeholder="Promo/Coupon Code" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} style={{ ...inputStyle, padding: '8px 12px', flex: 1, fontSize: '12.5px' }} />
-                  <button type="submit" style={{ ...btnStyle, padding: '8px 16px', borderRadius: '8px' }}>Apply</button>
-                </form>
+                <div style={{ marginBottom: '20px' }}>
+                  <form onSubmit={handleApplyPromo} style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
+                    <input type="text" placeholder="Promo/Coupon Code" value={couponCode} onChange={(e) => setCouponCode(e.target.value)} style={{ ...inputStyle, padding: '8px 12px', flex: 1, fontSize: '12.5px' }} />
+                    <button type="submit" style={{ ...btnStyle, padding: '8px 16px', borderRadius: '8px' }}>Apply</button>
+                  </form>
+
+                  {/* Admin Available Offers List */}
+                  {availableCoupons.length > 0 && (
+                    <div style={{ backgroundColor: '#faf6f3', border: '1px solid #eee3dc', borderRadius: '8px', padding: '10px', marginTop: '8px' }}>
+                      <div style={{ fontSize: '10.5px', fontWeight: '700', color: '#5d463c', textTransform: 'uppercase', marginBottom: '6px' }}>Available Offers set by Admin:</div>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        {availableCoupons.map((item) => {
+                          const offerText = item.discountType === 'percentage' ? `${item.discountValue}% OFF` : `₹${item.discountValue} OFF`;
+                          const minValText = item.minCartValue ? ` (Min order ₹${item.minCartValue})` : '';
+
+                          return (
+                            <div key={item._id || item.code} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff', border: '1px solid #e0d6d0', padding: '5px 8px', borderRadius: '5px' }}>
+                              <span style={{ fontSize: '11.5px', fontWeight: '700', color: '#de3581' }}>{item.code} <span style={{ fontSize: '10.5px', color: '#666', fontWeight: 'normal' }}>- {offerText}{minValText}</span></span>
+                              <button onClick={() => handleApplyPromo(null, item.code)} style={{ background: '#de3581', color: '#fff', border: 'none', borderRadius: '4px', padding: '2px 8px', fontSize: '10px', fontWeight: '700', cursor: 'pointer' }}>APPLY</button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
-              {couponError && <p style={{ color: '#ff4d4f', fontSize: '11px', margin: '-14px 0 14px 0' }}>{couponError}</p>}
+              {couponError && <p style={{ color: '#ff4d4f', fontSize: '11px', margin: '-10px 0 14px 0' }}>{couponError}</p>}
 
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '700', color: '#2b221d', borderBottom: '1px solid #f2ebe8', paddingBottom: '16px', marginBottom: '16px' }}>
                 <span>Grand Total</span>

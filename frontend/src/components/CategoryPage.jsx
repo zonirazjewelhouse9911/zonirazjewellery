@@ -29,8 +29,13 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
   useEffect(() => {
     setLoading(true);
+    const isTrendingPage = category === 'Trending Now' || category === 'Trending' || category === 'trending-now';
+    const productsEndpoint = isTrendingPage
+      ? `${API_BASE_URL}/api/userSide/trending-products`
+      : `${API_BASE_URL}/api/admin/products`;
+
     Promise.all([
-      fetch(`${API_BASE_URL}/api/admin/products`).then(res => res.json()),
+      fetch(productsEndpoint).then(res => res.json()),
       fetch(`${API_BASE_URL}/api/productBasePricing`).then(res => res.json()).catch(() => null)
     ])
       .then(([resData, pricingData]) => {
@@ -65,33 +70,38 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
               if (subTag) subcategory = subTag;
             }
 
-            // Get gender
+            // Get gender (supporting database values: Femail, mail, kide, female, male, kids, women, men)
             let genderList = [];
-            if (p.gender) {
-              const gLower = p.gender.toLowerCase();
+            const rawGender = p.gender || p.productgender || p.product_gender || p.target_audience || (p.specs && p.specs.gender) || '';
+            if (rawGender) {
+              const gLower = String(rawGender).toLowerCase().trim();
               genderList.push(gLower);
-              if (gLower === 'female' || gLower === 'women') {
-                genderList.push('women', 'female');
+              if (gLower.includes('femail') || gLower.includes('female') || gLower.includes('women') || gLower.includes('woman') || gLower.includes('fem')) {
+                genderList.push('women', 'female', 'femail');
               }
-              if (gLower === 'male' || gLower === 'men') {
-                genderList.push('men', 'male');
+              if ((gLower.includes('mail') || gLower.includes('male') || gLower.includes('men') || gLower.includes('man')) && !gLower.includes('femail') && !gLower.includes('female')) {
+                genderList.push('men', 'male', 'mail');
               }
-            }
-            if (p.specs && p.specs.gender) {
-              const gLower = p.specs.gender.toLowerCase();
-              genderList.push(gLower);
-              if (gLower === 'female' || gLower === 'women') {
-                genderList.push('women', 'female');
-              }
-              if (gLower === 'male' || gLower === 'men') {
-                genderList.push('men', 'male');
+              if (gLower.includes('kide') || gLower.includes('kids') || gLower.includes('kid') || gLower.includes('child')) {
+                genderList.push('kids', 'kide');
               }
             }
             if (p.tags && Array.isArray(p.tags)) {
-              if (p.tags.includes('women')) genderList.push('women', 'female');
-              if (p.tags.includes('men')) genderList.push('men', 'male');
-              if (p.tags.includes('kids')) genderList.push('kids');
+              if (p.tags.includes('women') || p.tags.includes('femail') || p.tags.includes('female')) genderList.push('women', 'female', 'femail');
+              if (p.tags.includes('men') || p.tags.includes('mail') || p.tags.includes('male')) genderList.push('men', 'male', 'mail');
+              if (p.tags.includes('kids') || p.tags.includes('kide')) genderList.push('kids', 'kide');
             }
+            const titleLower = String(p.product_title || p.name || '').toLowerCase();
+            const pCatLower = String(p.product_category || p.category || '').toLowerCase();
+            if (titleLower.includes('women') || titleLower.includes('femail') || titleLower.includes('female') || pCatLower.includes('women')) genderList.push('women', 'female', 'femail');
+            if ((titleLower.includes("men's") || titleLower.includes('mens') || titleLower.includes('mail') || pCatLower.includes('men')) && !titleLower.includes('femail')) genderList.push('men', 'male', 'mail');
+            if (titleLower.includes('kids') || titleLower.includes('kide') || titleLower.includes('child') || pCatLower.includes('kids')) genderList.push('kids', 'kide');
+
+            // Default fallback for general jewellery without explicit gender
+            if (genderList.length === 0) {
+              genderList.push('women', 'female', 'femail');
+            }
+
             const gender = [...new Set(genderList.map(s => s.toLowerCase()))].join(', ');
 
             // Get images array
@@ -406,9 +416,34 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
   // Apply filters and sorting
   const filteredProducts = products.filter(product => {
-    // Filter by Category (case-insensitive, hyphen-insensitive, singular/plural safe)
-    if (product.category && category) {
-      const prodCatClean = String(product.category).toLowerCase().replace(/[^a-z0-9]/g, '');
+    // Category & Gender filter
+    const catLower = String(category || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    const isWomenPage = catLower.includes('women') || catLower === 'female';
+    const isMenPage = (catLower.includes('men') && !catLower.includes('women')) || catLower === 'male';
+    const isKidsPage = catLower.includes('kids') || catLower.includes('child');
+    const isGenderPage = isWomenPage || isMenPage || isKidsPage;
+
+    if (isGenderPage) {
+      const prodGender = String(product.gender || '').toLowerCase();
+      const prodCat = String(product.category || '').toLowerCase();
+      const prodName = String(product.name || '').toLowerCase();
+
+      if (isWomenPage) {
+        // Strict Women filter: match women/female/femail
+        const isWomen = prodGender.includes('women') || prodGender.includes('female') || prodGender.includes('femail') || prodCat.includes('women') || prodName.includes('women') || prodName.includes('female');
+        if (!isWomen) return false;
+      } else if (isMenPage) {
+        // Strict Men filter: match men/male/mail
+        const isMen = (prodGender.includes('men') || prodGender.includes('male') || prodGender.includes('mail') || prodCat.includes('men') || prodName.includes('men') || prodName.includes('male')) && !prodGender.includes('femail');
+        if (!isMen) return false;
+      } else if (isKidsPage) {
+        // Strict Kids filter: match kids/kide/child
+        const isKids = prodGender.includes('kids') || prodGender.includes('kide') || prodGender.includes('child') || prodCat.includes('kids') || prodCat.includes('child') || prodName.includes('kids');
+        if (!isKids) return false;
+      }
+    } else if (category && category !== 'All Products' && category !== 'Catalog' && category !== 'Trending Now' && category !== 'Trending' && category !== 'trending-now') {
+      // Standard product category filter (Rings, Earrings, Necklaces, etc.)
+      const prodCatClean = String(product.category || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       const pageCatClean = String(category).toLowerCase().replace(/[^a-z0-9]/g, '');
       let isMatch = (prodCatClean === pageCatClean);
       if (!isMatch) {
@@ -416,8 +451,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
         if (pageCatClean.endsWith('s') && pageCatClean.slice(0, -1) === prodCatClean) isMatch = true;
       }
       if (!isMatch) return false;
-    } else {
-      return false;
     }
 
     // Filter by URL subcategory query param
@@ -429,16 +462,28 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
       const subSlug = sub.toLowerCase().replace(/ /g, '-').trim();
       const targetSlug = String(targetSubcategory).trim();
       const isMatch = (subSlug === targetSlug || subSlug.includes(targetSlug) || targetSlug.includes(subSlug));
-      console.log(`Subcategory Match Check: product=${product.name}, sub=${sub}, subSlug=${subSlug}, targetSlug=${targetSlug}, isMatch=${isMatch}`);
       if (!isMatch) {
         return false;
       }
     }
 
-    // Filter by URL gender query param
+    // Filter by URL gender query param (e.g. #rings?gender=women)
     if (queryParams.gender) {
-      const gen = String(product.gender || '');
-      if (!gen.toLowerCase().includes(queryParams.gender)) return false;
+      const qGen = String(queryParams.gender).toLowerCase();
+      const prodGender = String(product.gender || '').toLowerCase();
+      const prodCat = String(product.category || '').toLowerCase();
+      const prodName = String(product.name || '').toLowerCase();
+
+      if (qGen === 'women' || qGen === 'female' || qGen === 'femail') {
+        const isWomen = prodGender.includes('women') || prodGender.includes('female') || prodGender.includes('femail') || prodCat.includes('women') || prodName.includes('women') || prodName.includes('female');
+        if (!isWomen) return false;
+      } else if (qGen === 'men' || qGen === 'male' || qGen === 'mail') {
+        const isMen = (prodGender.includes('men') || prodGender.includes('male') || prodGender.includes('mail') || prodCat.includes('men') || prodName.includes('men') || prodName.includes('male')) && !prodGender.includes('femail');
+        if (!isMen) return false;
+      } else if (qGen === 'kids' || qGen === 'child' || qGen === 'kide') {
+        const isKids = prodGender.includes('kids') || prodGender.includes('kide') || prodGender.includes('child') || prodCat.includes('kids') || prodCat.includes('child') || prodName.includes('kids');
+        if (!isKids) return false;
+      }
     }
 
     // Filter by URL stone query param

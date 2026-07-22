@@ -44,7 +44,19 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
   // Active Tab
   const [activeTab, setActiveTab] = useState('bag'); // 'bag' | 'trial'
 
-  const { cartList, removeFromCart, updateQuantity, addToCart } = useContext(CartContext);
+  const { cartList, removeFromCart, updateQuantity, addToCart, subtotal, gst, shipping, discount, grandTotal, coupon, applyCoupon, removeCoupon } = useContext(CartContext);
+  const [availableCoupons, setAvailableCoupons] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API_BASE_URL}/api/userSide/available-coupons`)
+      .then(res => res.json())
+      .then(resData => {
+        if (resData.success && Array.isArray(resData.data)) {
+          setAvailableCoupons(resData.data);
+        }
+      })
+      .catch(err => console.error('Error fetching available coupons:', err));
+  }, []);
 
   // Cart item calculation
   const cartItemsCount = cartList.reduce((sum, item) => sum + item.quantity, 0);
@@ -65,14 +77,18 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
     alert(`${item.name} added to Shopping Bag!`);
   };
 
-  // Apply Coupon
-  const applyCoupon = (e) => {
-    e.preventDefault();
-    if (couponCode.toUpperCase() === 'ZONIRAZ500' || couponCode.toUpperCase() === 'SAVE500') {
-      setAppliedDiscount(500);
-      setCouponMessage("🎉 Coupon applied! ₹500 off your order.");
-    } else {
-      setCouponMessage("❌ Invalid Coupon Code. Try ZONIRAZ500");
+  // Apply Coupon Handler
+  const handleApplyCoupon = async (e, codeOverride) => {
+    if (e) e.preventDefault();
+    const codeToApply = codeOverride || couponCode;
+    if (!codeToApply) return;
+    setCouponMessage('');
+    try {
+      const data = await applyCoupon(codeToApply);
+      setCouponMessage(data.message || `🎉 ${codeToApply.toUpperCase()} applied!`);
+      setCouponCode('');
+    } catch (err) {
+      setCouponMessage(`❌ ${err.message || 'Invalid Coupon Code'}`);
     }
   };
 
@@ -88,7 +104,7 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
 
   // Financial Calculations
   const cartItemIds = cartList.map(item => item.id.toString());
-  let subtotal = 0;
+  let originalMrpSubtotal = 0;
   let savings = 0;
 
   cartItemIds.forEach(id => {
@@ -100,12 +116,10 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
     if (item) {
       const cartItem = cartList.find(c => c.id.toString() === id);
       const qty = cartItem ? cartItem.quantity : 0;
-      subtotal += item.originalPrice * qty;
+      originalMrpSubtotal += item.originalPrice * qty;
       savings += (item.originalPrice - item.price) * qty;
     }
   });
-
-  const totalCost = subtotal - savings - appliedDiscount;
 
   return (
     <div className="cart-page-wrapper">
@@ -830,21 +844,69 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
               {/* Apply Coupon code block */}
               <div className="coupon-section-card">
                 <div className="coupon-title-row">
-                  <span>🎟️ Apply Coupon</span>
-                  <span>Coupon List</span>
+                  <span>🎟️ Apply Coupon & Offers</span>
+                  <span>{availableCoupons.length > 0 ? `${availableCoupons.length} Active Offers` : 'Promo Code'}</span>
                 </div>
-                <form onSubmit={applyCoupon} className="coupon-form">
-                  <input 
-                    type="text" 
-                    placeholder="Enter Coupon Code" 
-                    className="coupon-input"
-                    value={couponCode}
-                    onChange={(e) => setCouponCode(e.target.value)}
-                  />
-                  <button type="submit" className="coupon-btn">Apply</button>
-                </form>
+
+                {coupon ? (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#eaffea', border: '1px solid #c8e6c9', padding: '10px 14px', borderRadius: '10px', marginTop: '6px' }}>
+                    <div>
+                      <div style={{ fontSize: '13px', color: '#2e7d32', fontWeight: '700' }}>🎁 {coupon.code} APPLIED</div>
+                      <div style={{ fontSize: '11px', color: '#388e3c' }}>You saved ₹{discount.toLocaleString('en-IN')} on this order!</div>
+                    </div>
+                    <button onClick={removeCoupon} style={{ background: 'none', border: 'none', color: '#d32f2f', fontSize: '11px', fontWeight: '800', cursor: 'pointer', padding: '4px 8px' }}>
+                      REMOVE
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <form onSubmit={handleApplyCoupon} className="coupon-form">
+                      <input 
+                        type="text" 
+                        placeholder="Enter Coupon Code" 
+                        className="coupon-input"
+                        value={couponCode}
+                        onChange={(e) => setCouponCode(e.target.value)}
+                      />
+                      <button type="submit" className="coupon-btn">Apply</button>
+                    </form>
+
+                    {/* Available Offers set by Admin */}
+                    {availableCoupons.length > 0 && (
+                      <div style={{ marginTop: '12px', borderTop: '1px dashed #e0d6d0', paddingTop: '10px' }}>
+                        <div style={{ fontSize: '11px', fontWeight: '700', color: '#5d463c', textTransform: 'uppercase', marginBottom: '8px' }}>
+                          Available Offers set by Admin:
+                        </div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                          {availableCoupons.map((item) => {
+                            const offerText = item.discountType === 'percentage' 
+                              ? `${item.discountValue}% OFF` 
+                              : `₹${item.discountValue} OFF`;
+                            const minValText = item.minCartValue ? ` (Min order ₹${item.minCartValue})` : '';
+
+                            return (
+                              <div key={item._id || item.code} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fcf8f6', border: '1px solid #f0e6e0', padding: '6px 10px', borderRadius: '6px' }}>
+                                <div>
+                                  <span style={{ fontSize: '12px', fontWeight: '700', color: '#de3581', letterSpacing: '0.5px' }}>{item.code}</span>
+                                  <span style={{ fontSize: '11px', color: '#666', marginLeft: '6px' }}>- {offerText}{minValText}</span>
+                                </div>
+                                <button 
+                                  onClick={() => handleApplyCoupon(null, item.code)} 
+                                  style={{ background: '#de3581', color: '#fff', border: 'none', borderRadius: '4px', padding: '3px 10px', fontSize: '10.5px', fontWeight: '700', cursor: 'pointer' }}
+                                >
+                                  APPLY
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+
                 {couponMessage && (
-                  <div className="coupon-msg" style={{ color: couponMessage.includes('Invalid') ? '#f44336' : '#2e7d32' }}>
+                  <div className="coupon-msg" style={{ color: couponMessage.includes('❌') ? '#f44336' : '#2e7d32', marginTop: '8px' }}>
                     {couponMessage}
                   </div>
                 )}
@@ -880,23 +942,23 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
                   <span>Subtotal</span>
                   <span>₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="summary-row" style={{ color: '#2e7d32', fontWeight: '600' }}>
-                  <span>You Saved</span>
-                  <span>- ₹{savings.toLocaleString('en-IN')}</span>
+                <div className="summary-row">
+                  <span>GST (3%)</span>
+                  <span>+ ₹{gst.toLocaleString('en-IN')}</span>
                 </div>
-                {appliedDiscount > 0 && (
+                {discount > 0 && (
                   <div className="summary-row" style={{ color: '#2e7d32', fontWeight: '600' }}>
-                    <span>Coupon Discount</span>
-                    <span>- ₹{appliedDiscount}</span>
+                    <span>Coupon Discount ({coupon?.code})</span>
+                    <span>- ₹{discount.toLocaleString('en-IN')}</span>
                   </div>
                 )}
                 <div className="summary-row">
                   <span>Shipping (Standard)</span>
-                  <span style={{ color: '#2e7d32', fontWeight: '600' }}>Free</span>
+                  <span style={{ color: '#2e7d32', fontWeight: '600' }}>{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
                 </div>
                 <div className="summary-row bold">
                   <span>Total Cost</span>
-                  <span>₹{totalCost.toLocaleString('en-IN')}</span>
+                  <span>₹{grandTotal.toLocaleString('en-IN')}</span>
                 </div>
 
                 <button 

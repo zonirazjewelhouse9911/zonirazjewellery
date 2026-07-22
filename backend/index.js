@@ -115,6 +115,10 @@ app.use('/api/userSide', reviewRoutes);
 const similarProductsRoutes = require('./src/routes/userSide/similarProducts');
 app.use('/api/userSide', similarProductsRoutes);
 
+const trendingProductsRoutes = require('./src/routes/userSide/trendingProducts');
+app.use('/api/userSide', trendingProductsRoutes);
+app.use('/api', trendingProductsRoutes);
+
 const userValidationRoutes = require('./src/routes/userSide/user_validation');
 app.use('/api/userSide', userValidationRoutes);
 

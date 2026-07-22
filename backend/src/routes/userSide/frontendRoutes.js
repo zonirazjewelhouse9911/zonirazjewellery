@@ -18,5 +18,7 @@ router.post('/orders', user_auth, frontendOrder.createOrder);
 
 // Coupon routes
 router.post('/coupons/verify', frontendCoupon.verifyCoupon);
+router.get('/coupons/available', frontendCoupon.getAvailableCoupons);
+router.get('/userSide/available-coupons', frontendCoupon.getAvailableCoupons);
 
 module.exports = router;
