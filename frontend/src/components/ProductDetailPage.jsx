@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { API_BASE_URL } from '../config';
 import { products } from '../data/products';
 import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
 import { 
   Star, 
   Sparkles, 
@@ -79,6 +80,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const [isZoomed, setIsZoomed] = useState(false);
   const [sizingVideoOpen, setSizingVideoOpen] = useState(false);
   const { addToCart } = useContext(CartContext);
+  const { requireAuth } = useContext(AuthContext);
 
   // Reset selected image when metal color changes
   useEffect(() => {
@@ -400,7 +402,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
   };
 
   const handleWishlist = () => {
-    setWishlist(prev => ({ ...prev, [product.id]: !prev[product.id] }));
+    requireAuth(() => {
+      setWishlist(prev => ({ ...prev, [product.id]: !prev[product.id] }));
+    });
   };
 
   const handlePincodeCheck = (e) => {

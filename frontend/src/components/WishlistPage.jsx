@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { products } from '../data/products';
+import { useVideoCall } from '../context/VideoCallContext';
 
 export default function WishlistPage({ products: propProducts = [], wishlist = {}, setWishlist }) {
-  // Modal states
-  const [callModalOpen, setCallModalOpen] = useState(false);
-  const [callConnected, setCallConnected] = useState(false);
+  const { startCall, adminOnline } = useVideoCall();
+  // Modal states (video call handled globally)
 
   const [tryHomeModalOpen, setTryHomeModalOpen] = useState(false);
   const [tryHomeForm, setTryHomeForm] = useState({ name: '', phone: '', date: '' });
@@ -21,17 +21,6 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
   const wishlistedProducts = (propProducts && propProducts.length > 0 ? propProducts : products)
     .filter(p => wishlistedIds.includes(p.id.toString()));
 
-  // Connect video call simulation
-  useEffect(() => {
-    let timer;
-    if (callModalOpen) {
-      setCallConnected(false);
-      timer = setTimeout(() => {
-        setCallConnected(true);
-      }, 2000);
-    }
-    return () => clearTimeout(timer);
-  }, [callModalOpen]);
 
   const handleTryHomeSubmit = (e) => {
     e.preventDefault();
@@ -293,6 +282,28 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
         .wishlist-delivery-btn:hover {
           background-color: #efe7e5;
         }
+        .wishlist-video-call-btn {
+          flex-shrink: 0;
+          width: 36px;
+          height: 36px;
+          border: 1px solid #634d40;
+          background: transparent;
+          color: #634d40;
+          border-radius: 6px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .wishlist-video-call-btn:hover {
+          background-color: #634d40;
+          color: #fff;
+        }
+        .wishlist-video-call-btn svg {
+          width: 17px;
+          height: 17px;
+        }
 
         /* Empty state */
         .empty-wishlist-view {
@@ -485,7 +496,7 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
                       className="wishlist-try-btn" 
                       onClick={() => setTryHomeModalOpen(true)}
                     >
-                      Try to Home
+                      Try at Home
                     </button>
                     <button 
                       className="wishlist-delivery-btn"
@@ -497,6 +508,25 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
                     >
                       Check Delivery
                     </button>
+                    {/* Video Call Button — real WebRTC */}
+                    <button
+                      className="wishlist-video-call-btn"
+                      title={adminOnline ? 'Video Call — Advisor Online' : 'Video Call — Advisor Offline'}
+                      aria-label="Start video call"
+                      onClick={() => startCall(product)}
+                      style={{ position: 'relative' }}
+                    >
+                      <span style={{
+                        position: 'absolute', top: -4, right: -4,
+                        width: 10, height: 10, borderRadius: '50%',
+                        background: adminOnline ? '#4caf50' : '#9e9e9e',
+                        border: '2px solid #fff', display: 'block',
+                      }}/>
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                        <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                      </svg>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -505,60 +535,6 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
         )}
       </div>
 
-      {/* Video Call Modal */}
-      {callModalOpen && (
-        <div className="modal-overlay" onClick={() => setCallModalOpen(false)}>
-          <div className="modal-content" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => setCallModalOpen(false)}>✕</button>
-            <h3 className="modal-title">Live Video Consultation</h3>
-            <p style={{ fontSize: '13px', color: '#746380' }}>
-              Connect live with our designer showroom to see your wishlisted pieces.
-            </p>
-
-            <div className="video-call-screen">
-              {!callConnected ? (
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{
-                    border: '3px solid rgba(255,255,255,0.3)',
-                    borderTop: '3px solid #de3581',
-                    borderRadius: '50%',
-                    width: '36px',
-                    height: '36px',
-                    animation: 'spin 1s linear infinite',
-                    margin: '0 auto 12px auto'
-                  }} />
-                  <p style={{ fontSize: '14px', fontWeight: '500' }}>Calling showroom advisor...</p>
-                </div>
-              ) : (
-                <>
-                  <video 
-                    src="https://player.vimeo.com/external/384761655.sd.mp4?s=d00e70fa45778845e2da8ef2a6d71b3e9508fe51&profile_id=164&oauth2_token_id=57447761"
-                    className="consultant-video"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                  <div className="user-pip-video">
-                    <div style={{ width: '100%', height: '100%', backgroundColor: '#6e4b85', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '9px' }}>
-                      You
-                    </div>
-                  </div>
-                  <div style={{ position: 'absolute', top: '10px', left: '10px', backgroundColor: 'rgba(0,0,0,0.5)', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#4caf50', display: 'inline-block' }} />
-                    Live Delhi Showroom
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="video-call-controls">
-              <button className="circle-control-btn" style={{ backgroundColor: '#5c4b6e' }} onClick={() => alert("Muted mic")}>🎙️</button>
-              <button className="circle-control-btn" style={{ backgroundColor: '#f44336' }} onClick={() => setCallModalOpen(false)}>🛑</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Book Try at Home Modal */}
       {tryHomeModalOpen && (

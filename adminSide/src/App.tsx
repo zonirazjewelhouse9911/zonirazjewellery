@@ -9,6 +9,7 @@ import ExchangeInquiries from './pages/ExchangeInquiries';
 import SellGoldInquiries from './pages/SellGoldInquiries';
 import Banners from './pages/Banners';
 import PricingSettings from './pages/PricingSettings';
+import VideoCallPanel from './pages/VideoCallPanel';
 import { resolveProductImage } from './lib/imageResolver';
 import { 
   Grid, 
@@ -28,7 +29,8 @@ import {
   Loader2,
   RefreshCw,
   Coins,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Video
 } from 'lucide-react';
 import './App.css';
 
@@ -48,6 +50,7 @@ const MENU_ITEMS = [
   { id: 'exchange', label: 'Exchange Leads', icon: RefreshCw },
   { id: 'sellgold', label: 'Sell Gold Leads', icon: Coins },
   { id: 'pricing', label: 'Daily Pricing', icon: SlidersHorizontal },
+  { id: 'videocall', label: 'Video Calls', icon: Video },
 ];
 
 const CATEGORIES = [
@@ -367,6 +370,8 @@ function App() {
             <Banners />
           ) : activeMenu === 'pricing' ? (
             <PricingSettings />
+          ) : activeMenu === 'videocall' ? (
+            <VideoCallPanel />
           ) : (
             <div className="py-24 text-center">
               <span className="text-xs uppercase tracking-[0.4em] font-black text-slate-400">Atelier Admin Panel</span>

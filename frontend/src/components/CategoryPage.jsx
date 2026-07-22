@@ -2,9 +2,13 @@ import React, { useState, useEffect, useContext } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
 import { products as initialProducts } from '../data/products';
 import { CartContext } from '../context/CartContext';
+import { AuthContext } from '../context/AuthContext';
+import { useVideoCall } from '../context/VideoCallContext';
 
 export default function CategoryPage({ category, wishlist = {}, setWishlist, cart = {}, setCart }) {
   const { addToCart } = useContext(CartContext);
+  const { requireAuth } = useContext(AuthContext);
+  const { startCall, adminOnline } = useVideoCall();
   // Map category to product types in sidebar
   const categoryProductTypesMap = {
     "Rings": ['Rings', 'Band', 'Cluster', 'Floral'],
@@ -261,10 +265,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   const [tryHomeForm, setTryHomeForm] = useState({ name: '', phone: '', date: '' });
   const [tryHomeSuccess, setTryHomeSuccess] = useState(false);
 
-  // Video call modal state
-  const [callModalOpen, setCallModalOpen] = useState(false);
-  const [callProduct, setCallProduct] = useState(null);
-  const [callConnected, setCallConnected] = useState(false);
+  // Video call is handled globally via VideoCallContext
 
   // Accordion toggle states
   const [openAccordions, setOpenAccordions] = useState({
@@ -348,9 +349,11 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
     window.location.hash = '#' + categorySlug;
   };
 
-  // Toggle wishlist
+  // Toggle wishlist — requires login
   const toggleWishlist = (id) => {
-    setWishlist(prev => ({ ...prev, [id]: !prev[id] }));
+    requireAuth(() => {
+      setWishlist(prev => ({ ...prev, [id]: !prev[id] }));
+    });
   };
 
   // Image Navigation on Card
@@ -400,17 +403,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
     }, 2500);
   };
 
-  // Connect video call simulation
-  useEffect(() => {
-    let timer;
-    if (callModalOpen) {
-      setCallConnected(false);
-      timer = setTimeout(() => {
-        setCallConnected(true);
-      }, 2000);
-    }
-    return () => clearTimeout(timer);
-  }, [callModalOpen]);
 
   // Apply filters and sorting
   const filteredProducts = products.filter(product => {
@@ -1031,9 +1023,36 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
           color: #fff;
         }
         
+        .card-actions {
+          display: flex;
+          gap: 8px;
+          margin-top: 10px;
+        }
+        .add-to-bag-btn {
+          flex: 1;
+          border: 1px solid #634d40;
+          color: #634d40;
+          background: transparent;
+          border-radius: 4px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 6px;
+          padding: 9px 10px;
+          cursor: pointer;
+          transition: all 0.2s;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.5px;
+        }
+        .add-to-bag-btn:hover {
+          background-color: #634d40;
+          color: #fff;
+        }
         .video-call-btn {
-          width: 36px;
-          height: 36px;
+          flex-shrink: 0;
+          width: 40px;
+          height: 40px;
           border-radius: 6px;
           border: 1px solid #634d40;
           color: #634d40;
@@ -1045,7 +1064,8 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
           cursor: pointer;
         }
         .video-call-btn:hover {
-          background-color: #f7f0ee;
+          background-color: #634d40;
+          color: #fff;
           border-color: #634d40;
         }
         .video-call-btn svg {
@@ -1633,23 +1653,49 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
                         {/* Card actions */}
                         <div className="card-actions" onClick={e => e.stopPropagation()}>
-                          <button 
-                            className="video-call-btn"
-                            style={{ borderColor: '#634d40', color: '#634d40', width: '100%', borderRadius: '4px', display: 'flex', justifyContent: 'center', gap: '8px', alignItems: 'center' }}
-                             onClick={(e) => {
-                               e.stopPropagation();
-                               addToCart(product, 1);
-                               alert("Added to Shopping Bag!");
-                             }}
+                          {/* Add to Bag */}
+                          <button
+                            className="add-to-bag-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(product, 1);
+                            }}
                             title="Add to Shopping Bag"
                             aria-label="Add to shopping bag"
                           >
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '16px', height: '16px' }}>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: '15px', height: '15px' }}>
                               <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                               <line x1="3" y1="6" x2="21" y2="6"></line>
                               <path d="M16 10a4 4 0 0 1-8 0"></path>
                             </svg>
-                            <span style={{ fontSize: '11px', fontWeight: '700', letterSpacing: '0.5px' }}>ADD TO BAG</span>
+                            ADD TO BAG
+                          </button>
+
+                          {/* Video Call Consultation — real WebRTC via context */}
+                          <button
+                            className="video-call-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              startCall(product);
+                            }}
+                            title={adminOnline ? 'Video Call — Advisor Online' : 'Video Call — Advisor Offline'}
+                            aria-label="Start video call consultation"
+                            style={{ position: 'relative' }}
+                          >
+                            {/* Online indicator dot */}
+                            <span style={{
+                              position: 'absolute',
+                              top: -4, right: -4,
+                              width: 10, height: 10,
+                              borderRadius: '50%',
+                              background: adminOnline ? '#4caf50' : '#9e9e9e',
+                              border: '2px solid #fff',
+                              display: 'block',
+                            }}/>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                              <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                            </svg>
                           </button>
                         </div>
                       </div>
@@ -1756,79 +1802,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
         </div>
       )}
 
-      {/* Video Call Consultation Modal */}
-      {callModalOpen && (
-        <div className="modal-overlay" onClick={() => setCallModalOpen(false)}>
-          <div className="modal-content" style={{ maxWidth: '500px' }} onClick={(e) => e.stopPropagation()}>
-            <button className="modal-close-btn" onClick={() => setCallModalOpen(false)}>✕</button>
-            <h3 className="modal-title">Live Video Consultation</h3>
-            <p style={{ fontSize: '13px', color: '#746380' }}>
-              Connect live with our store representative to view <strong>{callProduct?.name}</strong>.
-            </p>
-
-            <div className="video-call-screen">
-              {!callConnected ? (
-                <div style={{ textAlign: 'center' }}>
-                  <div style={{
-                    border: '3px solid rgba(255,255,255,0.3)',
-                    borderTop: '3px solid #de3581',
-                    borderRadius: '50%',
-                    width: '36px',
-                    height: '36px',
-                    animation: 'spin 1s linear infinite',
-                    margin: '0 auto 12px auto'
-                  }} />
-                  <p style={{ fontSize: '14px', fontWeight: '500' }}>Connecting to Showroom...</p>
-                </div>
-              ) : (
-                <>
-                  <video 
-                    src="https://player.vimeo.com/external/384761655.sd.mp4?s=d00e70fa45778845e2da8ef2a6d71b3e9508fe51&profile_id=164&oauth2_token_id=57447761"
-                    className="consultant-video"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                  />
-                  <div className="user-pip-video">
-                    <div style={{ width: '100%', height: '100%', backgroundColor: '#6e4b85', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '9px' }}>
-                      You
-                    </div>
-                  </div>
-                  <div style={{ position: 'absolute', top: '10px', left: '10px', backgroundColor: 'rgba(0,0,0,0.5)', padding: '4px 8px', borderRadius: '4px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#4caf50', display: 'inline-block' }} />
-                    Live - Showroom Delhi
-                  </div>
-                </>
-              )}
-            </div>
-
-            <div className="video-call-controls">
-              <button 
-                className="circle-control-btn" 
-                style={{ backgroundColor: '#5c4b6e' }}
-                onClick={() => alert("Microphone muted")}
-              >
-                🎙️
-              </button>
-              <button 
-                className="circle-control-btn" 
-                style={{ backgroundColor: '#f44336' }}
-                onClick={() => setCallModalOpen(false)}
-              >
-                🛑
-              </button>
-            </div>
-            
-            <style>{`
-              @keyframes spin {
-                0% { transform: rotate(0deg); }
-                100% { transform: rotate(360deg); }
-              }
-            `}</style>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

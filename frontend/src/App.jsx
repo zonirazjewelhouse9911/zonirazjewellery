@@ -33,7 +33,10 @@ import SellGoldPage from './components/SellGoldPage';
 import BuyGoldPage from './components/BuyGoldPage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { VideoCallProvider } from './context/VideoCallContext';
 import AuthModal from './components/AuthModal';
+import VideoCallModal from './components/VideoCallModal';
+import AdminVideoPanel from './components/AdminVideoPanel';
 import { products } from './data/products';
 
 const hashToCategoryMap = {
@@ -76,14 +79,37 @@ const hashToCategoryMap = {
 function AppContent() {
   const { isAuthModalOpen, setIsAuthModalOpen } = useContext(AuthContext);
   const [currentView, setCurrentView] = React.useState('home');
-  const [wishlist, setWishlist] = React.useState({});
-  const [cart, setCart] = React.useState({});
+  const [wishlist, setWishlist] = React.useState(() => {
+    try {
+      const saved = localStorage.getItem('zoniraj_wishlist');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+  const [cart, setCart] = React.useState(() => {
+    try {
+      const saved = localStorage.getItem('zoniraj_cart');
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
   const [selectedProductId, setSelectedProductId] = React.useState(null);
   const [helpCategory, setHelpCategory] = React.useState('delivery');
   const [selectedCategoryName, setSelectedCategoryName] = React.useState('Rings');
   const [termsTab, setTermsTab] = React.useState('terms');
 
   const [allProducts, setAllProducts] = React.useState([]);
+
+  // Persist wishlist & cart to localStorage on every change
+  React.useEffect(() => {
+    localStorage.setItem('zoniraj_wishlist', JSON.stringify(wishlist));
+  }, [wishlist]);
+
+  React.useEffect(() => {
+    localStorage.setItem('zoniraj_cart', JSON.stringify(cart));
+  }, [cart]);
 
   React.useEffect(() => {
     Promise.all([
@@ -342,6 +368,9 @@ function AppContent() {
       } else if (hash === 'privacy' || hash === 'privacy-policy') {
         setCurrentView('privacy');
         window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (hash === 'admin-call') {
+        setCurrentView('admin-call');
+        window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash) {
         const cleanHash = hash.toLowerCase().replace(/[^a-z0-9]/g, '');
         const knownCategories = [
@@ -421,6 +450,8 @@ function AppContent() {
         <SellGoldPage onBack={() => { window.location.hash = ''; }} />
       ) : currentView === 'buy-gold' ? (
         <BuyGoldPage onBack={() => { window.location.hash = ''; }} />
+      ) : currentView === 'admin-call' ? (
+        <AdminVideoPanel />
       ) : (
         <>
           <Hero />
@@ -440,6 +471,8 @@ function AppContent() {
       )}
       <Footer />
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      {/* Global Video Call Modal — renders on top of everything */}
+      <VideoCallModal />
 
       {/* Floating WhatsApp and Call widgets */}
       <div className="floating-contact-widgets">
@@ -474,7 +507,9 @@ export default function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <AppContent />
+        <VideoCallProvider>
+          <AppContent />
+        </VideoCallProvider>
       </CartProvider>
     </AuthProvider>
   );
