@@ -29,6 +29,9 @@ export default function VideoCallPanel() {
   const [camOff, setCamOff] = useState(false);
   const [connected, setConnected] = useState(false);
 
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+
   const socketRef = useRef<Socket | null>(null);
   const peerRef = useRef<SimplePeer.Instance | null>(null);
   const localStreamRef = useRef<MediaStream | null>(null);
@@ -36,6 +39,19 @@ export default function VideoCallPanel() {
 
   const localVideoRef = useRef<HTMLVideoElement>(null);
   const remoteVideoRef = useRef<HTMLVideoElement>(null);
+
+  // Attach local and remote media streams when video elements mount
+  useEffect(() => {
+    if (localVideoRef.current && localStream) {
+      localVideoRef.current.srcObject = localStream;
+    }
+  }, [localStream, callStatus]);
+
+  useEffect(() => {
+    if (remoteVideoRef.current && remoteStream) {
+      remoteVideoRef.current.srcObject = remoteStream;
+    }
+  }, [remoteStream, callStatus]);
 
   // ── Connect socket once ──────────────────────────────────────────────────
   useEffect(() => {
@@ -84,6 +100,8 @@ export default function VideoCallPanel() {
     }
     if (localVideoRef.current) localVideoRef.current.srcObject = null;
     if (remoteVideoRef.current) remoteVideoRef.current.srcObject = null;
+    setLocalStream(null);
+    setRemoteStream(null);
     callerSocketId.current = null;
     setIncomingCall(null);
   }, []);
@@ -108,7 +126,7 @@ export default function VideoCallPanel() {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
       localStreamRef.current = stream;
-      if (localVideoRef.current) localVideoRef.current.srcObject = stream;
+      setLocalStream(stream);
 
       const peer = new SimplePeer({ initiator: false, trickle: true, stream });
       peerRef.current = peer;
@@ -123,8 +141,8 @@ export default function VideoCallPanel() {
         }
       });
 
-      peer.on('stream', (remoteStream: MediaStream) => {
-        if (remoteVideoRef.current) remoteVideoRef.current.srcObject = remoteStream;
+      peer.on('stream', (rStream: MediaStream) => {
+        setRemoteStream(rStream);
         setCallStatus('connected');
       });
 
@@ -416,11 +434,6 @@ export default function VideoCallPanel() {
         </div>
       )}
 
-      {/* ── Hidden video elements for idle/ringing (needed for stream attachment) ── */}
-      <div style={{ display: 'none' }}>
-        <video ref={localVideoRef} autoPlay playsInline muted />
-        <video ref={remoteVideoRef} autoPlay playsInline />
-      </div>
     </div>
   );
 }

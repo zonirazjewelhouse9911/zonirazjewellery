@@ -14,18 +14,18 @@ export default function VideoCallModal() {
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
 
-  // Attach streams to video elements
+  // Attach streams to video elements when mounted or stream updates
   useEffect(() => {
     if (localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
     }
-  }, [localStream]);
+  }, [localStream, callStatus]);
 
   useEffect(() => {
     if (remoteVideoRef.current && remoteStream) {
       remoteVideoRef.current.srcObject = remoteStream;
     }
-  }, [remoteStream]);
+  }, [remoteStream, callStatus]);
 
   // Don't render if idle
   if (callStatus === 'idle') return null;
