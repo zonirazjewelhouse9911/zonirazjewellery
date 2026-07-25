@@ -1,6 +1,7 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { products } from '../data/products';
 import { CartContext } from '../context/CartContext';
+import { API_BASE_URL } from '../config';
 
 // Frequently bought together items (earrings, pendants, etc.)
 const frequentlyBoughtItems = [
@@ -739,15 +740,21 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
               
               {/* Items Card List */}
               <div className="cart-items-card">
-                {cartList.map(product => {
-                  const id = product.id;
-                  const qty = product.quantity;
+                {cartList.map((product, index) => {
+                  const id = product.id || product._id || product.product_id || index;
+                  const qty = product.quantity || 1;
+                  const pPrice = Number(product.price || product.base_price_withGST || 0);
+                  const pOrigPrice = Number(product.originalPrice || product.mrp || (pPrice ? Math.round(pPrice * 1.25) : 0));
+                  const pSavings = Math.max(0, pOrigPrice - pPrice);
+                  const pName = product.name || product.product_title || 'Jewellery Item';
+                  const pImage = product.image || product.product_image || '/images/site/default-ring.jpg';
+
                   return (
                     <div className="cart-item-row" key={id}>
                       {/* Delete button */}
                       <button 
                         className="cart-item-remove-btn"
-                        onClick={() => handleRemoveItem(product.id)}
+                        onClick={() => handleRemoveItem(id)}
                         aria-label="Remove item"
                       >
                         ✕
@@ -755,19 +762,23 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
 
                       {/* Image Thumbnail */}
                       <div className="cart-item-img-wrap">
-                        <img src={product.image} alt={product.name} className="cart-item-img" />
+                        <img src={pImage} alt={pName} className="cart-item-img" />
                         <span className="cart-item-badge">★ 1k+ bought this</span>
                       </div>
 
                       {/* Details */}
                       <div className="cart-item-details">
-                        <h3 className="cart-item-title">{product.name}</h3>
+                        <h3 className="cart-item-title">{pName}</h3>
                         <div className="cart-item-price-row">
-                          <span className="cart-item-price">₹{product.price.toLocaleString('en-IN')}</span>
-                          <span className="cart-item-old-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
-                          <span className="cart-item-save">
-                            Save ₹{(product.originalPrice - product.price).toLocaleString('en-IN')}
-                          </span>
+                          <span className="cart-item-price">₹{pPrice.toLocaleString('en-IN')}</span>
+                          {pOrigPrice > pPrice && (
+                            <span className="cart-item-old-price">₹{pOrigPrice.toLocaleString('en-IN')}</span>
+                          )}
+                          {pSavings > 0 && (
+                            <span className="cart-item-save">
+                              Save ₹{pSavings.toLocaleString('en-IN')}
+                            </span>
+                          )}
                         </div>
 
                         {/* Action controllers */}
@@ -777,7 +788,7 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
                             <select 
                               className="qty-select"
                               value={qty}
-                              onChange={(e) => handleQtyChange(product.id, parseInt(e.target.value))}
+                              onChange={(e) => handleQtyChange(id, parseInt(e.target.value))}
                             >
                               {[1, 2, 3, 4, 5].map(q => (
                                 <option key={q} value={q}>{q}</option>
@@ -808,22 +819,28 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
                   <span style={{ fontSize: '12px', color: '#634d40', cursor: 'pointer' }}>▲</span>
                 </h4>
                 <div className="fbt-grid">
-                  {frequentlyBoughtItems.map(item => (
-                    <div className="fbt-item" key={item.id}>
-                      <img src={item.image} alt={item.name} className="fbt-img" />
-                      <h5 className="fbt-name">{item.name}</h5>
-                      <div className="fbt-price-row">
-                        <span className="fbt-price">₹{item.price.toLocaleString('en-IN')}</span>
-                        <span className="fbt-old-price">₹{item.originalPrice.toLocaleString('en-IN')}</span>
+                  {frequentlyBoughtItems.map(item => {
+                    const fbtPrice = Number(item.price || 0);
+                    const fbtOrigPrice = Number(item.originalPrice || fbtPrice);
+                    return (
+                      <div className="fbt-item" key={item.id}>
+                        <img src={item.image} alt={item.name} className="fbt-img" />
+                        <h5 className="fbt-name">{item.name}</h5>
+                        <div className="fbt-price-row">
+                          <span className="fbt-price">₹{fbtPrice.toLocaleString('en-IN')}</span>
+                          {fbtOrigPrice > fbtPrice && (
+                            <span className="fbt-old-price">₹{fbtOrigPrice.toLocaleString('en-IN')}</span>
+                          )}
+                        </div>
+                        <button 
+                          className="fbt-add-btn"
+                          onClick={() => handleAddFBT(item)}
+                        >
+                          + ADD
+                        </button>
                       </div>
-                      <button 
-                        className="fbt-add-btn"
-                        onClick={() => handleAddFBT(item)}
-                      >
-                        + ADD
-                      </button>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 

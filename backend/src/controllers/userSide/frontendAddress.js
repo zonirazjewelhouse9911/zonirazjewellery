@@ -16,7 +16,9 @@ const mapToClientAddress = (mongoAddress) => ({
 
 exports.getAddresses = async (req, res) => {
     try {
-        const user_id = req.user._id;
+        const user_id = req.user?._id || req.user?.id;
+        if (!user_id) return res.status(401).json({ error: 'User authentication required' });
+        
         const addressDoc = await Address.findOne({ user_id });
         if (!addressDoc) return res.status(200).json([]);
         
@@ -30,7 +32,9 @@ exports.getAddresses = async (req, res) => {
 
 exports.addAddress = async (req, res) => {
     try {
-        const user_id = req.user._id;
+        const user_id = req.user?._id || req.user?.id;
+        if (!user_id) return res.status(401).json({ error: 'User authentication required' });
+
         const { fullName, mobile, flatNumber, streetAddress, landmark, area, city, state, pincode, isDefault } = req.body;
 
         let addressDoc = await Address.findOne({ user_id });
@@ -71,7 +75,8 @@ exports.addAddress = async (req, res) => {
 
 exports.updateAddress = async (req, res) => {
     try {
-        const user_id = req.user._id;
+        const user_id = req.user?._id || req.user?.id;
+        if (!user_id) return res.status(401).json({ error: 'User authentication required' });
         const addressId = req.params.id;
         const { fullName, mobile, flatNumber, streetAddress, landmark, area, city, state, pincode, isDefault } = req.body;
 
@@ -111,7 +116,8 @@ exports.updateAddress = async (req, res) => {
 
 exports.deleteAddress = async (req, res) => {
     try {
-        const user_id = req.user._id;
+        const user_id = req.user?._id || req.user?.id;
+        if (!user_id) return res.status(401).json({ error: 'User authentication required' });
         const addressId = req.params.id;
 
         let addressDoc = await Address.findOne({ user_id });

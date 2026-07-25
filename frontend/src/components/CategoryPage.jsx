@@ -1181,7 +1181,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 10000;
+          z-index: 999999 !important;
           animation: fadeIn 0.25s ease-out;
         }
         .modal-content {

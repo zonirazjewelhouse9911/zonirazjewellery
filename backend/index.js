@@ -88,6 +88,9 @@ app.use('/api', categoryRoutes);
 const bannerRoutes = require('./src/routes/bannerRoutes');
 app.use('/api', bannerRoutes);
 
+const adminAuthRoutes = require('./src/routes/adminAuthRoutes');
+app.use('/api/admin/auth', adminAuthRoutes);
+
 const userRoutes = require('./src/routes/userRoutes');
 app.use('/api', userRoutes);
 
@@ -139,6 +142,15 @@ app.use('/api', jewelleryPricingRoutes);
 
 const basePricingRoutes = require('./src/routes/basePricing');
 app.use('/api', basePricingRoutes);
+
+const pincodeRoutes = require('./src/routes/pincodeRoutes');
+app.use('/api', pincodeRoutes);
+
+const goldMineRoutes = require('./src/routes/goldMineRoutes');
+app.use('/api', goldMineRoutes);
+
+const razorpayRoutes = require('./src/routes/razorpayRoutes');
+app.use('/api/razorpay', razorpayRoutes);
 
 // ─── Video Call Admin Status REST endpoint ────────────────────────────────────
 // Track online admins in memory (socketId -> adminInfo)

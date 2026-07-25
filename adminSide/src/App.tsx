@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import AdminLogin from './pages/AdminLogin';
+import Dashboard from './pages/Dashboard';
 import ProductEditor from './pages/ProductEditor';
 import Orders from './pages/Orders';
 import Categories from './pages/Categories';
@@ -10,6 +12,7 @@ import SellGoldInquiries from './pages/SellGoldInquiries';
 import Banners from './pages/Banners';
 import PricingSettings from './pages/PricingSettings';
 import VideoCallPanel from './pages/VideoCallPanel';
+import GoldMineWallets from './pages/GoldMineWallets';
 import { resolveProductImage } from './lib/imageResolver';
 import { 
   Grid, 
@@ -39,6 +42,7 @@ const MENU_ITEMS = [
   { id: 'overview', label: 'Overview', icon: Grid },
   { id: 'products', label: 'Products', icon: Package },
   { id: 'orders', label: 'Orders', icon: ShoppingBag },
+  { id: 'goldmine', label: '10+1 Gold Wallets', icon: Coins },
   { id: 'categories', label: 'Categories', icon: Tag },
   { id: 'customers', label: 'Customers', icon: Users },
   { id: 'collections', label: 'Collections', icon: Layers },
@@ -64,7 +68,8 @@ const CATEGORIES = [
 ];
 
 function App() {
-  const [activeMenu, setActiveMenu] = useState('products');
+  const [adminToken, setAdminToken] = useState<string | null>(() => localStorage.getItem('adminToken'));
+  const [activeMenu, setActiveMenu] = useState('overview');
   const [selectedProductId, setSelectedProductId] = useState<string | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -72,6 +77,19 @@ function App() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // If not authenticated, render Admin Login screen
+  if (!adminToken) {
+    return (
+      <AdminLogin 
+        onLoginSuccess={(token) => {
+          localStorage.setItem('adminToken', token);
+          setAdminToken(token);
+          setActiveMenu('overview');
+        }} 
+      />
+    );
+  }
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -196,7 +214,11 @@ function App() {
         {/* Sidebar Sign Out */}
         <div className="p-6 border-t border-white/5">
           <button 
-            onClick={() => alert('Signing out of Atelier...')}
+            onClick={() => {
+              localStorage.removeItem('adminToken');
+              localStorage.removeItem('adminUser');
+              setAdminToken(null);
+            }}
             className="w-full flex items-center space-x-4 px-5 py-3.5 rounded-xl text-left text-xs uppercase tracking-widest font-black text-[#efe7e5]/60 hover:text-red-300 hover:bg-red-500/10 transition-all cursor-pointer"
           >
             <LogOut size={16} className="shrink-0" />
@@ -352,8 +374,12 @@ function App() {
                 )}
               </div>
             </div>
+          ) : activeMenu === 'overview' ? (
+            <Dashboard onNavigate={(page) => setActiveMenu(page)} />
           ) : activeMenu === 'orders' ? (
             <Orders />
+          ) : activeMenu === 'goldmine' ? (
+            <GoldMineWallets />
           ) : activeMenu === 'categories' ? (
             <Categories />
           ) : activeMenu === 'customers' ? (

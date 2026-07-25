@@ -2,7 +2,8 @@ const addressModel = require("../../models/address");
 
 exports.user_address_manager = async (req, res) => {
     try {
-      const user_id = req.user._id;
+      const user_id = req.user?._id || req.user?.id;
+      if (!user_id) return { message: "User not authenticated", data: { entries: [] }, success: false };
       let address_data = await addressModel.findOne({ user_id });
       
       if (!address_data) {
@@ -29,7 +30,8 @@ exports.user_address_manager = async (req, res) => {
 
 exports.user_address_add = async (req, res) => {
     try {
-      const user_id = req.user._id;
+      const user_id = req.user?._id || req.user?.id;
+      if (!user_id) return { message: "User not authenticated", data: { entries: [] }, success: false };
       const {
         name,
         mobile,

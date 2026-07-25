@@ -37,7 +37,12 @@ const lifestyleImages = [
 ];
 
 const sizeOptions = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-const metalOptions = ['14 KT Yellow', '14 KT Rose', '18 KT Yellow', '18 KT White', 'Platinum'];
+const karatOptions = ['14 KT', '18 KT', '22 KT', '24 KT', 'Platinum'];
+const colorOptions = [
+  { id: 'Yellow', name: 'Yellow Gold', colorCode: '#E5C158' },
+  { id: 'Rose', name: 'Rose Gold', colorCode: '#E09B8D' },
+  { id: 'White', name: 'White Gold', colorCode: '#D5D9E0' }
+];
 const diamondOptions = ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
 
 export default function ProductDetailPage({ product, products: propProducts = [], wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
@@ -68,7 +73,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
       ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
       : 12
   );
-  const [selectedMetal, setSelectedMetal] = useState('14 KT Yellow');
+  const [selectedKarat, setSelectedKarat] = useState('14 KT');
+  const [selectedColor, setSelectedColor] = useState('Yellow');
+  const selectedMetal = selectedKarat === 'Platinum' ? 'Platinum' : `${selectedKarat} ${selectedColor}`;
   const [selectedDiamond, setSelectedDiamond] = useState('IJ-SI');
   const [pincode, setPincode] = useState('');
   const [pincodeMsg, setPincodeMsg] = useState('');
@@ -82,10 +89,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const { addToCart } = useContext(CartContext);
   const { requireAuth } = useContext(AuthContext);
 
-  // Reset selected image when metal color changes
+  // Reset selected image when metal karat or color changes
   useEffect(() => {
     setSelectedImage(0);
-  }, [selectedMetal]);
+  }, [selectedKarat, selectedColor]);
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -348,6 +355,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
   // Resolve gallery images dynamically based on selected metal color
   let colorGalleryImages = null;
+  const metalLower = (selectedColor || 'yellow').toLowerCase();
+
   if (product.gallery) {
     let galleryObj = {};
     if (typeof product.gallery === 'string') {
@@ -360,7 +369,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
       galleryObj = product.gallery;
     }
 
-    const metalLower = (selectedMetal || '').toLowerCase();
     let rawList = [];
     if (metalLower.includes('white')) {
       rawList = galleryObj['1'] || galleryObj['white'] || [];
@@ -379,9 +387,37 @@ export default function ProductDetailPage({ product, products: propProducts = []
     }
   }
 
+  // Fallback color image filtering if product.images array is present
+  if ((!colorGalleryImages || colorGalleryImages.length === 0) && product.images && product.images.length > 0) {
+    const matchedByUrl = product.images.filter(imgUrl => {
+      const urlLower = String(imgUrl).toLowerCase();
+      if (metalLower.includes('rose')) return urlLower.includes('rose') || urlLower.includes('pink');
+      if (metalLower.includes('white')) return urlLower.includes('white') || urlLower.includes('silver');
+      if (metalLower.includes('yellow')) return urlLower.includes('yellow') || urlLower.includes('gold');
+      return false;
+    });
+
+    if (matchedByUrl.length > 0) {
+      colorGalleryImages = matchedByUrl;
+    } else if (product.images.length > 1) {
+      if (selectedColor === 'Rose' && product.images[1]) {
+        colorGalleryImages = [product.images[1]];
+      } else if (selectedColor === 'White' && product.images[2]) {
+        colorGalleryImages = [product.images[2]];
+      } else if (selectedColor === 'Yellow' && product.images[0]) {
+        colorGalleryImages = [product.images[0]];
+      }
+    }
+  }
+
   const allImages = colorGalleryImages && colorGalleryImages.length > 0
     ? colorGalleryImages
     : (product.images && product.images.length > 0 ? product.images : [product.image]);
+
+  const handleColorChange = (colorId) => {
+    setSelectedColor(colorId);
+    setSelectedImage(0);
+  };
 
   const handleMobileScroll = (e) => {
     const scrollLeft = e.target.scrollLeft;
@@ -1766,13 +1802,13 @@ export default function ProductDetailPage({ product, products: propProducts = []
               </div>
             )}
             <div className="pdp-custom-item">
-              <span className="pdp-custom-label">Metal</span>
+              <span className="pdp-custom-label">Purity</span>
               <select
                 className="pdp-custom-select"
-                value={selectedMetal}
-                onChange={e => setSelectedMetal(e.target.value)}
+                value={selectedKarat}
+                onChange={e => setSelectedKarat(e.target.value)}
               >
-                {metalOptions.map(m => <option key={m} value={m}>{m}</option>)}
+                {karatOptions.map(k => <option key={k} value={k}>{k}</option>)}
               </select>
             </div>
             <div className="pdp-custom-item">
@@ -1809,13 +1845,80 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
                 <div className="pdp-customise-summary">
                   <div><strong>Size</strong><span>{selectedSize}</span></div>
-                  <div><strong>Metal</strong><span>{selectedMetal}</span></div>
+                  <div><strong>Purity</strong><span>{selectedKarat}</span></div>
+                  {selectedKarat !== 'Platinum' && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <strong>Color</strong>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px' }}>
+                        <span style={{
+                          width: '12px',
+                          height: '12px',
+                          borderRadius: '50%',
+                          backgroundColor: colorOptions.find(c => c.id === selectedColor)?.colorCode || '#E5C158',
+                          display: 'inline-block',
+                          border: '1px solid #c4b5ac'
+                        }} />
+                        {colorOptions.find(c => c.id === selectedColor)?.name}
+                      </span>
+                    </div>
+                  )}
                   <div><strong>Diamond</strong><span>{selectedDiamond}</span></div>
                 </div>
               </div>
 
               <div className="pdp-customise-note">
                 Your choices are ready to be reviewed before checkout. We’ll style this piece to match your preferred finish and sparkle.
+              </div>
+            </div>
+          )}
+
+          {/* Dedicated Choose Color Card between Customise Card and Sizing Guide */}
+          {selectedKarat !== 'Platinum' && (
+            <div className="pdp-color-picker-card" style={{
+              margin: '14px 0',
+              padding: '12px 16px',
+              backgroundColor: '#FAF8F5',
+              border: '1px solid #EBE4D8',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              gap: '12px'
+            }}>
+              <div>
+                <div style={{ fontSize: '12px', fontWeight: '700', color: '#231535', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Choose Metal Color
+                </div>
+                <div style={{ fontSize: '11px', color: '#736b63', marginTop: '2px' }}>
+                  Selected: <span style={{ fontWeight: '600', color: '#231535' }}>{colorOptions.find(c => c.id === selectedColor)?.name}</span>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                {colorOptions.map(c => {
+                  const isSelected = selectedColor === c.id;
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => handleColorChange(c.id)}
+                      title={c.name}
+                      style={{
+                        width: '26px',
+                        height: '26px',
+                        borderRadius: '50%',
+                        backgroundColor: c.colorCode,
+                        border: isSelected ? '2px solid #231535' : '1px solid #d4c5bd',
+                        boxShadow: isSelected ? '0 0 0 2px #A98E73' : '0 1px 3px rgba(0,0,0,0.08)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                        transform: isSelected ? 'scale(1.15)' : 'scale(1)',
+                        outline: 'none',
+                        padding: 0
+                      }}
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -1967,8 +2070,11 @@ export default function ProductDetailPage({ product, products: propProducts = []
         </div>
 
         {activeTab === 'details' && (() => {
-          const netWeight = pricingDetails.goldWeight || product.gold_weight || product.weight || 0;
-          const grossWeight = netWeight + ((product.diamond_weight || 0) + (product.gemstone_weight || 0)) * 0.2;
+          const grossWeight = product.gross_weight || product.gold_weight || product.weight || 0;
+          const diamondW_g = (product.diamond_weight || 0) * 0.2;
+          const gemstoneW_g = (product.gemstone_weight || 0) * 0.2;
+          const netWeight = Math.max(0, grossWeight - diamondW_g - gemstoneW_g);
+
           const displayKarat = selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : `${selectedMetal.split(' ')[0]} KT`);
           const displayColor = selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : (selectedMetal.includes('Yellow') ? 'Yellow' : selectedMetal.includes('Rose') ? 'Rose' : 'White'));
           
@@ -2094,16 +2200,15 @@ export default function ProductDetailPage({ product, products: propProducts = []
         )}
 
         {activeTab === 'weight' && (() => {
-          const goldW = pricingDetails.goldWeight || product.gold_weight || product.weight || 0;
-          const grossW = product.gold_weight || product.weight || 0;
-          
           const diamondW_ct = product.diamond_weight || 0;
           const diamondW_g = diamondW_ct * 0.2;
           
           const gemstoneW_ct = product.gemstone_weight || 0;
           const gemstoneW_g = gemstoneW_ct * 0.2;
           
-          const netW = goldW + diamondW_g + gemstoneW_g;
+          const grossW = product.gross_weight || product.gold_weight || product.weight || 0;
+          const netW = Math.max(0, grossW - diamondW_g - gemstoneW_g);
+          const goldW = netW;
 
           return (
             <div className="pdp-details-grid animate-in fade-in duration-300">
@@ -2123,14 +2228,14 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 {diamondW_ct > 0 && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Diamond Weight</span>
-                    <span className="pdp-detail-val">{diamondW_ct.toFixed(2)} ct ({diamondW_g.toFixed(3)} g)</span>
+                    <span className="pdp-detail-val">{diamondW_ct.toFixed(2)} ct</span>
                   </div>
                 )}
                 
                 {gemstoneW_ct > 0 && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Gemstone Weight</span>
-                    <span className="pdp-detail-val">{gemstoneW_ct.toFixed(2)} ct ({gemstoneW_g.toFixed(3)} g)</span>
+                    <span className="pdp-detail-val">{gemstoneW_ct.toFixed(2)} ct</span>
                   </div>
                 )}
                 

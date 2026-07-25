@@ -72,16 +72,20 @@ exports.productPricing = async (req, res) => {
         }
 
         if (product_data.product_type && product_data.product_type.toLowerCase() === "diamond") {
-            const total_diamond_weight = (product_data.diamond_weight || 0) * (product_data.diamond_count || 1);
+            const total_diamond_weight = (product_data.diamond_weight || 0);
             real_diamond_weight = total_diamond_weight;
 
-            // if (product_data.product_category === "Rings") {
-            // Base weight at reference size 12, adjusted proportionally
-            real_gold_weight = (isNaN(size) || size === 12)
+            const gross_gold_weight = (isNaN(size) || size === 12)
                 ? product_data.gold_weight
                 : product_data.gold_weight + (size - 12) * weight_differenceINsize_g;
 
-            // diamond rate calculation for castum
+            // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Gemstone Weight (g)
+            const diamond_weight_g = total_diamond_weight * 0.2;
+            const gemstone_weight_g = (product_data.gemstone_weight || 0) * 0.2;
+            const net_gold_weight = Math.max(0, gross_gold_weight - diamond_weight_g - gemstone_weight_g);
+            real_gold_weight = net_gold_weight;
+
+            // diamond rate calculation for custom
             switch (rawDiamond) {
                 case "IJ-SI":
                     diamond_rate = current_price.diamond_rate_ij_si;
@@ -102,51 +106,50 @@ exports.productPricing = async (req, res) => {
             // 14k is the base weight reference; convert weight + rate for the selected karat
             switch (rawMetal) {
                 case "9k": {
-                    const gold_rate_9k = current_price.gold_rate_24k * 9 / 24;
-                    const adjusted_weight = real_gold_weight * 9 / 14;
+                    const gold_rate_9k = current_price.gold_rate_24k * 37 / 100;
+                    const adjusted_weight = net_gold_weight - 21 / 100;
                     item_gold_price = adjusted_weight * gold_rate_9k;
                     real_gold_weight = adjusted_weight;
                     break;
                 }
                 case "18k": {
-                    const gold_rate_18k = current_price.gold_rate_24k * 18 / 24;
-                    const adjusted_weight = real_gold_weight * 18 / 14;
+                    const gold_rate_18k = current_price.gold_rate_24k * 75 / 100;
+                    const adjusted_weight = net_gold_weight + 16.5 / 100;
                     item_gold_price = adjusted_weight * gold_rate_18k;
                     real_gold_weight = adjusted_weight;
                     break;
                 }
                 case "22k": {
-                    const gold_rate_22k = current_price.gold_rate_24k * 22 / 24;
-                    const adjusted_weight = real_gold_weight * 22 / 14;
+                    const gold_rate_22k = current_price.gold_rate_24k * 91.6 / 100;
+                    const adjusted_weight = net_gold_weight + 33.1 / 100;
                     item_gold_price = adjusted_weight * gold_rate_22k;
                     real_gold_weight = adjusted_weight;
                     break;
                 }
                 case "24k": {
                     const gold_rate_24k = current_price.gold_rate_24k * 24 / 24;
-                    const adjusted_weight = real_gold_weight * 24 / 14;
+                    const adjusted_weight = net_gold_weight + 41.5 / 100;
                     item_gold_price = adjusted_weight * gold_rate_24k;
                     real_gold_weight = adjusted_weight;
                     break;
                 }
                 default: {
                     // 14k fallback (also covers rawMetal === "14k")
-                    const gold_rate_14k = current_price.gold_rate_24k * 14 / 24;
-                    item_gold_price = real_gold_weight * gold_rate_14k;
+                    const gold_rate_14k = Math.floor(current_price.gold_rate_24k * 58.5 / 100);
+                    item_gold_price = Math.floor(net_gold_weight * gold_rate_14k);
+                    real_gold_weight = net_gold_weight;
                 }
             }
-            // } else {
-            //     // TODO: handle gold weight/pricing for non-Ring diamond categories
-            //     console.log(`No gold pricing branch defined for category: ${product_data.product_category}`);
-            // }
 
             item_diamond_price = total_diamond_weight * diamond_rate;
+
+            // Making charges = Net Gold Weight * 24K Gold Rate * Making Percentage / 100
+            const gold_cost_24k = net_gold_weight * current_price.gold_rate_24k;
+            making_charges_amount = Math.round(gold_cost_24k * (product_data.making_charges || 0) / 100);
+
             const materials_cost = item_gold_price + item_diamond_price + solitaire_price + gemstone_price;
-            making_charges_amount = materials_cost * (product_data.making_charges || 0) / 100;
-            
             item_base_price = materials_cost + making_charges_amount;
             item_base_price_withGST = Math.round(item_base_price + (item_base_price * gst_percent / 100));
-            console.log(item_base_price_withGST, "base_price_withGST");
 
         } else {
             console.log(`No pricing branch defined for product_type: ${product_data.product_type}`);
@@ -165,7 +168,7 @@ exports.productPricing = async (req, res) => {
             diamond_weight: real_diamond_weight,
             diamond_rate_used: diamond_rate,
             diamond_grade: rawDiamond || null,
-            making_charges: Math.round(making_charges_amount)
+            making_charges: making_charges_amount
         });
 
     } catch (error) {

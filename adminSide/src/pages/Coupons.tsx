@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, Search, X, Plus, Ticket, CheckCircle2, AlertCircle, Edit2, TrendingUp, Activity } from 'lucide-react';
+import { Loader2, Search, X, Plus, Ticket, CheckCircle2, AlertCircle, Edit2, TrendingUp, Activity, MessageSquare, Send, Users, CheckSquare, Square, ExternalLink } from 'lucide-react';
 import { cn } from '../lib/utils';
 
 interface Restrictions {
@@ -45,6 +45,77 @@ export default function Coupons() {
   // Modals state
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCoupon, setSelectedCoupon] = useState<Coupon | null>(null);
+
+  // WhatsApp Broadcast Modal State
+  const [waModalOpen, setWaModalOpen] = useState(false);
+  const [waCoupon, setWaCoupon] = useState<Coupon | null>(null);
+  const [userList, setUserList] = useState<any[]>([]);
+  const [selectedUserIds, setSelectedUserIds] = useState<string[]>([]);
+  const [waCustomMessage, setWaCustomMessage] = useState('');
+  const [waLoading, setWaLoading] = useState(false);
+  const [waSending, setWaSending] = useState(false);
+  const [broadcastResult, setBroadcastResult] = useState<any>(null);
+
+  const handleOpenWhatsAppModal = async (coupon: Coupon) => {
+    setWaCoupon(coupon);
+    setWaModalOpen(true);
+    setWaLoading(true);
+    setBroadcastResult(null);
+    setWaCustomMessage(`✨ *Exclusive Offer from Zoniraz Jewels!* 💎\n\nHello {userName},\nUse promo code *${coupon.code}* on your next order to get *${coupon.discountValue}${coupon.discountType === 'percentage' ? '%' : ' ₹'} OFF*!\n\nRedeem now: http://localhost:5173/#checkout`);
+    
+    try {
+      const res = await fetch('/api/admin/users');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setUserList(data.data);
+        setSelectedUserIds(data.data.map((u: any) => u._id));
+      }
+    } catch (err) {
+      console.error('Failed to load users for WhatsApp coupon broadcast:', err);
+    } finally {
+      setWaLoading(false);
+    }
+  };
+
+  const toggleSelectUser = (id: string) => {
+    setSelectedUserIds(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const toggleSelectAllUsers = () => {
+    if (selectedUserIds.length === userList.length) {
+      setSelectedUserIds([]);
+    } else {
+      setSelectedUserIds(userList.map((u: any) => u._id));
+    }
+  };
+
+  const handleDispatchWhatsAppBroadcast = async () => {
+    if (!waCoupon || selectedUserIds.length === 0) return;
+    setWaSending(true);
+    try {
+      const res = await fetch('/api/admin/coupons/send-whatsapp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          couponId: waCoupon._id || waCoupon.code,
+          targetUserIds: selectedUserIds,
+          customMessage: waCustomMessage
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.data) {
+        setBroadcastResult(data.data);
+      } else {
+        alert(data.message || 'Failed to prepare WhatsApp broadcast');
+      }
+    } catch (err: any) {
+      alert(err.message || 'WhatsApp broadcast failed');
+    } finally {
+      setWaSending(false);
+    }
+  };
   
   // Form State
   const [formData, setFormData] = useState<Coupon>(DEFAULT_COUPON);
@@ -300,7 +371,7 @@ export default function Coupons() {
                 </div>
 
                 {/* Lower Block: Specs lists */}
-                <div className="p-8 space-y-4 text-[10px] tracking-[0.2em] font-black text-slate-400 uppercase">
+                <div className="p-6 space-y-3 text-[10px] tracking-[0.2em] font-black text-slate-400 uppercase">
                   <div className="flex items-center justify-between">
                     <span>Minimum Cart</span>
                     <span className="text-slate-800 font-bold tracking-normal">{formatPrice(coupon.minCartValue)}</span>
@@ -315,6 +386,18 @@ export default function Coupons() {
                       {coupon.usedCount} / {coupon.usageLimit}
                     </span>
                   </div>
+                </div>
+
+                {/* WhatsApp Broadcast Action Button */}
+                <div className="p-4 bg-slate-50/80 border-t border-slate-100 mt-auto">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenWhatsAppModal(coupon)}
+                    className="w-full py-2.5 px-4 rounded-2xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center space-x-2 transition-all shadow-sm cursor-pointer"
+                  >
+                    <MessageSquare size={14} />
+                    <span>Send via WhatsApp 📱</span>
+                  </button>
                 </div>
 
               </div>
@@ -476,6 +559,178 @@ export default function Coupons() {
             </div>
 
           </form>
+        </div>
+      )}
+
+      {/* WhatsApp Coupon Broadcast Modal */}
+      {waModalOpen && waCoupon && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-4 backdrop-blur-xs animate-in fade-in duration-300">
+          <div className="bg-white text-[#12100e] w-full max-w-2xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden max-h-[92vh] flex flex-col">
+            
+            {/* Modal Header */}
+            <div className="p-6 bg-emerald-700 text-white flex items-center justify-between shrink-0">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center">
+                  <MessageSquare size={20} className="text-emerald-200" />
+                </div>
+                <div>
+                  <span className="text-[9px] uppercase tracking-widest text-emerald-200 font-bold block">WhatsApp Coupon Broadcast</span>
+                  <h3 className="text-lg font-bold">
+                    Send Code <span className="font-mono bg-white/20 px-2 py-0.5 rounded text-white">{waCoupon.code}</span> ({waCoupon.discountValue}{waCoupon.discountType === 'percentage' ? '%' : ' ₹'} OFF)
+                  </h3>
+                </div>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setWaModalOpen(false)}
+                className="p-2 hover:bg-white/10 rounded-full transition-colors cursor-pointer text-white"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6 overflow-y-auto flex-1 text-xs">
+              
+              {/* Message Template Editor */}
+              <div className="space-y-2">
+                <label className="font-bold text-slate-700 text-xs flex items-center justify-between">
+                  <span>📱 Customize WhatsApp Message Template:</span>
+                  <span className="text-[10px] text-slate-400 font-normal">Supports &#123;userName&#125;, &#123;couponCode&#125;, &#123;discountValue&#125;</span>
+                </label>
+                <textarea
+                  rows={4}
+                  value={waCustomMessage}
+                  onChange={(e) => setWaCustomMessage(e.target.value)}
+                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs font-sans text-slate-800 focus:bg-white focus:border-emerald-500 outline-none leading-relaxed"
+                />
+              </div>
+
+              {/* Target User Selection */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                  <label className="font-bold text-slate-700 text-xs flex items-center space-x-2">
+                    <Users size={14} className="text-emerald-600" />
+                    <span>Select Target Customers ({selectedUserIds.length} / {userList.length} Selected):</span>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={toggleSelectAllUsers}
+                    className="text-xs font-bold text-emerald-600 hover:text-emerald-700 flex items-center space-x-1 cursor-pointer"
+                  >
+                    {selectedUserIds.length === userList.length ? <CheckSquare size={14} /> : <Square size={14} />}
+                    <span>{selectedUserIds.length === userList.length ? 'Deselect All' : 'Select All'}</span>
+                  </button>
+                </div>
+
+                {waLoading ? (
+                  <div className="py-8 flex flex-col items-center justify-center space-y-2 text-slate-400">
+                    <Loader2 size={24} className="animate-spin text-emerald-600" />
+                    <span>Loading registered users list...</span>
+                  </div>
+                ) : userList.length === 0 ? (
+                  <div className="py-6 text-center text-slate-400 font-medium bg-slate-50 rounded-2xl">
+                    No users found in database.
+                  </div>
+                ) : (
+                  <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-2xl divide-y divide-slate-100 bg-slate-50/50">
+                    {userList.map(u => {
+                      const isSelected = selectedUserIds.includes(u._id);
+                      return (
+                        <div 
+                          key={u._id}
+                          onClick={() => toggleSelectUser(u._id)}
+                          className={cn(
+                            "p-3 flex items-center justify-between cursor-pointer transition-colors hover:bg-white",
+                            isSelected ? "bg-emerald-50/50" : ""
+                          )}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {}}
+                              className="accent-emerald-600 w-4 h-4 rounded cursor-pointer"
+                            />
+                            <div>
+                              <div className="font-bold text-slate-800">{u.user_name || u.name || 'Valued Patron'}</div>
+                              <div className="text-[11px] text-slate-500">{u.phone_number || u.mobile || 'No mobile'} • {u.email || ''}</div>
+                            </div>
+                          </div>
+                          <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-full", isSelected ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600")}>
+                            {isSelected ? 'Included' : 'Skip'}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Broadcast Results (Links to open WhatsApp Web for each selected user) */}
+              {broadcastResult && (
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-3">
+                  <div className="font-bold text-emerald-800 flex items-center justify-between">
+                    <span>🎉 Twilio API Broadcast Prepared for {broadcastResult.totalUsers} Customers!</span>
+                  </div>
+                  <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-[11px] text-amber-800 font-medium">
+                    💡 <strong>Twilio Sandbox Tip:</strong> Recipient phones must join your Twilio Sandbox number (+1 415 523 8886) first. If not joined, click <strong>"Open WhatsApp Web"</strong> below to send directly in 1 click!
+                  </div>
+                  <div className="max-h-40 overflow-y-auto space-y-2 pr-1">
+                    {broadcastResult.userBroadcasts?.map((b: any, idx: number) => (
+                      <div key={idx} className="p-2.5 bg-white rounded-xl border border-emerald-100 flex items-center justify-between shadow-xs">
+                        <div>
+                          <div className="font-bold text-slate-800">{b.name}</div>
+                          <div className="text-[11px] text-slate-500">{b.phone || 'No Phone'} • <span className="text-emerald-700 font-semibold">{b.status || 'SENT'}</span></div>
+                        </div>
+                        {b.waUrl ? (
+                          <a
+                            href={b.waUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-[11px] flex items-center space-x-1.5 shadow-xs cursor-pointer"
+                          >
+                            <MessageSquare size={13} />
+                            <span>Open WhatsApp Web</span>
+                            <ExternalLink size={11} />
+                          </a>
+                        ) : (
+                          <span className="text-slate-400 italic text-[11px]">No valid phone</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-5 bg-slate-50 border-t border-slate-200 flex items-center justify-between shrink-0">
+              <span className="text-slate-500 font-medium text-xs">
+                {selectedUserIds.length} recipients selected
+              </span>
+              <div className="flex items-center space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setWaModalOpen(false)}
+                  className="px-4 py-2.5 border border-slate-200 text-slate-600 rounded-xl font-bold hover:bg-slate-100 transition-all cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  disabled={waSending || selectedUserIds.length === 0}
+                  onClick={handleDispatchWhatsAppBroadcast}
+                  className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl font-bold flex items-center space-x-2 transition-all shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  {waSending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+                  <span>Dispatch WhatsApp Campaign 🚀</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
         </div>
       )}
 

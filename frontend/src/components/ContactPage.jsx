@@ -382,7 +382,7 @@ export default function ContactPage() {
             </div>
             <h4>Call Us At</h4>
             <div className="contact-value">
-              <a href="tel:+919784836080" style={{ textDecoration: 'none', color: 'inherit' }}>97848 36080</a>
+              <a href="tel:+919784836060" style={{ textDecoration: 'none', color: 'inherit' }}>97848 36060</a>
             </div>
             <p className="timing-text">Mon-Sat: 10AM - 8PM, Sun: Closed</p>
           </div>

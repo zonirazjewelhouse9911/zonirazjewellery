@@ -31,6 +31,7 @@ import TermsPage from './components/TermsPage';
 import PrivacyPage from './components/PrivacyPage';
 import SellGoldPage from './components/SellGoldPage';
 import BuyGoldPage from './components/BuyGoldPage';
+import GoldMinePage from './components/GoldMinePage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -351,6 +352,9 @@ function AppContent() {
       } else if (hash === 'buy-gold' || hash === 'digital-gold') {
         setCurrentView('buy-gold');
         window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (hash === 'gold-mine' || hash === 'goldmine' || hash === '10-plus-1-plan') {
+        setCurrentView('gold-mine');
+        window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash === 'delivery' || hash === 'delivery-information') {
         setHelpCategory('delivery');
         setCurrentView('delivery');
@@ -418,7 +422,7 @@ function AppContent() {
 
   return (
     <>
-      <Header wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} />
+      <Header wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} allProducts={allProducts} />
       {currentView === 'product' ? (
         <ProductDetailPage
           product={selectedProduct}
@@ -459,6 +463,8 @@ function AppContent() {
         <SellGoldPage onBack={() => { window.location.hash = ''; }} />
       ) : currentView === 'buy-gold' ? (
         <BuyGoldPage onBack={() => { window.location.hash = ''; }} />
+      ) : currentView === 'gold-mine' ? (
+        <GoldMinePage />
       ) : currentView === 'admin-call' ? (
         <AdminVideoPanel />
       ) : (
@@ -486,7 +492,7 @@ function AppContent() {
       {/* Floating WhatsApp and Call widgets */}
       <div className="floating-contact-widgets">
         <a 
-          href="https://wa.me/919784836080" 
+          href="https://wa.me/919784836060" 
           target="_blank" 
           rel="noopener noreferrer" 
           className="floating-widget whatsapp-widget"
@@ -498,9 +504,9 @@ function AppContent() {
           </svg>
         </a>
         <a 
-          href="tel:+919784836080" 
+          href="tel:+919784836060" 
           className="floating-widget call-widget"
-          data-tooltip="Call Us: +91 97848 36080"
+          data-tooltip="Call Us: +91 97848 36060"
           aria-label="Call Us"
         >
           <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">

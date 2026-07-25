@@ -4,12 +4,21 @@ import { AuthContext } from '../context/AuthContext';
 
 export default function UserDashboard() {
   const { user, token, logout, updateProfile, deleteAccount } = useContext(AuthContext);
-  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'addresses' | 'orders'
+  const [activeTab, setActiveTab] = useState(() => {
+    const hash = window.location.hash.toLowerCase();
+    if (hash.includes('wallet')) return 'wallet';
+    if (hash.includes('order')) return 'orders';
+    if (hash.includes('address')) return 'addresses';
+    return 'profile';
+  }); // 'profile' | 'wallet' | 'addresses' | 'orders'
   const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', email: '', mobile: '' });
   const [addresses, setAddresses] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [walletData, setWalletData] = useState(null);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
   const [loadingOrders, setLoadingOrders] = useState(false);
+  const [loadingWallet, setLoadingWallet] = useState(false);
+  const [selectedWalletKarat, setSelectedWalletKarat] = useState('24K');
 
   // Address creation/edit state
   const [showAddressForm, setShowAddressForm] = useState(false);
@@ -79,12 +88,31 @@ export default function UserDashboard() {
     }
   };
 
+  // Fetch Wallet
+  const fetchWallet = async () => {
+    const userEmail = user?.email;
+    if (!userEmail) return;
+    setLoadingWallet(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/goldmine/wallet?email=${encodeURIComponent(userEmail)}`);
+      const data = await res.json();
+      if (data.success) {
+        setWalletData(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching wallet:', err);
+    } finally {
+      setLoadingWallet(false);
+    }
+  };
+
   useEffect(() => {
-    if (token) {
+    if (user) {
       if (activeTab === 'addresses') fetchAddresses();
       if (activeTab === 'orders') fetchOrders();
+      if (activeTab === 'wallet') fetchWallet();
     }
-  }, [activeTab, token]);
+  }, [activeTab, user]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -200,6 +228,7 @@ export default function UserDashboard() {
           {/* SIDEBAR TABS */}
           <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #dbcfcb', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
             <button onClick={() => setActiveTab('profile')} style={{ ...tabBtnStyle, ...(activeTab === 'profile' ? activeTabStyle : {}) }}>👤 My Profile</button>
+            <button onClick={() => setActiveTab('wallet')} style={{ ...tabBtnStyle, ...(activeTab === 'wallet' ? activeTabStyle : {}), backgroundColor: activeTab === 'wallet' ? '#2b221d' : '#fffdf7', color: activeTab === 'wallet' ? '#ffffff' : '#a37b34', fontWeight: '600' }}>✨ Gold Wallet</button>
             <button onClick={() => setActiveTab('addresses')} style={{ ...tabBtnStyle, ...(activeTab === 'addresses' ? activeTabStyle : {}) }}>📍 Saved Addresses</button>
             <button onClick={() => setActiveTab('orders')} style={{ ...tabBtnStyle, ...(activeTab === 'orders' ? activeTabStyle : {}) }}>📦 Order History</button>
             <button onClick={logout} style={{ ...tabBtnStyle, color: '#ff4d4f' }}>🚪 Secure Logout</button>
@@ -234,6 +263,204 @@ export default function UserDashboard() {
                   </div>
                   <button type="submit" style={saveBtnStyle}>SAVE CHANGES</button>
                 </form>
+              </div>
+            )}
+
+            {/* GOLD WALLET TAB */}
+            {activeTab === 'wallet' && (
+              <div>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '10px' }}>
+                  <div>
+                    <h2 style={{ ...panelTitleStyle, margin: 0 }}>My Gold Wallet Passbook</h2>
+                    <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#746380' }}>
+                      Every EMI paid in your 10+1 Gold Mine scheme is stored as pure gold weight in your wallet.
+                    </p>
+                  </div>
+                  <button onClick={fetchWallet} style={addAddrBtnStyle}>
+                    🔄 Refresh Balance
+                  </button>
+                </div>
+
+                {loadingWallet ? (
+                  <p style={{ color: '#746380' }}>Loading your Gold Wallet details...</p>
+                ) : (
+                  <div>
+                    {/* GOLD WALLET CARD */}
+                    <div style={{
+                      background: 'linear-gradient(135deg, #1e2d42 0%, #2b221d 100%)',
+                      borderRadius: '20px',
+                      padding: '28px',
+                      color: '#ffffff',
+                      boxShadow: '0 10px 30px rgba(0,0,0,0.12)',
+                      marginBottom: '30px',
+                      position: 'relative',
+                      overflow: 'hidden'
+                    }}>
+                      <div style={{ position: 'absolute', top: '-40px', right: '-40px', width: '160px', height: '160px', borderRadius: '50%', background: 'radial-gradient(circle, rgba(200, 163, 89, 0.25) 0%, transparent 70%)', pointerEvents: 'none' }} />
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '13px', fontWeight: '700', letterSpacing: '1.5px', textTransform: 'uppercase', color: '#c8a359' }}>
+                            ZONIRAZ GOLD WALLET
+                          </span>
+                        </div>
+                        <div style={{ fontSize: '11px', background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '12px', color: '#e2e8f0' }}>
+                          Live 24K Gold Rate: <strong>₹{walletData?.currentLiveRate24k?.toLocaleString('en-IN') || 7200}/g</strong>
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '20px', alignItems: 'center' }}>
+                        {/* Balance Column */}
+                        <div>
+                          <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#cbd5e0', marginBottom: '4px' }}>
+                            Total Accumulated Gold ({selectedWalletKarat})
+                          </div>
+                          <div style={{ fontSize: '32px', fontWeight: '800', color: '#c8a359', fontFamily: "'Playfair Display', serif" }}>
+                            {walletData?.karatWeights?.[selectedWalletKarat] || 0} <span style={{ fontSize: '16px', color: '#ffffff', fontWeight: '500' }}>grams</span>
+                          </div>
+                          
+                          {/* Karat selector pills */}
+                          <div style={{ display: 'flex', gap: '6px', marginTop: '10px' }}>
+                            {['24K', '22K', '18K', '14K'].map(karat => (
+                              <button
+                                key={karat}
+                                onClick={() => setSelectedWalletKarat(karat)}
+                                style={{
+                                  padding: '3px 9px',
+                                  borderRadius: '12px',
+                                  fontSize: '10px',
+                                  fontWeight: '700',
+                                  border: selectedWalletKarat === karat ? '1px solid #c8a359' : '1px solid rgba(255,255,255,0.2)',
+                                  background: selectedWalletKarat === karat ? '#c8a359' : 'transparent',
+                                  color: selectedWalletKarat === karat ? '#1e2d42' : '#ffffff',
+                                  cursor: 'pointer'
+                                }}
+                              >
+                                {karat}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Current Market Value */}
+                        <div>
+                          <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#cbd5e0', marginBottom: '4px' }}>
+                            Current Market Valuation
+                          </div>
+                          <div style={{ fontSize: '24px', fontWeight: '700', color: '#ffffff' }}>
+                            ₹{(walletData?.currentMarketValue || 0).toLocaleString('en-IN')}
+                          </div>
+                          <div style={{ fontSize: '11px', color: '#a0aec0', marginTop: '4px' }}>
+                            Based on live 24K bullion rate
+                          </div>
+                        </div>
+
+                        {/* Total Deposited & Bonus */}
+                        <div>
+                          <div style={{ fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px', color: '#cbd5e0', marginBottom: '4px' }}>
+                            Cash Deposited & Bonus
+                          </div>
+                          <div style={{ fontSize: '14px', fontWeight: '600', color: '#ffffff' }}>
+                            Saved: ₹{(walletData?.totalAmountSaved || 0).toLocaleString('en-IN')}
+                          </div>
+                          <div style={{ fontSize: '12px', fontWeight: '600', color: '#9ae6b4', marginTop: '2px' }}>
+                            Zoniraz Bonus: +₹{(walletData?.totalBonusEarned || 0).toLocaleString('en-IN')} FREE
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* WALLET TRANSACTIONS HISTORY TABLE */}
+                    <h3 style={{ fontFamily: "'Playfair Display', serif", fontSize: '18px', color: '#2b221d', marginBottom: '16px' }}>
+                      Wallet Transaction Ledger ({walletData?.transactions?.length || 0})
+                    </h3>
+
+                    {(!walletData?.transactions || walletData.transactions.length === 0) ? (
+                      <div style={{ border: '1px solid #dbcfcb', borderRadius: '16px', padding: '30px', textAlign: 'center', backgroundColor: '#faf7f5' }}>
+                        <p style={{ color: '#746380', fontSize: '14px', margin: '0 0 12px 0' }}>
+                          No gold credits recorded in your wallet yet. Start a 10+1 Gold Mine scheme to accumulate gold every month!
+                        </p>
+                        <button onClick={() => window.location.hash = 'gold-mine'} style={saveBtnStyle}>
+                          START 10+1 GOLD PLAN NOW
+                        </button>
+                      </div>
+                    ) : (
+                      <div style={{ border: '1px solid #dbcfcb', borderRadius: '16px', overflow: 'hidden' }}>
+                        <div style={{ overflowX: 'auto' }}>
+                          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '12.5px', textAlign: 'left' }}>
+                            <thead>
+                              <tr style={{ backgroundColor: '#faf7f5', color: '#8c7365', borderBottom: '1px solid #dbcfcb', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '1px' }}>
+                                <th style={{ padding: '12px 16px' }}>Date</th>
+                                <th style={{ padding: '12px 16px' }}>Transaction & Plan ID</th>
+                                <th style={{ padding: '12px 16px' }}>Amount (₹)</th>
+                                <th style={{ padding: '12px 16px' }}>24K Rate</th>
+                                <th style={{ padding: '12px 16px' }}>Gold Grams</th>
+                                <th style={{ padding: '12px 16px' }}>Status / Type</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {walletData.transactions.map((txn, idx) => (
+                                <tr key={txn.transactionId || idx} style={{ borderBottom: '1px solid #f2ebe8', backgroundColor: txn.paidBy === 'ZONIRAZ_BONUS' ? '#f0fff4' : '#ffffff' }}>
+                                  <td style={{ padding: '12px 16px', color: '#746380' }}>
+                                    {new Date(txn.date).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}
+                                  </td>
+                                  <td style={{ padding: '12px 16px' }}>
+                                    <strong style={{ color: '#2b221d', display: 'block', fontSize: '13px' }}>
+                                      {txn.description || `EMI #${txn.installmentNumber}`}
+                                    </strong>
+                                    {txn.planId && (
+                                      <span style={{ fontSize: '11px', color: '#8c7365' }}>Plan ID: {txn.planId}</span>
+                                    )}
+                                  </td>
+                                  <td style={{ padding: '12px 16px', fontWeight: '600', color: '#2b221d' }}>
+                                    ₹{txn.amount?.toLocaleString('en-IN')}
+                                  </td>
+                                  <td style={{ padding: '12px 16px', color: '#746380' }}>
+                                    ₹{txn.goldRate24k}/g
+                                  </td>
+                                  <td style={{ padding: '12px 16px', fontWeight: '700', color: '#c8a359', fontSize: '13.5px' }}>
+                                    +{txn.goldWeight24kGrams} g
+                                  </td>
+                                  <td style={{ padding: '12px 16px' }}>
+                                    {txn.paidBy === 'ZONIRAZ_BONUS' ? (
+                                      <span style={{ color: '#22543d', backgroundColor: '#c6f6d5', padding: '3px 8px', borderRadius: '12px', fontSize: '10.5px', fontWeight: '700' }}>
+                                        🎁 100% FREE BONUS
+                                      </span>
+                                    ) : (
+                                      <span style={{ color: '#2f855a', backgroundColor: '#e6fffa', padding: '3px 8px', borderRadius: '12px', fontSize: '10.5px', fontWeight: '600' }}>
+                                        ✓ EMI CREDITED
+                                      </span>
+                                    )}
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Quick action card */}
+                    <div style={{ marginTop: '24px', backgroundColor: '#faf7f5', padding: '20px', borderRadius: '16px', border: '1px solid #dbcfcb', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px' }}>
+                      <div>
+                        <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#2b221d' }}>
+                          Want to accumulate more gold or redeem?
+                        </h4>
+                        <p style={{ margin: 0, fontSize: '12px', color: '#746380' }}>
+                          Your Gold Wallet balance can be redeemed towards BIS Hallmarked Gold & Diamond Jewellery purchases.
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', gap: '10px' }}>
+                        <button onClick={() => window.location.hash = 'gold-mine'} style={saveBtnStyle}>
+                          10+1 GOLD SCHEME
+                        </button>
+                        <button onClick={() => window.location.hash = ''} style={{ ...saveBtnStyle, backgroundColor: '#8c7365' }}>
+                          BROWSE JEWELLERY
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 

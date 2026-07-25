@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import banner1 from '../assets/ten-off.jpg.jpeg';
-import banner2 from '../assets/ZONIRAZ.png';
+import banner1 from '../assets/poster for zoniraz.jpg.jpeg';
+import banner2 from '../assets/zZONIRAZ 1.png';
 
 const slides = [
   { id: 1, type: 'image', src: banner2 },

@@ -528,7 +528,7 @@ export default function AboutPage() {
               <div>
                 <h5>Customer Helpline</h5>
                 <p style={{ fontWeight: '700' }}>
-                  <a href="tel:+919784836080" style={{ textDecoration: 'none', color: 'inherit' }}>97848 36080</a>
+                  <a href="tel:+919784836060" style={{ textDecoration: 'none', color: 'inherit' }}>97848 36060</a>
                 </p>
               </div>
             </div>

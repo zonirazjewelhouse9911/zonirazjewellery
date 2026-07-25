@@ -336,7 +336,7 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
           display: flex;
           align-items: center;
           justify-content: center;
-          z-index: 10000;
+          z-index: 999999 !important;
         }
         .modal-content {
           background-color: #fff;

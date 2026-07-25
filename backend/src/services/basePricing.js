@@ -2,21 +2,17 @@ const product = require('../models/productModel');
 const livePrice = require('../models/jewelleryPricingModel');
 
 exports.productBasePricing = async (req, res) => {
-    let gold_weight = 0;
-    let gold_price = 0;
-    let total_diamond_weight = 0;
-    let diamond_price = 0;
-    let base_price = 0;
-    let base_price_withGST = 0;
-    let base_price_object = {}
+    // let gold_weight = 0;
+    // let gold_price = 0;
+    // let total_diamond_weight = 0;
+    // let diamond_price = 0;
+    // let base_price = 0;
+    // let base_price_withGST = 0;
+    // let base_price_object = {}
 
     try {
-        // const product_category = req.query.product_category;
+
         const current_price = await livePrice.findOne().sort({ createdAt: -1 });
-
-
-
-        // console.log(current_price);
         const product_data = await product.find();
         if (!product_data) {
             return {
@@ -40,53 +36,64 @@ exports.productBasePricing = async (req, res) => {
             const gemstone_price = item.gemstone_price || 0;
 
             if (item.product_type && item.product_type.toLowerCase() === "diamond") {
-                const total_diamond_weight = (item.diamond_weight || 0) * (item.diamond_count || 1);
-                console.log(total_diamond_weight, "total_diamond_weight");
+                const total_diamond_weight = (item.diamond_weight || 0);
+                const diamond_weight_g = total_diamond_weight * 0.2;
+                const gemstone_weight_g = (item.gemstone_weight || 0) * 0.2;
 
-                // if (solitaire_price>0 || !gemstone_price > 0) {
-                //     item_gold_price = gold_weight * current_price.gold_rate_24k;
-                // } else {
-                //     const gold_rate_14k = current_price.gold_rate_24k * 14 / 24;
-                //     item_gold_price = gold_weight * gold_rate_14k;
-                // }
-                const gold_rate_14k = current_price.gold_rate_24k * 14 / 24;
-                item_gold_price = gold_weight * gold_rate_14k;
-                item_diamond_price = total_diamond_weight * current_price.diamond_rate;
-                
+                const raw_gold_weight = item.gold_weight || item.weight || 0;
+                // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Gemstone Weight (g)
+                const net_gold_weight = Math.max(0, raw_gold_weight - diamond_weight_g - gemstone_weight_g);
+
+                const gold_rate_14k = Math.floor(current_price.gold_rate_24k * 58.5 / 100);
+                console.log(gold_rate_14k, "gold_rate_14k");
+
+                item_gold_price = Math.floor(net_gold_weight * gold_rate_14k);
+                item_diamond_price = total_diamond_weight * current_price.diamond_rate_ij_si;
+
+                // Making charges = Net Gold Weight * 24K Gold Rate * Making Percentage / 100
+                const gold_cost_24k = net_gold_weight * current_price.gold_rate_24k;
+                const making_charges_amount = Math.round(gold_cost_24k * makingCharges / 100);
+
                 const materials_cost = item_gold_price + item_diamond_price + solitaire_price + gemstone_price;
-                const making_charges_amount = materials_cost * makingCharges / 100;
                 item_base_price = materials_cost + making_charges_amount;
                 item_base_price_withGST = item_base_price + (item_base_price * gst_percent / 100);
-                console.log(item_base_price_withGST, "base_price_withGST");
+
+                return {
+                    _id: item._id,
+                    product_id: item.product_id,
+                    product_title: item.product_title,
+                    product_type: item.product_type,
+                    gold_price: Math.round(item_gold_price),
+                    diamond_price: Math.round(item_diamond_price),
+                    making_charges: Math.round(making_charges_amount),
+                    base_price_withGST: Math.round(item_base_price_withGST),
+                    gold_weight: net_gold_weight
+                };
             } else {
-                const gold_rate_18kt = current_price.gold_rate_24k * 18 / 24;
+                const gold_rate_18kt = current_price.gold_rate_24k * 75 / 100;
                 item_gold_price = gold_weight * gold_rate_18kt;
-                
+
+                // Making charges = Net Gold Weight * 24K Gold Rate * Making Percentage / 100
+                const gold_cost_24k = gold_weight * current_price.gold_rate_24k;
+                const making_charges_amount = Math.round(gold_cost_24k * makingCharges / 100);
+
                 const materials_cost = item_gold_price;
-                const making_charges_amount = materials_cost * makingCharges / 100;
                 item_base_price = materials_cost + making_charges_amount;
                 item_base_price_withGST = item_base_price + (item_base_price * gst_percent / 100);
-                console.log(item_base_price_withGST, "base_price_withGST");
+
+                return {
+                    _id: item._id,
+                    product_id: item.product_id,
+                    product_title: item.product_title,
+                    product_type: item.product_type,
+                    gold_price: Math.round(item_gold_price),
+                    diamond_price: 0,
+                    making_charges: Math.round(making_charges_amount),
+                    base_price_withGST: Math.round(item_base_price_withGST),
+                    gold_weight: gold_weight
+                };
             }
-
-            const materials_total = item.product_type && item.product_type.toLowerCase() === "diamond" 
-                ? (item_gold_price + item_diamond_price + solitaire_price + gemstone_price)
-                : item_gold_price;
-            const final_making_charges = materials_total * makingCharges / 100;
-
-            return {
-                _id: item._id,
-                product_id: item.product_id,
-                product_title: item.product_title,
-                product_type: item.product_type,
-                gold_price: Math.round(item_gold_price),
-                diamond_price: Math.round(item_diamond_price),
-                making_charges: Math.round(final_making_charges),
-                base_price_withGST: Math.round(item_base_price_withGST),
-                gold_weight: gold_weight
-            };
         });
-
         return {
             success: true,
             message: "Product base pricing",

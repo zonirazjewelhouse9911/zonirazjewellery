@@ -2,8 +2,7 @@ const mongoose = require('mongoose');
 
 const orderItemSchema = new mongoose.Schema({
   productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Product',
+    type: mongoose.Schema.Types.Mixed,
     required: true
   },
   name: {
@@ -100,7 +99,7 @@ const orderSchema = new mongoose.Schema({
   },
   orderStatus: {
     type: String,
-    enum: ['placed', 'processing', 'shipped', 'delivered', 'cancelled'],
+    enum: ['placed', 'pending', 'processing', 'shipped', 'delivered', 'cancelled'],
     default: 'placed'
   },
   currency: {

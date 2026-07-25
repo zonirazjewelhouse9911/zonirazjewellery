@@ -76,13 +76,227 @@ function getCategoryBanners(categoryName) {
   return [customerFavouritesImg, caratlaneIconicsImg];
 }
 
-export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart }) {
+export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart, allProducts = [] }) {
   const { user, token, logout } = useContext(AuthContext);
   const { cartList } = useContext(CartContext);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [authModalInitialTab, setAuthModalInitialTab] = useState('login');
   const [pincode, setPincode] = useState('');
   const [tempPincode, setTempPincode] = useState('');
+  const [pincodeData, setPincodeData] = useState(null);
+  const [pincodeLoading, setPincodeLoading] = useState(false);
+  const [pincodeError, setPincodeError] = useState('');
+  const [isPincodeOpen, setIsPincodeOpen] = useState(false);
+  const pincodeWrapperRef = useRef(null);
+
+  // Debounced Product Search States & Refs
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const desktopSearchRef = useRef(null);
+  const mobileSearchRef = useRef(null);
+
+  // Debounce Effect (300ms delay)
+  useEffect(() => {
+    setIsSearching(true);
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery.trim());
+      setIsSearching(false);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
+
+  // Execute Search on Debounced Query
+  useEffect(() => {
+    if (!debouncedQuery) {
+      setSearchResults([]);
+      return;
+    }
+
+    const q = debouncedQuery.toLowerCase();
+    const catalog = (allProducts && allProducts.length > 0) ? allProducts : products;
+
+    const filtered = catalog.filter(p => {
+      const name = String(p.name || p.product_title || p.title || '').toLowerCase();
+      const category = String(p.category || p.product_category || '').toLowerCase();
+      const subcategory = String(p.subcategory || p.product_subcategory || '').toLowerCase();
+      const tags = Array.isArray(p.tags) ? p.tags.join(' ').toLowerCase() : String(p.tags || '').toLowerCase();
+      const sku = String(p.sku || p.product_id || p._id || '').toLowerCase();
+
+      return name.includes(q) || category.includes(q) || subcategory.includes(q) || tags.includes(q) || sku.includes(q);
+    });
+
+    setSearchResults(filtered);
+  }, [debouncedQuery, allProducts]);
+
+  // Click outside & Escape key listeners to close search dropdown
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      const inDesktop = desktopSearchRef.current && desktopSearchRef.current.contains(e.target);
+      const inMobile = mobileSearchRef.current && mobileSearchRef.current.contains(e.target);
+      if (!inDesktop && !inMobile) {
+        setIsSearchOpen(false);
+      }
+    };
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
+  const handleSelectSearchResult = (prod) => {
+    const targetId = prod.id || prod._id || prod.product_id;
+    if (targetId) {
+      window.location.hash = `product-${targetId}`;
+    }
+    setIsSearchOpen(false);
+    setSearchQuery('');
+  };
+
+  const renderSearchResultsDropdown = () => {
+    if (!isSearchOpen || !searchQuery.trim()) return null;
+
+    return (
+      <div 
+        className="header-search-dropdown-popup"
+        style={{
+          position: 'absolute',
+          top: '100%',
+          left: '20px',
+          width: '380px',
+          maxWidth: 'calc(100vw - 32px)',
+          marginTop: '4px',
+          background: '#ffffff',
+          borderRadius: '12px',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.18)',
+          border: '1px solid #ebd8d4',
+          zIndex: 10000,
+          maxHeight: '380px',
+          overflowY: 'auto',
+          padding: '12px'
+        }}
+      >
+        {isSearching ? (
+          <div style={{ padding: '16px', textAlign: 'center', color: '#718096', fontSize: '12px' }}>
+            <span>Searching products...</span>
+          </div>
+        ) : searchResults.length > 0 ? (
+          <div>
+            <div style={{ fontSize: '11px', fontWeight: '700', color: '#C8A359', letterSpacing: '1px', marginBottom: '8px', padding: '0 4px', textTransform: 'uppercase' }}>
+              Products Found ({searchResults.length})
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {searchResults.slice(0, 8).map((prod) => {
+                const prodId = prod.id || prod._id || prod.product_id;
+                const prodName = prod.name || prod.product_title || 'Jewellery Item';
+                const prodImg = prod.image || (prod.images && prod.images[0]) || 'https://placehold.co/100x100?text=Zoniraz';
+                const prodPrice = Number(prod.price || prod.basePrice || 0);
+                const prodCategory = prod.category || prod.product_category || 'Jewellery';
+
+                return (
+                  <div
+                    key={prodId}
+                    onClick={() => handleSelectSearchResult(prod)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      padding: '8px',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                      backgroundColor: '#FAFCFE'
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#FFF5F4')}
+                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#FAFCFE')}
+                  >
+                    <img
+                      src={prodImg}
+                      alt={prodName}
+                      style={{
+                        width: '44px',
+                        height: '44px',
+                        borderRadius: '6px',
+                        objectFit: 'cover',
+                        border: '1px solid #E2E8F0',
+                        flexShrink: 0
+                      }}
+                    />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: '13px', fontWeight: '600', color: '#1A202C', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        {prodName}
+                      </div>
+                      <div style={{ fontSize: '11px', color: '#718096' }}>
+                        {prodCategory}
+                      </div>
+                    </div>
+                    {prodPrice > 0 && (
+                      <div style={{ fontSize: '13px', fontWeight: '700', color: '#F05A47', flexShrink: 0 }}>
+                        ₹{prodPrice.toLocaleString('en-IN')}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {searchResults.length > 8 && (
+              <div style={{ textAlign: 'center', paddingTop: '10px', fontSize: '11px', color: '#718096' }}>
+                + {searchResults.length - 8} more products match your search
+              </div>
+            )}
+          </div>
+        ) : (
+          <div style={{ padding: '16px', textAlign: 'center', color: '#718096', fontSize: '12px' }}>
+            No products found for "<strong>{debouncedQuery}</strong>"
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const handlePincodeSubmit = async (e) => {
+    e.preventDefault();
+    const code = tempPincode.trim();
+    if (!code || code.length < 6) {
+      setPincodeError('Please enter a 6-digit PIN code');
+      return;
+    }
+
+    setPincodeLoading(true);
+    setPincodeError('');
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/pincode/${code}`);
+      const data = await res.json();
+      if (data.success && data.data) {
+        setPincode(code);
+        setPincodeData(data.data);
+        setIsPincodeOpen(false);
+      } else {
+        setPincodeError(data.message || 'PIN code not found');
+      }
+    } catch (err) {
+      console.error('Pincode fetch error:', err);
+      setPincode(code);
+      setIsPincodeOpen(false);
+    } finally {
+      setPincodeLoading(false);
+    }
+  };
+
   const [goldModalOpen, setGoldModalOpen] = useState(false);
   const [goldActiveTab, setGoldActiveTab] = useState('menu'); // 'menu' | 'buy' | 'sell' | 'exchange'
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -90,6 +304,19 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
   const [disabledDropdown, setDisabledDropdown] = useState(null);
   const headerRef = useRef(null);
   const [headerHeight, setHeaderHeight] = useState(145);
+
+  // Close pincode dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (pincodeWrapperRef.current && !pincodeWrapperRef.current.contains(event.target)) {
+        setIsPincodeOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   // Measure header height dynamically
   useEffect(() => {
@@ -171,23 +398,15 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handlePincodeSubmit = (e) => {
-    e.preventDefault();
-    setPincode(tempPincode);
-  };
 
   return (
     <>
-      <header ref={headerRef} className={`jaypore-header ${scrolled ? 'scrolled' : ''}`}>
+      <header ref={headerRef} className={`jaypore-header ${scrolled ? 'scrolled' : ''}`} style={{ position: 'relative' }}>
       {/* Top Bar matching Candere style */}
       <div className="header-top-bar desktop-only-util">
         <div className="top-bar-left">
-          <a href="#digital-gold" className="top-bar-link" onClick={(e) => { e.preventDefault(); setGoldModalOpen(true); setGoldActiveTab('menu'); }}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="top-bar-icon">
-              <circle cx="12" cy="12" r="10"></circle>
-              <path d="M12 8v8M8 12h8"></path>
-            </svg>
-            BUY DIGITAL GOLD
+          <a href="#profile" className="top-bar-link" style={{ color: '#f59e0b', fontWeight: '700' }} onClick={(e) => { e.preventDefault(); window.location.hash = 'profile'; }}>
+            MY GOLD WALLET
           </a>
         </div>
       </div>
@@ -208,15 +427,39 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
         </button>
 
         {/* Left Side: Desktop Search Capsule */}
-        <div className="header-left-search desktop-only-util">
+        <div ref={desktopSearchRef} className="header-left-search desktop-only-util" style={{ position: 'relative' }}>
           <div className="search-bar-capsule">
-            <input type="text" placeholder="Search for Minimalist Jewellery..." />
-            <button className="search-capsule-btn" aria-label="Search">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-            </button>
+            <input 
+              type="text" 
+              placeholder="Search for Minimalist Jewellery..." 
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setIsSearchOpen(true);
+              }}
+              onFocus={() => setIsSearchOpen(true)}
+            />
+            {searchQuery ? (
+              <button 
+                type="button" 
+                className="search-capsule-btn" 
+                aria-label="Clear Search" 
+                onClick={() => {
+                  setSearchQuery('');
+                  setDebouncedQuery('');
+                  setSearchResults([]);
+                }}
+              >
+                <X size={14} />
+              </button>
+            ) : (
+              <button className="search-capsule-btn" aria-label="Search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              </button>
+            )}
           </div>
         </div>
 
@@ -230,15 +473,28 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
         {/* Right Side: Pincode + Icon Actions */}
         <div className="header-right-actions">
           {/* Pincode Selector */}
-          <div className="nav-item-container nav-pincode-wrapper desktop-only-util">
-            <a href="#delivery-stores" className="utility-item nav-item-trigger">
+          <div ref={pincodeWrapperRef} className={`nav-item-container nav-pincode-wrapper desktop-only-util ${isPincodeOpen ? 'open' : ''}`}>
+            <a 
+              href="#delivery-stores" 
+              className="utility-item nav-item-trigger"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsPincodeOpen(prev => !prev);
+              }}
+              style={{ cursor: 'pointer' }}
+            >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '16px', height: '16px', marginRight: '4px' }}>
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
                 <circle cx="12" cy="10" r="3"></circle>
               </svg>
-              <span>{pincode ? pincode : 'PINCODE'}</span>
+              <span>
+                {pincode 
+                  ? (pincodeData?.areaName ? `${pincode} (${pincodeData.areaName})` : pincode)
+                  : 'PINCODE'}
+              </span>
             </a>
-            <div className="pincode-dropdown" style={{ right: '0', left: 'auto' }}>
+            <div className={`pincode-dropdown ${isPincodeOpen ? 'open' : ''}`} style={{ right: '0', left: 'auto' }}>
               <p className="pincode-dropdown-text">
                 Your PIN Code unlocks Fastest delivery date, Try-at-Home availability, Nearest store and In-store design!
               </p>
@@ -251,65 +507,86 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                   maxLength={6}
                   className="pincode-input"
                 />
-                <button type="submit" className="pincode-submit-btn">
-                  {pincode ? 'Change' : 'Apply'}
+                <button type="submit" className="pincode-submit-btn" disabled={pincodeLoading}>
+                  {pincodeLoading ? 'Checking...' : (pincode ? 'Change' : 'Apply')}
                 </button>
               </form>
+
+              {pincodeError && (
+                <div style={{ color: '#d9534f', fontSize: '11px', marginTop: '6px' }}>
+                  {pincodeError}
+                </div>
+              )}
+
+              {pincodeData && (
+                <div style={{
+                  fontSize: '11px',
+                  color: '#444',
+                  backgroundColor: '#f9f6f0',
+                  padding: '10px',
+                  borderRadius: '6px',
+                  marginTop: '8px',
+                  border: '1px solid #ebdccb'
+                }}>
+                  <div style={{ fontWeight: '700', color: '#231535', fontSize: '12px', marginBottom: '3px' }}>
+                    📍 {pincodeData.areaName} ({pincodeData.pincode})
+                  </div>
+                  {pincodeData.district && (
+                    <div style={{ color: '#555' }}>
+                      <strong>District:</strong> {pincodeData.district}, {pincodeData.state}
+                    </div>
+                  )}
+                  {pincodeData.lat !== null && pincodeData.lon !== null && (
+                    <div style={{ color: '#777', marginTop: '4px', fontSize: '10px' }}>
+                      🌐 <strong>Coords:</strong> Lat {pincodeData.lat?.toFixed(4)}, Lon {pincodeData.lon?.toFixed(4)}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
           <div className="icon-actions">
 
-            {/* Profile Dropdown */}
+            {/* Profile Icon (Opens Login/Register Popup directly on click) */}
             <div className="nav-item-container nav-profile-wrapper">
               <a
                 href="#profile"
                 className="action-link-icon nav-item-trigger"
                 aria-label="Profile"
+                title="My Profile"
                 onClick={(e) => {
-                  if (!token && !user) {
-                    e.preventDefault();
-                    setShowAuthModal(true);
-                  }
+                  e.preventDefault();
+                  setShowAuthModal(true);
                 }}
+                style={{ cursor: 'pointer' }}
               >
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                   <circle cx="12" cy="7" r="4"></circle>
                 </svg>
               </a>
-              <div className="profile-dropdown" style={{ right: 0 }}>
-                {token || user ? (
-                  <>
-                    <h4 style={{ textTransform: 'none' }}>Hello, {user ? user.firstName : 'Valued Customer'}!</h4>
-                    <p className="profile-dropdown-subtitle">Manage profile, addresses & orders.</p>
-                    <div className="profile-actions-stack" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                      <a href="#profile" className="profile-signup-btn" style={{ textAlign: 'center' }}>My Dashboard</a>
-                      <button
-                        onClick={logout}
-                        className="profile-login-btn"
-                        style={{ border: '1px solid #d4c5bd', background: 'none', cursor: 'pointer', padding: '10px', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', color: '#2b221d', display: 'block', width: '100%', borderRadius: '2px', textAlign: 'center' }}
-                      >
-                        Log Out
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h4>Your Account</h4>
-                    <p className="profile-dropdown-subtitle">Access account & manage your orders.</p>
-                    <div className="profile-actions-stack">
-                      <button
-                        onClick={() => setShowAuthModal(true)}
-                        className="profile-signup-btn"
-                        style={{ border: '1px solid #2b221d', background: 'none', color: '#2b221d', cursor: 'pointer', padding: '12px', fontSize: '11px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px', width: '100%', borderRadius: '2px', display: 'block', textAlign: 'center' }}
-                      >
-                        Sign In / Register
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
+            </div>
+
+            {/* Gold Wallet Icon */}
+            <div className="nav-item-container nav-wallet-wrapper">
+              <a
+                href="#profile"
+                className="action-link-icon nav-item-trigger"
+                aria-label="Gold Wallet"
+                title="My Gold Wallet"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (!user) {
+                    setShowAuthModal(true);
+                  } else {
+                    window.location.hash = 'profile';
+                  }
+                }}
+                style={{ cursor: 'pointer', color: '#c8a359' }}
+              >
+                <Coins size={22} />
+              </a>
             </div>
 
             {/* Wishlist */}
@@ -342,7 +619,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
       </div>
 
       {/* Dedicated Mobile Search Row (appears on second row on mobile viewport) */}
-      <div className="mobile-search-row">
+      <div ref={mobileSearchRef} className="mobile-search-row" style={{ position: 'relative' }}>
         <div className="search-bar-inline">
           <button className="search-trigger" aria-label="Search">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -350,29 +627,71 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
               <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
             </svg>
           </button>
-          <input type="text" placeholder="Search for engagement rings" />
-          <div className="search-actions-inline">
-            <button className="search-action-btn camera-search" title="Search by Image">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                <circle cx="12" cy="13" r="4"></circle>
-              </svg>
+          <input 
+            type="text" 
+            placeholder="Search for engagement rings..." 
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setIsSearchOpen(true);
+            }}
+            onFocus={() => setIsSearchOpen(true)}
+          />
+          {searchQuery ? (
+            <button 
+              type="button" 
+              className="search-action-btn" 
+              title="Clear Search" 
+              style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer' }}
+              onClick={() => {
+                setSearchQuery('');
+                setDebouncedQuery('');
+                setSearchResults([]);
+              }}
+            >
+              <X size={14} />
             </button>
-            <button className="search-action-btn voice-search" title="Voice Search">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                <line x1="12" y1="19" x2="12" y2="23"></line>
-                <line x1="8" y1="23" x2="16" y2="23"></line>
-              </svg>
-            </button>
-          </div>
+          ) : (
+            <div className="search-actions-inline">
+              <button className="search-action-btn camera-search" title="Search by Image">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                  <circle cx="12" cy="13" r="4"></circle>
+                </svg>
+              </button>
+              <button className="search-action-btn voice-search" title="Voice Search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                  <line x1="12" y1="19" x2="12" y2="23"></line>
+                  <line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
       {/* Bottom Tier: Category Links */}
       <div className="header-nav-row">
         <nav className="bottom-category-nav">
+          <div className="nav-item-container">
+            <a
+              href="#profile"
+              className="nav-item-trigger"
+              style={{ color: '#c8a359', fontWeight: '700' }}
+              onClick={(e) => {
+                e.preventDefault();
+                if (!user) {
+                  setShowAuthModal(true);
+                } else {
+                  window.location.hash = 'profile';
+                }
+              }}
+            >
+              GOLD WALLET
+            </a>
+          </div>
           {categories
             .filter(cat => {
               const name = (cat.categoryName || '').toLowerCase().trim();
@@ -598,6 +917,8 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
             })}
         </nav>
       </div>
+
+      {renderSearchResultsDropdown()}
     </header>
 
     {/* Digital Gold Modal */}
@@ -636,6 +957,14 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
                     <h4>Exchange Old Gold</h4>
                     <p>Convert your physical old gold ornaments into pure digital gold credits.</p>
                     <button className="gold-action-btn" onClick={() => setGoldActiveTab('exchange')}>Exchange Gold</button>
+                  </div>
+                  <div className="gold-option-card" style={{ borderColor: '#E5C158', background: '#fffef9' }}>
+                    <div className="gold-icon-wrapper" style={{ background: '#fdfbf7' }}>
+                      <Sparkles size={24} style={{ color: '#E5C158' }} />
+                    </div>
+                    <h4 style={{ color: '#231535' }}>10+1 Savings Plan</h4>
+                    <p>Pay 10 installments and get 11th Month 100% FREE from Zoniraz.</p>
+                    <button className="gold-action-btn" style={{ background: '#231535', color: '#fff' }} onClick={() => { setGoldModalOpen(false); window.location.hash = 'gold-mine'; }}>Explore 10+1 Plan</button>
                   </div>
                 </div>
               </div>
@@ -724,6 +1053,11 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
               </button>
 
               <div className="drawer-quick-actions">
+                <a href="#profile" className="drawer-action-box" onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); if (!user) { setShowAuthModal(true); } else { window.location.hash = 'profile'; } }}>
+                  <span className="box-icon">💰</span>
+                  <span className="box-label">Wallet</span>
+                </a>
+
                 <a href="#delivery-stores" className="drawer-action-box" onClick={() => setMobileMenuOpen(false)}>
                   <span className="box-icon">🏪</span>
                   <span className="box-label">Stores</span>
@@ -744,6 +1078,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart 
             {/* Middle: Category list with arrows */}
             <div className="drawer-categories-list">
               {[
+                { name: "Gold Wallet (10+1 Scheme)", desc: "View accumulated 24K gold balance & passbook", hash: "#profile", img: null },
                 { name: "Rings", desc: "Browse by Style, Metals & Stones", hash: "#rings", img: silverRingsImg },
                 { name: "Earrings", desc: "Browse by Style, Price & More..", hash: "#earrings", img: dancingHoopsImg },
                 { name: "Bracelets & Bangles", desc: "Browse by Style, Metal & Kids", hash: "#bracelets", img: stretchableBanglesImg },

@@ -81,6 +81,29 @@ export default function CheckoutPage() {
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [completedOrderDetails, setCompletedOrderDetails] = useState(null);
 
+  // 10+1 Gold Wallet State
+  const [userWallet, setUserWallet] = useState(null);
+  const [useWallet, setUseWallet] = useState(false);
+
+  useEffect(() => {
+    if (user?.email) {
+      fetch(`${API_BASE_URL}/api/goldmine/wallet?email=${encodeURIComponent(user.email)}`)
+        .then(res => res.json())
+        .then(resData => {
+          if (resData.success && resData.data) {
+            setUserWallet(resData.data);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [user]);
+
+  const availableWalletBalance = userWallet?.currentMarketValue || 0;
+  const baseOrderTotal = grandTotal;
+  const walletDeduction = useWallet ? Math.min(availableWalletBalance, baseOrderTotal) : 0;
+  const finalPayableTotal = Math.max(0, baseOrderTotal - walletDeduction);
+  const isFullyCoveredByWallet = useWallet && walletDeduction >= baseOrderTotal && baseOrderTotal > 0;
+
   // Load addresses on step 2 if logged in
   useEffect(() => {
     if (token && step === 2) {
@@ -168,7 +191,21 @@ export default function CheckoutPage() {
     setStep(3);
   };
 
-  const handleOrderSubmission = async () => {
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
+  const handleOrderSubmission = async (razorpayParams = {}) => {
     setIsProcessingPayment(true);
     setError('');
 
@@ -180,7 +217,10 @@ export default function CheckoutPage() {
       shippingFee: shipping,
       gstAmount: gst,
       couponDiscount: discount,
-      grandTotal,
+      grandTotal: finalPayableTotal,
+      walletAmountUsed: walletDeduction,
+      razorpayOrderId: razorpayParams.razorpayOrderId || null,
+      razorpayPaymentId: razorpayParams.razorpayPaymentId || null,
       deliveryEstimate: deliveryMethod === 'delivery' ? '5-7 Business Days' : null,
       storeDetails: deliveryMethod === 'pickup' ? {
         name: store.name,
@@ -210,6 +250,113 @@ export default function CheckoutPage() {
     } catch (err) {
       setError(err.message || 'Payment simulation failed');
     } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
+  const handleRazorpayPayment = async () => {
+    if (paymentMethod === 'cod' || finalPayableTotal <= 0) {
+      handleOrderSubmission();
+      return;
+    }
+
+    setIsProcessingPayment(true);
+    setError('');
+
+    try {
+      // Create Razorpay Order on Backend
+      const res = await fetch(`${API_BASE_URL}/api/razorpay/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: finalPayableTotal,
+          currency: 'INR',
+          receipt: `rcpt_${Date.now()}`
+        })
+      });
+
+      const orderData = await res.json();
+      if (!orderData.success) {
+        throw new Error(orderData.message || 'Failed to initialize payment gateway.');
+      }
+
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error('Razorpay SDK failed to load. Please check your network connection.');
+      }
+
+      const activeRazorpayKey = (orderData.keyId && 
+        !orderData.keyId.includes('YourKeyIdHere') && 
+        !orderData.keyId.includes('placeholder') && 
+        !orderData.keyId.includes('zoniraz') &&
+        !orderData.keyId.includes('xxxx')) 
+          ? orderData.keyId 
+          : 'rzp_test_1DP5mmOlF5G5ag';
+
+      const options = {
+        key: activeRazorpayKey,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: 'Zoniraz Jewellery House',
+        description: `Order Payment (Net: ₹${finalPayableTotal.toLocaleString('en-IN')})`,
+        image: 'https://cdn-icons-png.flaticon.com/512/3665/3665927.png',
+        handler: async function (response) {
+          try {
+            await fetch(`${API_BASE_URL}/api/razorpay/verify-payment`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpay_order_id: response.razorpay_order_id,
+                razorpay_payment_id: response.razorpay_payment_id,
+                razorpay_signature: response.razorpay_signature
+              })
+            });
+
+            await handleOrderSubmission({
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id
+            });
+          } catch (verErr) {
+            console.error('Razorpay verification notice:', verErr);
+            await handleOrderSubmission({
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id
+            });
+          }
+        },
+        modal: {
+          ondismiss: function () {
+            setIsProcessingPayment(false);
+          }
+        },
+        prefill: {
+          name: user?.user_name || user?.name || 'Valued Customer',
+          email: user?.email || '',
+          contact: user?.phone_number || user?.phone || ''
+        },
+        notes: {
+          walletAmountUsed: walletDeduction,
+          customerEmail: user?.email || ''
+        },
+        theme: {
+          color: '#c8a359'
+        }
+      };
+
+      if (orderData.razorpayOrderId && !orderData.razorpayOrderId.startsWith('order_sim_')) {
+        options.order_id = orderData.razorpayOrderId;
+      }
+
+      const rzpInstance = new window.Razorpay(options);
+      rzpInstance.on('payment.failed', function (response) {
+        console.error('Razorpay payment failed:', response.error);
+        setError(response.error?.description || 'Payment failed. Please try again.');
+        setIsProcessingPayment(false);
+      });
+      rzpInstance.open();
+    } catch (err) {
+      console.error('Razorpay payment gateway error:', err);
+      setError(err.message || 'Payment initiation failed. Please try again.');
       setIsProcessingPayment(false);
     }
   };
@@ -610,27 +757,132 @@ export default function CheckoutPage() {
             {step === 5 && (
               <div>
                 <h2 style={stepTitleStyle}>Choose Payment Option</h2>
-                
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '30px' }}>
-                  <label style={paymentLabelStyle(paymentMethod === 'card')}>
-                    <input type="radio" name="payment" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} style={{ accentColor: '#c5a880' }} />
-                    <span style={{ fontSize: '14px', fontWeight: '600' }}>💳 Credit / Debit Card (Visa, MasterCard, Amex)</span>
+
+                {/* 10+1 Gold Wallet Balance Option - ALWAYS VISIBLE */}
+                <div style={{
+                  backgroundColor: useWallet ? '#fffdf5' : '#faf7f5',
+                  border: useWallet ? '2px solid #c8a359' : '1px solid #dbcfcb',
+                  borderRadius: '16px',
+                  padding: '20px',
+                  marginBottom: '24px',
+                  transition: 'all 0.3s ease',
+                  boxShadow: useWallet ? '0 4px 20px rgba(200, 163, 89, 0.15)' : 'none'
+                }}>
+                  <label style={{ display: 'flex', alignItems: 'center', gap: '14px', cursor: availableWalletBalance > 0 ? 'pointer' : 'default' }}>
+                    <input
+                      type="checkbox"
+                      checked={useWallet}
+                      disabled={availableWalletBalance <= 0}
+                      onChange={(e) => setUseWallet(e.target.checked)}
+                      style={{ width: '20px', height: '20px', accentColor: '#1e2d42', cursor: availableWalletBalance > 0 ? 'pointer' : 'not-allowed' }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: '15px', fontWeight: '700', color: '#1e2d42', display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                        <span>10+1 Gold Wallet Balance</span>
+                        <span style={{
+                          fontSize: '11px',
+                          backgroundColor: availableWalletBalance > 0 ? '#c8a359' : '#e2e8f0',
+                          color: availableWalletBalance > 0 ? '#1e2d42' : '#64748b',
+                          padding: '3px 10px',
+                          borderRadius: '12px',
+                          fontWeight: '800'
+                        }}>
+                          AVAILABLE: ₹{availableWalletBalance.toLocaleString('en-IN')} ({userWallet?.totalGold24kGrams || 0}g 24K)
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '12.5px', color: '#746380', marginTop: '4px' }}>
+                        {availableWalletBalance > 0 ? (
+                          useWallet
+                            ? `✓ Deducting ₹${walletDeduction.toLocaleString('en-IN')} from your 10+1 Gold Wallet balance.`
+                            : 'Check box to deduct your accumulated Gold Wallet balance from the order total.'
+                        ) : (
+                          <span>
+                            You currently have ₹0 in your 10+1 Gold Wallet.{' '}
+                            <a href="#gold-mine" style={{ color: '#c8a359', fontWeight: '700', textDecoration: 'underline' }}>
+                              Join 10+1 Gold Mine scheme
+                            </a>{' '}
+                            to start saving and earn 100% free bonus installments!
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </label>
-                  <label style={paymentLabelStyle(paymentMethod === 'upi')}>
-                    <input type="radio" name="payment" checked={paymentMethod === 'upi'} onChange={() => setPaymentMethod('upi')} style={{ accentColor: '#c5a880' }} />
-                    <span style={{ fontSize: '14px', fontWeight: '600' }}>📱 UPI Gateway (GPay, PhonePe, Paytm)</span>
-                  </label>
-                  <label style={paymentLabelStyle(paymentMethod === 'cod')}>
-                    <input type="radio" name="payment" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} style={{ accentColor: '#c5a880' }} />
-                    <span style={{ fontSize: '14px', fontWeight: '600' }}>💵 Cash on Delivery (COD)</span>
-                  </label>
+
+                  {useWallet && availableWalletBalance > 0 && (
+                    <div style={{ marginTop: '14px', paddingTop: '12px', borderTop: '1px dashed #d4c5bd', fontSize: '13px', color: '#276749', fontWeight: '700', display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Gold Wallet Deduction Applied:</span>
+                      <span>- ₹{walletDeduction.toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
                 </div>
+
+                {/* Remaining Payment Method Selector */}
+                {isFullyCoveredByWallet ? (
+                  <div style={{ backgroundColor: '#f0fff4', border: '1px solid #9ae6b4', padding: '20px', borderRadius: '14px', marginBottom: '24px', color: '#22543d', fontWeight: '600', fontSize: '14px', textAlign: 'center' }}>
+                    🎉 100% of this purchase is covered by your 10+1 Gold Wallet balance! No additional payment method required.
+                  </div>
+                ) : (
+                  <div>
+                    {useWallet && (
+                      <div style={{ fontSize: '13px', color: '#746380', fontWeight: '600', marginBottom: '14px' }}>
+                        Select payment method for the remaining balance of <strong style={{ color: '#2b221d', fontSize: '15px' }}>₹{finalPayableTotal.toLocaleString('en-IN')}</strong>:
+                      </div>
+                    )}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '30px' }}>
+                      <label style={paymentLabelStyle(paymentMethod === 'upi')}>
+                        <input type="radio" name="payment" checked={paymentMethod === 'upi'} onChange={() => setPaymentMethod('upi')} style={{ accentColor: '#c5a880' }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#2b221d' }}>📱 UPI Payment Gateway (Google Pay, PhonePe, Paytm, BHIM)</div>
+                          <div style={{ fontSize: '11.5px', color: '#746380', marginTop: '2px' }}>Instant payment via any UPI App or VPA ID using Razorpay Gateway</div>
+                        </div>
+                      </label>
+                      <label style={paymentLabelStyle(paymentMethod === 'card')}>
+                        <input type="radio" name="payment" checked={paymentMethod === 'card'} onChange={() => setPaymentMethod('card')} style={{ accentColor: '#c5a880' }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#2b221d' }}>💳 Credit / Debit Cards (Visa, MasterCard, RuPay, Amex)</div>
+                          <div style={{ fontSize: '11.5px', color: '#746380', marginTop: '2px' }}>Supports 3D Secure Verification & EMI on all major Indian banks</div>
+                        </div>
+                      </label>
+                      <label style={paymentLabelStyle(paymentMethod === 'netbanking')}>
+                        <input type="radio" name="payment" checked={paymentMethod === 'netbanking'} onChange={() => setPaymentMethod('netbanking')} style={{ accentColor: '#c5a880' }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#2b221d' }}>🏦 Net Banking (SBI, HDFC, ICICI, Axis, PNB, Kotak)</div>
+                          <div style={{ fontSize: '11.5px', color: '#746380', marginTop: '2px' }}>Direct bank account transfer through secure Razorpay portal</div>
+                        </div>
+                      </label>
+                      <label style={paymentLabelStyle(paymentMethod === 'cod')}>
+                        <input type="radio" name="payment" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} style={{ accentColor: '#c5a880' }} />
+                        <div style={{ flex: 1 }}>
+                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#2b221d' }}>💵 Cash on Delivery (COD)</div>
+                          <div style={{ fontSize: '11.5px', color: '#746380', marginTop: '2px' }}>Pay cash at doorstep upon delivery</div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                )}
 
                 {error && <div style={{ color: '#ff4d4f', fontSize: '13px', marginBottom: '15px' }}>{error}</div>}
 
                 <div className="flex-wrap-row" style={{ display: 'flex', gap: '15px' }}>
-                  <button onClick={handleOrderSubmission} disabled={isProcessingPayment} style={btnStyle}>
-                    {isProcessingPayment ? 'PROCESSING PAYMENT...' : 'PLACE ORDER'}
+                  <button
+                    onClick={isFullyCoveredByWallet || paymentMethod === 'cod' ? handleOrderSubmission : handleRazorpayPayment}
+                    disabled={isProcessingPayment}
+                    style={{
+                      ...btnStyle,
+                      backgroundColor: '#1e2d42',
+                      color: '#ffffff',
+                      boxShadow: '0 4px 15px rgba(30, 45, 66, 0.2)',
+                      fontSize: '13px',
+                      letterSpacing: '1px'
+                    }}
+                  >
+                    {isProcessingPayment
+                      ? 'PROCESSING PAYMENT...'
+                      : isFullyCoveredByWallet
+                      ? 'PAY VIA GOLD WALLET & PLACE ORDER'
+                      : paymentMethod === 'cod'
+                      ? 'PLACE COD ORDER'
+                      : `PAY ₹${finalPayableTotal.toLocaleString('en-IN')} VIA RAZORPAY`}
                   </button>
                   <button onClick={() => setStep(4)} style={{ ...btnStyle, backgroundColor: '#a39084' }}>BACK</button>
                 </div>
@@ -665,8 +917,14 @@ export default function CheckoutPage() {
                       <span>{completedOrderDetails.deliveryEstimate}</span>
                     </div>
                   )}
+                  {completedOrderDetails.digiGoldRedeemedAmount > 0 && (
+                    <div style={summaryRowStyle}>
+                      <span>Paid via 10+1 Gold Wallet</span>
+                      <span style={{ color: '#276749', fontWeight: '700' }}>- ₹{parseFloat(completedOrderDetails.digiGoldRedeemedAmount).toLocaleString('en-IN')}</span>
+                    </div>
+                  )}
                   <div style={{ ...summaryRowStyle, borderTop: '1px dashed #d4c5bd', paddingTop: '10px', fontSize: '14px', fontWeight: '700' }}>
-                    <span>Grand Total</span>
+                    <span>Net Amount Paid</span>
                     <span>₹{parseFloat(completedOrderDetails.grandTotal).toLocaleString('en-IN')}</span>
                   </div>
                 </div>
@@ -747,9 +1005,46 @@ export default function CheckoutPage() {
               )}
               {couponError && <p style={{ color: '#ff4d4f', fontSize: '11px', margin: '-10px 0 14px 0' }}>{couponError}</p>}
 
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '700', color: '#2b221d', borderBottom: '1px solid #f2ebe8', paddingBottom: '16px', marginBottom: '16px' }}>
-                <span>Grand Total</span>
-                <span>₹{grandTotal.toLocaleString('en-IN')}</span>
+              {/* 10+1 Gold Wallet Redemption Option in Summary - ALWAYS VISIBLE */}
+              <div style={{
+                backgroundColor: useWallet ? '#fffdf5' : '#faf7f5',
+                border: useWallet ? '1.5px solid #c8a359' : '1px solid #e2e8f0',
+                padding: '12px 14px',
+                borderRadius: '12px',
+                marginBottom: '16px'
+              }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: availableWalletBalance > 0 ? 'pointer' : 'default', fontSize: '12.5px', fontWeight: '700', color: '#1e2d42' }}>
+                  <input
+                    type="checkbox"
+                    checked={useWallet}
+                    disabled={availableWalletBalance <= 0}
+                    onChange={(e) => setUseWallet(e.target.checked)}
+                    style={{ accentColor: '#1e2d42', width: '16px', height: '16px', cursor: availableWalletBalance > 0 ? 'pointer' : 'not-allowed' }}
+                  />
+                  <span>Apply 10+1 Gold Wallet (₹{availableWalletBalance.toLocaleString('en-IN')} avail.)</span>
+                </label>
+                {availableWalletBalance <= 0 && (
+                  <div style={{ fontSize: '10.5px', color: '#94a3b8', marginTop: '4px', paddingLeft: '26px' }}>
+                    No wallet balance available. <a href="#gold-mine" style={{ color: '#c8a359', textDecoration: 'underline', fontWeight: '600' }}>Join 10+1 Scheme</a>
+                  </div>
+                )}
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderBottom: '1px solid #f2ebe8', paddingBottom: '16px', marginBottom: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#746380' }}>
+                  <span>Order Total</span>
+                  <span>₹{baseOrderTotal.toLocaleString('en-IN')}</span>
+                </div>
+                {useWallet && walletDeduction > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#276749', fontWeight: '700' }}>
+                    <span>Gold Wallet Applied</span>
+                    <span>- ₹{walletDeduction.toLocaleString('en-IN')}</span>
+                  </div>
+                )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '800', color: '#2b221d', marginTop: '4px' }}>
+                  <span>Net Payable Amount</span>
+                  <span style={{ color: '#2b221d' }}>₹{finalPayableTotal.toLocaleString('en-IN')}</span>
+                </div>
               </div>
             </div>
           )}

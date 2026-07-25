@@ -1,5 +1,10 @@
 import React from 'react';
 
+// Dynamically import all feature images from assets/image
+const featureImages = Object.values(
+  import.meta.glob('../assets/image/*.jpeg', { eager: true, import: 'default' })
+);
+
 export default function ExchangeProgram() {
   return (
     <section className="ep-section">
@@ -22,60 +27,27 @@ export default function ExchangeProgram() {
           <div className="ep-line" />
         </div>
 
-        {/* 4 Feature Columns */}
-        <div className="ep-features-grid">
-          {/* Feature 1 */}
-          <div className="ep-feature-item">
-            <div className="ep-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M2.5 2v6h6M21.5 22v-6h-6" />
-                <path d="M22 11.5A10 10 0 0 0 3.2 7.2L2.5 8M2 12.5a10 10 0 0 0 18.8 4.3l0.7-0.8" />
-              </svg>
+        {/* Feature Images Showcase Grid */}
+        <div className="ep-images-grid">
+          {featureImages.map((imgSrc, idx) => (
+            <div key={idx} className="ep-image-item">
+              <img 
+                src={imgSrc} 
+                alt={`Zoniraz Guarantee ${idx + 1}`} 
+                className="ep-feature-img" 
+              />
             </div>
-            <h4 className="ep-feature-title">Zoniraz Exchange</h4>
-          </div>
-
-          {/* Feature 2 */}
-          <div className="ep-feature-item">
-            <div className="ep-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M6 3h12l4 6-10 12L2 9z" />
-                <path d="M11 3 8 9l4 12 4-12-3-6" />
-              </svg>
-            </div>
-            <h4 className="ep-feature-title">The Purity Guarantee</h4>
-          </div>
-
-          {/* Feature 3 */}
-          <div className="ep-feature-item">
-            <div className="ep-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-              </svg>
-            </div>
-            <h4 className="ep-feature-title">Complete Transparency and Trust</h4>
-          </div>
-
-          {/* Feature 4 */}
-          <div className="ep-feature-item">
-            <div className="ep-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                <polyline points="9 22 9 12 15 12 15 22" />
-              </svg>
-            </div>
-            <h4 className="ep-feature-title">Lifetime Maintenance</h4>
-          </div>
+          ))}
         </div>
 
         {/* Banner Cards Row */}
         <div className="ep-banner-cards-row">
-          <div className="ep-banner-card">
-            <img src="/zoniraz banner 5.jpg.jpeg" alt="Exchange Program Banner 1" className="ep-banner-img" />
-          </div>
-          <div className="ep-banner-card">
-            <img src="/gold banner .jpg.jpeg" alt="Exchange Program Banner 2" className="ep-banner-img" />
-          </div>
+          <a href="#gold-mine" className="ep-banner-card" style={{ display: 'block', textDecoration: 'none', cursor: 'pointer' }}>
+            <img src="/zoniraz banner 5.jpg.jpeg" alt="Gold Mine 10+1 Monthly Installment Plan" className="ep-banner-img" />
+          </a>
+          <a href="#sell-gold" className="ep-banner-card" style={{ display: 'block', textDecoration: 'none', cursor: 'pointer' }}>
+            <img src="/gold banner .jpg.jpeg" alt="Sell & Exchange Old Gold" className="ep-banner-img" />
+          </a>
         </div>
 
       </div>

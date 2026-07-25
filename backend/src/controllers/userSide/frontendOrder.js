@@ -1,4 +1,5 @@
 const Order = require('../../models/orderModel');
+const walletService = require('../../services/walletService');
 
 const mapToClientOrder = (mongoOrder) => ({
     id: mongoOrder._id,
@@ -6,6 +7,7 @@ const mapToClientOrder = (mongoOrder) => ({
     createdAt: mongoOrder.createdAt,
     grandTotal: mongoOrder.totalAmount,
     deliveryMethod: 'delivery',
+    digiGoldRedeemedAmount: mongoOrder.digiGoldRedeemedAmount || 0,
     OrderItems: (mongoOrder.items || []).map((item, idx) => ({
         id: item._id || idx,
         productId: item.productId,
@@ -32,7 +34,7 @@ exports.getOrders = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
     try {
-        const { items, deliveryMethod, shippingFee, gstAmount, couponDiscount, grandTotal, deliveryEstimate, storeDetails } = req.body;
+        const { items, deliveryMethod, shippingFee, gstAmount, couponDiscount, grandTotal, deliveryEstimate, storeDetails, walletAmountUsed } = req.body;
         const user_id = req.user._id;
 
         const orderItems = (items || []).map(item => ({
@@ -54,6 +56,7 @@ exports.createOrder = async (req, res) => {
             userId: user_id,
             items: orderItems,
             totalAmount: grandTotal,
+            digiGoldRedeemedAmount: Number(walletAmountUsed) || 0,
             shippingAddress: {
                 fullName: req.user.user_name || req.user.name || 'User',
                 phone: req.user.phone_number || req.user.phone || '0000000000',
@@ -63,10 +66,22 @@ exports.createOrder = async (req, res) => {
                 pincode: '000000'
             },
             paymentStatus: 'paid', // Simulate success checkout
-            orderStatus: 'pending'
+            orderStatus: 'placed'
         });
 
         await newOrder.save();
+
+        if (walletAmountUsed && Number(walletAmountUsed) > 0 && req.user?.email) {
+          try {
+            await walletService.redeemWalletForOrder({
+              userEmail: req.user.email,
+              amount: Number(walletAmountUsed),
+              orderId: newOrder._id
+            });
+          } catch (wErr) {
+            console.error('Error redeeming wallet balance for order:', wErr);
+          }
+        }
 
         return res.status(201).json(mapToClientOrder(newOrder));
     } catch (error) {

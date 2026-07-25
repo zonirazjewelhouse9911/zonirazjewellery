@@ -51,6 +51,21 @@ class CouponController {
       return res.status(500).json({ success: false, message: error.message || 'Failed to update coupon' });
     }
   }
+
+  sendWhatsAppCoupon = async (req, res) => {
+    try {
+      const { couponId, targetUserIds, customMessage } = req.body;
+      const data = await couponService.sendWhatsAppCoupon({ couponId, targetUserIds, customMessage });
+      return res.status(200).json({
+        success: true,
+        message: 'WhatsApp coupon broadcast prepared successfully',
+        data
+      });
+    } catch (error) {
+      console.error('Send WhatsApp Coupon Controller Error:', error);
+      return res.status(500).json({ success: false, message: error.message || 'Failed to send WhatsApp coupon' });
+    }
+  }
 }
 
 module.exports = new CouponController();
