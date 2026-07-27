@@ -26,7 +26,7 @@ import {
   PhoneOff,
   ChevronRight
 } from 'lucide-react';
-import ringVideo from '../assets/videos/zoniraz ring .mp4';
+import ringVideo from '../assets/vs-p_v2.mp4';
 
 // Lifestyle / model images from Unsplash (free to use)
 const lifestyleImages = [
