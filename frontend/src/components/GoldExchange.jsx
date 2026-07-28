@@ -22,7 +22,7 @@ export default function GoldExchange() {
           <p className="ge-card-fineprint">* ALWAR BRANCH ONLY</p>
 
           <a href="#sell-gold" className="ge-card-btn">
-            SELL GOLD &rarr;
+            SELL OLD GOLD &rarr;
           </a>
 
           {/* Faint background decorative arrow */}

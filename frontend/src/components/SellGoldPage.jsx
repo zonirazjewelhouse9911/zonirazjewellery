@@ -1,107 +1,59 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { API_BASE_URL } from '../config';
-import { AuthContext } from '../context/AuthContext';
-import { ArrowLeft, HelpCircle, Shield, TrendingDown, Coins, ChevronDown, ChevronUp, AlertCircle, Clock } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowLeft, Coins, ChevronDown, ChevronUp, MapPin, Phone, Mail, Clock, Shield, Award, CheckCircle2 } from 'lucide-react';
 
 export default function SellGoldPage({ onBack }) {
-  const { requireAuth } = useContext(AuthContext);
-  const [liveRate14k, setLiveRate14k] = useState(4200); // 14k rate default
-  const [amount, setAmount] = useState('');
-  const [grams, setGrams] = useState('');
   const [activeFaq, setActiveFaq] = useState(null);
-  
-  // Timer State for rate lock (Caratlane style countdown)
-  const [secondsLeft, setSecondsLeft] = useState(76); // 1 minute 16 seconds default
-
-  // 24K Sell rate calculation
-  const sellRate24k = Math.round(liveRate14k * 24 / 14);
-
-  // Fetch latest jewellery rates from daily settings
-  useEffect(() => {
-    fetch(`${API_BASE_URL}/api/jewellery-pricing`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.success && data.data && data.data.gold_rate_14k) {
-          setLiveRate14k(data.data.gold_rate_14k);
-        }
-      })
-      .catch(err => console.error('Error fetching gold rate:', err));
-  }, []);
-
-  // Timer countdown implementation
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          // Reset to a random timer value between 60 and 90 seconds
-          return Math.floor(Math.random() * 30) + 60;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Convert seconds to MM:SS format
-  const formatTimer = (sec) => {
-    const minutes = Math.floor(sec / 60);
-    const seconds = sec % 60;
-    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-  };
-
-  // Convert amount to grams
-  const handleAmountChange = (val) => {
-    setAmount(val);
-    if (!val || isNaN(val)) {
-      setGrams('');
-      return;
-    }
-    const calculatedGrams = (parseFloat(val) / sellRate24k).toFixed(4);
-    setGrams(calculatedGrams);
-  };
-
-  // Convert grams to amount
-  const handleGramsChange = (val) => {
-    setGrams(val);
-    if (!val || isNaN(val)) {
-      setAmount('');
-      return;
-    }
-    const calculatedAmount = Math.round(parseFloat(val) * sellRate24k);
-    setAmount(calculatedAmount.toString());
-  };
-
-  const handleProceed = (e) => {
-    e.preventDefault();
-    if (!amount || parseFloat(amount) <= 0) return;
-
-    requireAuth(() => {
-      alert(`Sell Order Confirmed!\nSelling Weight: ${grams} gms\nProceeds: ₹${parseFloat(amount).toLocaleString('en-IN')} will be credited to your linked bank account.`);
-      if (onBack) onBack();
-      else window.location.hash = '';
-    });
-  };
+  const [formData, setFormData] = useState({
+    name: '',
+    mobile: '',
+    email: '',
+    appointmentDate: '',
+    appointmentTime: '',
+    goldDetails: ''
+  });
+  const [submitted, setSubmitted] = useState(false);
 
   const toggleFaq = (index) => {
     setActiveFaq(activeFaq === index ? null : index);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.mobile || !formData.email || !formData.goldDetails) {
+      alert("Please fill all required fields marked with *");
+      return;
+    }
+    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(false);
+      setFormData({
+        name: '',
+        mobile: '',
+        email: '',
+        appointmentDate: '',
+        appointmentTime: '',
+        goldDetails: ''
+      });
+      alert("Thank you! Your Sell Old Gold enquiry has been submitted. Our valuation executive will contact you shortly.");
+    }, 1500);
+  };
+
   const faqs = [
     {
-      question: "How do I sell my gold?",
-      answer: "Selling your digital gold is simple! Enter either the value in Rupees or weight in grams you wish to sell. Confirm the transaction, and the proceeds will be directly credited to your registered bank account via secure instant transfer."
+      question: "How do I sell my physical old gold ornaments?",
+      answer: "Selling your physical old gold is easy and 100% transparent! Simply fill out the enquiry form above or visit our store. Our certified gemologists test your gold in front of you using advanced German Karatmeter machines and offer instant payout."
     },
     {
-      question: "Is there any lock-in period to sell gold?",
-      answer: "No, there is no lock-in period. You can purchase and sell your gold on the same day, subject to standard verification check protocols."
+      question: "What documents are required to sell physical old gold?",
+      answer: "You need to bring a valid government-issued photo ID (Aadhaar Card, PAN Card, or Passport) along with original purchase invoices/receipts of the gold items if available."
     },
     {
-      question: "How long will it take to get the money in my bank account?",
-      answer: "Usually, the money is credited to your bank account instantly via IMPS bank transfer. In rare cases of banking network delays, it may take up to 24 hours."
+      question: "Is there any melting or testing charge for physical gold?",
+      answer: "No, we offer 100% free gold purity testing in front of you with zero hidden charges. We evaluate your gold based on exact weight and purity at live market rates."
     },
     {
-      question: "Why is the buy and sell price different on the same day?",
-      answer: "The difference between the buy and sell rate (spread) covers processing fees, secure vaulting/insurance costs with Brink's, and live commodity market price fluctuations."
+      question: "How will I receive the payout for my sold gold?",
+      answer: "Payouts are transferred instantly to your bank account via UPI, IMPS, or NEFT, or cash payout as per government regulatory guidelines."
     }
   ];
 
@@ -112,111 +64,197 @@ export default function SellGoldPage({ onBack }) {
         <button className="sellgold-back-btn" onClick={onBack || (() => window.location.hash = '')}>
           <ArrowLeft size={16} /> Back to Home
         </button>
-        <span className="sellgold-breadcrumb">Home / Digital Gold / Sell Gold</span>
+        <span className="sellgold-breadcrumb">Home / Physical Gold / Sell Old Gold</span>
       </div>
 
       {/* Gold Sub Header Nav Bar */}
       <div className="gold-sub-navbar">
         <div className="gold-nav-brand">
           <Coins size={20} className="gold-nav-icon" />
-          <span>eGold <small>by ZONIRAZ</small></span>
+          <span>Gold Portal <small>by ZONIRAZ</small></span>
         </div>
         <div className="gold-nav-links">
           <a href="#buy-gold" className="gold-nav-link">BUY GOLD</a>
-          <a href="#delivery" className="gold-nav-link">GIFT CARD</a>
-          <a href="#delivery" className="gold-nav-link">GIFT CARD CLAIM</a>
-          <a href="#delivery" className="gold-nav-link">EXCHANGE / REDEEM</a>
-          <a href="#sell-gold" className="gold-nav-link active">SELL GOLD</a>
-          <a href="#terms" className="gold-nav-link">FAQ</a>
+          <a href="#sell-gold" className="gold-nav-link active">SELL OLD GOLD</a>
         </div>
       </div>
 
       <div className="sellgold-content-wrapper">
-        <h1 className="sellgold-main-title">Sell Gold</h1>
+        <div className="sellgold-heading-block">
+          <h1 className="sellgold-main-title">Sell Old Gold</h1>
+          <p className="sellgold-subtitle">
+            Get maximum market value for your physical old gold ornaments with 100% transparent Karatmeter testing and instant payout.
+          </p>
+        </div>
 
-        {/* 3-Card Grid */}
-        <div className="sellgold-cards-grid">
-          {/* Card 1: Converter Form */}
-          <div className="sellgold-card convert-card">
-            <form onSubmit={handleProceed}>
-              <div className="converter-flex">
-                <div className="convert-input-group">
-                  <label className="convert-label">Sell Gold by Amount</label>
-                  <div className="convert-input-wrap">
-                    <span className="input-prefix">₹</span>
-                    <input
-                      type="number"
-                      placeholder="Enter Amount"
-                      className="convert-input"
-                      value={amount}
-                      onChange={(e) => handleAmountChange(e.target.value)}
-                    />
-                  </div>
-                </div>
+        {/* Feature Highlights Grid */}
+        <div className="gold-features-bar">
+          <div className="feature-item">
+            <Shield className="feature-icon" size={24} />
+            <div>
+              <strong>German Karatmeter Testing</strong>
+              <p>100% non-destructive & accurate purity check</p>
+            </div>
+          </div>
+          <div className="feature-item">
+            <Award className="feature-icon" size={24} />
+            <div>
+              <strong>Live Market Rates</strong>
+              <p>Best price guaranteed for old physical gold</p>
+            </div>
+          </div>
+          <div className="feature-item">
+            <CheckCircle2 className="feature-icon" size={24} />
+            <div>
+              <strong>Instant Payout</strong>
+              <p>Immediate bank transfer (UPI/IMPS/NEFT)</p>
+            </div>
+          </div>
+        </div>
 
-                <div className="equals-sign">=</div>
+        {/* Contact Us Form & Info Section */}
+        <div className="sellgold-contact-grid">
+          {/* Left Column: Contact & Store Info */}
+          <div className="sellgold-info-card">
+            <h2 className="info-card-title">Visit Our Store or Contact Us</h2>
+            <p className="info-card-desc">
+              Have old gold jewellery, coins, or bars? Book an appointment or contact our team directly for a free valuation.
+            </p>
 
-                <div className="convert-input-group">
-                  <label className="convert-label">or Sell in Grams</label>
-                  <div className="convert-input-wrap">
-                    <input
-                      type="number"
-                      step="0.0001"
-                      placeholder="Enter Grams"
-                      className="convert-input text-right"
-                      value={grams}
-                      onChange={(e) => handleGramsChange(e.target.value)}
-                    />
-                    <span className="input-suffix">gms</span>
-                  </div>
+            <div className="info-details-list">
+              <div className="info-detail-item">
+                <MapPin className="detail-icon" size={20} />
+                <div>
+                  <strong>Store Address</strong>
+                  <p>Tilak Market, 7, Hanuman Burj, Kabir Colony, Alwar, Rajasthan 301001, India</p>
                 </div>
               </div>
 
-              <button 
-                type="submit" 
-                className="sellgold-submit-btn" 
-                disabled={!amount || parseFloat(amount) <= 0}
-              >
-                Proceed to Sell
+              <div className="info-detail-item">
+                <Phone className="detail-icon" size={20} />
+                <div>
+                  <strong>Phone / Call Us</strong>
+                  <p><a href="tel:+919784836060">+91 9784836060</a></p>
+                </div>
+              </div>
+
+              <div className="info-detail-item">
+                <Mail className="detail-icon" size={20} />
+                <div>
+                  <strong>Email Inquiry</strong>
+                  <p><a href="mailto:zonirazjewelhose@gmail.com">zonirazjewelhose@gmail.com</a></p>
+                </div>
+              </div>
+
+              <div className="info-detail-item">
+                <Clock className="detail-icon" size={20} />
+                <div>
+                  <strong>Store Hours</strong>
+                  <p>Mon - Sat: 10:00 AM - 8:00 PM (Sunday Closed)</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="important-note-box">
+              <strong>Note:</strong> Please carry a valid Photo ID (Aadhaar / PAN card) when visiting our store for physical gold evaluation.
+            </div>
+          </div>
+
+          {/* Right Column: Contact Us Form */}
+          <div className="sellgold-form-card">
+            <h2 className="form-card-title">Sell Old Gold Enquiry Form</h2>
+            <p className="form-card-subtitle">Fill in your details below and our team will get in touch with you shortly.</p>
+
+            <form onSubmit={handleSubmit} className="sellgold-contact-form">
+              <div className="form-row-2col">
+                <div className="form-field">
+                  <label htmlFor="name">Name *</label>
+                  <input
+                    type="text"
+                    id="name"
+                    placeholder="Enter Full Name"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="mobile">Mobile Number *</label>
+                  <input
+                    type="tel"
+                    id="mobile"
+                    placeholder="10-digit Mobile Number"
+                    pattern="[0-9]{10}"
+                    required
+                    value={formData.mobile}
+                    onChange={(e) => setFormData({ ...formData, mobile: e.target.value.replace(/\D/g, '') })}
+                  />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="email">Email Address *</label>
+                <input
+                  type="email"
+                  id="email"
+                  placeholder="Enter Email Address"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                />
+              </div>
+
+              <div className="form-row-2col">
+                <div className="form-field">
+                  <label htmlFor="appointmentDate">Store Visit Date (Optional)</label>
+                  <input
+                    type="date"
+                    id="appointmentDate"
+                    value={formData.appointmentDate}
+                    onChange={(e) => setFormData({ ...formData, appointmentDate: e.target.value })}
+                  />
+                </div>
+
+                <div className="form-field">
+                  <label htmlFor="appointmentTime">Preferred Time Slot (Optional)</label>
+                  <select
+                    id="appointmentTime"
+                    value={formData.appointmentTime}
+                    onChange={(e) => setFormData({ ...formData, appointmentTime: e.target.value })}
+                  >
+                    <option value="">Select Time Slot</option>
+                    <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
+                    <option value="12:00 PM - 02:00 PM">12:00 PM - 02:00 PM</option>
+                    <option value="02:00 PM - 04:00 PM">02:00 PM - 04:00 PM</option>
+                    <option value="04:00 PM - 06:00 PM">04:00 PM - 06:00 PM</option>
+                    <option value="06:00 PM - 08:00 PM">06:00 PM - 08:00 PM</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label htmlFor="goldDetails">Physical Gold Details / Query *</label>
+                <textarea
+                  id="goldDetails"
+                  rows="4"
+                  placeholder="Mention gold items (e.g. Bangles, Ring, Chain), approximate weight in grams, or any questions..."
+                  required
+                  value={formData.goldDetails}
+                  onChange={(e) => setFormData({ ...formData, goldDetails: e.target.value })}
+                ></textarea>
+              </div>
+
+              <button type="submit" className="sellgold-submit-btn" disabled={submitted}>
+                {submitted ? 'Submitting Enquiry...' : 'Submit Sell Enquiry'}
               </button>
             </form>
           </div>
-
-          {/* Card 2: Live Rate display */}
-          <div className="sellgold-card rate-card">
-            <div className="rate-card-header">
-              <span className="card-lbl">Sell Rate</span>
-              <span className="timer-badge">
-                <Clock size={12} className="timer-icon" /> Price valid for {formatTimer(secondsLeft)} min
-              </span>
-            </div>
-            <div className="rate-value">₹{sellRate24k.toLocaleString('en-IN')}/gram</div>
-            <div className="rate-purity-row">
-              <Shield size={14} className="purity-icon" />
-              <span>24K 99.9% Purity</span>
-              <HelpCircle size={12} className="info-icon-trigger" title="Live certified 24 karat gold rate" />
-            </div>
-          </div>
-
-          {/* Card 3: Gold Balance display */}
-          <div className="sellgold-card balance-card">
-            <div className="balance-icon-wrap">
-              <Coins size={32} className="balance-coin" />
-            </div>
-            <div className="balance-label">Gold Balance</div>
-            <div className="balance-value">0.00 gms</div>
-          </div>
         </div>
 
-        {/* Quick Links */}
-        <div className="sellgold-quick-links">
-          <a href="#profile" className="quick-lnk">Check Sell History →</a>
-          <a href="#buy-gold" className="quick-lnk">Redeem Gold →</a>
-        </div>
-
-        {/* FAQ Accordion Section */}
+        {/* FAQ Section */}
         <div className="sellgold-faq-section">
-          <h2 className="faq-main-title">Selling the Gold <span>FAQs</span></h2>
+          <h2 className="faq-main-title">Selling Physical Old Gold <span>FAQs</span></h2>
           <div className="faq-list">
             {faqs.map((faq, i) => (
               <div key={i} className={`faq-item ${activeFaq === i ? 'open' : ''}`}>
@@ -224,16 +262,18 @@ export default function SellGoldPage({ onBack }) {
                   <h3>{faq.question}</h3>
                   {activeFaq === i ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </div>
-                <div className="faq-answer-row">
-                  <p>{faq.answer}</p>
-                </div>
+                {activeFaq === i && (
+                  <div className="faq-answer-row">
+                    <p>{faq.answer}</p>
+                  </div>
+                )}
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      {/* Styled JSX */}
+      {/* Embedded CSS */}
       <style>{`
         .sellgold-page-container {
           padding: 30px 4% 60px;
@@ -251,60 +291,55 @@ export default function SellGoldPage({ onBack }) {
         }
 
         .sellgold-back-btn {
-          background: transparent;
-          border: none;
-          color: #A98E73;
-          font-size: 14px;
-          font-weight: 500;
-          cursor: pointer;
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 0;
-          transition: color 0.2s ease;
+          background: #FAF8F6;
+          border: 1px solid #E5DFD9;
+          padding: 8px 16px;
+          border-radius: 20px;
+          font-size: 13px;
+          color: #554A42;
+          cursor: pointer;
+          transition: all 0.2s ease;
         }
 
         .sellgold-back-btn:hover {
-          color: #8C735B;
+          background: #EFEAE4;
+          color: #2C2520;
         }
 
         .sellgold-breadcrumb {
           font-size: 12px;
-          color: #8E867E;
+          color: #8C7E75;
+          letter-spacing: 0.5px;
         }
 
-        /* Gold Subbar styled matching Caratlane premium banner */
         .gold-sub-navbar {
           display: flex;
-          align-items: center;
           justify-content: space-between;
-          background-color: #FFFFFF;
-          padding: 12px 24px;
+          align-items: center;
+          background: #FFFFFF;
+          border: 1px solid #EFEAE4;
           border-radius: 12px;
-          box-shadow: 0 4px 15px rgba(93, 70, 60, 0.04);
+          padding: 12px 24px;
           margin-bottom: 30px;
-          border: 1px solid #EAE5E0;
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
         }
 
         .gold-nav-brand {
           display: flex;
           align-items: center;
           gap: 8px;
-          font-size: 18px;
           font-weight: 700;
-          color: #634d40;
+          font-size: 18px;
+          color: #A98E73;
         }
 
         .gold-nav-brand small {
-          font-size: 10px;
+          font-size: 11px;
+          color: #8C7E75;
           font-weight: 400;
-          color: #A98E73;
-          letter-spacing: 0.1em;
-          margin-left: 4px;
-        }
-
-        .gold-nav-icon {
-          color: #A98E73;
         }
 
         .gold-nav-links {
@@ -314,28 +349,23 @@ export default function SellGoldPage({ onBack }) {
 
         .gold-nav-link {
           text-decoration: none;
-          color: #8E867E;
-          font-size: 12px;
+          color: #6C5F56;
+          font-size: 13px;
           font-weight: 600;
-          letter-spacing: 0.03em;
-          padding: 6px 0;
-          position: relative;
-          transition: color 0.2s ease;
+          letter-spacing: 0.5px;
+          padding: 6px 12px;
+          border-radius: 6px;
+          transition: all 0.2s ease;
         }
 
-        .gold-nav-link:hover, .gold-nav-link.active {
+        .gold-nav-link:hover {
           color: #A98E73;
         }
 
-        .gold-nav-link.active::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          height: 2px;
-          background-color: #A98E73;
-          border-radius: 2px;
+        .gold-nav-link.active {
+          color: #A98E73;
+          border-bottom: 2px solid #A98E73;
+          border-radius: 0;
         }
 
         .sellgold-content-wrapper {
@@ -343,249 +373,257 @@ export default function SellGoldPage({ onBack }) {
           margin: 0 auto;
         }
 
-        .sellgold-main-title {
-          font-size: 28px;
-          font-weight: 700;
-          margin-bottom: 24px;
-          color: #2C2520;
+        .sellgold-heading-block {
+          margin-bottom: 30px;
+          text-align: left;
         }
 
-        /* 3-Card Grid System */
-        .sellgold-cards-grid {
+        .sellgold-main-title {
+          font-size: 32px;
+          font-weight: 600;
+          color: #2C2520;
+          margin-bottom: 8px;
+        }
+
+        .sellgold-subtitle {
+          font-size: 15px;
+          color: #6C5F56;
+          max-width: 750px;
+          line-height: 1.6;
+        }
+
+        .gold-features-bar {
           display: grid;
-          grid-template-columns: 2fr 1fr 1fr;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 20px;
+          margin-bottom: 35px;
+        }
+
+        .feature-item {
+          background: #FFFFFF;
+          border: 1px solid #EFEAE4;
+          padding: 20px;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+        }
+
+        .feature-icon {
+          color: #A98E73;
+          flex-shrink: 0;
+        }
+
+        .feature-item strong {
+          display: block;
+          font-size: 14px;
+          color: #2C2520;
+          margin-bottom: 2px;
+        }
+
+        .feature-item p {
+          font-size: 12px;
+          color: #8C7E75;
+          margin: 0;
+        }
+
+        .sellgold-contact-grid {
+          display: grid;
+          grid-template-columns: 1fr 1.3fr;
+          gap: 30px;
+          margin-bottom: 50px;
+        }
+
+        @media (max-width: 850px) {
+          .sellgold-contact-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .sellgold-info-card {
+          background: #FFFFFF;
+          border: 1px solid #EFEAE4;
+          border-radius: 16px;
+          padding: 30px;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+        }
+
+        .info-card-title {
+          font-size: 22px;
+          font-weight: 600;
+          color: #2C2520;
+          margin-bottom: 8px;
+        }
+
+        .info-card-desc {
+          font-size: 14px;
+          color: #6C5F56;
+          line-height: 1.5;
+          margin-bottom: 24px;
+        }
+
+        .info-details-list {
+          display: flex;
+          flex-direction: column;
           gap: 20px;
           margin-bottom: 24px;
         }
 
-        .sellgold-card {
-          background-color: #FFFFFF;
-          border-radius: 12px;
-          padding: 24px;
-          box-shadow: 0 4px 15px rgba(93, 70, 60, 0.04);
-          border: 1px solid #EAE5E0;
+        .info-detail-item {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
+        }
+
+        .detail-icon {
+          color: #A98E73;
+          margin-top: 2px;
+          flex-shrink: 0;
+        }
+
+        .info-detail-item strong {
+          display: block;
+          font-size: 14px;
+          color: #2C2520;
+          margin-bottom: 2px;
+        }
+
+        .info-detail-item p {
+          font-size: 13px;
+          color: #6C5F56;
+          margin: 0;
+          line-height: 1.4;
+        }
+
+        .info-detail-item a {
+          color: #A98E73;
+          text-decoration: none;
+        }
+
+        .important-note-box {
+          background: #FAF5EE;
+          border-left: 4px solid #A98E73;
+          padding: 12px 16px;
+          border-radius: 6px;
+          font-size: 13px;
+          color: #5C4A3A;
+        }
+
+        .sellgold-form-card {
+          background: #FFFFFF;
+          border: 1px solid #EFEAE4;
+          border-radius: 16px;
+          padding: 30px;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+        }
+
+        .form-card-title {
+          font-size: 22px;
+          font-weight: 600;
+          color: #2C2520;
+          margin-bottom: 6px;
+        }
+
+        .form-card-subtitle {
+          font-size: 13px;
+          color: #8C7E75;
+          margin-bottom: 24px;
+        }
+
+        .sellgold-contact-form {
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          gap: 16px;
         }
 
-        .convert-card {
-          justify-content: space-between;
+        .form-row-2col {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 16px;
         }
 
-        .converter-flex {
+        @media (max-width: 600px) {
+          .form-row-2col {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .form-field {
           display: flex;
-          align-items: center;
-          gap: 15px;
-          margin-bottom: 20px;
+          flex-direction: column;
+          gap: 6px;
         }
 
-        .convert-input-group {
-          flex: 1;
+        .form-field label {
+          font-size: 12px;
+          font-weight: 600;
+          color: #4A3E36;
+          letter-spacing: 0.3px;
         }
 
-        .convert-label {
-          display: block;
-          font-size: 13px;
-          color: #8E867E;
-          margin-bottom: 8px;
-          font-weight: 500;
-        }
-
-        .convert-input-wrap {
-          display: flex;
-          align-items: center;
-          border: 1px solid #C5A880;
+        .form-field input,
+        .form-field select,
+        .form-field textarea {
+          width: 100%;
+          padding: 12px 14px;
+          border: 1px solid #E0D7CE;
           border-radius: 8px;
-          padding: 8px 12px;
-          background-color: #FFFFFF;
+          background: #FDFBF9;
+          font-size: 14px;
+          color: #2C2520;
+          outline: none;
+          font-family: inherit;
           transition: border-color 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .convert-input-wrap:focus-within {
+        .form-field input:focus,
+        .form-field select:focus,
+        .form-field textarea:focus {
           border-color: #A98E73;
-          box-shadow: 0 0 0 3px rgba(169, 142, 115, 0.15);
-        }
-
-        .input-prefix {
-          font-size: 16px;
-          color: #2C2520;
-          font-weight: 600;
-          margin-right: 6px;
-        }
-
-        .input-suffix {
-          font-size: 13px;
-          color: #8E867E;
-          font-weight: 500;
-          margin-left: 6px;
-        }
-
-        .convert-input {
-          border: none;
-          outline: none;
-          width: 100%;
-          font-size: 16px;
-          color: #2C2520;
-          font-weight: 600;
-          padding: 0;
-        }
-
-        .text-right {
-          text-align: right;
-        }
-
-        .equals-sign {
-          font-size: 24px;
-          color: #A98E73;
-          font-weight: 600;
-          margin-top: 15px;
+          box-shadow: 0 0 0 3px rgba(169, 142, 115, 0.12);
+          background: #FFFFFF;
         }
 
         .sellgold-submit-btn {
-          background-color: #A98E73;
+          margin-top: 8px;
+          padding: 14px 24px;
+          background: #2C2520;
           color: #FFFFFF;
           border: none;
           border-radius: 8px;
-          padding: 12px 24px;
           font-size: 14px;
           font-weight: 600;
-          width: 100%;
+          letter-spacing: 0.5px;
           cursor: pointer;
-          transition: background-color 0.2s ease, transform 0.1s ease;
+          transition: background 0.2s ease, transform 0.1s ease;
         }
 
-        .sellgold-submit-btn:hover:not(:disabled) {
-          background-color: #8C735B;
-          transform: translateY(-1px);
+        .sellgold-submit-btn:hover {
+          background: #A98E73;
         }
 
         .sellgold-submit-btn:disabled {
-          background-color: #E6E1DC;
-          color: #A29B93;
+          background: #CCCCCC;
           cursor: not-allowed;
         }
 
-        /* Live Rate card styling */
-        .rate-card-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 12px;
-        }
-
-        .card-lbl {
-          font-size: 14px;
-          color: #8E867E;
-          font-weight: 500;
-        }
-
-        .timer-badge {
-          background-color: #FDF3E7;
-          color: #D47B25;
-          font-size: 11px;
-          padding: 4px 8px;
-          border-radius: 20px;
-          display: flex;
-          align-items: center;
-          gap: 4px;
-          font-weight: 600;
-        }
-
-        .timer-icon {
-          color: #D47B25;
-        }
-
-        .rate-value {
-          font-size: 22px;
-          font-weight: 700;
-          color: #634d40;
-          margin-bottom: 12px;
-        }
-
-        .rate-purity-row {
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          font-size: 12px;
-          color: #8E867E;
-          font-weight: 500;
-        }
-
-        .purity-icon {
-          color: #4CAF50;
-        }
-
-        .info-icon-trigger {
-          color: #C5A880;
-          cursor: pointer;
-          margin-left: 2px;
-        }
-
-        /* Gold Balance card styling */
-        .balance-card {
-          align-items: center;
-          text-align: center;
-        }
-
-        .balance-icon-wrap {
-          width: 50px;
-          height: 50px;
-          background-color: #F8F3EE;
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          margin-bottom: 12px;
-        }
-
-        .balance-coin {
-          color: #A98E73;
-        }
-
-        .balance-label {
-          font-size: 13px;
-          color: #8E867E;
-          font-weight: 500;
-          margin-bottom: 4px;
-        }
-
-        .balance-value {
-          font-size: 18px;
-          font-weight: 700;
-          color: #2C2520;
-        }
-
-        /* Quick Links styling */
-        .sellgold-quick-links {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 15px;
-          padding: 0 4px;
-        }
-
-        .quick-lnk {
-          text-decoration: none;
-          color: #A98E73;
-          font-size: 13px;
-          font-weight: 600;
-          transition: color 0.2s ease;
-        }
-
-        .quick-lnk:hover {
-          color: #8C735B;
-        }
-
-        /* FAQs accordion styling */
         .sellgold-faq-section {
-          margin-top: 50px;
+          background: #FFFFFF;
+          border: 1px solid #EFEAE4;
+          border-radius: 16px;
+          padding: 35px 30px;
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.02);
         }
 
         .faq-main-title {
-          font-size: 20px;
-          font-weight: 700;
-          color: #2C2520;
+          font-size: 24px;
+          font-weight: 600;
           margin-bottom: 24px;
+          color: #2C2520;
         }
 
         .faq-main-title span {
@@ -599,85 +637,39 @@ export default function SellGoldPage({ onBack }) {
         }
 
         .faq-item {
-          background-color: #FFFFFF;
+          border: 1px solid #EFEAE4;
           border-radius: 8px;
-          border: 1px solid #EAE5E0;
           overflow: hidden;
-          transition: border-color 0.2s ease;
-        }
-
-        .faq-item.open {
-          border-color: #C5A880;
+          transition: all 0.2s ease;
         }
 
         .faq-question-row {
-          padding: 16px 20px;
           display: flex;
-          align-items: center;
           justify-content: space-between;
+          align-items: center;
+          padding: 16px 20px;
+          background: #FDFBF9;
           cursor: pointer;
-          user-select: none;
         }
 
         .faq-question-row h3 {
-          font-size: 14px;
-          font-weight: 600;
-          color: #634d40;
+          font-size: 15px;
+          font-weight: 500;
+          color: #2C2520;
           margin: 0;
         }
 
         .faq-answer-row {
-          max-height: 0;
-          overflow: hidden;
-          transition: max-height 0.3s ease-out;
-          background-color: #FCFAF9;
-        }
-
-        .faq-item.open .faq-answer-row {
-          max-height: 120px;
+          padding: 16px 20px;
+          background: #FFFFFF;
+          border-top: 1px solid #EFEAE4;
         }
 
         .faq-answer-row p {
-          padding: 0 20px 16px 20px;
-          font-size: 13px;
-          color: #8E867E;
-          line-height: 1.5;
+          font-size: 14px;
+          color: #6C5F56;
+          line-height: 1.6;
           margin: 0;
-        }
-
-        /* Responsive styling */
-        @media (max-width: 900px) {
-          .sellgold-cards-grid {
-            grid-template-columns: 1fr;
-            gap: 16px;
-          }
-          
-          .converter-flex {
-            flex-direction: column;
-            align-items: stretch;
-            gap: 10px;
-          }
-
-          .equals-sign {
-            transform: rotate(90deg);
-            margin: 0 auto;
-            height: 20px;
-          }
-
-          .text-right {
-            text-align: left;
-          }
-
-          .gold-sub-navbar {
-            flex-direction: column;
-            gap: 15px;
-            align-items: flex-start;
-          }
-
-          .gold-nav-links {
-            flex-wrap: wrap;
-            gap: 12px;
-          }
         }
       `}</style>
     </div>

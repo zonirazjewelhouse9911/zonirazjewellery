@@ -946,9 +946,9 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                     <div className="gold-icon-wrapper">
                       <TrendingDown size={24} style={{ color: '#A98E73' }} />
                     </div>
-                    <h4>Sell Gold</h4>
-                    <p>Sell your stored gold balance instantly at real-time rates.</p>
-                    <button className="gold-action-btn" onClick={() => { setGoldModalOpen(false); window.location.hash = 'sell-gold'; }}>Sell Gold</button>
+                    <h4>Sell Old Gold</h4>
+                    <p>Sell your physical old gold ornaments at best market rates.</p>
+                    <button className="gold-action-btn" onClick={() => { setGoldModalOpen(false); window.location.hash = 'sell-gold'; }}>Sell Old Gold</button>
                   </div>
                   <div className="gold-option-card">
                     <div className="gold-icon-wrapper">
@@ -997,7 +997,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                 <button className="gold-back-btn" onClick={() => setGoldActiveTab('menu')} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <ArrowLeft size={14} /> Back
                 </button>
-                <h3>Sell Gold</h3>
+                <h3>Sell Old Gold</h3>
                 <p className="gold-rate-ticker">Live selling rate: <strong>₹7,120/gm</strong></p>
                 <form className="gold-portal-form" onSubmit={(e) => { e.preventDefault(); alert('Gold sold successfully!'); setGoldModalOpen(false); }}>
                   <div className="form-group">

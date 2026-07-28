@@ -36,6 +36,44 @@ router.get('/goldmine/wallet', async (req, res) => {
   }
 });
 
+// POST /api/goldmine/buy-gold
+router.post('/goldmine/buy-gold', async (req, res) => {
+  try {
+    const { userEmail, amount, grams, goldRate24k, userId } = req.body;
+    if (!userEmail) {
+      return res.status(400).json({ success: false, message: 'User email is required' });
+    }
+    const numAmount = Number(amount) || 0;
+    const numGrams = Number(grams) || 0;
+    if (numAmount <= 0 || numGrams <= 0) {
+      return res.status(400).json({ success: false, message: 'Invalid purchase amount or weight' });
+    }
+
+    await walletService.creditWalletForEMI({
+      userEmail,
+      planId: 'DIRECT_BUY',
+      installmentNumber: 0,
+      amount: numAmount,
+      goldRate24k: Number(goldRate24k) || 7200,
+      goldWeight24kGrams: numGrams,
+      paidBy: 'USER',
+      description: `Direct Digital Gold Purchase: ${numGrams}g 24K Gold (₹${numAmount.toLocaleString('en-IN')})`,
+      userId
+    });
+
+    const updatedDetails = await walletService.getUserWalletDetails(userEmail);
+
+    return res.status(200).json({
+      success: true,
+      message: `Successfully purchased ${numGrams}g Digital Gold! Added to your 10+1 Gold Wallet.`,
+      data: updatedDetails.data
+    });
+  } catch (err) {
+    console.error('Error in buy-gold endpoint:', err);
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // POST /api/goldmine/start-plan
 router.post('/goldmine/start-plan', async (req, res) => {
   try {

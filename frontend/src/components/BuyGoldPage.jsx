@@ -4,11 +4,13 @@ import { AuthContext } from '../context/AuthContext';
 import { ArrowLeft, HelpCircle, Shield, TrendingUp, Coins, ChevronDown, ChevronUp, AlertCircle, Clock } from 'lucide-react';
 
 export default function BuyGoldPage({ onBack }) {
-  const { requireAuth } = useContext(AuthContext);
+  const { user, requireAuth } = useContext(AuthContext);
   const [liveRate14k, setLiveRate14k] = useState(4200); // 14k rate default
   const [amount, setAmount] = useState('');
   const [grams, setGrams] = useState('');
   const [activeFaq, setActiveFaq] = useState(null);
+  const [walletData, setWalletData] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   
   // Timer State for rate lock
   const [secondsLeft, setSecondsLeft] = useState(82); // 1 minute 22 seconds default
@@ -27,6 +29,27 @@ export default function BuyGoldPage({ onBack }) {
       })
       .catch(err => console.error('Error fetching gold rate:', err));
   }, []);
+
+  // Fetch user 10+1 Gold Wallet
+  const fetchUserWallet = async () => {
+    const emailToFetch = user?.email;
+    if (!emailToFetch) return;
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/goldmine/wallet?email=${encodeURIComponent(emailToFetch)}`);
+      const data = await res.json();
+      if (data.success && data.data) {
+        setWalletData(data.data);
+      }
+    } catch (err) {
+      console.error('Error fetching user wallet:', err);
+    }
+  };
+
+  useEffect(() => {
+    if (user?.email) {
+      fetchUserWallet();
+    }
+  }, [user]);
 
   // Timer countdown implementation
   useEffect(() => {
@@ -71,12 +94,45 @@ export default function BuyGoldPage({ onBack }) {
 
   const handleProceed = (e) => {
     e.preventDefault();
-    if (!amount || parseFloat(amount) <= 0) return;
+    if (!amount || parseFloat(amount) < 100) return;
 
-    requireAuth(() => {
-      alert(`Buy Order Confirmed!\nBuying Weight: ${grams} gms\nTotal Amount: ₹${parseFloat(amount).toLocaleString('en-IN')} (incl. GST).\nProceeding with gateway payment...`);
-      if (onBack) onBack();
-      else window.location.hash = '';
+    requireAuth(async () => {
+      const emailToUse = user?.email;
+      if (!emailToUse) {
+        alert('Please log in to purchase digital gold.');
+        return;
+      }
+
+      setSubmitting(true);
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/goldmine/buy-gold`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userEmail: emailToUse,
+            amount: parseFloat(amount),
+            grams: parseFloat(grams),
+            goldRate24k: buyRate24k,
+            userId: user?._id || user?.id
+          })
+        });
+        const data = await res.json();
+        if (data.success && data.data) {
+          const totalGrams = data.data.totalGold24kGrams || 0;
+          const liveVal = Math.round(totalGrams * buyRate24k);
+          alert(`🎉 Digital Gold Purchase Successful!\n\nWeight Purchased: ${grams} gms\nAmount Paid: ₹${parseFloat(amount).toLocaleString('en-IN')}\n\n✅ Added to your 10+1 Gold Wallet!\nTotal Gold Balance: ${totalGrams.toFixed(4)} gms\nLive Market Value: ₹${liveVal.toLocaleString('en-IN')} (at ₹${buyRate24k.toLocaleString('en-IN')}/gm)`);
+          setAmount('');
+          setGrams('');
+          setWalletData(data.data);
+        } else {
+          alert(data.message || 'Failed to complete gold purchase.');
+        }
+      } catch (err) {
+        console.error('Error purchasing gold:', err);
+        alert('Server error while processing purchase. Please try again.');
+      } finally {
+        setSubmitting(false);
+      }
     });
   };
 
@@ -121,11 +177,7 @@ export default function BuyGoldPage({ onBack }) {
         </div>
         <div className="gold-nav-links">
           <a href="#buy-gold" className="gold-nav-link active">BUY GOLD</a>
-          <a href="#delivery" className="gold-nav-link">GIFT CARD</a>
-          <a href="#delivery" className="gold-nav-link">GIFT CARD CLAIM</a>
-          <a href="#delivery" className="gold-nav-link">EXCHANGE / REDEEM</a>
-          <a href="#sell-gold" className="gold-nav-link">SELL GOLD</a>
-          <a href="#terms" className="gold-nav-link">FAQ</a>
+          <a href="#sell-gold" className="gold-nav-link">SELL OLD GOLD</a>
         </div>
       </div>
 
@@ -173,9 +225,9 @@ export default function BuyGoldPage({ onBack }) {
               <button 
                 type="submit" 
                 className="buygold-submit-btn" 
-                disabled={!amount || parseFloat(amount) < 100}
+                disabled={submitting || !amount || parseFloat(amount) < 100}
               >
-                {amount && parseFloat(amount) < 100 ? 'Min. Buy Amount is ₹100' : 'Proceed to Buy'}
+                {submitting ? 'Processing Gold Purchase...' : amount && parseFloat(amount) < 100 ? 'Min. Buy Amount is ₹100' : 'Proceed to Buy'}
               </button>
             </form>
           </div>
@@ -201,15 +253,23 @@ export default function BuyGoldPage({ onBack }) {
             <div className="balance-icon-wrap">
               <Coins size={32} className="balance-coin" />
             </div>
-            <div className="balance-label">Gold Balance</div>
-            <div className="balance-value">0.00 gms</div>
+            <div className="balance-label">10+1 Gold Wallet Balance</div>
+            <div className="balance-value">
+              {walletData ? `${(walletData.totalGold24kGrams || 0).toFixed(4)} gms` : '0.0000 gms'}
+            </div>
+            <div className="balance-rupee-value" style={{ fontSize: '13.5px', color: '#A98E73', fontWeight: '600', marginTop: '6px' }}>
+              Live Value: ₹{Math.round((walletData?.totalGold24kGrams || 0) * buyRate24k).toLocaleString('en-IN')}
+            </div>
+            <div className="balance-rate-sub" style={{ fontSize: '11px', color: '#8E867E', marginTop: '2px' }}>
+              (@ Live Rate ₹{buyRate24k.toLocaleString('en-IN')}/gm)
+            </div>
           </div>
         </div>
 
         {/* Quick Links */}
         <div className="buygold-quick-links">
           <a href="#profile" className="quick-lnk">Check Purchase History →</a>
-          <a href="#sell-gold" className="quick-lnk">Sell Gold Balance →</a>
+          <a href="#sell-gold" className="quick-lnk">Sell Old Gold →</a>
         </div>
 
         {/* FAQ Accordion Section */}
