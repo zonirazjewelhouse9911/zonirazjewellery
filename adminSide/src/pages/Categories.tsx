@@ -395,10 +395,24 @@ export default function Categories() {
                   <label className="text-[9px] uppercase tracking-widest font-black text-[#5d463c] block">Category Name</label>
                   <input
                     type="text"
+                    list="category-presets"
                     value={formData.name}
                     onChange={handleNameChange}
+                    placeholder="Select or enter category name"
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-xs text-[#12100e] focus:ring-1 focus:ring-brand-gold/50"
                   />
+                  <datalist id="category-presets">
+                    <option value="Rings" />
+                    <option value="Pendants" />
+                    <option value="Nose Pins" />
+                    <option value="Bangles" />
+                    <option value="Chains" />
+                    <option value="Earrings" />
+                    <option value="Mangalsutra" />
+                    <option value="Tennis Bracelets" />
+                    <option value="Bracelets" />
+                    <option value="Necklaces" />
+                  </datalist>
                 </div>
                 <div className="space-y-2">
                   <label className="text-[9px] uppercase tracking-widest font-black text-[#5d463c] block">Slug</label>

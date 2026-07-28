@@ -106,19 +106,21 @@ export default function GoldMinePage() {
     '14K': parseFloat((estimated24kGrams * (24 / 14)).toFixed(3))
   };
 
-  const handleStartPlan = async (e) => {
-    e.preventDefault();
-    if (!userEmail) {
-      setMsg({ type: 'error', text: 'Please enter your email address to start your Gold Mine 10+1 plan.' });
-      return;
-    }
-    if (monthlyAmount < 5000) {
-      setMsg({ type: 'error', text: 'Minimum monthly installment is ₹5,000.' });
-      return;
-    }
+  const loadRazorpayScript = () => {
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
 
-    setSubmitting(true);
-    setMsg(null);
+  const executeStartPlan = async (razorpayParams = {}) => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/goldmine/start-plan`, {
         method: 'POST',
@@ -128,12 +130,15 @@ export default function GoldMinePage() {
           userName,
           userPhone,
           monthlyAmount,
-          userId: user?._id || user?.id
+          userId: user?._id || user?.id,
+          razorpayPaymentId: razorpayParams.razorpayPaymentId || null,
+          razorpayOrderId: razorpayParams.razorpayOrderId || null,
+          paymentMethod: razorpayParams.paymentMethod || 'Razorpay (UPI / Card / Netbanking)'
         })
       });
       const data = await res.json();
       if (data.success) {
-        setMsg({ type: 'success', text: data.message });
+        setMsg({ type: 'success', text: '🎉 ' + data.message });
         fetchMyPlans();
         fetchUserWallet();
         const activeSection = document.getElementById('my-active-plans-section');
@@ -150,21 +155,105 @@ export default function GoldMinePage() {
     }
   };
 
-  const handlePayNextInstallment = async (planId) => {
-    setPayingPlanId(planId);
+  const handleStartPlan = async (e) => {
+    e.preventDefault();
+    if (!user || (!user.email && !userEmail)) {
+      setMsg({ 
+        type: 'error', 
+        text: '🔒 Login Required: Please log in to your Zoniraz account to start a 10+1 Gold Mine Savings Plan.' 
+      });
+      return;
+    }
+    if (!userEmail) {
+      setMsg({ type: 'error', text: 'Please enter your account email address to start your Gold Mine 10+1 plan.' });
+      return;
+    }
+    if (monthlyAmount < 2) {
+      setMsg({ type: 'error', text: 'Minimum monthly installment is ₹2.' });
+      return;
+    }
+
+    setSubmitting(true);
     setMsg(null);
+
+    try {
+      const orderRes = await fetch(`${API_BASE_URL}/api/razorpay/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: monthlyAmount,
+          currency: 'INR',
+          receipt: `gmp_reg_${Date.now()}`
+        })
+      });
+      const orderData = await orderRes.json();
+      const scriptLoaded = await loadRazorpayScript();
+
+      if (orderData.success && scriptLoaded && window.Razorpay) {
+        const activeRazorpayKey = (orderData.keyId && 
+          !orderData.keyId.includes('YourKeyIdHere') && 
+          !orderData.keyId.includes('placeholder') && 
+          !orderData.keyId.includes('xxxx')) 
+            ? orderData.keyId 
+            : 'rzp_live_THER7MTHLStjLj';
+
+        const options = {
+          key: activeRazorpayKey,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: 'Zoniraz Jewellery House',
+          description: `10+1 Gold Mine Plan Registration - 1st Month ₹${monthlyAmount.toLocaleString('en-IN')}`,
+          image: '/zoni.png',
+          order_id: orderData.razorpayOrderId || orderData.order?.id,
+          prefill: {
+            name: userName || '',
+            email: userEmail,
+            contact: userPhone || ''
+          },
+          theme: {
+            color: '#5D463C'
+          },
+          handler: async function (response) {
+            executeStartPlan({
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              paymentMethod: 'Razorpay (UPI / Card / Netbanking)'
+            });
+          },
+          modal: {
+            ondismiss: function () {
+              setSubmitting(false);
+              setMsg({ type: 'error', text: 'Razorpay payment cancelled.' });
+            }
+          }
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        executeStartPlan();
+      }
+    } catch (err) {
+      console.warn('Razorpay start plan init notice:', err);
+      executeStartPlan();
+    }
+  };
+
+  const executePayInstallment = async (planId, razorpayParams = {}) => {
     try {
       const res = await fetch(`${API_BASE_URL}/api/goldmine/pay-installment`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           planId: planId,
-          userEmail: userEmail || user?.email
+          userEmail: userEmail || user?.email,
+          razorpayPaymentId: razorpayParams.razorpayPaymentId || null,
+          razorpayOrderId: razorpayParams.razorpayOrderId || null,
+          paymentMethod: razorpayParams.paymentMethod || 'Razorpay (UPI / Card / Netbanking)'
         })
       });
       const data = await res.json();
       if (data.success) {
-        setMsg({ type: 'success', text: data.message });
+        setMsg({ type: 'success', text: '💳 ' + data.message });
         fetchMyPlans();
         fetchUserWallet();
       } else {
@@ -174,6 +263,74 @@ export default function GoldMinePage() {
       setMsg({ type: 'error', text: 'Server error while processing installment payment.' });
     } finally {
       setPayingPlanId(null);
+    }
+  };
+
+  const handlePayNextInstallment = async (planId) => {
+    setPayingPlanId(planId);
+    setMsg(null);
+    const targetPlan = myPlans.find(p => p.planId === planId);
+    const amountToPay = targetPlan?.monthlyAmount || 5000;
+
+    try {
+      const orderRes = await fetch(`${API_BASE_URL}/api/razorpay/create-order`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: amountToPay,
+          currency: 'INR',
+          receipt: `gmp_emi_${Date.now()}`
+        })
+      });
+      const orderData = await orderRes.json();
+      const scriptLoaded = await loadRazorpayScript();
+
+      if (orderData.success && scriptLoaded && window.Razorpay) {
+        const activeRazorpayKey = (orderData.keyId && 
+          !orderData.keyId.includes('YourKeyIdHere') && 
+          !orderData.keyId.includes('placeholder') && 
+          !orderData.keyId.includes('xxxx')) 
+            ? orderData.keyId 
+            : 'rzp_live_THER7MTHLStjLj';
+
+        const options = {
+          key: activeRazorpayKey,
+          amount: orderData.amount,
+          currency: orderData.currency,
+          name: 'Zoniraz Jewellery House',
+          description: `Gold Mine Plan ${planId} Installment - ₹${amountToPay.toLocaleString('en-IN')}`,
+          image: '/zoni.png',
+          order_id: orderData.razorpayOrderId || orderData.order?.id,
+          prefill: {
+            name: userName || '',
+            email: userEmail,
+            contact: userPhone || ''
+          },
+          theme: {
+            color: '#5D463C'
+          },
+          handler: async function (response) {
+            executePayInstallment(planId, {
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              paymentMethod: 'Razorpay (UPI / Card / Netbanking)'
+            });
+          },
+          modal: {
+            ondismiss: function () {
+              setPayingPlanId(null);
+              setMsg({ type: 'error', text: 'Razorpay payment cancelled.' });
+            }
+          }
+        };
+        const rzp = new window.Razorpay(options);
+        rzp.open();
+      } else {
+        executePayInstallment(planId);
+      }
+    } catch (err) {
+      console.warn('Razorpay installment notice:', err);
+      executePayInstallment(planId);
     }
   };
 
@@ -292,8 +449,8 @@ export default function GoldMinePage() {
                 <span style={{ position: 'absolute', left: '10px', top: '8px', color: '#718096', fontWeight: '600', fontSize: '13px' }}>₹</span>
                 <input
                   type="number"
-                  min="5000"
-                  step="500"
+                  min="2"
+                  step="1"
                   required
                   value={monthlyAmount}
                   onChange={(e) => setMonthlyAmount(Number(e.target.value))}
@@ -362,9 +519,9 @@ export default function GoldMinePage() {
           </form>
 
           {/* Preset Chips */}
-          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginTop: '10px', fontSize: '11px', color: '#718096' }}>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center', marginTop: '10px', fontSize: '11px', color: '#718096', flexWrap: 'wrap' }}>
             <span>Popular Amounts:</span>
-            {[5000, 10000, 15000, 25000].map(amt => (
+            {[2, 5000, 10000, 15000, 25000].map(amt => (
               <button
                 key={amt}
                 type="button"
@@ -380,7 +537,7 @@ export default function GoldMinePage() {
                   fontWeight: '600'
                 }}
               >
-                ₹{amt.toLocaleString('en-IN')}
+                {amt === 2 ? '₹2 (Test)' : `₹${amt.toLocaleString('en-IN')}`}
               </button>
             ))}
           </div>
@@ -674,17 +831,29 @@ export default function GoldMinePage() {
                       </div>
 
                       <div style={{ textAlign: 'right' }}>
-                        <span style={{
-                          padding: '4px 10px',
-                          borderRadius: '16px',
-                          fontSize: '11px',
-                          fontWeight: '700',
-                          background: plan.status === 'COMPLETED' ? '#F0FFF4' : '#FEFCBF',
-                          color: plan.status === 'COMPLETED' ? '#22543D' : '#744210',
-                          border: `1px solid ${plan.status === 'COMPLETED' ? '#9AE6B4' : '#F6E05E'}`
-                        }}>
-                          {plan.status === 'COMPLETED' ? '🎉 COMPLETED (11/11 Paid)' : `ACTIVE (${plan.totalPaidInstallments}/10 Paid)`}
-                        </span>
+                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '4px' }}>
+                          <span style={{
+                            padding: '4px 10px',
+                            borderRadius: '16px',
+                            fontSize: '11px',
+                            fontWeight: '700',
+                            background: plan.status === 'COMPLETED' ? '#F0FFF4' : '#FEFCBF',
+                            color: plan.status === 'COMPLETED' ? '#22543D' : '#744210',
+                            border: `1px solid ${plan.status === 'COMPLETED' ? '#9AE6B4' : '#F6E05E'}`
+                          }}>
+                            {plan.status === 'COMPLETED' ? '🎉 COMPLETED' : `ACTIVE (${plan.totalPaidInstallments}/10 Paid)`}
+                          </span>
+
+                          {plan.bonusLapsed ? (
+                            <span style={{ padding: '2px 8px', borderRadius: '10px', fontSize: '10px', fontWeight: '700', background: '#FFF5F5', color: '#E53E3E', border: '1px solid #FEB2B2' }}>
+                              ⚠️ 11th Bonus Lapsed (Late EMI)
+                            </span>
+                          ) : (
+                            <span style={{ padding: '2px 8px', borderRadius: '10px', fontSize: '10px', fontWeight: '700', background: '#F0FFF4', color: '#276749', border: '1px solid #9AE6B4' }}>
+                              ✨ 11th Bonus Eligible
+                            </span>
+                          )}
+                        </div>
 
                         {plan.status === 'ACTIVE' && plan.totalPaidInstallments < 10 && (
                           <button
@@ -758,7 +927,20 @@ export default function GoldMinePage() {
                                     🎁 ZONIRAZ 100% FREE BONUS
                                   </span>
                                 ) : (
-                                  <span style={{ color: '#2F855A', fontWeight: '600' }}>✓ PAID</span>
+                                  <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                                    <span style={{ color: '#2F855A', fontWeight: '700', display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                      <ShieldCheck size={12} style={{ color: '#2F855A' }} />
+                                      ✓ Paid via Razorpay
+                                    </span>
+                                    <span style={{ fontSize: '10px', color: '#4A5568' }}>
+                                      {inst.paymentMethod || 'Razorpay (UPI / Card / Netbanking)'}
+                                    </span>
+                                    {inst.transactionId && (
+                                      <span style={{ fontSize: '9px', color: '#718096', fontFamily: 'monospace' }}>
+                                        Txn: {inst.transactionId}
+                                      </span>
+                                    )}
+                                  </div>
                                 )}
                               </td>
                             </tr>

@@ -49,12 +49,15 @@ const GENDERS = [
 
 export const CATEGORIES = [
   { id: '1', name: 'Rings' },
-  { id: '2', name: 'Earrings' },
-  { id: '3', name: 'Necklaces' },
-  { id: '4', name: 'Bracelets' },
-  { id: '5', name: 'Bangles' },
-  { id: '6', name: 'Pendants' },
-  { id: '7', name: 'Chains' }
+  { id: '2', name: 'Pendants' },
+  { id: '3', name: 'Nose Pins' },
+  { id: '4', name: 'Bangles' },
+  { id: '5', name: 'Chains' },
+  { id: '6', name: 'Earrings' },
+  { id: '7', name: 'Mangalsutra' },
+  { id: '8', name: 'Tennis Bracelets' },
+  { id: '9', name: 'Bracelets' },
+  { id: '10', name: 'Necklaces' }
 ];
 
 export const SUBCATEGORIES = [
@@ -72,6 +75,9 @@ export const SUBCATEGORIES = [
 
 const RING_SIZES = Array.from({ length: 30 }, (_, i) => (i + 1).toString());
 const BANGLE_SIZES = ['2.2', '2.4', '2.6', '2.8', '2.10', '3.0'];
+const CHAIN_SIZES_AANA = ['256', '288', '320', '352', '384', '416', '448'];
+const MANGALSUTRA_SIZES_AANA = ['224', '256', '288', '320', '352', '384'];
+const TENNIS_BRACELET_SIZES_AANA = ['256', '288', '320', '352', '384'];
 
 interface ProductEditorProps {
   productId?: string;
@@ -146,6 +152,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
   const [includeSolitaire, setIncludeSolitaire] = useState(false);
   const [includeDiamond, setIncludeDiamond] = useState(false);
   const [includeGemstone, setIncludeGemstone] = useState(false);
+  const [isCustomCategory, setIsCustomCategory] = useState(false);
 
   // Form State matching productModel.js fields
   const [formData, setFormData] = useState<ProductFormData>({
@@ -321,11 +328,14 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     // Clean up category size values if sizing not applicable
     const categoryLower = (formData.category_id || '').toLowerCase();
     const isRing = formData.category_id === '1' || categoryLower === 'rings' || categoryLower === 'ring';
-    const isBangleOrBracelet = formData.category_id === '4' || formData.category_id === '5' || 
-                               categoryLower === 'bracelets' || categoryLower === 'bangles' || 
-                               categoryLower === 'bracelet' || categoryLower === 'bangle';
-    const cleanSizeId = (isRing || isBangleOrBracelet) ? formData.size_id : '';
-    const cleanBangleSizeId = (isRing || isBangleOrBracelet) ? formData.banglesize_id : '0';
+    const isBangle = formData.category_id === '5' || categoryLower === 'bangles' || categoryLower === 'bangle';
+    const isTennisBracelet = formData.category_id === '8' || categoryLower === 'tennis bracelets' || categoryLower === 'tennis bracelet' || categoryLower === 'bracelets' || categoryLower === 'bracelet';
+    const isChain = formData.category_id === '5' || categoryLower === 'chains' || categoryLower === 'chain';
+    const isMangalsutra = formData.category_id === '7' || categoryLower === 'mangalsutra' || categoryLower === 'mangalsutras';
+    const showSizing = isRing || isBangle || isTennisBracelet || isChain || isMangalsutra;
+
+    const cleanSizeId = showSizing ? formData.size_id : '';
+    const cleanBangleSizeId = showSizing ? formData.banglesize_id : '0';
 
     const payload = {
       ...formData,
@@ -564,24 +574,62 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Select Category Name*</label>
-                <input
-                  type="text"
-                  placeholder="Enter Category Name (e.g. Rings, Earrings)"
-                  value={formData.category_id}
-                  onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                <select
+                  value={
+                    isCustomCategory
+                      ? 'Other'
+                      : CATEGORIES.some(c => c.name.toLowerCase() === (formData.category_id || '').toLowerCase())
+                        ? CATEGORIES.find(c => c.name.toLowerCase() === (formData.category_id || '').toLowerCase())?.name
+                        : (formData.category_id ? 'Other' : '')
+                  }
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === 'Other') {
+                      setIsCustomCategory(true);
+                      setFormData({ ...formData, category_id: '' });
+                    } else {
+                      setIsCustomCategory(false);
+                      setFormData({ ...formData, category_id: val });
+                    }
+                  }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
-                />
+                >
+                  <option value="">-- Select Category --</option>
+                  {CATEGORIES.map(c => (
+                    <option key={c.id} value={c.name}>{c.name}</option>
+                  ))}
+                  <option value="Other">Other / Custom Category...</option>
+                </select>
               </div>
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Select Subcategory*</label>
                 <input
                   type="text"
-                  placeholder="Enter Subcategory Name"
+                  list="subcategory-options"
+                  placeholder="Enter or select Subcategory Name"
                   value={formData.subcategory_id}
                   onChange={(e) => setFormData({ ...formData, subcategory_id: e.target.value })}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
                 />
+                <datalist id="subcategory-options">
+                  {SUBCATEGORIES.map(s => (
+                    <option key={s.id} value={s.name} />
+                  ))}
+                </datalist>
               </div>
+
+              {(isCustomCategory || (formData.category_id && !CATEGORIES.some(c => c.name.toLowerCase() === (formData.category_id || '').toLowerCase()))) && (
+                <div className="space-y-4 col-span-1 md:col-span-2 bg-amber-50/50 p-6 rounded-3xl border border-amber-200/80">
+                  <label className="text-[10px] uppercase tracking-[0.3em] font-black text-amber-800 block">Custom / Extra Category Field*</label>
+                  <input
+                    type="text"
+                    placeholder="Enter Custom Category Name (e.g. Brooches, Anklets)"
+                    value={formData.category_id}
+                    onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                    className="w-full bg-white border border-amber-300 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
+                  />
+                </div>
+              )}
               <div className="space-y-4">
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Enter Product Title*</label>
                 <input
@@ -1140,39 +1188,65 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             {(() => {
               const categoryLower = (formData.category_id || '').toLowerCase();
               const isRing = formData.category_id === '1' || categoryLower === 'rings' || categoryLower === 'ring';
-              const isBangleOrBracelet = formData.category_id === '4' || formData.category_id === '5' || 
-                                         categoryLower === 'bracelets' || categoryLower === 'bangles' || 
-                                         categoryLower === 'bracelet' || categoryLower === 'bangle';
-              const showSizing = isRing || isBangleOrBracelet;
+              const isBangle = formData.category_id === '5' || categoryLower === 'bangles' || categoryLower === 'bangle';
+              const isTennisBracelet = formData.category_id === '8' || categoryLower === 'tennis bracelets' || categoryLower === 'tennis bracelet' || categoryLower === 'bracelets' || categoryLower === 'bracelet';
+              const isChain = categoryLower === 'chains' || categoryLower === 'chain';
+              const isMangalsutra = categoryLower === 'mangalsutra' || categoryLower === 'mangalsutras';
+              const showSizing = isRing || isBangle || isTennisBracelet || isChain || isMangalsutra;
 
               if (!showSizing) return null;
+
+              const sizesList = isRing
+                ? RING_SIZES
+                : isBangle
+                  ? BANGLE_SIZES
+                  : isChain
+                    ? CHAIN_SIZES_AANA
+                    : isMangalsutra
+                      ? MANGALSUTRA_SIZES_AANA
+                      : TENNIS_BRACELET_SIZES_AANA;
+
+              const titleLabel = isRing
+                ? 'Ring Sizes Whitelist'
+                : isBangle
+                  ? 'Bangle Sizes Whitelist'
+                  : isChain
+                    ? 'Chain Lengths Whitelist (Aana / Inches)'
+                    : isMangalsutra
+                      ? 'Mangalsutra Lengths Whitelist (Aana / Inches)'
+                      : 'Tennis Bracelet Lengths Whitelist (Aana / Inches)';
+
+              const isAanaCategory = isChain || isMangalsutra || isTennisBracelet;
 
               return (
                 <div className="space-y-6 pt-10 border-t border-slate-200/80">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-serif font-bold text-[#12100e]">
-                      {isRing ? 'Ring Sizes Whitelist' : 'Bangle/Bracelet Sizes Whitelist'}
+                      {titleLabel}
                     </h3>
                     <span className="text-[9px] uppercase tracking-widest text-[#5d463c] font-bold">
                       {activeSizes.length} Selected
                     </span>
                   </div>
-                  <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-10 gap-3">
-                    {(isRing ? RING_SIZES : BANGLE_SIZES).map(sz => {
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
+                    {sizesList.map(sz => {
                       const isChecked = activeSizes.includes(sz);
+                      const displayLabel = isAanaCategory
+                        ? `${sz} Aana (${(Number(sz) * 0.0625).toFixed(1).replace(/\.0$/, '')}")`
+                        : sz;
                       return (
                         <button
                           key={sz}
                           type="button"
                           onClick={() => handleSizeToggle(sz)}
                           className={cn(
-                            'flex items-center justify-center py-3 rounded-xl border text-center transition-all duration-205 text-[11px] font-bold cursor-pointer',
+                            'flex items-center justify-center py-3 px-2 rounded-xl border text-center transition-all duration-200 text-[11px] font-bold cursor-pointer',
                             isChecked
-                              ? 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c]'
-                              : 'bg-slate-50 border border-slate-200 text-[#12100e]/50 hover:border-[#5d463c]/30'
+                              ? 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c] shadow-md'
+                              : 'bg-slate-50 border border-slate-200 text-[#12100e]/50 hover:border-[#5d463c]/40'
                           )}
                         >
-                          {sz}
+                          {displayLabel}
                         </button>
                       );
                     })}

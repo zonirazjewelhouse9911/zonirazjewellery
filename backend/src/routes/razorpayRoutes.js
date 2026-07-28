@@ -35,9 +35,9 @@ router.post('/create-order', async (req, res) => {
 
     const isPlaceholderKey = !RAZORPAY_KEY_ID || 
       RAZORPAY_KEY_ID.includes('placeholder') || 
-      RAZORPAY_KEY_ID.includes('demo') || 
       RAZORPAY_KEY_ID.includes('YourKeyIdHere') ||
-      RAZORPAY_KEY_ID.includes('zoniraz');
+      RAZORPAY_KEY_ID.includes('xxxx') ||
+      RAZORPAY_KEY_ID === 'rzp_test_placeholder_key';
 
     let order = null;
     if (razorpayInstance && !isPlaceholderKey) {

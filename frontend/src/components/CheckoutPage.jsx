@@ -288,10 +288,9 @@ export default function CheckoutPage() {
       const activeRazorpayKey = (orderData.keyId && 
         !orderData.keyId.includes('YourKeyIdHere') && 
         !orderData.keyId.includes('placeholder') && 
-        !orderData.keyId.includes('zoniraz') &&
         !orderData.keyId.includes('xxxx')) 
           ? orderData.keyId 
-          : 'rzp_test_1DP5mmOlF5G5ag';
+          : 'rzp_live_THER7MTHLStjLj';
 
       const options = {
         key: activeRazorpayKey,

@@ -24,7 +24,7 @@ exports.productPricing = async (req, res) => {
     console.log("Resolved size:", rawMetal);
 
     try {
-        const weight_differenceINsize_g = 0.140;
+        // const weight_differenceINsize_g = 0.140;
         let real_gold_weight = 0;
         let real_diamond_weight = 0;
         let item_gold_price = 0;
@@ -75,9 +75,93 @@ exports.productPricing = async (req, res) => {
             const total_diamond_weight = (product_data.diamond_weight || 0);
             real_diamond_weight = total_diamond_weight;
 
-            const gross_gold_weight = (isNaN(size) || size === 12)
-                ? product_data.gold_weight
-                : product_data.gold_weight + (size - 12) * weight_differenceINsize_g;
+            let gross_gold_weight = product_data.gold_weight;
+
+            // Convert size from Aana to Inches
+            // 1 Aana = 0.0625 Inch
+            const sizeInInches = size * 0.0625;
+
+            if (!isNaN(size)) {
+
+                // -------------------------------
+                // CHAIN CALCULATION
+                // -------------------------------
+                const catStr = (product_data.category || product_data.product_category || product_data.category_id || '').toLowerCase();
+
+                // -------------------------------
+                // CHAIN CALCULATION (Default 20")
+                // -------------------------------
+                if (
+                    catStr === "chains" ||
+                    catStr === "chain"
+                ) {
+
+                    // Database gold weight is for the base size stored in base_length
+                    // Default base length = 20 inches if not stored
+                    const baseLength = product_data.base_length || 20;
+
+                    // Every 1 inch = 0.5 gram (500mg)
+                    const weightPerInch = 0.5;
+
+                    gross_gold_weight =
+                        product_data.gold_weight +
+                        ((sizeInInches - baseLength) * weightPerInch);
+                }
+
+                // ---------------------------------
+                // MANGALSUTRA CALCULATION (Default 18")
+                // ---------------------------------
+                else if (
+                    catStr === "mangalsutra" ||
+                    catStr === "mangalsutras"
+                ) {
+
+                    // Database gold weight is for the base size stored in base_length
+                    // Default base length = 18 inches if not stored
+                    const baseLength = product_data.base_length || 18;
+
+                    // Every 1 inch = 0.5 gram (500mg)
+                    const weightPerInch = 0.5;
+
+                    gross_gold_weight =
+                        product_data.gold_weight +
+                        ((sizeInInches - baseLength) * weightPerInch);
+                }
+
+                // ---------------------------------
+                // TENNIS BRACELET CALCULATION (Default 20")
+                // ---------------------------------
+                else if (
+                    catStr === "tennis bracelets" ||
+                    catStr === "tennis bracelet" ||
+                    catStr === "bracelets" ||
+                    catStr === "bracelet"
+                ) {
+
+                    // Database weight belongs to 20 inch bracelet
+                    const baseLength = product_data.base_length || 20;
+
+                    // Calculate weight of 1 inch
+                    const weightPerInch = product_data.gold_weight / baseLength;
+
+                    // Final weight according to selected size
+                    gross_gold_weight = weightPerInch * sizeInInches;
+                }
+
+                // ---------------------------------
+                // NORMAL RINGS (OLD LOGIC)
+                // ---------------------------------
+                else {
+
+                    const weight_differenceINsize_g = 0.140;
+
+                    gross_gold_weight =
+                        size === 12
+                            ? product_data.gold_weight
+                            : product_data.gold_weight +
+                            (size - 12) * weight_differenceINsize_g;
+                }
+            }
 
             // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Gemstone Weight (g)
             const diamond_weight_g = total_diamond_weight * 0.2;

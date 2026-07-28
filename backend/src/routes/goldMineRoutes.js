@@ -39,13 +39,17 @@ router.get('/goldmine/wallet', async (req, res) => {
 // POST /api/goldmine/start-plan
 router.post('/goldmine/start-plan', async (req, res) => {
   try {
-    const { userEmail, userName, userPhone, monthlyAmount, userId } = req.body;
+    const { userEmail, userName, userPhone, monthlyAmount, userId, paymentMethod, transactionId, razorpayPaymentId, razorpayOrderId } = req.body;
     const result = await goldMineService.startPlan({
       userEmail,
       userName,
       userPhone,
       monthlyAmount,
-      userId
+      userId,
+      paymentMethod,
+      transactionId,
+      razorpayPaymentId,
+      razorpayOrderId
     });
     if (!result.success) {
       return res.status(400).json(result);
@@ -60,8 +64,15 @@ router.post('/goldmine/start-plan', async (req, res) => {
 // POST /api/goldmine/pay-installment
 router.post('/goldmine/pay-installment', async (req, res) => {
   try {
-    const { planId, userEmail } = req.body;
-    const result = await goldMineService.payInstallment({ planId, userEmail });
+    const { planId, userEmail, paymentMethod, transactionId, razorpayPaymentId, razorpayOrderId } = req.body;
+    const result = await goldMineService.payInstallment({ 
+      planId, 
+      userEmail,
+      paymentMethod,
+      transactionId,
+      razorpayPaymentId,
+      razorpayOrderId
+    });
     if (!result.success) {
       return res.status(400).json(result);
     }

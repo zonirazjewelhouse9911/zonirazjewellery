@@ -46,10 +46,15 @@ const colorOptions = [
 const diamondOptions = ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
 
 export default function ProductDetailPage({ product, products: propProducts = [], wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
-  const categoryName = (product?.product_category || product?.category || '').toLowerCase();
+  const categoryName = (product?.product_category || product?.category || product?.category_id || '').toLowerCase();
   const isRing = categoryName === 'rings' || categoryName === 'ring';
-  const isBangleOrBracelet = categoryName === 'bangles' || categoryName === 'bangle' || categoryName === 'bracelets' || categoryName === 'bracelet';
-  const showSizing = isRing || isBangleOrBracelet;
+  const isBangleOrBracelet = categoryName === 'bangles' || categoryName === 'bangle';
+  const isTennisBracelet = categoryName === 'tennis bracelets' || categoryName === 'tennis bracelet' || categoryName === 'bracelets' || categoryName === 'bracelet';
+  const isChain = categoryName === 'chains' || categoryName === 'chain';
+  const isMangalsutra = categoryName === 'mangalsutra' || categoryName === 'mangalsutras';
+  
+  const isAanaSizeProduct = isChain || isMangalsutra || isTennisBracelet;
+  const showSizing = isRing || isBangleOrBracelet || isAanaSizeProduct;
 
   const getProductSizes = () => {
     if (!product) return [];
@@ -62,6 +67,18 @@ export default function ProductDetailPage({ product, products: propProducts = []
     if (isBangleOrBracelet) {
       return ['2.2', '2.4', '2.6', '2.8', '2.10', '3.0'];
     }
+    if (isChain) {
+      // Chain sizes in Aana (1 Inch = 16 Aana / 0.0625") - Default 20" (320)
+      return ['256', '288', '320', '352', '384', '416', '448'];
+    }
+    if (isMangalsutra) {
+      // Mangalsutra sizes in Aana (1 Inch = 16 Aana / 0.0625") - Default 18" (288)
+      return ['224', '256', '288', '320', '352', '384'];
+    }
+    if (isTennisBracelet) {
+      // Tennis Bracelet sizes in Aana (1 Inch = 16 Aana / 0.0625") - Default 20" (320)
+      return ['256', '288', '320', '352', '384'];
+    }
     return [];
   };
 
@@ -69,10 +86,18 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(
-    isBangleOrBracelet
-      ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
-      : 12
+    isChain
+      ? '320' // 20 Inches in Aana
+      : isMangalsutra
+        ? '288' // Default 18 Inches in Aana (288 * 0.0625 = 18)
+        : isTennisBracelet
+          ? '320' // 20 Inches in Aana
+          : isBangleOrBracelet
+            ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
+            : 12
   );
+  const [isCustomSizeSelected, setIsCustomSizeSelected] = useState(false);
+  const [customSizeInput, setCustomSizeInput] = useState('');
   const [selectedKarat, setSelectedKarat] = useState('14 KT');
   const [selectedColor, setSelectedColor] = useState('Yellow');
   const selectedMetal = selectedKarat === 'Platinum' ? 'Platinum' : `${selectedKarat} ${selectedColor}`;
@@ -159,9 +184,11 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
   useEffect(() => {
     let active = true;
-    const defaultSize = isBangleOrBracelet
-      ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
-      : 12;
+    const defaultSize = isChain
+      ? '320'
+      : isBangleOrBracelet
+        ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
+        : 12;
     const isCustomized = selectedSize !== defaultSize || selectedMetal !== '14 KT Yellow' || selectedDiamond !== 'IJ-SI';
 
     if (!isCustomized) {
@@ -1653,10 +1680,23 @@ export default function ProductDetailPage({ product, products: propProducts = []
             <div className="pdp-sticky-sep" />
             <select
               className="pdp-sticky-size-sel"
-              value={selectedSize}
-              onChange={e => setSelectedSize(e.target.value)}
+              value={isCustomSizeSelected ? 'Custom' : selectedSize}
+              onChange={e => {
+                const val = e.target.value;
+                if (val === 'Custom') {
+                  setIsCustomSizeSelected(true);
+                } else {
+                  setIsCustomSizeSelected(false);
+                  setSelectedSize(val);
+                }
+              }}
             >
-              {activeSizes.map(s => <option key={s} value={s}>{s}</option>)}
+              {activeSizes.map(s => (
+                <option key={s} value={s}>
+                  {isAanaSizeProduct ? `${s} Aana (${(Number(s) * 0.0625).toFixed(1).replace(/\.0$/, '')}")` : s}
+                </option>
+              ))}
+              <option value="Custom">Custom Size...</option>
             </select>
           </>
         )}
@@ -1788,16 +1828,31 @@ export default function ProductDetailPage({ product, products: propProducts = []
           </div>
 
           {/* Customise selectors */}
-          <div className="pdp-customise-box">
+          <div className="pdp-customise-box" style={{ flexWrap: 'wrap' }}>
             {showSizing && (
               <div className="pdp-custom-item">
-                <span className="pdp-custom-label">Size</span>
+                <span className="pdp-custom-label">{isAanaSizeProduct ? 'Length' : isBangleOrBracelet ? 'Bangle Size' : 'Ring Size'}</span>
                 <select
                   className="pdp-custom-select"
-                  value={selectedSize}
-                  onChange={e => setSelectedSize(e.target.value)}
+                  value={isCustomSizeSelected ? 'Custom' : selectedSize}
+                  onChange={e => {
+                    const val = e.target.value;
+                    if (val === 'Custom') {
+                      setIsCustomSizeSelected(true);
+                    } else {
+                      setIsCustomSizeSelected(false);
+                      setSelectedSize(val);
+                    }
+                  }}
                 >
-                  {activeSizes.map(s => <option key={s} value={s}>{s}</option>)}
+                  {activeSizes.map(s => (
+                    <option key={s} value={s}>
+                      {isAanaSizeProduct 
+                        ? `${s} Aana (${(Number(s) * 0.0625).toFixed(1).replace(/\.0$/, '')}")` 
+                        : s}
+                    </option>
+                  ))}
+                  <option value="Custom">Custom Size...</option>
                 </select>
               </div>
             )}
@@ -1829,6 +1884,50 @@ export default function ProductDetailPage({ product, products: propProducts = []
             </button>
           </div>
 
+          {/* Custom Size Input Box when Custom Size is chosen */}
+          {showSizing && isCustomSizeSelected && (
+            <div style={{
+              margin: '10px 0',
+              padding: '12px 16px',
+              backgroundColor: '#FAF8F5',
+              border: '1px solid #EBE4D8',
+              borderRadius: '8px',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '6px'
+            }}>
+              <label style={{ fontSize: '11px', fontWeight: '700', color: '#231535', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                {isAanaSizeProduct ? 'Enter Custom Length in Aana (1 Inch = 16 Aana / 0.0625")' : 'Enter Custom Size'}
+              </label>
+              <input
+                type="number"
+                step="any"
+                placeholder={isAanaSizeProduct ? (isMangalsutra ? "e.g. 288 for 18 inches, 256 for 16 inches" : "e.g. 320 for 20 inches, 288 for 18 inches") : "Enter size..."}
+                value={customSizeInput}
+                onChange={e => {
+                  const val = e.target.value;
+                  setCustomSizeInput(val);
+                  if (val && !isNaN(val) && Number(val) > 0) {
+                    setSelectedSize(val);
+                  }
+                }}
+                style={{
+                  padding: '8px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #d4c5bd',
+                  fontSize: '13px',
+                  outline: 'none',
+                  backgroundColor: '#fff'
+                }}
+              />
+              {isAanaSizeProduct && customSizeInput && !isNaN(customSizeInput) && Number(customSizeInput) > 0 && (
+                <div style={{ fontSize: '12px', color: '#A98E73', fontWeight: '600', marginTop: '2px' }}>
+                  Equivalent Length: {(Number(customSizeInput) * 0.0625).toFixed(2).replace(/\.00$/, '')} Inches
+                </div>
+              )}
+            </div>
+          )}
+
           {isCustomizeOpen && (
             <div className="pdp-customise-card" role="region" aria-label="Customization preview">
               <div className="pdp-customise-card-header">
@@ -1844,7 +1943,14 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   <div className="pdp-customise-preview-stone" style={{ background: currentMetalAccent }} />
                 </div>
                 <div className="pdp-customise-summary">
-                  <div><strong>Size</strong><span>{selectedSize}</span></div>
+                  <div>
+                    <strong>{isAanaSizeProduct ? 'Length' : 'Size'}</strong>
+                    <span>
+                      {isAanaSizeProduct 
+                        ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")` 
+                        : selectedSize}
+                    </span>
+                  </div>
                   <div><strong>Purity</strong><span>{selectedKarat}</span></div>
                   {selectedKarat !== 'Platinum' && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -2129,8 +2235,14 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   <Ruler size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Dimensions
                 </div>
                 <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Ring Size</span>
-                  <span className="pdp-detail-val">{selectedSize}</span>
+                  <span className="pdp-detail-key">
+                    {isChain ? 'Chain Length' : isMangalsutra ? 'Mangalsutra Length' : isTennisBracelet ? 'Bracelet Length' : isBangleOrBracelet ? 'Bangle Size' : 'Ring Size'}
+                  </span>
+                  <span className="pdp-detail-val">
+                    {isAanaSizeProduct 
+                      ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")` 
+                      : selectedSize}
+                  </span>
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Width</span>
