@@ -1950,6 +1950,11 @@ button {
   gap: 30px;
 }
 
+.ge-grid.single-card {
+  max-width: 1100px;
+  grid-template-columns: 1fr;
+}
+
 .ge-card {
   background-color: #fdfcfb;
   border-radius: 40px;

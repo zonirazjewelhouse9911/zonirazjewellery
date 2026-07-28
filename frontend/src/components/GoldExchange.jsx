@@ -3,8 +3,8 @@ import React from 'react';
 export default function GoldExchange() {
   return (
     <section className="ge-section">
-      <div className="ge-grid">
-        {/* Left Card - Sell Old Gold */}
+      <div className="ge-grid single-card">
+        {/* Sell Old Gold Card */}
         <div className="ge-card">
           <div className="ge-card-icon-wrap">
             <span className="ge-icon-rotated">
@@ -32,25 +32,6 @@ export default function GoldExchange() {
               <polyline points="70 70 80 80 70 90" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </div>
-        </div>
-
-        {/* Right Card - Exchange Program */}
-        <div className="ge-card">
-          <div className="ge-card-icon-wrap ge-icon-arch">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-              <path d="M2.5 2v6h6M21.5 22v-6h-6" />
-              <path d="M22 11.5A10 10 0 0 0 3.2 7.2L2.5 8M2 12.5a10 10 0 0 0 18.8 4.3l0.7-0.8" />
-            </svg>
-          </div>
-
-          <h3 className="ge-card-title">Exchange your Old Gold for 100% Value!</h3>
-          <p className="ge-card-description">
-            Unlock full value for your old gold today with our <strong>Exchange Program!</strong>
-          </p>
-
-          <a href="#exchange-program" className="ge-card-btn">
-            KNOW MORE &rarr;
-          </a>
         </div>
       </div>
     </section>
