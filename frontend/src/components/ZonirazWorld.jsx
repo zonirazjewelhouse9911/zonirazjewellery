@@ -15,17 +15,17 @@ export default function ZonirazWorld() {
         {/* Left stacked cards */}
         <div className="zw-left-col">
           <div className="zw-card zw-card-stacked">
-            <img src={ringTopImg} alt="Gold Diamond Ring" className="zw-card-img" />
+            <img src={ringTopImg} alt="Gold Diamond Ring" className="zw-card-img" loading="lazy" decoding="async" width="500" height="300" />
           </div>
           <div className="zw-card zw-card-stacked">
-            <img src={ringBottomImg} alt="Diamond Band" className="zw-card-img" />
+            <img src={ringBottomImg} alt="Diamond Band" className="zw-card-img" loading="lazy" decoding="async" width="500" height="300" />
           </div>
         </div>
 
         {/* Right featured card */}
         <div className="zw-right-col">
           <div className="zw-card zw-card-featured">
-            <img src={heritageImg} alt="The Heritage Collection" className="zw-card-img" />
+            <img src={heritageImg} alt="The Heritage Collection" className="zw-card-img" loading="lazy" decoding="async" width="600" height="620" />
             <div className="zw-featured-overlay">
               <h3 className="zw-featured-title">The Heritage</h3>
               <p className="zw-featured-subtitle">CRAFTING BRILLIANCE FOR GENERATIONS.</p>

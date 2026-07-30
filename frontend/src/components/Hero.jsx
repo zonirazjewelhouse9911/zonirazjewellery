@@ -83,6 +83,7 @@ export default function Hero() {
             autoPlay
             muted
             playsInline
+            preload="metadata"
             onEnded={goNext}
             className="hero-slide-media"
             style={{
@@ -90,12 +91,19 @@ export default function Hero() {
               height: '100%',
               pointerEvents: 'none'
             }}
-          />
+          >
+            <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+          </video>
         ) : slides[current].type === 'image' ? (
           <img
             src={slides[current].src}
             alt="Zoniraz Jewellery Banner"
             className="hero-slide-media"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            width="1920"
+            height="1080"
             style={{
               width: '100%',
               height: '100%',

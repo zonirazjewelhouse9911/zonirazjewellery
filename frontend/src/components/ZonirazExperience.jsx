@@ -16,7 +16,7 @@ export default function ZonirazExperience() {
         {/* Left Card: Book an Appointment */}
         <a href="#contact" className="ze-card">
           <div className="ze-card-img-wrap">
-            <img src={consultationImg} alt="Book an Appointment" className="ze-card-img" />
+            <img src={consultationImg} alt="" aria-hidden="true" className="ze-card-img" loading="lazy" decoding="async" width="580" height="380" />
           </div>
           <span className="ze-card-label">BOOK AN APPOINTMENT</span>
         </a>
@@ -24,7 +24,7 @@ export default function ZonirazExperience() {
         {/* Right Card: Blogs */}
         <a href="#blogs" className="ze-card">
           <div className="ze-card-img-wrap">
-            <img src={blogsImg} alt="Blogs" className="ze-card-img" />
+            <img src={blogsImg} alt="" aria-hidden="true" className="ze-card-img" loading="lazy" decoding="async" width="580" height="380" />
           </div>
           <span className="ze-card-label">BLOGS</span>
         </a>

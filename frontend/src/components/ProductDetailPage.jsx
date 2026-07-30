@@ -2505,14 +2505,16 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   className="pdp-video-feed"
                   src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c054ba20ef413c2f925f2066fa2eb967&profile_id=139&oauth2_token_id=57447761"
                   autoPlay loop muted playsInline
-                />
+                >
+                  <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+                </video>
               )}
             </div>
             <div className="pdp-call-controls">
-              <button className="pdp-ctrl-btn" style={{ background: '#5c4b6e', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => alert('Muted')}>
+              <button className="pdp-ctrl-btn" style={{ background: '#5c4b6e', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => alert('Muted')} aria-label="Mute microphone">
                 <Mic size={18} />
               </button>
-              <button className="pdp-ctrl-btn" style={{ background: '#f44336', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setVideoOpen(false)}>
+              <button className="pdp-ctrl-btn" style={{ background: '#f44336', display: 'flex', alignItems: 'center', justifyContent: 'center' }} onClick={() => setVideoOpen(false)} aria-label="End video call">
                 <PhoneOff size={18} />
               </button>
             </div>
@@ -2537,7 +2539,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             }} 
             onClick={e => e.stopPropagation()}
           >
-            <button className="pdp-modal-close" onClick={() => setSizingVideoOpen(false)}>✕</button>
+            <button className="pdp-modal-close" onClick={() => setSizingVideoOpen(false)} aria-label="Close modal">✕</button>
             <h3 className="pdp-modal-title" style={{ marginBottom: 12 }}>How to Measure Your Size</h3>
             <div style={{ flex: 1, position: 'relative', width: '100%', borderRadius: 8, overflow: 'hidden', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <video
@@ -2546,7 +2548,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 loop
                 playsInline
                 style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
-              />
+              >
+                <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+              </video>
             </div>
           </div>
         </div>

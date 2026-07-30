@@ -81,13 +81,13 @@ export default function FindPerfectMatch({ products = [] }) {
         </div>
         <div className="fpm-arrows">
           <button className="fpm-arrow" onClick={() => scroll(-1)} aria-label="Scroll left">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <line x1="19" y1="12" x2="5" y2="12"/>
               <polyline points="12 19 5 12 12 5"/>
             </svg>
           </button>
           <button className="fpm-arrow" onClick={() => scroll(1)} aria-label="Scroll right">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
               <line x1="5" y1="12" x2="19" y2="12"/>
               <polyline points="12 5 19 12 12 19"/>
             </svg>
@@ -99,7 +99,7 @@ export default function FindPerfectMatch({ products = [] }) {
         {categories.map((cat) => (
           <a key={cat.id} href={`#${cat.id}`} className="fpm-card">
             <div className="fpm-card-img-wrap">
-              <img src={cat.image} alt={cat.label} className="fpm-card-img" />
+              <img src={cat.image} alt="" aria-hidden="true" className="fpm-card-img" loading="lazy" decoding="async" width="240" height="290" />
             </div>
             <span className="fpm-card-label">{cat.label}</span>
           </a>

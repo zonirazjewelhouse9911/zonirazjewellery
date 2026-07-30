@@ -197,6 +197,10 @@ export default function GoldMinePage() {
             ? orderData.keyId 
             : 'rzp_live_THER7MTHLStjLj';
 
+        const isRealOrderId = orderData.razorpayOrderId && 
+          !orderData.razorpayOrderId.startsWith('order_rzp_') && 
+          !orderData.razorpayOrderId.startsWith('order_sim_');
+
         const options = {
           key: activeRazorpayKey,
           amount: orderData.amount,
@@ -204,7 +208,6 @@ export default function GoldMinePage() {
           name: 'Zoniraz Jewellery House',
           description: `10+1 Gold Mine Plan Registration - 1st Month ₹${monthlyAmount.toLocaleString('en-IN')}`,
           image: '/zoni.png',
-          order_id: orderData.razorpayOrderId || orderData.order?.id,
           prefill: {
             name: userName || '',
             email: userEmail,
@@ -227,6 +230,10 @@ export default function GoldMinePage() {
             }
           }
         };
+
+        if (isRealOrderId) {
+          options.order_id = orderData.razorpayOrderId;
+        }
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else {
@@ -293,6 +300,10 @@ export default function GoldMinePage() {
             ? orderData.keyId 
             : 'rzp_live_THER7MTHLStjLj';
 
+        const isRealOrderId = orderData.razorpayOrderId && 
+          !orderData.razorpayOrderId.startsWith('order_rzp_') && 
+          !orderData.razorpayOrderId.startsWith('order_sim_');
+
         const options = {
           key: activeRazorpayKey,
           amount: orderData.amount,
@@ -300,7 +311,6 @@ export default function GoldMinePage() {
           name: 'Zoniraz Jewellery House',
           description: `Gold Mine Plan ${planId} Installment - ₹${amountToPay.toLocaleString('en-IN')}`,
           image: '/zoni.png',
-          order_id: orderData.razorpayOrderId || orderData.order?.id,
           prefill: {
             name: userName || '',
             email: userEmail,
@@ -323,6 +333,10 @@ export default function GoldMinePage() {
             }
           }
         };
+
+        if (isRealOrderId) {
+          options.order_id = orderData.razorpayOrderId;
+        }
         const rzp = new window.Razorpay(options);
         rzp.open();
       } else {

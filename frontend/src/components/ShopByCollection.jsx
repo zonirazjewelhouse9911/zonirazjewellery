@@ -132,10 +132,13 @@ export default function ShopByCollection({ products = [] }) {
               loop
               muted
               playsInline
+              preload="metadata"
               className="collection-card-img"
-            />
+            >
+              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+            </video>
           ) : (
-            <img src={displayed[0].image} alt={displayed[0].title} className="collection-card-img" />
+            <img src={displayed[0].image} alt={displayed[0].title} className="collection-card-img" loading="lazy" decoding="async" width="600" height="600" />
           )}
           <div className="collection-card-overlay">
             <span className="collection-card-label">{displayed[0].label}</span>
@@ -155,11 +158,14 @@ export default function ShopByCollection({ products = [] }) {
                   loop
                   muted
                   playsInline
+                  preload="metadata"
                   className="collection-card-img"
                   style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
-                />
+                >
+                  <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+                </video>
               ) : (
-                <img src={col.image} alt={col.title} className="collection-card-img" />
+                <img src={col.image} alt={col.title} className="collection-card-img" loading="lazy" decoding="async" width="300" height="300" />
               )}
               <div className="collection-card-overlay">
                 <span className="collection-card-label">{col.label}</span>

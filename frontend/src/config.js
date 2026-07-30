@@ -11,10 +11,17 @@ export const API_BASE_URL =
  * @param {string} url - The URL or path to format
  * @returns {string} The fully qualified URL pointing to the backend
  */
-export const getUploadsUrl = (url) => {
+export const getUploadsUrl = (url, width) => {
   if (!url) return '';
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  if (url.startsWith('/')) return `${API_BASE_URL}${url}`;
-  if (url.startsWith('uploads/')) return `${API_BASE_URL}/${url}`;
-  return `${API_BASE_URL}/uploads/${url}`;
+  let formatted = url;
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    if (url.startsWith('/')) formatted = `${API_BASE_URL}${url}`;
+    else if (url.startsWith('uploads/')) formatted = `${API_BASE_URL}/${url}`;
+    else formatted = `${API_BASE_URL}/uploads/${url}`;
+  }
+  if (formatted.includes('res.cloudinary.com') && formatted.includes('/upload/')) {
+    const params = width ? `f_auto,q_auto,w_${width},c_limit` : 'f_auto,q_auto';
+    return formatted.replace('/upload/', `/upload/${params}/`);
+  }
+  return formatted;
 };

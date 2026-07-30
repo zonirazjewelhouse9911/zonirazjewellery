@@ -466,7 +466,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
         {/* Center: Brand Logo */}
         <div className="header-brand">
           <a href="#" className="brand-logo-text">
-            <img src="/zoni.png" alt="Zoniraz Logo" className="header-brand-logo-img" />
+            <img src="/zoni.png" alt="Zoniraz Logo" className="header-brand-logo-img" decoding="async" width="180" height="60" />
           </a>
         </div>
 
@@ -653,14 +653,14 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
             </button>
           ) : (
             <div className="search-actions-inline">
-              <button className="search-action-btn camera-search" title="Search by Image">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <button className="search-action-btn camera-search" title="Search by Image" aria-label="Search by Image">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
                   <circle cx="12" cy="13" r="4"></circle>
                 </svg>
               </button>
-              <button className="search-action-btn voice-search" title="Voice Search">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <button className="search-action-btn voice-search" title="Voice Search" aria-label="Voice Search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
                   <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
                   <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
                   <line x1="12" y1="19" x2="12" y2="23"></line>
@@ -925,7 +925,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
       {goldModalOpen && (
         <div className="gold-modal-overlay">
           <div className="gold-modal-container">
-            <button className="gold-modal-close" onClick={() => setGoldModalOpen(false)}>
+            <button className="gold-modal-close" onClick={() => setGoldModalOpen(false)} aria-label="Close modal">
               <X size={18} />
             </button>
 
@@ -1048,7 +1048,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
 
             {/* Header: Close Button & Quick Utilities */}
             <div className="drawer-header-row">
-              <button className="drawer-close-btn" onClick={() => setMobileMenuOpen(false)}>
+              <button className="drawer-close-btn" onClick={() => setMobileMenuOpen(false)} aria-label="Close menu">
                 ✕
               </button>
 

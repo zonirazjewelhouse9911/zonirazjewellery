@@ -46,11 +46,14 @@ export default function TrendingNow() {
                   loop
                   muted
                   playsInline
+                  preload="metadata"
                   className="trending-card-img"
                   style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
-                />
+                >
+                  <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+                </video>
               ) : (
-                <img src={item.image} alt={item.title} className="trending-card-img" />
+                <img src={item.image} alt={item.title} className="trending-card-img" loading="lazy" decoding="async" width="400" height="400" />
               )}
             </div>
             <h3 className="trending-card-title">{item.title}</h3>

@@ -342,7 +342,7 @@ export default function CheckoutPage() {
         }
       };
 
-      if (orderData.razorpayOrderId && !orderData.razorpayOrderId.startsWith('order_sim_')) {
+      if (orderData.razorpayOrderId && !orderData.razorpayOrderId.startsWith('order_sim_') && !orderData.razorpayOrderId.startsWith('order_rzp_')) {
         options.order_id = orderData.razorpayOrderId;
       }
 

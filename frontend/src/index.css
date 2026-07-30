@@ -8,6 +8,17 @@
   font-family: 'Inter', sans-serif;
 }
 
+/* Accessibility Focus Styles */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #5d463c;
+  outline-offset: 2px;
+}
+
 h1,
 h2,
 h3,
@@ -694,7 +705,18 @@ button {
   background: rgba(255, 255, 255, 0.35);
   border: none;
   cursor: pointer;
+  position: relative;
   transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.carousel-dot::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
 }
 
 .carousel-dot.active {
@@ -879,8 +901,8 @@ button {
 
 .shop-collection-subtitle {
   font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 300;
+  color: #553e34;
+  font-weight: 500;
   letter-spacing: 0.02em;
 }
 
@@ -1108,7 +1130,7 @@ button {
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: #4a362c;
   transition: color 0.2s ease;
 }
 
@@ -1138,8 +1160,8 @@ button {
 
 .trending-subtitle {
   font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 300;
+  color: #553e34;
+  font-weight: 500;
   letter-spacing: 0.02em;
   margin-bottom: 15px;
 }
@@ -1456,8 +1478,8 @@ button {
 
 .cfy-subtitle {
   font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 300;
+  color: #553e34;
+  font-weight: 500;
   letter-spacing: 0.02em;
 }
 
@@ -1541,8 +1563,8 @@ button {
 
 .za-centered-subtitle {
   font-size: 13.5px;
-  color: var(--text-muted);
-  font-weight: 300;
+  color: #553e34;
+  font-weight: 500;
   letter-spacing: 0.02em;
   margin-bottom: 16px;
 }
@@ -2028,7 +2050,7 @@ button {
 
 .ge-card-btn {
   background-color: #c5a880;
-  color: #ffffff;
+  color: #2c1e17;
   padding: 12px 28px;
   border-radius: 30px;
   font-size: 11.5px;
@@ -2281,8 +2303,8 @@ button {
 
 .ze-subtitle {
   font-size: 13.5px;
-  color: var(--text-muted);
-  font-weight: 300;
+  color: #553e34;
+  font-weight: 500;
   letter-spacing: 0.02em;
 }
 
@@ -2395,7 +2417,8 @@ button {
 .feature-info p {
   font-size: 11px;
   line-height: 1.5;
-  color: var(--text-muted);
+  color: #4a362c;
+  font-weight: 500;
 }
 
 /* ===== Main Footer ===== */
@@ -2477,7 +2500,7 @@ button {
 
 .footer-links-list a {
   font-size: 12px;
-  color: rgba(239, 231, 229, 0.75);
+  color: #efe7e5;
   text-decoration: none;
   transition: color 0.2s ease, padding-left 0.2s ease;
 }
@@ -2531,7 +2554,7 @@ button {
   font-size: 9.5px;
   font-weight: 600;
   letter-spacing: 0.08em;
-  color: rgba(239, 231, 229, 0.7);
+  color: #efe7e5;
   text-transform: uppercase;
   margin: 0;
   line-height: 1.4;
@@ -2573,12 +2596,23 @@ button {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(259, 231, 229, 0.8);
+  color: #ffffff;
+  position: relative;
   transition: var(--transition-smooth);
+}
+
+.social-circle-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
 }
 
 .social-circle-btn:hover {
@@ -2598,12 +2632,13 @@ button {
   justify-content: space-between;
   align-items: center;
   font-size: 11.5px;
-  color: rgba(239, 231, 229, 0.55);
+  color: rgba(239, 231, 229, 0.9);
   margin-top: 10px;
 }
 
 .copyright-text {
   margin: 0;
+  color: #efe7e5;
 }
 
 .footer-legal-links {
@@ -2612,7 +2647,7 @@ button {
 }
 
 .footer-legal-links a {
-  color: rgba(239, 231, 229, 0.55);
+  color: #efe7e5;
   text-decoration: none;
   transition: color 0.2s ease;
 }
@@ -4149,6 +4184,10 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 10px;
+  position: relative;
   transition: var(--transition-smooth);
 }
 

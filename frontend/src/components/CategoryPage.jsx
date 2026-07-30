@@ -1648,7 +1648,9 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                             loop 
                             muted 
                             playsInline
-                          />
+                          >
+                            <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+                          </video>
                         )}
 
                         {/* Slide Arrows */}

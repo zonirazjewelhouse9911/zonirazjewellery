@@ -149,11 +149,14 @@ export default function ZonirazAssurance() {
                     loop
                     muted={index !== activeIndex || isMuted}
                     playsInline
+                    preload="metadata"
                     style={{ objectFit: 'cover' }}
                     autoPlay
-                  />
+                  >
+                    <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+                  </video>
                 ) : (
-                  <img src={story.image} alt={story.title} className="za-card-bg-img" />
+                  <img src={story.image} alt={story.title} className="za-card-bg-img" loading="lazy" decoding="async" width="400" height="500" />
                 )}
 
                 {/* Dark Vignette Overlay */}

@@ -161,7 +161,9 @@ export default function AdminVideoPanel() {
               autoPlay
               playsInline
               style={s.remoteVideo}
-            />
+            >
+              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+            </video>
             {/* Admin self PiP */}
             <video
               ref={localVideoRef}
@@ -169,7 +171,9 @@ export default function AdminVideoPanel() {
               playsInline
               muted
               style={s.localVideo}
-            />
+            >
+              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+            </video>
             <div style={s.liveBadge}>
               <span style={s.liveDot}/>
               LIVE

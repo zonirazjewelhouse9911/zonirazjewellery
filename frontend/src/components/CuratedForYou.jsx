@@ -23,7 +23,7 @@ export default function CuratedForYou() {
         {genderCards.map((card) => (
           <a key={card.id} href={card.href} className="cfy-card">
             <div className="cfy-card-img-wrap">
-              <img src={card.image} alt={card.label} className="cfy-card-img" />
+              <img src={card.image} alt="" aria-hidden="true" className="cfy-card-img" loading="lazy" decoding="async" width="400" height="500" />
             </div>
             <p className="cfy-card-label">{card.label}</p>
           </a>

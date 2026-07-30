@@ -116,7 +116,9 @@ export default function VideoCallModal() {
               autoPlay
               playsInline
               style={styles.remoteVideo}
-            />
+            >
+              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+            </video>
             {/* Local (user) PiP */}
             <video
               ref={localVideoRef}
@@ -124,7 +126,9 @@ export default function VideoCallModal() {
               playsInline
               muted
               style={styles.localVideo}
-            />
+            >
+              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+            </video>
             {/* Live badge */}
             <div style={styles.liveBadge}>
               <span style={styles.liveDot}/>
