@@ -3,6 +3,7 @@ import { API_BASE_URL } from '../config';
 import { products } from '../data/products';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { 
   Star, 
   Sparkles, 
@@ -46,6 +47,7 @@ const colorOptions = [
 const diamondOptions = ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
 
 export default function ProductDetailPage({ product, products: propProducts = [], wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
+  const { formatPrice } = useCurrency();
   const categoryName = (product?.product_category || product?.category || product?.category_id || '').toLowerCase();
   const isRing = categoryName === 'rings' || categoryName === 'ring';
   const isBangleOrBracelet = categoryName === 'bangles' || categoryName === 'bangle';
@@ -1673,7 +1675,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
         <img src={product.image} alt="" className="pdp-sticky-product-img" />
         <div>
           <div className="pdp-sticky-name">{product.name}</div>
-          <div className="pdp-sticky-price">₹{currentPrice.toLocaleString('en-IN')}</div>
+          <div className="pdp-sticky-price">{formatPrice(currentPrice)}</div>
         </div>
         {showSizing && (
           <>
@@ -1814,9 +1816,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
           {/* Price */}
           <div className="pdp-price-row">
-            <span className="pdp-current-price">₹{currentPrice.toLocaleString('en-IN')}</span>
+            <span className="pdp-current-price">{formatPrice(currentPrice)}</span>
             {originalPrice > currentPrice && (
-              <span className="pdp-original-price">₹{originalPrice.toLocaleString('en-IN')}</span>
+              <span className="pdp-original-price">{formatPrice(originalPrice)}</span>
             )}
           </div>
           <div className="pdp-tax-note">(MRP Inclusive of all taxes)</div>
@@ -2281,31 +2283,31 @@ export default function ProductDetailPage({ product, products: propProducts = []
               <div className="pdp-detail-group-title">Price Breakup</div>
               <div className="pdp-detail-row">
                 <span className="pdp-detail-key">Gold Value</span>
-                <span className="pdp-detail-val">₹{pricingDetails.goldCost.toLocaleString('en-IN')}</span>
+                <span className="pdp-detail-val">{formatPrice(pricingDetails.goldCost)}</span>
               </div>
               <div className="pdp-detail-row">
                 <span className="pdp-detail-key">Diamond Value</span>
-                <span className="pdp-detail-val">₹{pricingDetails.diamondCost.toLocaleString('en-IN')}</span>
+                <span className="pdp-detail-val">{formatPrice(pricingDetails.diamondCost)}</span>
               </div>
               {pricingDetails.gemstoneCost > 0 && (
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Gemstone Value</span>
-                  <span className="pdp-detail-val">₹{pricingDetails.gemstoneCost.toLocaleString('en-IN')}</span>
+                  <span className="pdp-detail-val">{formatPrice(pricingDetails.gemstoneCost)}</span>
                 </div>
               )}
               <div className="pdp-detail-row">
                 <span className="pdp-detail-key">Making Charges</span>
-                <span className="pdp-detail-val">₹{pricingDetails.makingCharges.toLocaleString('en-IN')}</span>
+                <span className="pdp-detail-val">{formatPrice(pricingDetails.makingCharges)}</span>
               </div>
               {pricingDetails.gst > 0 && (
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">GST / Taxes</span>
-                  <span className="pdp-detail-val">₹{pricingDetails.gst.toLocaleString('en-IN')}</span>
+                  <span className="pdp-detail-val">{formatPrice(pricingDetails.gst)}</span>
                 </div>
               )}
               <div className="pdp-detail-row" style={{ borderTop: '1px solid #f0edf5', paddingTop: 10, marginTop: 4 }}>
                 <span className="pdp-detail-key" style={{ fontWeight: 700, color: '#231535' }}>Total</span>
-                <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>₹{pricingDetails.price.toLocaleString('en-IN')}</span>
+                <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>{formatPrice(pricingDetails.price)}</span>
               </div>
             </div>
           </div>
@@ -2422,9 +2424,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   <div className="pdp-related-info">
                     <div className="pdp-related-name">{p.name}</div>
                     <div className="pdp-related-prices">
-                      <span className="pdp-related-price">₹{Number(p.price || 0).toLocaleString('en-IN')}</span>
+                      <span className="pdp-related-price">{formatPrice(p.price || 0)}</span>
                       {Number(p.originalPrice || 0) > Number(p.price || 0) && (
-                        <span className="pdp-related-old-price">₹{Number(p.originalPrice || 0).toLocaleString('en-IN')}</span>
+                        <span className="pdp-related-old-price">{formatPrice(p.originalPrice || 0)}</span>
                       )}
                     </div>
                   </div>

@@ -1,6 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { products } from '../data/products';
 import { CartContext } from '../context/CartContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { API_BASE_URL } from '../config';
 
 // Frequently bought together items (earrings, pendants, etc.)
@@ -28,7 +29,8 @@ const frequentlyBoughtItems = [
   }
 ];
 
-export default function CartPage({ products: propProducts = [], cart = {}, setCart }) {
+export default function CartPage({ cart = {}, setCart, wishlist = {}, setWishlist }) {
+  const { formatPrice } = useCurrency();
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [couponMessage, setCouponMessage] = useState('');
@@ -770,13 +772,13 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
                       <div className="cart-item-details">
                         <h3 className="cart-item-title">{pName}</h3>
                         <div className="cart-item-price-row">
-                          <span className="cart-item-price">₹{pPrice.toLocaleString('en-IN')}</span>
+                          <span className="cart-item-price">{formatPrice(pPrice)}</span>
                           {pOrigPrice > pPrice && (
-                            <span className="cart-item-old-price">₹{pOrigPrice.toLocaleString('en-IN')}</span>
+                            <span className="cart-item-old-price">{formatPrice(pOrigPrice)}</span>
                           )}
                           {pSavings > 0 && (
                             <span className="cart-item-save">
-                              Save ₹{pSavings.toLocaleString('en-IN')}
+                              Save {formatPrice(pSavings)}
                             </span>
                           )}
                         </div>
@@ -957,25 +959,25 @@ export default function CartPage({ products: propProducts = [], cart = {}, setCa
               <div className="summary-card">
                 <div className="summary-row">
                   <span>Subtotal</span>
-                  <span>₹{subtotal.toLocaleString('en-IN')}</span>
+                  <span>{formatPrice(subtotal)}</span>
                 </div>
                 <div className="summary-row">
                   <span>GST (3%)</span>
-                  <span>+ ₹{gst.toLocaleString('en-IN')}</span>
+                  <span>+ {formatPrice(gst)}</span>
                 </div>
                 {discount > 0 && (
                   <div className="summary-row" style={{ color: '#2e7d32', fontWeight: '600' }}>
                     <span>Coupon Discount ({coupon?.code})</span>
-                    <span>- ₹{discount.toLocaleString('en-IN')}</span>
+                    <span>- {formatPrice(discount)}</span>
                   </div>
                 )}
                 <div className="summary-row">
                   <span>Shipping (Standard)</span>
-                  <span style={{ color: '#2e7d32', fontWeight: '600' }}>{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
+                  <span style={{ color: '#2e7d32', fontWeight: '600' }}>{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
                 </div>
                 <div className="summary-row bold">
                   <span>Total Cost</span>
-                  <span>₹{grandTotal.toLocaleString('en-IN')}</span>
+                  <span>{formatPrice(grandTotal)}</span>
                 </div>
 
                 <button 

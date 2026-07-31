@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { products } from '../data/products';
 import { useVideoCall } from '../context/VideoCallContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 export default function WishlistPage({ products: propProducts = [], wishlist = {}, setWishlist }) {
   const { startCall, adminOnline } = useVideoCall();
+  const { formatPrice } = useCurrency();
   // Modal states (video call handled globally)
 
   const [tryHomeModalOpen, setTryHomeModalOpen] = useState(false);
@@ -483,8 +485,8 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
                 {/* Info */}
                 <div className="wishlist-info">
                   <div className="wishlist-price-row">
-                    <span className="wishlist-current-price">₹{product.price.toLocaleString('en-IN')}</span>
-                    <span className="wishlist-original-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
+                    <span className="wishlist-current-price">{formatPrice(product.price)}</span>
+                    <span className="wishlist-original-price">{formatPrice(product.originalPrice)}</span>
                     <span className="wishlist-discount">
                       ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF)
                     </span>

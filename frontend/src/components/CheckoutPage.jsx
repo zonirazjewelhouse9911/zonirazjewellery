@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
+import { useCurrency } from '../context/CurrencyContext';
 import AuthModal from './AuthModal';
 import { ChevronRight, MapPin, Truck, Eye, CreditCard } from 'lucide-react';
 
@@ -11,6 +12,7 @@ const stores = [
 ];
 
 export default function CheckoutPage() {
+  const { formatPrice } = useCurrency();
   const { user, token, sendOtp, verifyOtp } = useContext(AuthContext);
   const { cartList, clearCart, subtotal, gst, shipping, discount, grandTotal, coupon, applyCoupon, removeCoupon } = useContext(CartContext);
 
@@ -701,7 +703,7 @@ export default function CheckoutPage() {
                         <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#2b221d', fontWeight: '600' }}>{item.name}</h4>
                         <p style={{ margin: '0', fontSize: '12.5px', color: '#8c7365' }}>Purity: {item.selectedPurity || '18KT'}</p>
                         <p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#2b221d', fontWeight: '600' }}>
-                          {item.quantity} x ₹{item.price.toLocaleString('en-IN')}
+                          {item.quantity} x {formatPrice(item.price)}
                         </p>
                       </div>
                     </div>
@@ -947,20 +949,20 @@ export default function CheckoutPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', fontSize: '13.5px', color: '#746380', borderBottom: '1px solid #f2ebe8', paddingBottom: '16px', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Subtotal</span>
-                  <span>₹{subtotal.toLocaleString('en-IN')}</span>
+                  <span>{formatPrice(subtotal)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>GST (3%)</span>
-                  <span>₹{gst.toLocaleString('en-IN')}</span>
+                  <span>{formatPrice(gst)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span>Delivery Charges</span>
-                  <span>{shipping === 0 ? 'FREE' : `₹${shipping}`}</span>
+                  <span>{shipping === 0 ? 'FREE' : formatPrice(shipping)}</span>
                 </div>
                 {discount > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', color: 'green', fontWeight: '600' }}>
                     <span>Discount</span>
-                    <span>- ₹{discount.toLocaleString('en-IN')}</span>
+                    <span>- {formatPrice(discount)}</span>
                   </div>
                 )}
               </div>
@@ -1032,17 +1034,17 @@ export default function CheckoutPage() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', borderBottom: '1px solid #f2ebe8', paddingBottom: '16px', marginBottom: '16px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '14px', color: '#746380' }}>
                   <span>Order Total</span>
-                  <span>₹{baseOrderTotal.toLocaleString('en-IN')}</span>
+                  <span>{formatPrice(baseOrderTotal)}</span>
                 </div>
                 {useWallet && walletDeduction > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13.5px', color: '#276749', fontWeight: '700' }}>
                     <span>Gold Wallet Applied</span>
-                    <span>- ₹{walletDeduction.toLocaleString('en-IN')}</span>
+                    <span>- {formatPrice(walletDeduction)}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: '800', color: '#2b221d', marginTop: '4px' }}>
                   <span>Net Payable Amount</span>
-                  <span style={{ color: '#2b221d' }}>₹{finalPayableTotal.toLocaleString('en-IN')}</span>
+                  <span style={{ color: '#2b221d' }}>{formatPrice(finalPayableTotal)}</span>
                 </div>
               </div>
             </div>

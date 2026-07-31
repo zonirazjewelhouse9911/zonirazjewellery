@@ -35,6 +35,7 @@ import GoldMinePage from './components/GoldMinePage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
+import { CurrencyProvider } from './context/CurrencyContext';
 import AuthModal from './components/AuthModal';
 import VideoCallModal from './components/VideoCallModal';
 import AdminVideoPanel from './components/AdminVideoPanel';
@@ -227,9 +228,11 @@ function AppContent() {
 
             // Get material / stone / metal
             let matList = [];
+            if (p.material) matList.push(p.material);
             if (p.product_type) matList.push(p.product_type);
             if (p.stoneType) matList.push(p.stoneType);
             if (p.defaultMetal) matList.push(p.defaultMetal);
+            if (p.metal_type) matList.push(String(p.metal_type));
             if (p.specs) {
               if (p.specs.metal) matList.push(p.specs.metal);
               if (p.specs.stoneType) matList.push(p.specs.stoneType);
@@ -238,11 +241,25 @@ function AppContent() {
               if (p.tags.includes('diamond')) matList.push('diamond');
               if (p.tags.includes('gold')) matList.push('gold');
               if (p.tags.includes('platinum')) matList.push('platinum');
+              if (p.tags.includes('gemstone') || p.tags.includes('gemstones')) matList.push('gemstone');
               if (p.tags.includes('rose gold') || p.tags.includes('rose-gold')) matList.push('rose gold');
               if (p.tags.includes('yellow gold') || p.tags.includes('yellow-gold')) matList.push('yellow gold');
               if (p.tags.includes('white gold') || p.tags.includes('white-gold')) matList.push('white gold');
             }
-            const material = [...new Set(matList.map(s => s.toLowerCase()))].join(', ');
+
+            // Numeric weight & specification indications
+            if (Number(p.gold_weight) > 0) matList.push('gold');
+            if (Number(p.diamond_weight) > 0 || Number(p.diamond_count) > 0 || p.diamond_quality) matList.push('diamond');
+            if (Number(p.gemstone_weight) > 0 || Number(p.noof_gem) > 0 || p.color_stone || Number(p.gemstone_price) > 0) matList.push('gemstone');
+            if (Number(p.solitaires_weight) > 0 || Number(p.solitaires_price) > 0 || p.solitaires_quality) matList.push('diamond');
+
+            // Product name / title keyword inspection
+            if (titleLower.includes('gold')) matList.push('gold');
+            if (titleLower.includes('diamond')) matList.push('diamond');
+            if (titleLower.includes('platinum')) matList.push('platinum');
+            if (titleLower.includes('gemstone') || titleLower.includes('ruby') || titleLower.includes('emerald') || titleLower.includes('sapphire') || titleLower.includes('topaz') || titleLower.includes('pearl')) matList.push('gemstone');
+
+            const material = [...new Set(matList.map(s => String(s).toLowerCase()))].join(', ');
             
             const weight = p.product_weight || p.gold_weight || p.baseWeight || 0;
             const fastDelivery = p.feature === '1';
@@ -385,7 +402,8 @@ function AppContent() {
         setCurrentView('admin-call');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (hash) {
-        const cleanHash = hash.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const routeOnly = hash.split('?')[0];
+        const cleanHash = routeOnly.toLowerCase().replace(/[^a-z0-9]/g, '');
         const knownCategories = [
           "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
           "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
@@ -402,7 +420,7 @@ function AppContent() {
         }
         if (!matchedCategory) {
           // Fallback: title-case the hash
-          matchedCategory = hash.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+          matchedCategory = routeOnly.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         }
         setSelectedCategoryName(matchedCategory);
         setCurrentView('rings');
@@ -520,12 +538,14 @@ function AppContent() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <CartProvider>
-        <VideoCallProvider>
-          <AppContent />
-        </VideoCallProvider>
-      </CartProvider>
-    </AuthProvider>
+    <CurrencyProvider>
+      <AuthProvider>
+        <CartProvider>
+          <VideoCallProvider>
+            <AppContent />
+          </VideoCallProvider>
+        </CartProvider>
+      </AuthProvider>
+    </CurrencyProvider>
   );
 }

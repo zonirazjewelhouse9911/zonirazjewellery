@@ -4,11 +4,13 @@ import { products as initialProducts } from '../data/products';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { useVideoCall } from '../context/VideoCallContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 export default function CategoryPage({ category, wishlist = {}, setWishlist, cart = {}, setCart }) {
   const { addToCart } = useContext(CartContext);
   const { requireAuth } = useContext(AuthContext);
   const { startCall, adminOnline } = useVideoCall();
+  const { formatPrice } = useCurrency();
   // Map category to product types in sidebar
   const categoryProductTypesMap = {
     "Rings": ['Rings', 'Band', 'Cluster', 'Floral'],
@@ -22,10 +24,25 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
   const productTypes = categoryProductTypesMap[category] || [category];
 
+  const parseHashParams = () => {
+    const fullHash = (window.location.hash || '').replace('#', '');
+    const queryIndex = fullHash.indexOf('?');
+    const params = {};
+    if (queryIndex !== -1) {
+      const queryString = fullHash.substring(queryIndex + 1);
+      const parts = queryString.split('&');
+      parts.forEach(part => {
+        const [k, v] = part.split('=');
+        if (k && v) params[k.toLowerCase()] = decodeURIComponent(v).toLowerCase();
+      });
+    }
+    return params;
+  };
+
   // Dynamic products from backend database
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [queryParams, setQueryParams] = useState({});
+  const [queryParams, setQueryParams] = useState(parseHashParams);
 
   useEffect(() => {
     setLoading(true);
@@ -149,9 +166,11 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
             // Get material / stone / metal
             let matList = [];
+            if (p.material) matList.push(p.material);
             if (p.product_type) matList.push(p.product_type);
             if (p.stoneType) matList.push(p.stoneType);
             if (p.defaultMetal) matList.push(p.defaultMetal);
+            if (p.metal_type) matList.push(String(p.metal_type));
             if (p.specs) {
               if (p.specs.metal) matList.push(p.specs.metal);
               if (p.specs.stoneType) matList.push(p.specs.stoneType);
@@ -160,11 +179,25 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
               if (p.tags.includes('diamond')) matList.push('diamond');
               if (p.tags.includes('gold')) matList.push('gold');
               if (p.tags.includes('platinum')) matList.push('platinum');
+              if (p.tags.includes('gemstone') || p.tags.includes('gemstones')) matList.push('gemstone');
               if (p.tags.includes('rose gold') || p.tags.includes('rose-gold')) matList.push('rose gold');
               if (p.tags.includes('yellow gold') || p.tags.includes('yellow-gold')) matList.push('yellow gold');
               if (p.tags.includes('white gold') || p.tags.includes('white-gold')) matList.push('white gold');
             }
-            const material = [...new Set(matList.map(s => s.toLowerCase()))].join(', ');
+
+            // Numeric weight & specification indications
+            if (Number(p.gold_weight) > 0) matList.push('gold');
+            if (Number(p.diamond_weight) > 0 || Number(p.diamond_count) > 0 || p.diamond_quality) matList.push('diamond');
+            if (Number(p.gemstone_weight) > 0 || Number(p.noof_gem) > 0 || p.color_stone || Number(p.gemstone_price) > 0) matList.push('gemstone');
+            if (Number(p.solitaires_weight) > 0 || Number(p.solitaires_price) > 0 || p.solitaires_quality) matList.push('diamond');
+
+            // Product name / title keyword inspection
+            if (titleLower.includes('gold')) matList.push('gold');
+            if (titleLower.includes('diamond')) matList.push('diamond');
+            if (titleLower.includes('platinum')) matList.push('platinum');
+            if (titleLower.includes('gemstone') || titleLower.includes('ruby') || titleLower.includes('emerald') || titleLower.includes('sapphire') || titleLower.includes('topaz') || titleLower.includes('pearl')) matList.push('gemstone');
+
+            const material = [...new Set(matList.map(s => String(s).toLowerCase()))].join(', ');
             const weight = p.product_weight || p.gold_weight || p.baseWeight || 0;
             const fastDelivery = p.feature === '1';
             const latest = p.sessional === '1';
@@ -227,31 +260,22 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
   useEffect(() => {
     const handleHashChange = () => {
-      const fullHash = window.location.hash.replace('#', '');
-      const [_, queryString] = fullHash.split('?');
-      const params = {};
-      if (queryString) {
-        const parts = queryString.split('&');
-        parts.forEach(part => {
-          const [k, v] = part.split('=');
-          if (k && v) params[k.toLowerCase()] = decodeURIComponent(v).toLowerCase();
-        });
-      }
+      const params = parseHashParams();
       console.log('CategoryPage HashChange Params:', params);
       setQueryParams(params);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     handleHashChange();
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [category]);
 
   // Filters State
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [selectedPrices, setSelectedPrices] = useState([]);
   const [selectedWeights, setSelectedWeights] = useState([]);
   const [selectedMaterials, setSelectedMaterials] = useState([]);
-  const [selectedProductTypes, setSelectedProductTypes] = useState([]);
   const [discountOnly, setDiscountOnly] = useState(false);
   
   // Quick Filters (Capsules)
@@ -282,7 +306,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
     size: window.innerWidth > 768,
     price: window.innerWidth > 768,
     discounts: window.innerWidth > 768,
-    productType: window.innerWidth > 768,
     weight: window.innerWidth > 768,
     material: window.innerWidth > 768
   });
@@ -290,6 +313,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   // Reset filters on category change
   useEffect(() => {
     resetLocalFilters();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [category]);
 
   const toggleAccordion = (key) => {
@@ -335,18 +359,11 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
     );
   };
 
-  const handleProductTypeChange = (type) => {
-    setSelectedProductTypes(prev => 
-      prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]
-    );
-  };
-
   const resetLocalFilters = () => {
     setSelectedSizes([]);
     setSelectedPrices([]);
     setSelectedWeights([]);
     setSelectedMaterials([]);
-    setSelectedProductTypes([]);
     setDiscountOnly(false);
     setActiveCapsule('All');
   };
@@ -535,26 +552,22 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
     }
 
     // Material Filter
-    if (selectedMaterials.length > 0 && !selectedMaterials.includes(product.material)) return false;
-    
-    // Product Type Filter (using Substring matching on product name)
-    if (selectedProductTypes.length > 0) {
-      const matchesType = selectedProductTypes.some(type => {
-        const nameLower = product.name.toLowerCase();
-        const typeLower = type.toLowerCase();
-        if (nameLower.includes(typeLower)) return true;
-        if (typeLower.endsWith('s') && nameLower.includes(typeLower.slice(0, -1))) return true;
-        if (nameLower.includes(typeLower + 's')) return true;
+    if (selectedMaterials.length > 0) {
+      const matchesMaterial = selectedMaterials.some(mat => {
+        const targetMat = mat.toLowerCase();
+        const prodMat = String(product.material || '').toLowerCase();
+        const prodName = String(product.name || '').toLowerCase();
+        
+        if (prodMat.includes(targetMat) || prodName.includes(targetMat)) return true;
+        if (targetMat === 'gold' && (Number(product.gold_weight) > 0 || prodMat.includes('yellow') || prodMat.includes('rose') || prodMat.includes('white'))) return true;
+        if (targetMat === 'diamond' && (Number(product.diamond_weight) > 0 || Number(product.diamond_count) > 0)) return true;
+        if (targetMat === 'gemstone' && (Number(product.gemstone_weight) > 0 || Number(product.noof_gem) > 0)) return true;
+        if (targetMat === 'platinum' && (prodMat.includes('plat') || prodName.includes('plat'))) return true;
+
         return false;
       });
-      if (!matchesType) return false;
+      if (!matchesMaterial) return false;
     }
-
-    // Capsules
-    if (activeCapsule === 'Fast Delivery' && !product.fastDelivery) return false;
-    if (activeCapsule === 'Latest Designs' && !product.latest) return false;
-    if (activeCapsule === 'Store Pickup' && !product.storePickup) return false;
-    if (activeCapsule === 'Try at Home' && !product.tryAtHome) return false;
 
     return true;
   });
@@ -570,7 +583,24 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
     return a.id - b.id;
   });
 
-  const totalActiveFilters = selectedSizes.length + selectedPrices.length + selectedWeights.length + selectedMaterials.length + selectedProductTypes.length + (discountOnly ? 1 : 0);
+  const totalActiveFilters = selectedSizes.length + selectedPrices.length + selectedWeights.length + selectedMaterials.length + (discountOnly ? 1 : 0);
+
+  const formatBreadcrumbName = (str) => {
+    if (!str) return '';
+    const cleanRaw = String(str).toLowerCase().replace(/-/g, ' ').trim();
+    const foundProd = products.find(p => {
+      const pSub = String(p.subcategory || '').toLowerCase().replace(/-/g, ' ').trim();
+      return pSub === cleanRaw;
+    });
+    if (foundProd && foundProd.subcategory) {
+      return foundProd.subcategory;
+    }
+    return cleanRaw.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  };
+
+  const rawSubcrumb = queryParams.subcategory || queryParams.style || queryParams.metal || queryParams.stone || queryParams.gender;
+  const activeSubcrumb = rawSubcrumb ? formatBreadcrumbName(rawSubcrumb) : null;
+  const categorySlug = String(category).toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
 
   if (loading) {
     return (
@@ -1374,26 +1404,21 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
       <div className="rings-container">
         {/* Breadcrumbs */}
         <div className="rings-breadcrumb">
-          <a href="#">Home</a> &gt; <a href={`#${category.toLowerCase().split(' ')[0]}`}>Jewellery</a> &gt; <span style={{ color: '#634d40', fontWeight: '600' }}>{category}</span>
+          <a href="#">Home</a> &gt; <a href={`#${categorySlug}`}>Jewellery</a> &gt;{' '}
+          {activeSubcrumb ? (
+            <>
+              <a href={`#${categorySlug}`}>{category}</a> &gt;{' '}
+              <span style={{ color: '#634d40', fontWeight: '600' }}>{activeSubcrumb}</span>
+            </>
+          ) : (
+            <span style={{ color: '#634d40', fontWeight: '600' }}>{category}</span>
+          )}
         </div>
 
         {/* Title */}
         <div className="rings-header-row">
-          <h1 className="rings-title">{category}</h1>
+          <h1 className="rings-title">{activeSubcrumb ? `${category} - ${activeSubcrumb}` : category}</h1>
           <span className="rings-count">{sortedProducts.length} Designs</span>
-        </div>
-
-        {/* Capsules quick filters */}
-        <div className="capsules-bar">
-          {['All', 'Fast Delivery', 'Latest Designs', 'Store Pickup'].map((cap) => (
-            <button
-              key={cap}
-              className={`capsule-btn ${activeCapsule === cap ? 'active' : ''}`}
-              onClick={() => setActiveCapsule(cap)}
-            >
-              {cap}
-            </button>
-          ))}
         </div>
 
         {/* Outer Layout wrapper */}
@@ -1437,12 +1462,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                 <span className="badge-chip" key={`mat-${m}`}>
                   {m}
                   <button onClick={() => handleMaterialChange(m)}>✕</button>
-                </span>
-              ))}
-              {selectedProductTypes.map(pt => (
-                <span className="badge-chip" key={`pt-${pt}`}>
-                  {pt}
-                  <button onClick={() => handleProductTypeChange(pt)}>✕</button>
                 </span>
               ))}
             </div>
@@ -1493,28 +1512,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                         onChange={() => handlePriceChange(pItem.value)}
                       />
                       <span>{pItem.label}</span>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Product Type Accordion */}
-            <div className="filter-section">
-              <div className="filter-section-header" onClick={() => toggleAccordion('productType')}>
-                <h4>Product Type</h4>
-                <span className={`filter-arrow ${openAccordions.productType ? '' : 'collapsed'}`}>▼</span>
-              </div>
-              {openAccordions.productType && (
-                <div className="filter-options-content">
-                  {productTypes.map(type => (
-                    <label key={type} className="checkbox-label">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedProductTypes.includes(type)}
-                        onChange={() => handleProductTypeChange(type)}
-                      />
-                      <span>{type}</span>
                     </label>
                   ))}
                 </div>
@@ -1675,8 +1672,8 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                       {/* Product Content */}
                       <div className="product-info">
                         <div className="price-row">
-                          <span className="current-price">₹{product.price.toLocaleString('en-IN')}</span>
-                          <span className="original-price">₹{product.originalPrice.toLocaleString('en-IN')}</span>
+                          <span className="current-price">{formatPrice(product.price)}</span>
+                          <span className="original-price">{formatPrice(product.originalPrice)}</span>
                           {product.originalPrice > product.price && (
                             <span className="discount-pct">
                               ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF)

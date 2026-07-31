@@ -2,8 +2,9 @@ import React, { useContext, useState, useEffect, useRef } from 'react';
 import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
+import { useCurrency } from '../context/CurrencyContext';
 import AuthModal from './AuthModal';
-import { Coins, TrendingDown, RefreshCw, X, ArrowLeft } from 'lucide-react';
+import { Coins, TrendingDown, RefreshCw, X, ArrowLeft, ChevronDown } from 'lucide-react';
 import messageBandsImg from '../assets/message-bands.png';
 import postcardsBannerImg from '../assets/postcards-banner.png';
 import switchEarringsImg from '../assets/switch-earrings.png';
@@ -88,6 +89,20 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
   const [pincodeError, setPincodeError] = useState('');
   const [isPincodeOpen, setIsPincodeOpen] = useState(false);
   const pincodeWrapperRef = useRef(null);
+
+  const { currency, setCurrency, currencies, activeCurrencyConfig, formatPrice } = useCurrency();
+  const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+  const currencyWrapperRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutsideCurrency = (e) => {
+      if (currencyWrapperRef.current && !currencyWrapperRef.current.contains(e.target)) {
+        setIsCurrencyOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutsideCurrency);
+    return () => document.removeEventListener('mousedown', handleClickOutsideCurrency);
+  }, []);
 
   // Debounced Product Search States & Refs
   const [searchQuery, setSearchQuery] = useState('');
@@ -245,7 +260,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                     </div>
                     {prodPrice > 0 && (
                       <div style={{ fontSize: '13px', fontWeight: '700', color: '#F05A47', flexShrink: 0 }}>
-                        ₹{prodPrice.toLocaleString('en-IN')}
+                        {formatPrice(prodPrice)}
                       </div>
                     )}
                   </div>
@@ -470,8 +485,93 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
           </a>
         </div>
 
-        {/* Right Side: Pincode + Icon Actions */}
+        {/* Right Side: Pincode + Currency + Icon Actions */}
         <div className="header-right-actions">
+          {/* Currency Selector */}
+          <div ref={currencyWrapperRef} className="nav-item-container nav-currency-wrapper">
+            <button 
+              className="utility-item nav-item-trigger currency-btn"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setIsCurrencyOpen(prev => !prev);
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '12px',
+                fontWeight: '600',
+                color: '#634d40',
+                padding: '4px 6px',
+                borderRadius: '4px'
+              }}
+              title="Change Currency"
+              aria-label="Change Currency"
+            >
+              <span style={{ fontSize: '14px' }}>{activeCurrencyConfig.flag}</span>
+              <span>{currency}</span>
+              <ChevronDown size={12} style={{ transition: 'transform 0.2s', transform: isCurrencyOpen ? 'rotate(180deg)' : 'none' }} />
+            </button>
+            {isCurrencyOpen && (
+              <div 
+                className="currency-dropdown-menu"
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  backgroundColor: '#ffffff',
+                  boxShadow: '0 8px 24px rgba(99,77,64,0.18)',
+                  borderRadius: '8px',
+                  padding: '6px 0',
+                  minWidth: '170px',
+                  zIndex: 1100,
+                  border: '1px solid #ebdccb'
+                }}
+              >
+                <div style={{ padding: '6px 12px', fontSize: '10px', fontWeight: '700', color: '#8c7365', borderBottom: '1px solid #efe7e5', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                  Select Currency
+                </div>
+                <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
+                  {currencies.map(c => (
+                    <button
+                      key={c.code}
+                      onClick={() => {
+                        setCurrency(c.code);
+                        setIsCurrencyOpen(false);
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '8px 12px',
+                        textAlign: 'left',
+                        background: currency === c.code ? '#faf5f2' : 'transparent',
+                        border: 'none',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justify: 'space-between',
+                        fontSize: '12px',
+                        color: currency === c.code ? '#634d40' : '#4a3b32',
+                        fontWeight: currency === c.code ? '700' : '500'
+                      }}
+                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f7f0eb'}
+                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = currency === c.code ? '#faf5f2' : 'transparent'}
+                    >
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '15px' }}>{c.flag}</span>
+                        <span>{c.code}</span>
+                      </span>
+                      <span style={{ fontSize: '11px', color: '#8c7365', fontWeight: '600' }}>{c.symbol.trim()}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Pincode Selector */}
           <div ref={pincodeWrapperRef} className={`nav-item-container nav-pincode-wrapper desktop-only-util ${isPincodeOpen ? 'open' : ''}`}>
             <a 
