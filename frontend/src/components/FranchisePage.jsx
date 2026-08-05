@@ -413,6 +413,10 @@ export default function FranchisePage() {
         {/* Hero Section */}
         <div className="franchise-hero">
           <div className="franchise-hero-content">
+            <h1 className="franchise-hero-title">Luxury Jewellery Franchise</h1>
+            <p className="franchise-hero-subtitle">
+              Partner with one of India's leading famous jewellery brands and establish a premium retail jewellery franchise showroom.
+            </p>
           </div>
         </div>
 
@@ -426,9 +430,9 @@ export default function FranchisePage() {
                 <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
               </svg>
             </div>
-            <h3 className="value-card-title">Heritage Excellence</h3>
+            <h3 className="value-card-title">Gold Jewellery Franchise</h3>
             <p className="value-card-desc">
-              50 years of manufacturing excellence and trust in the international jewels market.
+              Leverage 50 years of manufacturing excellence and launch a highly profitable gold jewellery franchise in India.
             </p>
           </div>
 
@@ -441,9 +445,9 @@ export default function FranchisePage() {
                 <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
             </div>
-            <h3 className="value-card-title">Global Reach</h3>
+            <h3 className="value-card-title">Diamond Jewellery Franchise</h3>
             <p className="value-card-desc">
-              A leading exporter and wholesaler with a footprint spanning major jewelry hubs.
+              Showcase exclusive designer diamond jewellery with certified diamond jewellery online integration.
             </p>
           </div>
 
@@ -457,9 +461,9 @@ export default function FranchisePage() {
                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </div>
-            <h3 className="value-card-title">Partner Support</h3>
+            <h3 className="value-card-title">Jewellery Business Franchise</h3>
             <p className="value-card-desc">
-              Comprehensive operational support, marketing leverage, and inventory management.
+              Benefit from comprehensive showroom startup support, marketing launch assets, and inventory setup.
             </p>
           </div>
         </div>
@@ -470,9 +474,9 @@ export default function FranchisePage() {
           {/* Left Column: Info Panel */}
           <div className="franchise-info-panel">
             <div>
-              <h2 className="info-panel-title">Start Your Journey With Us</h2>
+              <h2 className="info-panel-title">Start Your Jewellery Showroom Franchise</h2>
               <p className="info-panel-desc">
-                We are looking for visionary partners who understand the language of luxury and are committed to maintaining the high standards of the Zoniraz brand.
+                We are searching for dedicated partners to expand our luxury jewellery franchise network and represent our 50-year-old heritage.
               </p>
 
               {/* Expansion Model */}
@@ -484,8 +488,8 @@ export default function FranchisePage() {
                   </svg>
                 </div>
                 <div className="info-point-text">
-                  <h4>Expansion Model</h4>
-                  <p>FOCO & FOFO Models available for Tier 1 & Tier 2 cities.</p>
+                  <h4>Franchise Dealership Models</h4>
+                  <p>Flexible FOCO & FOFO retail formats tailored for prime Indian markets.</p>
                 </div>
               </div>
 
@@ -498,8 +502,8 @@ export default function FranchisePage() {
                   </svg>
                 </div>
                 <div className="info-point-text">
-                  <h4>Brand Value</h4>
-                  <p>Access to exclusive collections and established customer loyalty.</p>
+                  <h4>Brand Value & Loyalty</h4>
+                  <p>Access exclusive collections and serve an active customer demographic.</p>
                 </div>
               </div>
             </div>
@@ -507,7 +511,7 @@ export default function FranchisePage() {
             {/* Legacy Quote */}
             <div className="info-quote-box">
               <p className="info-quote-text">
-                "Our franchise partners aren't just business associates; they are the guardians of our 50-year legacy."
+                "Our jewellery brand franchise partners are the guardians of our trust and quality standard."
               </p>
             </div>
           </div>

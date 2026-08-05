@@ -201,6 +201,70 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     makingCharges: 0
   });
 
+  const sanitizeIncomingProduct = (product: any) => {
+    let parsedGallery = {};
+    if (product.gallery) {
+      if (typeof product.gallery === 'string') {
+        try {
+          parsedGallery = JSON.parse(product.gallery);
+        } catch (e) {
+          console.error('Failed to parse gallery JSON string', e);
+        }
+      } else if (typeof product.gallery === 'object') {
+        parsedGallery = product.gallery;
+      }
+    }
+
+    // Map metal names back to IDs
+    const rawMetalType = product.metal_type || '';
+    const resolvedMetalType = rawMetalType
+      .split(',')
+      .map((s: string) => s.trim())
+      .map((s: string) => {
+        const found = METAL_TYPES.find(m => m.name.toLowerCase() === s.toLowerCase() || m.id === s);
+        return found ? found.id : s;
+      })
+      .filter(Boolean)
+      .join(',');
+
+    // Map gender names back to IDs
+    const rawGender = product.gender || '';
+    const foundGender = GENDERS.find(g => g.name.toLowerCase() === String(rawGender).toLowerCase() || g.id === String(rawGender));
+    const resolvedGender = foundGender ? foundGender.id : '2';
+
+    // Normalize gallery keys to use metal IDs instead of metal names
+    const normalizedGallery: Record<string, string[]> = {};
+    Object.keys(parsedGallery).forEach(key => {
+      const found = METAL_TYPES.find(m => m.name.toLowerCase() === key.toLowerCase() || m.id === key);
+      const targetKey = found ? found.id : key;
+      normalizedGallery[targetKey] = (parsedGallery as any)[key];
+    });
+
+    return {
+      ...product,
+      price: Number(product.price || 0),
+      discount: Number(product.discount || 0),
+      stock: Number(product.stock || 0),
+      height: Number(product.height || 0),
+      width: Number(product.width || 0),
+      noof_gem: Number(product.noof_gem || 0),
+      gold_weight: Number(product.gold_weight || 0),
+      diamond_weight: Number(product.diamond_weight || 0),
+      diamond_count: Number(product.diamond_count || 0),
+      solitaires_weight: Number(product.solitaires_weight || 0),
+      solitaires_price: Number(product.solitaires_price || 0),
+      product_weight: Number(product.product_weight || 0),
+      center_diamond_weight: product.center_diamond_weight !== null ? Number(product.center_diamond_weight) : null,
+      center_diamond_price: product.center_diamond_price !== null ? Number(product.center_diamond_price) : null,
+      gemstone_weight: Number(product.gemstone_weight || 0),
+      gallery: normalizedGallery,
+      metal_type: resolvedMetalType,
+      gender: resolvedGender,
+      making_charges: Number(product.making_charges || 0),
+      makingCharges: Number(product.makingCharges || 0)
+    };
+  };
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -208,41 +272,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
         const data = await res.json();
         if (data.success) {
           const product = data.data;
-
-          let parsedGallery = {};
-          if (product.gallery) {
-            if (typeof product.gallery === 'string') {
-              try {
-                parsedGallery = JSON.parse(product.gallery);
-              } catch (e) {
-                console.error('Failed to parse gallery JSON string', e);
-              }
-            } else if (typeof product.gallery === 'object') {
-              parsedGallery = product.gallery;
-            }
-          }
-
-          setFormData({
-            ...product,
-            price: Number(product.price || 0),
-            discount: Number(product.discount || 0),
-            stock: Number(product.stock || 0),
-            height: Number(product.height || 0),
-            width: Number(product.width || 0),
-            noof_gem: Number(product.noof_gem || 0),
-            gold_weight: Number(product.gold_weight || 0),
-            diamond_weight: Number(product.diamond_weight || 0),
-            diamond_count: Number(product.diamond_count || 0),
-            solitaires_weight: Number(product.solitaires_weight || 0),
-            solitaires_price: Number(product.solitaires_price || 0),
-            product_weight: Number(product.product_weight || 0),
-            center_diamond_weight: product.center_diamond_weight !== null ? Number(product.center_diamond_weight) : null,
-            center_diamond_price: product.center_diamond_price !== null ? Number(product.center_diamond_price) : null,
-            gemstone_weight: Number(product.gemstone_weight || 0),
-            gallery: parsedGallery,
-            making_charges: Number(product.making_charges || 0),
-            makingCharges: Number(product.makingCharges || 0)
-          });
+          const sanitized = sanitizeIncomingProduct(product);
+          setFormData(sanitized);
           setIncludeSolitaire(Number(product.solitaires_price || 0) > 0);
           setIncludeDiamond(Number(product.diamond_weight || 0) > 0 || Number(product.diamond_count || 0) > 0);
           setIncludeGemstone(Number(product.gemstone_weight || 0) > 0 || Number(product.noof_gem || 0) > 0);
@@ -378,37 +409,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
         } else if (isNew) {
           window.location.search = `?id=${data.data._id}`;
         } else {
-          let parsedGallery = {};
-          if (data.data.gallery) {
-            if (typeof data.data.gallery === 'string') {
-              try {
-                parsedGallery = JSON.parse(data.data.gallery);
-              } catch (e) { }
-            } else if (typeof data.data.gallery === 'object') {
-              parsedGallery = data.data.gallery;
-            }
-          }
-          setFormData({
-            ...data.data,
-            price: Number(data.data.price || 0),
-            discount: Number(data.data.discount || 0),
-            stock: Number(data.data.stock || 0),
-            height: Number(data.data.height || 0),
-            width: Number(data.data.width || 0),
-            noof_gem: Number(data.data.noof_gem || 0),
-            gold_weight: Number(data.data.gold_weight || 0),
-            diamond_weight: Number(data.data.diamond_weight || 0),
-            diamond_count: Number(data.data.diamond_count || 0),
-            solitaires_weight: Number(data.data.solitaires_weight || 0),
-            solitaires_price: Number(data.data.solitaires_price || 0),
-            product_weight: Number(data.data.product_weight || 0),
-            center_diamond_weight: data.data.center_diamond_weight !== null ? Number(data.data.center_diamond_weight) : null,
-            center_diamond_price: data.data.center_diamond_price !== null ? Number(data.data.center_diamond_price) : null,
-            gemstone_weight: Number(data.data.gemstone_weight || 0),
-            gallery: parsedGallery,
-            making_charges: Number(data.data.making_charges || 0),
-            makingCharges: Number(data.data.makingCharges || 0)
-          });
+          const sanitized = sanitizeIncomingProduct(data.data);
+          setFormData(sanitized);
           setIncludeSolitaire(Number(data.data.solitaires_price || 0) > 0);
           setIncludeDiamond(Number(data.data.diamond_weight || 0) > 0 || Number(data.data.diamond_count || 0) > 0);
           setIncludeGemstone(Number(data.data.gemstone_weight || 0) > 0 || Number(data.data.noof_gem || 0) > 0);

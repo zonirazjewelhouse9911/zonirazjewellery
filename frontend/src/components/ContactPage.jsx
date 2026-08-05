@@ -337,39 +337,39 @@ export default function ContactPage() {
       <div className="contact-container">
         {/* Breadcrumbs */}
         <div className="contact-breadcrumb">
-          <a href="#">Home</a> &gt; <a href="#contact">Help & Contact</a> &gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>Help & Contact</span>
+          <a href="#">Home</a> &gt; <a href="#contact">Help & Contact</a> &gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>Contact Jewellery Store</span>
         </div>
 
         {/* Header */}
-        <h1 className="page-main-title">Help & Contact</h1>
+        <h1 className="page-main-title">Contact Our Jewellery Store</h1>
 
         {/* About Info White Block */}
         <div className="about-info-block">
           <p className="about-main-text">
-            Zoniraz Jewel house Pvt LTD. is one of the leading Jewellery manufacturer, wholesaler, retailer and exporter in the international Jewels, Gems and Precious stones market. For the last 50 Years we have been serving our loyal customers and delivering them not only qualitative and best designs of Jewellery but also a trustful and responsible brand. Launching our new jewellery brand of real gold and diamond jewellery silver jewellery birthstones. We speak about quality, experience, customer satisfaction, trust, honesty, belief and relationship. Our product gives you royal life experience and a high lifestyle. We believe in trust and honesty in our relationships with our customers, that is why trust is part of our policy. Our strong and elegant designs of jewellery raise grace and build personality and also serve a royal look as most of our designs are derived from Indian culture. We have varied ranges of unique collections of our products to satisfy various demands of different customers.
+            Zoniraz Jewel House Pvt Ltd is one of the leading luxury jewellery manufacturer, wholesaler, retailer, and exporter in the international market. For the last 50 years, we have served our loyal customers, delivering not only exquisite designs of branded gold jewellery but also building a trustworthy relationship. To submit a jewellery enquiry or consult with a specialist, please use the form below. We are here to assist you with gold jewellery consultations, diamond jewellery consultations, and guide you through our collections.
           </p>
 
           <div className="mission-vision-row">
             {/* Mission */}
             <div className="mission-vision-col">
-              <h3>Our Mission</h3>
+              <h3>Expert Guidance</h3>
               <p>
-                Our mission is to serve our customers with maximum satisfaction, and our goal is “ Next Generation Of Jewellery Industry for Customer Support and Satisfaction.” To execute and complete our mission we passionately commence our work at an early stage as well as search for rough diamond. Our diamond jewellery export also has begun and we are satisfying our customers with our excellent designed diamond jewellery.
+                Our mission is to support you at every stage, offering professional assistance from a certified contact jewellery expert. Whether you need custom jewellery designs or assistance with international shipping, our customer support team is available to help.
               </p>
             </div>
 
             {/* Vision */}
             <div className="mission-vision-col">
-              <h3>Our Vision</h3>
+              <h3>Our Showroom Location</h3>
               <p>
-                Our vision is to grow and reach every customer and become one of the emerging jewellery chains with satisfied and delightful customers. We are consistently making efforts in the path of this vision as well as this is the reason that today 50 years old jewels house Zoniraz website has loyalty and dedication of delivering superior quality, distinctive designs to satisfy our customers.
+                If you are looking for a trusted jewellery showroom near me, we invite you to visit our retail space. We consistently expand our physical presence, providing private lounges for personalized bridal and designer jewellery selections.
               </p>
             </div>
           </div>
         </div>
 
         {/* Have A Question Section */}
-        <h2 className="question-section-title">Have A Question</h2>
+        <h2 className="question-section-title">Submit a Jewellery Enquiry</h2>
 
         {/* Split Contact Box */}
         <div className="split-contact-box">
@@ -380,23 +380,23 @@ export default function ContactPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
             </div>
-            <h4>Call Us At</h4>
+            <h4>Jewellery Contact Number</h4>
             <div className="contact-value">
-              <a href="tel:+919784836060" style={{ textDecoration: 'none', color: 'inherit' }}>97848 36060</a>
+              <a href="tel:+919784836060" style={{ textDecoration: 'none', color: 'inherit' }}>+91 97848 36060</a>
             </div>
             <p className="timing-text">Mon-Sat: 10AM - 8PM, Sun: Closed</p>
           </div>
 
           {/* Write to Us */}
           <div className="split-half center-email">
-            <a href="mailto:zonirazjewelhose@gmail.com" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <a href="mailto:info@zoniraz.com" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div className="icon-circle" style={{ cursor: 'pointer' }}>
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
-              <h4>Write to Us</h4>
-              <div className="contact-value" style={{ fontSize: '15px', color: '#c5a880', textDecoration: 'underline', cursor: 'pointer' }}>zonirazjewelhose@gmail.com</div>
+              <h4>Jewellery Customer Service</h4>
+              <div className="contact-value" style={{ fontSize: '15px', color: '#c5a880', textDecoration: 'underline', cursor: 'pointer' }}>info@zoniraz.com</div>
             </a>
           </div>
 
@@ -408,19 +408,19 @@ export default function ContactPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
             </div>
-            <h4>Visit Us At</h4>
+            <h4>Visit Jewellery Showroom</h4>
             <div className="contact-value" style={{ fontSize: '13.5px', lineHeight: '1.5', fontWeight: '400', color: '#746380' }}>
+              Zoniraz Jewel House<br />
               Tilak Market, 7, Hanuman Burj,<br />
               Kabir Colony,<br />
-              Alwar, Rajasthan 301001<br />
-              India
+              Alwar, Rajasthan 301001, India
             </div>
           </div>
         </div>
 
         {/* Centered Notice */}
         <p className="toll-free-centered">
-          The toll free number is only applicable for domestic orders within India. For international customers or deliveries please reach us out through whatsapp or email.
+          The jewellery contact number is applicable for domestic support. For international inquiries or worldwide jewellery delivery coordination, please connect via WhatsApp or email.
         </p>
 
         {/* Message Form Box */}

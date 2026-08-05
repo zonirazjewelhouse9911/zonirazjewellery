@@ -14,11 +14,15 @@ const app = express();
 
 // CORS configuration
 const allowedOrigins = [
+  'https://admin.zoniraz.com',
   'https://admin.zoniraz.in',
+  'http://zoniraz.com',
   'http://zoniraz.in',
   'https://zoniraz.com',
   'https://www.zoniraz.com',
+  'zoniraz.com',
   'zoniraz.in',
+  'www.zoniraz.com',
   'www.zoniraz.in',
   'https://zoniraz.in',
   'https://www.zoniraz.in',
@@ -72,6 +76,20 @@ app.use('/api/stripe/webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
+const { generateSitemap } = require('./src/utils/sitemapGenerator');
+
+// Dynamic sitemap generation route
+app.get('/sitemap.xml', async (req, res) => {
+  try {
+    const xml = await generateSitemap();
+    res.header('Content-Type', 'application/xml');
+    return res.status(200).send(xml);
+  } catch (error) {
+    console.error('Dynamic sitemap serving error:', error);
+    return res.status(500).send('Error generating sitemap');
+  }
+});
+
 app.use(express.static(path.join(__dirname, '/public')));
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
 

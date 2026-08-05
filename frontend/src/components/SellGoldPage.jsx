@@ -64,7 +64,7 @@ export default function SellGoldPage({ onBack }) {
         <button className="sellgold-back-btn" onClick={onBack || (() => window.location.hash = '')}>
           <ArrowLeft size={16} /> Back to Home
         </button>
-        <span className="sellgold-breadcrumb">Home / Physical Gold / Sell Old Gold</span>
+        <span className="sellgold-breadcrumb">Home / Physical Gold / Old Gold Exchange</span>
       </div>
 
       {/* Gold Sub Header Nav Bar */}
@@ -75,15 +75,15 @@ export default function SellGoldPage({ onBack }) {
         </div>
         <div className="gold-nav-links">
           <a href="#buy-gold" className="gold-nav-link">BUY GOLD</a>
-          <a href="#sell-gold" className="gold-nav-link active">SELL OLD GOLD</a>
+          <a href="#sell-gold" className="gold-nav-link active">OLD GOLD EXCHANGE</a>
         </div>
       </div>
 
       <div className="sellgold-content-wrapper">
         <div className="sellgold-heading-block">
-          <h1 className="sellgold-main-title">Sell Old Gold</h1>
+          <h1 className="sellgold-main-title">Old Gold Exchange Scheme</h1>
           <p className="sellgold-subtitle">
-            Get maximum market value for your physical old gold ornaments with 100% transparent Karatmeter testing and instant payout.
+            Get maximum value using our old gold price calculator. Trade in your physical gold at the best gold exchange rate with transparent old gold valuation.
           </p>
         </div>
 
@@ -92,22 +92,22 @@ export default function SellGoldPage({ onBack }) {
           <div className="feature-item">
             <Shield className="feature-icon" size={24} />
             <div>
-              <strong>German Karatmeter Testing</strong>
-              <p>100% non-destructive & accurate purity check</p>
+              <strong>Gold Purity Calculator</strong>
+              <p>100% accurate, non-destructive old gold valuation checking</p>
             </div>
           </div>
           <div className="feature-item">
             <Award className="feature-icon" size={24} />
             <div>
-              <strong>Live Market Rates</strong>
-              <p>Best price guaranteed for old physical gold</p>
+              <strong>Gold Rate Today</strong>
+              <p>Get instant calculations using our old gold rate calculator</p>
             </div>
           </div>
           <div className="feature-item">
             <CheckCircle2 className="feature-icon" size={24} />
             <div>
-              <strong>Instant Payout</strong>
-              <p>Immediate bank transfer (UPI/IMPS/NEFT)</p>
+              <strong>Instant Payout Exchange</strong>
+              <p>Sell old gold instantly or opt for our gold exchange scheme</p>
             </div>
           </div>
         </div>
@@ -116,16 +116,16 @@ export default function SellGoldPage({ onBack }) {
         <div className="sellgold-contact-grid">
           {/* Left Column: Contact & Store Info */}
           <div className="sellgold-info-card">
-            <h2 className="info-card-title">Visit Our Store or Contact Us</h2>
+            <h2 className="info-card-title">Jewellery Buying Consultation</h2>
             <p className="info-card-desc">
-              Have old gold jewellery, coins, or bars? Book an appointment or contact our team directly for a free valuation.
+              Have questions about your gold exchange calculator results? Visit us or contact our team for a free gold valuation calculator check.
             </p>
 
             <div className="info-details-list">
               <div className="info-detail-item">
                 <MapPin className="detail-icon" size={20} />
                 <div>
-                  <strong>Store Address</strong>
+                  <strong>Store Location</strong>
                   <p>Tilak Market, 7, Hanuman Burj, Kabir Colony, Alwar, Rajasthan 301001, India</p>
                 </div>
               </div>
@@ -133,16 +133,16 @@ export default function SellGoldPage({ onBack }) {
               <div className="info-detail-item">
                 <Phone className="detail-icon" size={20} />
                 <div>
-                  <strong>Phone / Call Us</strong>
-                  <p><a href="tel:+919784836060">+91 9784836060</a></p>
+                  <strong>Jewellery Store Customer Care</strong>
+                  <p><a href="tel:+919784836060">+91 97848 36060</a></p>
                 </div>
               </div>
 
               <div className="info-detail-item">
                 <Mail className="detail-icon" size={20} />
                 <div>
-                  <strong>Email Inquiry</strong>
-                  <p><a href="mailto:zonirazjewelhose@gmail.com">zonirazjewelhose@gmail.com</a></p>
+                  <strong>Jewellery Sales Enquiry</strong>
+                  <p><a href="mailto:info@zoniraz.com">info@zoniraz.com</a></p>
                 </div>
               </div>
 

@@ -411,21 +411,21 @@ export default function AboutPage() {
         {/* Hero */}
         <div className="about-hero">
           <div className="about-hero-est">Est. 1976</div>
-          <h1 className="about-hero-title">Our Heritage</h1>
+          <h1 className="about-hero-title">Our Heritage as a Premium Luxury Jewellery Brand</h1>
           <p className="about-hero-desc">
-            Zoniraz Jewel House Pvt Ltd is one of the leading jewellery manufacturer, wholesaler, retailer and exporter in the international Jewels market.
+            Zoniraz Jewel House Pvt Ltd is recognized globally as a premium luxury jewellery brand. We operate as a premier jewellery manufacturer, wholesaler, retailer, and exporter, delivering fine craftsmanship to the international luxury jewels market.
           </p>
         </div>
 
         {/* 50 Years Excellence Section */}
         <div className="about-section-card">
           <span className="about-sec-badge">50 Years of Excellence</span>
-          <h2 className="about-sec-title">A Legacy of Trust and Craftsmanship</h2>
+          <h2 className="about-sec-title">A Legacy of Trust and Certified Diamond Jewellery Online</h2>
           <p className="about-sec-paragraph">
-            From the last 50 Years we are serving for our loyal customers and delivering them not only a qualitative and best designs of Jewellery but also a trustful and responsible brand.
+            For over half a century, we have served our discerning clientele, establishing Zoniraz as one of the most famous jewellery brands. We deliver exquisite designs of hallmarked jewellery online, backed by an unwavering commitment to quality and consumer transparency.
           </p>
           <blockquote className="about-quote-box">
-            "Zoniraz Jewel house believes in customer satisfaction because it’s your own brand and without your satisfaction we can’t win your trust, & customer trust is a part of our policy. This is the only reason we always keep customer satisfaction and trust above the price and profit of our product."
+            "Zoniraz Jewel House prioritizes customer satisfaction because we believe that trust is the cornerstone of a luxury jewellery brand. We always keep customer delight and integrity above price and profit, ensuring that when you buy luxury jewellery online, you receive an experience matching the highest standards of the finest international houses."
           </blockquote>
         </div>
 
@@ -433,49 +433,49 @@ export default function AboutPage() {
         <div className="stats-grid">
           <div className="stat-card">
             <div className="stat-number">50+</div>
-            <div className="stat-label">Years Experience</div>
+            <div className="stat-label">Years of Luxury Expertise</div>
           </div>
           <div className="stat-card">
             <div className="stat-number">100%</div>
-            <div className="stat-label">BIS Hallmarked</div>
+            <div className="stat-label">BIS Hallmarked Jewellery</div>
           </div>
         </div>
 
         {/* Exquisite Collections Title */}
-        <h3 className="collections-section-title">Exquisite Collections</h3>
+        <h3 className="collections-section-title">Exquisite Designer Diamond Jewellery</h3>
 
         {/* Exquisite Collections Grid */}
         <div className="coll-grid-luxury">
           {/* Rings */}
           <div className="coll-luxury-card">
             <div className="coll-img-wrapper">
-              <img src={meshClusterRingImg} alt="Rings Collection" />
+              <img src={meshClusterRingImg} alt="Branded gold jewellery rings collection" loading="lazy" decoding="async" width="300" height="300" />
             </div>
             <div className="coll-luxury-details">
               <h4>Rings</h4>
-              <p>Designer Collection</p>
+              <p>Luxury Bridal Jewellery</p>
             </div>
           </div>
-
+ 
           {/* Earrings */}
           <div className="coll-luxury-card">
             <div className="coll-img-wrapper">
-              <img src={dancingHoopsImg} alt="Earrings Collection" />
+              <img src={dancingHoopsImg} alt="Designer diamond jewellery earrings collection" loading="lazy" decoding="async" width="300" height="300" />
             </div>
             <div className="coll-luxury-details">
               <h4>Earrings</h4>
-              <p>Designer Collection</p>
+              <p>Fine Luxury Diamond Jewelry</p>
             </div>
           </div>
-
+ 
           {/* Pendants */}
           <div className="coll-luxury-card">
             <div className="coll-img-wrapper">
-              <img src={infinityNecklacesImg} alt="Pendants Collection" />
+              <img src={infinityNecklacesImg} alt="Certified diamond jewellery online pendants collection" loading="lazy" decoding="async" width="300" height="300" />
             </div>
             <div className="coll-luxury-details">
               <h4>Pendants</h4>
-              <p>Designer Collection</p>
+              <p>Famous Jewellery Brands Collection</p>
             </div>
           </div>
         </div>
@@ -484,15 +484,15 @@ export default function AboutPage() {
         <div className="showroom-panel">
           <div className="showroom-content">
             <span className="about-sec-badge" style={{ marginBottom: '8px' }}>Premium Infrastructure</span>
-            <h3>The Showroom Experience</h3>
+            <h3>Our Trusted Jewellery Showroom</h3>
             <p>
-              When you step in our showroom you will feel a great ambience and well managed and decorated staff to serve you in finest way.
+              When you step into our trusted jewellery showroom, you will experience a sophisticated ambience, guided by our dedicated experts who showcase the finest branded gold jewellery and luxury diamond jewelry.
             </p>
             <ul className="features-list">
-              <li>Well-constructed 2 Floor Showroom</li>
-              <li>Wide area designer display lounges</li>
-              <li>Air Conditioned & Eye-warming lights</li>
-              <li>Musical Atmosphere & Cozy Sofas</li>
+              <li>Elegant Two-Floor Showroom Infrastructure</li>
+              <li>Exclusive Lounges for Designer Diamond Jewellery</li>
+              <li>Air-Conditioned Private Viewing Rooms</li>
+              <li>Atmosphere of Luxury and Refined Hospitality</li>
             </ul>
           </div>
 
@@ -504,8 +504,8 @@ export default function AboutPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
               <div>
-                <h5>24/7 Support</h5>
-                <p>Always available to assist you</p>
+                <h5>Client Support</h5>
+                <p>Assistance for certified diamond jewellery online</p>
               </div>
             </div>
 
@@ -515,8 +515,8 @@ export default function AboutPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
               </svg>
               <div>
-                <h5>Global Reach</h5>
-                <p>Exporter in the international market</p>
+                <h5>Jewellery Shipping Abroad</h5>
+                <p>Express international delivery across global markets</p>
               </div>
             </div>
 
@@ -526,7 +526,7 @@ export default function AboutPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.94.725l.548 2.2a1 1 0 01-.321.988l-1.305.98a10.582 10.582 0 004.872 4.872l.98-1.305a1 1 0 01.988-.321l2.2.548a1 1 0 01.725.94V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
               <div>
-                <h5>Customer Helpline</h5>
+                <h5>Helpline & Showroom Location</h5>
                 <p style={{ fontWeight: '700' }}>
                   <a href="tel:+919784836060" style={{ textDecoration: 'none', color: 'inherit' }}>97848 36060</a>
                 </p>
@@ -541,10 +541,10 @@ export default function AboutPage() {
           <div className="mv-card">
             <h4>Our Mission</h4>
             <p style={{ marginBottom: '14px' }}>
-              Zoniraz Jewelhouse was founded with the mission: “Next Generation of Jewellery Industry for Customer Support and Satisfaction”.
+              Zoniraz was established to introduce the next generation of custom luxury bridal jewellery, emphasizing trust, expert guidance, and customer service.
             </p>
             <p>
-              We dedicatedly begin our work at early stage and search for rough Diamonds in the most remote parts of the world, ensuring every client has a reason to smile.
+              We source high-quality rough diamonds from the most remote areas of the world, transforming them into signature designer diamond jewellery collections.
             </p>
           </div>
 
@@ -552,19 +552,19 @@ export default function AboutPage() {
           <div className="mv-card">
             <h4>Our Vision</h4>
             <p style={{ marginBottom: '14px' }}>
-              To reach every customer and become the largest jewellery chain with satisfied and happy customers.
+              To offer access to our exquisite collections worldwide, becoming the global destination for buying luxury jewellery online.
             </p>
             <p>
-              Jewellery is a part of culture and in India, women are considered symbols of power and love. Our jewellery increases the grace and glory of your personality.
+              We celebrate culture by crafting branded gold jewellery and luxury diamond jewelry that enhances the grace and individuality of every personality.
             </p>
           </div>
         </div>
 
         {/* Stay Connected */}
         <div className="connected-block">
-          <h3>Stay Connected</h3>
+          <h3>Stay Connected with Our Brand</h3>
           <p>
-            Our customer can connect with us all around the world, no matter where you are and how much time you have been our customer.
+            Our clients can reach us from anywhere in the world to explore new releases, track international shipments, or book a private consultation at our trusted showroom.
           </p>
         </div>
 

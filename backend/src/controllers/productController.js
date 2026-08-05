@@ -1,6 +1,7 @@
 const productService = require('../services/productService');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
+const { generateSitemap } = require('../utils/sitemapGenerator');
 
 class ProductController {
   getProducts = async (req, res) => {
@@ -29,6 +30,7 @@ class ProductController {
   createProduct = async (req, res) => {
     try {
       const product = await productService.createProduct(req.body);
+      generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(201).json({
         success: true,
         message: 'Product successfully initialized in vault',
@@ -43,6 +45,7 @@ class ProductController {
   updateProduct = async (req, res) => {
     try {
       const product = await productService.updateProduct(req.params.id, req.body);
+      generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(200).json({
         success: true,
         message: 'Product successfully updated in vault',
@@ -104,6 +107,21 @@ class ProductController {
       }
 
       return res.status(500).json({ success: false, error: error.message || 'Internal Server Error during upload' });
+    }
+  }
+
+  deleteProduct = async (req, res) => {
+    try {
+      const product = await productService.deleteProduct(req.params.id);
+      generateSitemap().catch(err => console.error("Sitemap update error:", err));
+      return res.status(200).json({
+        success: true,
+        message: 'Product successfully deleted from vault',
+        data: product
+      });
+    } catch (error) {
+      console.error('Delete Product Controller Error:', error);
+      return res.status(500).json({ success: false, message: error.message || 'Failed to delete product' });
     }
   }
 }

@@ -198,6 +198,23 @@ class ProductService {
 
     return await product.save();
   }
+
+  async deleteProduct(id) {
+    if (!id || typeof id !== 'string') {
+      throw new Error('Valid Product ID must be provided.');
+    }
+    let product = null;
+    if (id.match(/^[0-9a-fA-F]{24}$/)) {
+      product = await Product.findByIdAndDelete(id);
+    }
+    if (!product) {
+      product = await Product.findOneAndDelete({ product_id: id });
+    }
+    if (!product) {
+      throw new Error('Product not found in database.');
+    }
+    return product;
+  }
 }
 
 module.exports = new ProductService();

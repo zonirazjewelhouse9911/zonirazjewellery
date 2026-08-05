@@ -1,4 +1,5 @@
 const categoryService = require('../services/categoryService');
+const { generateSitemap } = require('../utils/sitemapGenerator');
 
 class CategoryController {
   getCategories = async (req, res) => {
@@ -27,6 +28,7 @@ class CategoryController {
   createCategory = async (req, res) => {
     try {
       const category = await categoryService.createCategory(req.body);
+      generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(201).json({
         success: true,
         message: 'Category successfully created',
@@ -41,6 +43,7 @@ class CategoryController {
   updateCategory = async (req, res) => {
     try {
       const category = await categoryService.updateCategory(req.params.id, req.body);
+      generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(200).json({
         success: true,
         message: 'Category successfully updated',

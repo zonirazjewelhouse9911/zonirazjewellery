@@ -44,7 +44,7 @@ const fallbackCategories = [
 
 function getCategoryBanners(categoryName) {
   const cat = String(categoryName || '').toLowerCase();
-  
+
   if (cat.includes('pendant') || cat.includes('necklace')) {
     return [layeredNecklacesImg, infinityNecklacesImg];
   }
@@ -72,7 +72,7 @@ function getCategoryBanners(categoryName) {
   if (cat.includes('zodic') || cat.includes('zodiac')) {
     return [postcardsBannerImg, wearYourWinsImg];
   }
-  
+
   // Fallbacks
   return [customerFavouritesImg, caratlaneIconicsImg];
 }
@@ -173,9 +173,10 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
   }, []);
 
   const handleSelectSearchResult = (prod) => {
-    const targetId = prod.id || prod._id || prod.product_id;
-    if (targetId) {
-      window.location.hash = `product-${targetId}`;
+    const slug = prod.product_slug || prod.slug || prod.id || prod._id || prod.product_id;
+    if (slug) {
+      window.history.pushState(null, '', `/product/${slug}`);
+      window.dispatchEvent(new PopStateEvent('popstate'));
     }
     setIsSearchOpen(false);
     setSearchQuery('');
@@ -185,7 +186,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
     if (!isSearchOpen || !searchQuery.trim()) return null;
 
     return (
-      <div 
+      <div
         className="header-search-dropdown-popup"
         style={{
           position: 'absolute',
@@ -241,6 +242,10 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                     <img
                       src={prodImg}
                       alt={prodName}
+                      loading="lazy"
+                      decoding="async"
+                      width="44"
+                      height="44"
                       style={{
                         width: '44px',
                         height: '44px',
@@ -417,36 +422,311 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
   return (
     <>
       <header ref={headerRef} className={`jaypore-header ${scrolled ? 'scrolled' : ''}`} style={{ position: 'relative' }}>
-      {/* Top Bar matching Candere style */}
-      <div className="header-top-bar desktop-only-util">
-        <div className="top-bar-left">
-          <a href="#profile" className="top-bar-link" style={{ color: '#f59e0b', fontWeight: '700' }} onClick={(e) => { e.preventDefault(); window.location.hash = 'profile'; }}>
-            MY GOLD WALLET
-          </a>
+
+        {/* Main Row: Search on Left, Logo in Center, Actions on Right */}
+        <div className="header-main-row">
+          {/* Mobile Hamburger toggle */}
+          <button
+            className="mobile-menu-toggle-btn"
+            onClick={() => setMobileMenuOpen(true)}
+            aria-label="Open Navigation Menu"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mobile-menu-hamburger-icon">
+              <line x1="3" y1="12" x2="21" y2="12"></line>
+              <line x1="3" y1="6" x2="21" y2="6"></line>
+              <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+          </button>
+
+          {/* Left Side: Desktop Search Capsule */}
+          <div ref={desktopSearchRef} className="header-left-search desktop-only-util" style={{ position: 'relative' }}>
+            <div className="search-bar-capsule">
+              <input
+                type="text"
+                placeholder="Search for Minimalist Jewellery..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsSearchOpen(true);
+                }}
+                onFocus={() => setIsSearchOpen(true)}
+              />
+              {searchQuery ? (
+                <button
+                  type="button"
+                  className="search-capsule-btn"
+                  aria-label="Clear Search"
+                  onClick={() => {
+                    setSearchQuery('');
+                    setDebouncedQuery('');
+                    setSearchResults([]);
+                  }}
+                >
+                  <X size={14} />
+                </button>
+              ) : (
+                <button className="search-capsule-btn" aria-label="Search">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Center: Brand Logo */}
+          <div className="header-brand">
+            <a href="/" className="brand-logo-text">
+              <img src="/zoni.png" alt="Zoniraz Logo" className="header-brand-logo-img" decoding="async" width="180" height="60" />
+            </a>
+          </div>
+
+          {/* Right Side: Pincode + Currency + Icon Actions */}
+          <div className="header-right-actions">
+            {/* Currency Selector */}
+            <div ref={currencyWrapperRef} className="nav-item-container nav-currency-wrapper">
+              <button
+                className="utility-item nav-item-trigger currency-btn"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsCurrencyOpen(prev => !prev);
+                }}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  color: '#634d40',
+                  padding: '4px 6px',
+                  borderRadius: '4px'
+                }}
+                title="Change Currency"
+                aria-label="Change Currency"
+              >
+                <span style={{ fontSize: '14px' }}>{activeCurrencyConfig.flag}</span>
+                <span>{currency}</span>
+                <ChevronDown size={12} style={{ transition: 'transform 0.2s', transform: isCurrencyOpen ? 'rotate(180deg)' : 'none' }} />
+              </button>
+              {isCurrencyOpen && (
+                <div
+                  className="currency-dropdown-menu"
+                  style={{
+                    position: 'absolute',
+                    top: '100%',
+                    right: 0,
+                    backgroundColor: '#ffffff',
+                    boxShadow: '0 8px 24px rgba(99,77,64,0.18)',
+                    borderRadius: '8px',
+                    padding: '6px 0',
+                    minWidth: '170px',
+                    zIndex: 1100,
+                    border: '1px solid #ebdccb'
+                  }}
+                >
+                  <div style={{ padding: '6px 12px', fontSize: '10px', fontWeight: '700', color: '#8c7365', borderBottom: '1px solid #efe7e5', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
+                    Select Currency
+                  </div>
+                  <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
+                    {currencies.map(c => (
+                      <button
+                        key={c.code}
+                        onClick={() => {
+                          setCurrency(c.code);
+                          setIsCurrencyOpen(false);
+                        }}
+                        style={{
+                          width: '100%',
+                          padding: '8px 12px',
+                          textAlign: 'left',
+                          background: currency === c.code ? '#faf5f2' : 'transparent',
+                          border: 'none',
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justify: 'space-between',
+                          fontSize: '12px',
+                          color: currency === c.code ? '#634d40' : '#4a3b32',
+                          fontWeight: currency === c.code ? '700' : '500'
+                        }}
+                        onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f7f0eb'}
+                        onMouseLeave={(e) => e.currentTarget.style.backgroundColor = currency === c.code ? '#faf5f2' : 'transparent'}
+                      >
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ fontSize: '15px' }}>{c.flag}</span>
+                          <span>{c.code}</span>
+                        </span>
+                        <span style={{ fontSize: '11px', color: '#8c7365', fontWeight: '600' }}>{c.symbol.trim()}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Pincode Selector */}
+            <div ref={pincodeWrapperRef} className={`nav-item-container nav-pincode-wrapper desktop-only-util ${isPincodeOpen ? 'open' : ''}`}>
+              <a
+                href="#delivery-stores"
+                className="utility-item nav-item-trigger"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsPincodeOpen(prev => !prev);
+                }}
+                style={{ cursor: 'pointer' }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '16px', height: '16px', marginRight: '4px' }}>
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+                <span>
+                  {pincode
+                    ? (pincodeData?.areaName ? `${pincode} (${pincodeData.areaName})` : pincode)
+                    : 'PINCODE'}
+                </span>
+              </a>
+              <div className={`pincode-dropdown ${isPincodeOpen ? 'open' : ''}`} style={{ right: '0', left: 'auto' }}>
+                <p className="pincode-dropdown-text">
+                  Your PIN Code unlocks Fastest delivery date, Try-at-Home availability, Nearest store and In-store design!
+                </p>
+                <form onSubmit={handlePincodeSubmit} className="pincode-form">
+                  <input
+                    type="text"
+                    placeholder="Enter Pincode"
+                    value={tempPincode}
+                    onChange={(e) => setTempPincode(e.target.value)}
+                    maxLength={6}
+                    className="pincode-input"
+                  />
+                  <button type="submit" className="pincode-submit-btn" disabled={pincodeLoading}>
+                    {pincodeLoading ? 'Checking...' : (pincode ? 'Change' : 'Apply')}
+                  </button>
+                </form>
+
+                {pincodeError && (
+                  <div style={{ color: '#d9534f', fontSize: '11px', marginTop: '6px' }}>
+                    {pincodeError}
+                  </div>
+                )}
+
+                {pincodeData && (
+                  <div style={{
+                    fontSize: '11px',
+                    color: '#444',
+                    backgroundColor: '#f9f6f0',
+                    padding: '10px',
+                    borderRadius: '6px',
+                    marginTop: '8px',
+                    border: '1px solid #ebdccb'
+                  }}>
+                    <div style={{ fontWeight: '700', color: '#231535', fontSize: '12px', marginBottom: '3px' }}>
+                      📍 {pincodeData.areaName} ({pincodeData.pincode})
+                    </div>
+                    {pincodeData.district && (
+                      <div style={{ color: '#555' }}>
+                        <strong>District:</strong> {pincodeData.district}, {pincodeData.state}
+                      </div>
+                    )}
+                    {pincodeData.lat !== null && pincodeData.lon !== null && (
+                      <div style={{ color: '#777', marginTop: '4px', fontSize: '10px' }}>
+                        🌐 <strong>Coords:</strong> Lat {pincodeData.lat?.toFixed(4)}, Lon {pincodeData.lon?.toFixed(4)}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="icon-actions">
+
+              {/* Profile Icon (Opens Login/Register Popup directly on click) */}
+              <div className="nav-item-container nav-profile-wrapper">
+                <a
+                  href="#profile"
+                  className="action-link-icon nav-item-trigger"
+                  aria-label="Profile"
+                  title="My Profile"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowAuthModal(true);
+                  }}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                  </svg>
+                </a>
+              </div>
+
+              {/* Gold Wallet Icon */}
+              <div className="nav-item-container nav-wallet-wrapper">
+                <a
+                  href="#profile"
+                  className="action-link-icon nav-item-trigger"
+                  aria-label="Gold Wallet"
+                  title="My Gold Wallet"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    if (!user) {
+                      setShowAuthModal(true);
+                    } else {
+                      window.location.hash = 'profile';
+                    }
+                  }}
+                  style={{ cursor: 'pointer', color: '#c8a359' }}
+                >
+                  <Coins size={22} />
+                </a>
+              </div>
+
+              {/* Wishlist */}
+              <div className="nav-item-container nav-wishlist-wrapper">
+                <a href="/wishlist" className="action-link-icon" aria-label="Wishlist">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                  {Object.values(wishlist).filter(Boolean).length > 0 && (
+                    <span className="wishlist-badge">{Object.values(wishlist).filter(Boolean).length}</span>
+                  )}
+                </a>
+              </div>
+
+              {/* Cart */}
+              <div className="nav-item-container nav-cart-wrapper">
+                <a href="/cart" className="action-link-icon" aria-label="Shopping Bag">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                  {cartList.reduce((sum, item) => sum + item.quantity, 0) > 0 && (
+                    <span className="cart-badge">{cartList.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                  )}
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      {/* Main Row: Search on Left, Logo in Center, Actions on Right */}
-      <div className="header-main-row">
-        {/* Mobile Hamburger toggle */}
-        <button
-          className="mobile-menu-toggle-btn"
-          onClick={() => setMobileMenuOpen(true)}
-          aria-label="Open Navigation Menu"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mobile-menu-hamburger-icon">
-            <line x1="3" y1="12" x2="21" y2="12"></line>
-            <line x1="3" y1="6" x2="21" y2="6"></line>
-            <line x1="3" y1="18" x2="21" y2="18"></line>
-          </svg>
-        </button>
-
-        {/* Left Side: Desktop Search Capsule */}
-        <div ref={desktopSearchRef} className="header-left-search desktop-only-util" style={{ position: 'relative' }}>
-          <div className="search-bar-capsule">
-            <input 
-              type="text" 
-              placeholder="Search for Minimalist Jewellery..." 
+        {/* Dedicated Mobile Search Row (appears on second row on mobile viewport) */}
+        <div ref={mobileSearchRef} className="mobile-search-row" style={{ position: 'relative' }}>
+          <div className="search-bar-inline">
+            <button className="search-trigger" aria-label="Search">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+            <input
+              type="text"
+              placeholder="Search for engagement rings..."
               value={searchQuery}
               onChange={(e) => {
                 setSearchQuery(e.target.value);
@@ -455,10 +735,11 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
               onFocus={() => setIsSearchOpen(true)}
             />
             {searchQuery ? (
-              <button 
-                type="button" 
-                className="search-capsule-btn" 
-                aria-label="Clear Search" 
+              <button
+                type="button"
+                className="search-action-btn"
+                title="Clear Search"
+                style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer' }}
                 onClick={() => {
                   setSearchQuery('');
                   setDebouncedQuery('');
@@ -468,560 +749,277 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                 <X size={14} />
               </button>
             ) : (
-              <button className="search-capsule-btn" aria-label="Search">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Center: Brand Logo */}
-        <div className="header-brand">
-          <a href="#" className="brand-logo-text">
-            <img src="/zoni.png" alt="Zoniraz Logo" className="header-brand-logo-img" decoding="async" width="180" height="60" />
-          </a>
-        </div>
-
-        {/* Right Side: Pincode + Currency + Icon Actions */}
-        <div className="header-right-actions">
-          {/* Currency Selector */}
-          <div ref={currencyWrapperRef} className="nav-item-container nav-currency-wrapper">
-            <button 
-              className="utility-item nav-item-trigger currency-btn"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsCurrencyOpen(prev => !prev);
-              }}
-              style={{
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '4px',
-                fontSize: '12px',
-                fontWeight: '600',
-                color: '#634d40',
-                padding: '4px 6px',
-                borderRadius: '4px'
-              }}
-              title="Change Currency"
-              aria-label="Change Currency"
-            >
-              <span style={{ fontSize: '14px' }}>{activeCurrencyConfig.flag}</span>
-              <span>{currency}</span>
-              <ChevronDown size={12} style={{ transition: 'transform 0.2s', transform: isCurrencyOpen ? 'rotate(180deg)' : 'none' }} />
-            </button>
-            {isCurrencyOpen && (
-              <div 
-                className="currency-dropdown-menu"
-                style={{
-                  position: 'absolute',
-                  top: '100%',
-                  right: 0,
-                  backgroundColor: '#ffffff',
-                  boxShadow: '0 8px 24px rgba(99,77,64,0.18)',
-                  borderRadius: '8px',
-                  padding: '6px 0',
-                  minWidth: '170px',
-                  zIndex: 1100,
-                  border: '1px solid #ebdccb'
-                }}
-              >
-                <div style={{ padding: '6px 12px', fontSize: '10px', fontWeight: '700', color: '#8c7365', borderBottom: '1px solid #efe7e5', letterSpacing: '0.8px', textTransform: 'uppercase' }}>
-                  Select Currency
-                </div>
-                <div style={{ maxHeight: '240px', overflowY: 'auto' }}>
-                  {currencies.map(c => (
-                    <button
-                      key={c.code}
-                      onClick={() => {
-                        setCurrency(c.code);
-                        setIsCurrencyOpen(false);
-                      }}
-                      style={{
-                        width: '100%',
-                        padding: '8px 12px',
-                        textAlign: 'left',
-                        background: currency === c.code ? '#faf5f2' : 'transparent',
-                        border: 'none',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justify: 'space-between',
-                        fontSize: '12px',
-                        color: currency === c.code ? '#634d40' : '#4a3b32',
-                        fontWeight: currency === c.code ? '700' : '500'
-                      }}
-                      onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#f7f0eb'}
-                      onMouseLeave={(e) => e.currentTarget.style.backgroundColor = currency === c.code ? '#faf5f2' : 'transparent'}
-                    >
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <span style={{ fontSize: '15px' }}>{c.flag}</span>
-                        <span>{c.code}</span>
-                      </span>
-                      <span style={{ fontSize: '11px', color: '#8c7365', fontWeight: '600' }}>{c.symbol.trim()}</span>
-                    </button>
-                  ))}
-                </div>
+              <div className="search-actions-inline">
+                <button className="search-action-btn camera-search" title="Search by Image" aria-label="Search by Image">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                    <circle cx="12" cy="13" r="4"></circle>
+                  </svg>
+                </button>
+                <button className="search-action-btn voice-search" title="Voice Search" aria-label="Voice Search">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
+                    <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                    <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                    <line x1="12" y1="19" x2="12" y2="23"></line>
+                    <line x1="8" y1="23" x2="16" y2="23"></line>
+                  </svg>
+                </button>
               </div>
             )}
           </div>
+        </div>
 
-          {/* Pincode Selector */}
-          <div ref={pincodeWrapperRef} className={`nav-item-container nav-pincode-wrapper desktop-only-util ${isPincodeOpen ? 'open' : ''}`}>
-            <a 
-              href="#delivery-stores" 
-              className="utility-item nav-item-trigger"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsPincodeOpen(prev => !prev);
-              }}
-              style={{ cursor: 'pointer' }}
-            >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" style={{ width: '16px', height: '16px', marginRight: '4px' }}>
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                <circle cx="12" cy="10" r="3"></circle>
-              </svg>
-              <span>
-                {pincode 
-                  ? (pincodeData?.areaName ? `${pincode} (${pincodeData.areaName})` : pincode)
-                  : 'PINCODE'}
-              </span>
-            </a>
-            <div className={`pincode-dropdown ${isPincodeOpen ? 'open' : ''}`} style={{ right: '0', left: 'auto' }}>
-              <p className="pincode-dropdown-text">
-                Your PIN Code unlocks Fastest delivery date, Try-at-Home availability, Nearest store and In-store design!
-              </p>
-              <form onSubmit={handlePincodeSubmit} className="pincode-form">
-                <input
-                  type="text"
-                  placeholder="Enter Pincode"
-                  value={tempPincode}
-                  onChange={(e) => setTempPincode(e.target.value)}
-                  maxLength={6}
-                  className="pincode-input"
-                />
-                <button type="submit" className="pincode-submit-btn" disabled={pincodeLoading}>
-                  {pincodeLoading ? 'Checking...' : (pincode ? 'Change' : 'Apply')}
-                </button>
-              </form>
-
-              {pincodeError && (
-                <div style={{ color: '#d9534f', fontSize: '11px', marginTop: '6px' }}>
-                  {pincodeError}
-                </div>
-              )}
-
-              {pincodeData && (
-                <div style={{
-                  fontSize: '11px',
-                  color: '#444',
-                  backgroundColor: '#f9f6f0',
-                  padding: '10px',
-                  borderRadius: '6px',
-                  marginTop: '8px',
-                  border: '1px solid #ebdccb'
-                }}>
-                  <div style={{ fontWeight: '700', color: '#231535', fontSize: '12px', marginBottom: '3px' }}>
-                    📍 {pincodeData.areaName} ({pincodeData.pincode})
-                  </div>
-                  {pincodeData.district && (
-                    <div style={{ color: '#555' }}>
-                      <strong>District:</strong> {pincodeData.district}, {pincodeData.state}
-                    </div>
-                  )}
-                  {pincodeData.lat !== null && pincodeData.lon !== null && (
-                    <div style={{ color: '#777', marginTop: '4px', fontSize: '10px' }}>
-                      🌐 <strong>Coords:</strong> Lat {pincodeData.lat?.toFixed(4)}, Lon {pincodeData.lon?.toFixed(4)}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className="icon-actions">
-
-            {/* Profile Icon (Opens Login/Register Popup directly on click) */}
-            <div className="nav-item-container nav-profile-wrapper">
+        {/* Bottom Tier: Category Links */}
+        <div className="header-nav-row">
+          <nav className="bottom-category-nav">
+            <div className="nav-item-container">
               <a
-                href="#profile"
-                className="action-link-icon nav-item-trigger"
-                aria-label="Profile"
-                title="My Profile"
-                onClick={(e) => {
-                  e.preventDefault();
-                  setShowAuthModal(true);
-                }}
-                style={{ cursor: 'pointer' }}
-              >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-              </a>
-            </div>
-
-            {/* Gold Wallet Icon */}
-            <div className="nav-item-container nav-wallet-wrapper">
-              <a
-                href="#profile"
-                className="action-link-icon nav-item-trigger"
-                aria-label="Gold Wallet"
-                title="My Gold Wallet"
+                href="/profile"
+                className="nav-item-trigger"
+                style={{ color: '#c8a359', fontWeight: '700' }}
                 onClick={(e) => {
                   e.preventDefault();
                   if (!user) {
                     setShowAuthModal(true);
                   } else {
-                    window.location.hash = 'profile';
+                    window.history.pushState(null, '', '/profile');
+                    window.dispatchEvent(new PopStateEvent('popstate'));
                   }
                 }}
-                style={{ cursor: 'pointer', color: '#c8a359' }}
               >
-                <Coins size={22} />
+                GOLD WALLET
               </a>
             </div>
+            {categories
+              .filter(cat => {
+                const name = (cat.categoryName || '').toLowerCase().trim();
+                return name !== "men's jewellery" &&
+                  name !== "women's jewellery" &&
+                  name !== "kids jewellery" &&
+                  name !== "men" &&
+                  name !== "women" &&
+                  name !== "kids";
+              })
+              .map((cat, idx) => {
+                const displayName = cat.categoryName || 'Collection';
+                // Sanitize slug: strip special chars like & so #necklaces-pendants routes correctly
+                const categorySlug = displayName.toLowerCase()
+                  .replace(/[^a-z0-9\s-]/g, '')
+                  .trim()
+                  .replace(/\s+/g, '-');
 
-            {/* Wishlist */}
-            <div className="nav-item-container nav-wishlist-wrapper">
-              <a href="#wishlist" className="action-link-icon" aria-label="Wishlist">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                </svg>
-                {Object.values(wishlist).filter(Boolean).length > 0 && (
-                  <span className="wishlist-badge">{Object.values(wishlist).filter(Boolean).length}</span>
-                )}
-              </a>
-            </div>
+                // Extract unique subcategories
+                const subcategories = [...new Set((cat.products || [])
+                  .map(p => p.productSubCategory)
+                  .filter(Boolean))];
 
-            {/* Cart */}
-            <div className="nav-item-container nav-cart-wrapper">
-              <a href="#cart" className="action-link-icon" aria-label="Shopping Bag">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
-                  <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                  <line x1="3" y1="6" x2="21" y2="6"></line>
-                  <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-                {cartList.reduce((sum, item) => sum + item.quantity, 0) > 0 && (
-                  <span className="cart-badge">{cartList.reduce((sum, item) => sum + item.quantity, 0)}</span>
-                )}
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+                // Extract unique genders
+                const genders = [...new Set((cat.products || [])
+                  .map(p => p.productgender)
+                  .filter(Boolean))];
 
-      {/* Dedicated Mobile Search Row (appears on second row on mobile viewport) */}
-      <div ref={mobileSearchRef} className="mobile-search-row" style={{ position: 'relative' }}>
-        <div className="search-bar-inline">
-          <button className="search-trigger" aria-label="Search">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-          </button>
-          <input 
-            type="text" 
-            placeholder="Search for engagement rings..." 
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setIsSearchOpen(true);
-            }}
-            onFocus={() => setIsSearchOpen(true)}
-          />
-          {searchQuery ? (
-            <button 
-              type="button" 
-              className="search-action-btn" 
-              title="Clear Search" 
-              style={{ background: 'none', border: 'none', color: '#ffffff', cursor: 'pointer' }}
-              onClick={() => {
-                setSearchQuery('');
-                setDebouncedQuery('');
-                setSearchResults([]);
-              }}
-            >
-              <X size={14} />
-            </button>
-          ) : (
-            <div className="search-actions-inline">
-              <button className="search-action-btn camera-search" title="Search by Image" aria-label="Search by Image">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
-                  <circle cx="12" cy="13" r="4"></circle>
-                </svg>
-              </button>
-              <button className="search-action-btn voice-search" title="Voice Search" aria-label="Voice Search">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-                  <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-                  <line x1="12" y1="19" x2="12" y2="23"></line>
-                  <line x1="8" y1="23" x2="16" y2="23"></line>
-                </svg>
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
+                // Pick two distinct banners matching the hovered category name
+                const [banner1, banner2] = getCategoryBanners(displayName);
 
-      {/* Bottom Tier: Category Links */}
-      <div className="header-nav-row">
-        <nav className="bottom-category-nav">
-          <div className="nav-item-container">
-            <a
-              href="#profile"
-              className="nav-item-trigger"
-              style={{ color: '#c8a359', fontWeight: '700' }}
-              onClick={(e) => {
-                e.preventDefault();
-                if (!user) {
-                  setShowAuthModal(true);
-                } else {
-                  window.location.hash = 'profile';
-                }
-              }}
-            >
-              GOLD WALLET
-            </a>
-          </div>
-          {categories
-            .filter(cat => {
-              const name = (cat.categoryName || '').toLowerCase().trim();
-              return name !== "men's jewellery" &&
-                name !== "women's jewellery" &&
-                name !== "kids jewellery" &&
-                name !== "men" &&
-                name !== "women" &&
-                name !== "kids";
-            })
-            .map((cat, idx) => {
-              const displayName = cat.categoryName || 'Collection';
-              // Sanitize slug: strip special chars like & so #necklaces-pendants routes correctly
-              const categorySlug = displayName.toLowerCase()
-                .replace(/[^a-z0-9\s-]/g, '')
-                .trim()
-                .replace(/\s+/g, '-');
-
-              // Extract unique subcategories
-              const subcategories = [...new Set((cat.products || [])
-                .map(p => p.productSubCategory)
-                .filter(Boolean))];
-
-              // Extract unique genders
-              const genders = [...new Set((cat.products || [])
-                .map(p => p.productgender)
-                .filter(Boolean))];
-
-              // Pick two distinct banners matching the hovered category name
-              const [banner1, banner2] = getCategoryBanners(displayName);
-
-              return (
-                <div 
-                  key={idx} 
-                  className="nav-item-container"
-                >
-                  <a href={`#${categorySlug}`} className="nav-item-trigger" onClick={() => handleCategoryTriggerClick(categorySlug)}>
-                    {displayName}
-                  </a>
-                  <div className={`mega-dropdown ${disabledDropdown === categorySlug ? 'force-hide' : ''}`} style={{ top: `${headerHeight}px` }}>
-                    <div className="mega-dropdown-inner">
-                      {/* Column 1: Subcategories */}
-                      <div className="mega-column">
-                        <h4>Styles & Subcategories</h4>
-                        <ul>
-                          <li>
-                            <a 
-                              href={`#${categorySlug}`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              All {displayName}
-                            </a>
-                          </li>
-                          {subcategories.map((sub, sIdx) => {
-                            const subSlug = sub.toLowerCase().replace(/ /g, '-');
-                            return (
-                              <li key={sIdx}>
-                                <a 
-                                  href={`#${categorySlug}?subcategory=${subSlug}`} 
-                                  onClick={() => handleDropdownLinkClick(categorySlug)}
-                                >
-                                  {sub}
-                                </a>
-                              </li>
-                            );
-                          })}
-                        </ul>
-                      </div>
-
-                      {/* Column 2: Metal & Stone */}
-                      <div className="mega-column">
-                        <h4>By Metal & Stone</h4>
-                        <ul className="metal-stone-list">
-                          <li>
-                            <span className="dot dot-diamond"></span>
-                            <a 
-                              href={`#${categorySlug}?stone=diamond`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              Diamond
-                            </a>
-                          </li>
-                          <li>
-                            <span className="dot dot-gold"></span>
-                            <a 
-                              href={`#${categorySlug}?metal=gold`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              Gold
-                            </a>
-                          </li>
-                          <li>
-                            <span className="dot dot-rose-gold"></span>
-                            <a 
-                              href={`#${categorySlug}?metal=rose-gold`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              Rose Gold
-                            </a>
-                          </li>
-                          <li>
-                            <span className="dot dot-yellow-gold"></span>
-                            <a 
-                              href={`#${categorySlug}?metal=yellow-gold`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              Yellow Gold
-                            </a>
-                          </li>
-                          <li>
-                            <span className="dot dot-white-gold"></span>
-                            <a 
-                              href={`#${categorySlug}?metal=white-gold`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              White Gold
-                            </a>
-                          </li>
-                          <li>
-                            <span className="dot dot-platinum"></span>
-                            <a 
-                              href={`#${categorySlug}?metal=platinum`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              Platinum
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-
-                      {/* Column 3: By Price */}
-                      <div className="mega-column mega-column-price">
-                        <h4>By Price</h4>
-                        <ul>
-                          <li>
-                            <a 
-                              href={`#${categorySlug}?maxPrice=10000`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              Under ₹ 10k
-                            </a>
-                          </li>
-                          <li>
-                            <a 
-                              href={`#${categorySlug}?minPrice=10000&maxPrice=20000`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              ₹ 10k - ₹ 20k
-                            </a>
-                          </li>
-                          <li>
-                            <a 
-                              href={`#${categorySlug}?minPrice=20000&maxPrice=30000`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              ₹ 20k - ₹ 30k
-                            </a>
-                          </li>
-                          <li>
-                            <a 
-                              href={`#${categorySlug}?minPrice=30000&maxPrice=50000`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              ₹ 30k - ₹ 50k
-                            </a>
-                          </li>
-                          <li>
-                            <a 
-                              href={`#${categorySlug}?minPrice=50000`} 
-                              onClick={() => handleDropdownLinkClick(categorySlug)}
-                            >
-                              ₹ 50k & Above
-                            </a>
-                          </li>
-                        </ul>
-                      </div>
-
-                      {/* Column 4: Banners */}
-                      <div className="mega-banners">
-                        <div className="mega-banner-card">
-                          <img src={banner1} alt="Featured Collection" />
-                          <div className="banner-label">New Arrivals</div>
+                return (
+                  <div
+                    key={idx}
+                    className="nav-item-container"
+                  >
+                    <a href={`/${categorySlug}`} className="nav-item-trigger" onClick={(e) => { e.preventDefault(); window.history.pushState(null, '', `/${categorySlug}`); window.dispatchEvent(new PopStateEvent('popstate')); }}>
+                      {displayName}
+                    </a>
+                    <div className={`mega-dropdown ${disabledDropdown === categorySlug ? 'force-hide' : ''}`} style={{ top: `${headerHeight + 10}px` }}>
+                      <div className="mega-dropdown-inner">
+                        {/* Column 1: Subcategories */}
+                        <div className="mega-column">
+                          <h4>Styles & Subcategories</h4>
+                          <ul>
+                            <li>
+                              <a
+                                href={`/${categorySlug}`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                All {displayName}
+                              </a>
+                            </li>
+                            {subcategories.map((sub, sIdx) => {
+                              const subSlug = sub.toLowerCase().replace(/ /g, '-');
+                              return (
+                                <li key={sIdx}>
+                                  <a
+                                    href={`/${categorySlug}?subcategory=${subSlug}`}
+                                    onClick={() => handleDropdownLinkClick(categorySlug)}
+                                  >
+                                    {sub}
+                                  </a>
+                                </li>
+                              );
+                            })}
+                          </ul>
                         </div>
-                        <div className="mega-banner-card">
-                          <img src={banner2} alt="Special Edition" />
-                          <div className="banner-label">Shop Bestsellers</div>
-                        </div>
-                      </div>
 
-                      {/* Bottom Full-width Row: Demographic filters */}
-                      <div className="mega-dropdown-footer" style={{ gridColumn: 'span 5', marginTop: '15px' }}>
-                        <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
-                          <a 
-                            href={`#${categorySlug}?gender=women`} 
-                            className="footer-pill-btn" 
-                            style={{ paddingRight: '20px', borderRight: '1.5px solid #d4c5bd', textDecoration: 'none', color: '#8c7365' }} 
-                            onClick={() => handleDropdownLinkClick(categorySlug)}
-                          >
-                            For Women
-                          </a>
-                          <a 
-                            href={`#${categorySlug}?gender=men`} 
-                            className="footer-pill-btn" 
-                            style={{ paddingLeft: '20px', paddingRight: '20px', borderRight: '1.5px solid #d4c5bd', textDecoration: 'none', color: '#8c7365' }} 
-                            onClick={() => handleDropdownLinkClick(categorySlug)}
-                          >
-                            For Men
-                          </a>
-                          <a 
-                            href={`#${categorySlug}?gender=kids`} 
-                            className="footer-pill-btn" 
-                            style={{ paddingLeft: '20px', textDecoration: 'none', color: '#8c7365' }} 
-                            onClick={() => handleDropdownLinkClick(categorySlug)}
-                          >
-                            For Kids
-                          </a>
+                        {/* Column 2: Metal & Stone */}
+                        <div className="mega-column">
+                          <h4>By Metal & Stone</h4>
+                          <ul className="metal-stone-list">
+                            <li>
+                              <span className="dot dot-diamond"></span>
+                              <a
+                                href={`/${categorySlug}?stone=diamond`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                Diamond
+                              </a>
+                            </li>
+                            <li>
+                              <span className="dot dot-gold"></span>
+                              <a
+                                href={`/${categorySlug}?metal=gold`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                Gold
+                              </a>
+                            </li>
+                            <li>
+                              <span className="dot dot-rose-gold"></span>
+                              <a
+                                href={`/${categorySlug}?metal=rose-gold`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                Rose Gold
+                              </a>
+                            </li>
+                            <li>
+                              <span className="dot dot-yellow-gold"></span>
+                              <a
+                                href={`/${categorySlug}?metal=yellow-gold`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                Yellow Gold
+                              </a>
+                            </li>
+                            <li>
+                              <span className="dot dot-white-gold"></span>
+                              <a
+                                href={`/${categorySlug}?metal=white-gold`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                White Gold
+                              </a>
+                            </li>
+                            <li>
+                              <span className="dot dot-platinum"></span>
+                              <a
+                                href={`/${categorySlug}?metal=platinum`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                Platinum
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+
+                        {/* Column 3: By Price */}
+                        <div className="mega-column mega-column-price">
+                          <h4>By Price</h4>
+                          <ul>
+                            <li>
+                              <a
+                                href={`/${categorySlug}?maxPrice=10000`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                Under ₹ 10k
+                              </a>
+                            </li>
+                            <li>
+                              <a
+                                href={`/${categorySlug}?minPrice=10000&maxPrice=20000`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                ₹ 10k - ₹ 20k
+                              </a>
+                            </li>
+                            <li>
+                              <a
+                                href={`/${categorySlug}?minPrice=20000&maxPrice=30000`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                ₹ 20k - ₹ 30k
+                              </a>
+                            </li>
+                            <li>
+                              <a
+                                href={`/${categorySlug}?minPrice=30000&maxPrice=50000`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                ₹ 30k - ₹ 50k
+                              </a>
+                            </li>
+                            <li>
+                              <a
+                                href={`/${categorySlug}?minPrice=50000`}
+                                onClick={() => handleDropdownLinkClick(categorySlug)}
+                              >
+                                ₹ 50k & Above
+                              </a>
+                            </li>
+                          </ul>
+                        </div>
+
+                        {/* Column 4: Banners */}
+                        <div className="mega-banners">
+                          <div className="mega-banner-card">
+                            <img src={banner1} alt="Featured Collection" loading="lazy" decoding="async" width="300" height="150" />
+                            <div className="banner-label">New Arrivals</div>
+                          </div>
+                          <div className="mega-banner-card">
+                            <img src={banner2} alt="Special Edition" loading="lazy" decoding="async" width="300" height="150" />
+                            <div className="banner-label">Shop Bestsellers</div>
+                          </div>
+                        </div>
+
+                        {/* Bottom Full-width Row: Demographic filters */}
+                        <div className="mega-dropdown-footer" style={{ gridColumn: 'span 5', marginTop: '15px' }}>
+                          <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
+                            <a
+                              href={`/${categorySlug}?gender=women`}
+                              className="footer-pill-btn"
+                              style={{ paddingRight: '20px', borderRight: '1.5px solid #d4c5bd', textDecoration: 'none', color: '#8c7365' }}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
+                            >
+                              For Women
+                            </a>
+                            <a
+                              href={`/${categorySlug}?gender=men`}
+                              className="footer-pill-btn"
+                              style={{ paddingLeft: '20px', paddingRight: '20px', borderRight: '1.5px solid #d4c5bd', textDecoration: 'none', color: '#8c7365' }}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
+                            >
+                              For Men
+                            </a>
+                            <a
+                              href={`/${categorySlug}?gender=kids`}
+                              className="footer-pill-btn"
+                              style={{ paddingLeft: '20px', textDecoration: 'none', color: '#8c7365' }}
+                              onClick={() => handleDropdownLinkClick(categorySlug)}
+                            >
+                              For Kids
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-        </nav>
-      </div>
+                );
+              })}
+          </nav>
+        </div>
 
-      {renderSearchResultsDropdown()}
-    </header>
+        {renderSearchResultsDropdown()}
+      </header>
 
-    {/* Digital Gold Modal */}
+      {/* Digital Gold Modal */}
       {goldModalOpen && (
         <div className="gold-modal-overlay">
           <div className="gold-modal-container">
@@ -1178,16 +1176,16 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
             {/* Middle: Category list with arrows */}
             <div className="drawer-categories-list">
               {[
-                { name: "Gold Wallet (10+1 Scheme)", desc: "View accumulated 24K gold balance & passbook", hash: "#profile", img: null },
-                { name: "Rings", desc: "Browse by Style, Metals & Stones", hash: "#rings", img: silverRingsImg },
-                { name: "Earrings", desc: "Browse by Style, Price & More..", hash: "#earrings", img: dancingHoopsImg },
-                { name: "Bracelets & Bangles", desc: "Browse by Style, Metal & Kids", hash: "#bracelets", img: stretchableBanglesImg },
-                { name: "Solitaires", desc: "For Engagement, Anniversaries & Milestones", hash: "#solitaires", img: solitaireSetsImg },
-                { name: "Mangalsutras", desc: "Browse by neckwear, bracelets & more", hash: "#mangalsutras", img: trendyMangalsutrasImg },
-                { name: "Necklaces & Pendants", desc: "Browse by Style, Metal & Price", hash: "#necklaces", img: infinityNecklacesImg },
-                { name: "Silver by Shaya", desc: "Sterling silver collection", hash: "#silver", img: silverEarringsImg },
-                { name: "Gifting", desc: "For All Relationships & Occasions", hash: "#gifting", img: giftsForMomImg },
-                { name: "Trending", desc: "Most loved designs", hash: "#trending", img: gulnaaraImg }
+                { name: "Gold Wallet (10+1 Scheme)", desc: "View accumulated 24K gold balance & passbook", hash: "/profile", img: null },
+                { name: "Rings", desc: "Browse by Style, Metals & Stones", hash: "/rings", img: silverRingsImg },
+                { name: "Earrings", desc: "Browse by Style, Price & More..", hash: "/earrings", img: dancingHoopsImg },
+                { name: "Bracelets & Bangles", desc: "Browse by Style, Metal & Kids", hash: "/bracelets", img: stretchableBanglesImg },
+                { name: "Solitaires", desc: "For Engagement, Anniversaries & Milestones", hash: "/solitaires", img: solitaireSetsImg },
+                { name: "Mangalsutras", desc: "Browse by neckwear, bracelets & more", hash: "/mangalsutras", img: trendyMangalsutrasImg },
+                { name: "Necklaces & Pendants", desc: "Browse by Style, Metal & Price", hash: "/necklaces", img: infinityNecklacesImg },
+                { name: "Silver by Shaya", desc: "Sterling silver collection", hash: "/silver", img: silverEarringsImg },
+                { name: "Gifting", desc: "For All Relationships & Occasions", hash: "/gifting", img: giftsForMomImg },
+                { name: "Trending", desc: "Most loved designs", hash: "/trending", img: gulnaaraImg }
               ].map((category, idx) => (
                 <a
                   key={idx}
@@ -1196,7 +1194,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <div className="drawer-item-left-content">
-                    {category.img && <img src={category.img} alt={category.name} className="drawer-category-icon-img" />}
+                    {category.img && <img src={category.img} alt={category.name} className="drawer-category-icon-img" loading="lazy" decoding="async" width="24" height="24" />}
                     <div className="category-meta">
                       <span className="category-name">{category.name}</span>
                       <span className="category-desc">{category.desc}</span>
@@ -1208,10 +1206,10 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
 
               {/* OUR STORY & Auth Buttons moved directly under Trending button */}
               <div className="drawer-inline-footer" style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', marginBottom: '15px' }}>
-                <a href="#our-story" className="drawer-story-link" onClick={() => setMobileMenuOpen(false)}>
+                <a href="/about" className="drawer-story-link" onClick={() => setMobileMenuOpen(false)}>
                   OUR STORY
                 </a>
-                <a href="#franchise" className="drawer-story-link" onClick={() => setMobileMenuOpen(false)}>
+                <a href="/franchise" className="drawer-story-link" onClick={() => setMobileMenuOpen(false)}>
                   FRANCHISE
                 </a>
                 <div className="drawer-auth-buttons">

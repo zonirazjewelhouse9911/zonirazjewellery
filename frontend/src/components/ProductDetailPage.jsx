@@ -27,7 +27,8 @@ import {
   PhoneOff,
   ChevronRight
 } from 'lucide-react';
-import ringVideo from '../assets/vs-p_v2.mp4';
+import ringVideo from '../assets/videos/zoniraz ring .mp4';
+import banglesVideo from '../assets/videos/Bangles.mp4';
 
 // Lifestyle / model images from Unsplash (free to use)
 const lifestyleImages = [
@@ -100,8 +101,64 @@ export default function ProductDetailPage({ product, products: propProducts = []
   );
   const [isCustomSizeSelected, setIsCustomSizeSelected] = useState(false);
   const [customSizeInput, setCustomSizeInput] = useState('');
+  const getAvailableColors = () => {
+    if (!product) return [];
+    let parsedGallery = {};
+    if (product.gallery) {
+      if (typeof product.gallery === 'string') {
+        try {
+          parsedGallery = JSON.parse(product.gallery);
+        } catch (e) {
+          console.error("Failed to parse product gallery string", e);
+        }
+      } else {
+        parsedGallery = product.gallery;
+      }
+    }
+
+    return colorOptions.filter(c => {
+      const colorId = c.id.toLowerCase();
+      if (product.gallery) {
+        let list = [];
+        if (colorId === 'white') list = parsedGallery['1'] || parsedGallery['white'] || [];
+        else if (colorId === 'yellow') list = parsedGallery['2'] || parsedGallery['yellow'] || [];
+        else if (colorId === 'rose') list = parsedGallery['3'] || parsedGallery['rose'] || [];
+        return Array.isArray(list) && list.length > 0;
+      }
+
+      if (product.images && product.images.length > 0) {
+        const match = product.images.some(imgUrl => {
+          const urlLower = String(imgUrl).toLowerCase();
+          if (colorId === 'rose') return urlLower.includes('rose') || urlLower.includes('pink');
+          if (colorId === 'white') return urlLower.includes('white') || urlLower.includes('silver');
+          if (colorId === 'yellow') return urlLower.includes('yellow') || urlLower.includes('gold');
+          return false;
+        });
+        if (match) return true;
+
+        if (colorId === 'yellow' && product.images[0]) return true;
+        if (colorId === 'rose' && product.images[1]) return true;
+        if (colorId === 'white' && product.images[2]) return true;
+
+        return false;
+      }
+      return colorId === 'yellow';
+    });
+  };
+
+  const availableColors = getAvailableColors();
+
+  const [selectedColor, setSelectedColor] = useState(() => {
+    const active = getAvailableColors();
+    return active[0]?.id || 'Yellow';
+  });
+
+  useEffect(() => {
+    const active = getAvailableColors();
+    setSelectedColor(active[0]?.id || 'Yellow');
+  }, [product]);
+
   const [selectedKarat, setSelectedKarat] = useState('14 KT');
-  const [selectedColor, setSelectedColor] = useState('Yellow');
   const selectedMetal = selectedKarat === 'Platinum' ? 'Platinum' : `${selectedKarat} ${selectedColor}`;
   const [selectedDiamond, setSelectedDiamond] = useState('IJ-SI');
   const [pincode, setPincode] = useState('');
@@ -1672,7 +1729,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
       {/* Sticky top bar on scroll */}
       <div className={`pdp-sticky-bar ${stickyVisible ? 'visible' : ''}`}>
-        <img src={product.image} alt="" className="pdp-sticky-product-img" />
+        <img src={product.image} alt={`${product.name} Preview`} className="pdp-sticky-product-img" loading="lazy" decoding="async" width="40" height="40" />
         <div>
           <div className="pdp-sticky-name">{product.name}</div>
           <div className="pdp-sticky-price">{formatPrice(currentPrice)}</div>
@@ -1709,15 +1766,15 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
       {/* Breadcrumb */}
       <div className="pdp-breadcrumb">
-        <span onClick={() => { window.location.hash = ''; }}>Home</span>
+        <span onClick={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new Event('popstate')); }}>Home</span>
         <ChevronRight size={10} style={{ color: '#8C827A' }} />
-        <span onClick={() => { window.location.hash = '#' + (product.category || 'rings').toLowerCase().replace(/ /g, '-'); }}>
+        <span onClick={() => { window.history.pushState(null, '', '/' + (product.category || 'rings').toLowerCase().replace(/ /g, '-')); window.dispatchEvent(new Event('popstate')); }}>
           {product.category || 'Rings'}
         </span>
         {product.subcategory && (
           <>
             <ChevronRight size={10} style={{ color: '#8C827A' }} />
-            <span onClick={() => { window.location.hash = '#' + (product.category || 'rings').toLowerCase().replace(/ /g, '-') + '?subcategory=' + product.subcategory.toLowerCase().replace(/ /g, '-'); }}>
+            <span onClick={() => { window.history.pushState(null, '', '/' + (product.category || 'rings').toLowerCase().replace(/ /g, '-') + '?subcategory=' + product.subcategory.toLowerCase().replace(/ /g, '-')); window.dispatchEvent(new Event('popstate')); }}>
               {product.subcategory}
             </span>
           </>
@@ -1741,7 +1798,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   className={`pdp-thumb ${selectedImage === i ? 'active' : ''}`}
                   onClick={() => setSelectedImage(i)}
                 >
-                  <img src={img} alt={`View ${i + 1}`} />
+                  <img src={img} alt={`View ${i + 1}`} loading="lazy" decoding="async" width="64" height="64" />
                 </div>
               ))}
             </div>
@@ -1758,6 +1815,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 src={allImages[selectedImage]}
                 alt={product.name}
                 className="pdp-main-img"
+                decoding="async"
+                width="600"
+                height="600"
                 style={{
                   transform: isZoomed ? 'scale(2.2)' : 'scale(1)',
                   transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
@@ -1780,7 +1840,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             <div className="pdp-mobile-slider" onScroll={handleMobileScroll}>
               {allImages.map((img, i) => (
                 <div key={i} className="pdp-mobile-slide">
-                  <img src={img} alt={`${product.name} ${i + 1}`} />
+                  <img src={img} alt={`${product.name} ${i + 1}`} loading="lazy" decoding="async" width="400" height="400" />
                 </div>
               ))}
             </div>
@@ -1823,7 +1883,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
           </div>
           <div className="pdp-tax-note">(MRP Inclusive of all taxes)</div>
 
-          <div className="pdp-product-name">{product.name}</div>
+          <h1 className="pdp-product-name" style={{ margin: 0, padding: 0, display: 'block', fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit', fontFamily: 'inherit', lineHeight: 'inherit' }}>{product.name}</h1>
           <div className="pdp-offer-tag">
             <Sparkles size={14} style={{ display: 'inline', color: '#A98E73', verticalAlign: '-2px', marginRight: '4px' }} />
             Flat {savingsPct}% off on Making Charges
@@ -2003,7 +2063,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
               </div>
 
               <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                {colorOptions.map(c => {
+                {availableColors.map(c => {
                   const isSelected = selectedColor === c.id;
                   return (
                     <button
@@ -2032,7 +2092,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
           )}
 
           {/* Sizing guide */}
-          {showSizing && (
+          {(isRing || isBangleOrBracelet) && (
             <div className="pdp-ring-size-row">
               <span>{isRing ? 'Not sure about your ring size?' : 'Not sure about your bangle size?'}</span>
               <span className="pdp-learn-how-link" onClick={() => setSizingVideoOpen(true)} style={{ cursor: 'pointer' }}>LEARN HOW ▶</span>
@@ -2392,7 +2452,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   key={p.id}
                   className="pdp-related-card"
                   onClick={() => {
-                    window.location.hash = `product-${p.id}`;
+                    window.history.pushState(null, '', `/product/${p.product_slug || p.slug || p.id}`);
+                    window.dispatchEvent(new Event('popstate'));
                   }}
                 >
                   <div className="pdp-related-img-wrapper">
@@ -2545,7 +2606,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             <h3 className="pdp-modal-title" style={{ marginBottom: 12 }}>How to Measure Your Size</h3>
             <div style={{ flex: 1, position: 'relative', width: '100%', borderRadius: 8, overflow: 'hidden', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <video
-                src={ringVideo}
+                src={isRing ? ringVideo : banglesVideo}
                 autoPlay
                 loop
                 playsInline

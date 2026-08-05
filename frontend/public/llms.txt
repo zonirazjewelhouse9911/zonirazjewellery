@@ -1,0 +1,22 @@
+# Zoniraz Jewel House
+
+Zoniraz is a premium, luxury jewellery brand offering BIS Hallmarked Gold and certified Diamond jewellery. The platform features an extensive catalog of modern minimalist and traditional bridal collections, complete with digital gold investment services, real-time pricing calculators, and home trial booking.
+
+## Primary SEO Keywords & Search Intent
+- **Luxury Jewellery Brand:** Premium designer rings, necklaces, bracelets, bangles, pendants, and solitaires.
+- **BIS Hallmarked Gold:** Certified 14KT, 18KT, 22KT, and 24KT gold ornaments.
+- **Certified Diamond Jewellery Online:** VS-clarity and eye-clean diamond collections with certification verification.
+- **Gold Saving Scheme:** Systematic monthly gold SIP investments (Zoniraz Gold Mine).
+- **Old Gold Exchange:** Transparent old gold evaluation and buy-back rates.
+- **Bridal Jewellery & Styling:** Regals, chokers, jhumkas, chandbalis, and layered necklaces.
+
+## Technical Architecture
+- **Frontend Stack:** React (Single Page Application SPA), Vanilla CSS, Vite (Build Tool), Lucide Icons, dynamic Client-side routing with query param parsing.
+- **Backend Stack:** Node.js, Express, MongoDB with Mongoose ODM.
+- **Key API Integrations:** Real-time commodity base rates calculation `/api/productBasePricing`, custom variant customization `/api/productPricing`, and dynamic navbar aggregation `/api/userSide/GetNavbar`.
+
+## Key User Experience Features
+- **Dynamic Color Options Selection:** Auto-filters options circles (Yellow, Rose, Silver/White) on product detail pages. Hide options if the corresponding asset file is missing in the database gallery object.
+- **Dynamic Size Guide Video:** Size modal triggers category-based help videos (`videos/zoniraz ring .mp4` for Rings, `videos/Bangles.mp4` for Bangles). Completely hides sizing videos on other products.
+- **Dynamic Routing:** Supports clean paths `/chains`, `/nose-pin`, `/zodiac` alongside query searches `?subcategory=` and legacy hash fallbacks.
+- **SEO Ready Structure:** Custom generated dynamic JSON-LD schemas, robots.txt, and complete `/sitemap.xml` for index crawling.

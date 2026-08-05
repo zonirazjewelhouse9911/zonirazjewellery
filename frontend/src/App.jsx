@@ -21,6 +21,7 @@ import CartPage from './components/CartPage';
 import ProductDetailPage from './components/ProductDetailPage';
 import ContactPage from './components/ContactPage';
 import BlogPage from './components/BlogPage';
+import BlogDetailPage from './components/BlogDetailPage';
 import AboutPage from './components/AboutPage';
 import DeliveryPage from './components/DeliveryPage';
 import UserDashboard from './components/UserDashboard';
@@ -78,6 +79,235 @@ const hashToCategoryMap = {
   'kids': 'rings'
 };
 
+const getKeywordsForView = (currentView, queryParams, categoryName) => {
+  const cat = String(categoryName || '').toLowerCase().trim();
+  const params = queryParams || {};
+  const metal = params.metal || '';
+  const stone = params.stone || '';
+  const style = params.style || '';
+  const occasion = params.occasion || '';
+  const gender = params.gender || '';
+  const tag = params.tag || '';
+  const collection = params.collection || '';
+  const tab = params.tab || '';
+
+  if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && metal === 'gold') {
+    return {
+      url: "https://zoniraz.com/products?category=earrings&metal=gold",
+      primary: "Buy women Earrrings online in india",
+      secondary: ["earrings gold price in india","daily use earrings online","best gold earrings online"],
+      lsi: ["diamond earrings for wife","gold earrings price in saudi arabia","white gold earrings australia","22k gold earrings online india","18k gold earrings dubai","earrings gold price in ksa","modern earrings for girls","trendy earrings for women India","gold earrings for bride price","daily wear earrings gold price","latest new model earrings","tops gold earrings new design","traditional indian earrings designs","women earring design new fashion"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && metal === 'gold') {
+    return {
+      url: "https://zoniraz.com/products?category=rings&metal=gold",
+      primary: "Buy gold rings for women",
+      secondary: ["rose gold engagement rings uk","women's gold fashion rings","gold price ring woman"],
+      lsi: ["ladies gold anguthi","ladies gold ring diamond","ladies gold finger ring with price","white gold engagement rings australia","18k gold ring price in uae","22k gold rings for women","gold wedding rings uk","wedding ring designer online","gold earring price in uae","biggest gold ring dubai","gold ring price in saudi arabia","saudi arabia gold design ring","22k gold toe rings india","women gold rings online India"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && metal === 'gold' && occasion === 'engagement') {
+    return {
+      url: "https://zoniraz.com/products?category=rings&metal=gold&occasion=engagement",
+      primary: "Buy Gold Engagement Ring for Women",
+      secondary: ["14k gold ring engagement","14kt white gold engagement ring","gold engagement ring uk"],
+      lsi: ["14kt gold engagement ring","expensive women's wedding rings","luxury rose gold necklace","buy gold engagement ring online","luxury diamond engagement rings","gold round diamond engagement ring","rose gold pendants uk","latest indian engagement ring designs","wedding ring uae"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('pendant') || queryParams.category === 'pendants') && metal === 'gold') {
+    return {
+      url: "https://zoniraz.com/products?category=pendants&metal=gold",
+      primary: "Buy gold pendant necklace",
+      secondary: ["18k gold pendant necklace","custom gold necklace pendant","14k gold chain"],
+      lsi: ["14k white gold chain","name necklace for men","rose gold heart necklace uk","diamond pendant necklace australia","gold chain price in ksa","gold pendant online india","10k gold chain mens","14kt white gold chain","engraved gold bar necklace","mens long necklace","personalized jewelry gift","custom letter chain necklace","gold choker necklace australia","gold necklace price in saudi arabia","gold chain price in saudi arabia","men's 10 karat gold chain","chain white gold price in india","customised gold pendant india","gold chain 22k india","gold necklace uk","gold necklace ksa","gold necklace design in saudi arabia","saudi arabia gold necklace design","gold necklace australia"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('nose-pi') || queryParams.category === 'nose-pin') && metal === 'gold') {
+    return {
+      url: "https://zoniraz.com/products?category=nose-pin&metal=gold",
+      primary: "Buy gold nose pin for women",
+      secondary: ["small gold nose pin price","gold nose pin without stone","nose pin indian"],
+      lsi: ["real gold nose pin price","solid gold nose pin","ladies nose pin gold","nose piercing in uk","gold latest nose pin","small nose pin gold price","nose pin design gold price","gold nose pin india","large nose studs uk","gold nose pin price in uae","10 – 100/Low","custom diamond name pendant"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && stone === 'diamond') {
+    return {
+      url: "https://zoniraz.com/products?category=earrings&stone=diamond",
+      primary: "Buy Diamond Earrings",
+      secondary: ["diamond earrings on sale","8 gram gold jhumka designs with price","diamond wedding earrings for bride"],
+      lsi: ["latest diamond earrings designs","diamond stud earrings for women yellow gold","modern diamond earrings designs","drop &amp; linear diamond earrings for women","diamond earrings australia"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('pendant') || queryParams.category === 'pendants') && stone === 'diamond') {
+    return {
+      url: "https://zoniraz.com/products?category=pendants&stone=diamond",
+      primary: "diamond pendant for women",
+      secondary: ["small diamond initial necklace","10 gram gold jhumka designs with price","gold and diamond necklace women's"],
+      lsi: ["custom diamond name necklace","diamond name plate necklace","diamond pendant earring set indian","indian bridal diamond necklace with price","diamond necklace australia","diamond initial necklace australia"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && stone === 'diamond') {
+    return {
+      url: "https://zoniraz.com/products?category=rings&stone=diamond",
+      primary: "Buy Diamond Rings",
+      secondary: ["3 to 4 grams gold earrings designs","large diamond hoop earrings yellow gold","lab grown diamond engagement rings"],
+      lsi: ["best lab created diamond rings","affordable anniversary rings","diamond ring design for female in gold","diamond engagement rings uk","original diamond ring price in saudi arabia","bridal ring sets australia"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && stone === 'diamond') {
+    return {
+      url: "https://zoniraz.com/products?category=rings&stone=diamond",
+      primary: "buy diamond nose pin online",
+      secondary: ["diamond nose rings for sale","diamond big nose pin","diamond house nose pin"],
+      lsi: ["best day to wear diamond nose pin","designer diamond nose pin","diamond nose piercing price","14k gold diamond nose ring","indian gold ear studs","small gold stud earrings india","cost of diamond nose ring in india"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && style === 'drops') {
+    return {
+      url: "https://zoniraz.com/products?category=earrings&style=drops",
+      primary: "gold dangle earrings for women",
+      secondary: ["gold chains for women","cross necklace for women","thin gold chain"],
+      lsi: ["18k white gold drop earrings","rose gold dangle earrings wedding","large gold dangle earrings","small gold hoop earrings with dangle"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && style === 'studs') {
+    return {
+      url: "https://zoniraz.com/products?category=earrings&style=studs",
+      primary: "gold stud earrings for women",
+      secondary: ["yellow gold engagement rings","best lab created diamond engagement rings","14k white gold stud earrings"],
+      lsi: ["white stone ear studs","ladies gold stud earrings","14 karat white gold stud earrings","18k white gold diamond stud earrings","indian gold earrings studs","gold stud earrings uk"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && style === 'hoops') {
+    return {
+      url: "https://zoniraz.com/products?category=earrings&style=hoops",
+      primary: "gold hoop earrings for women",
+      secondary: ["gold cartilage hoop","mini huggies","ladies gold hoop earrings"],
+      lsi: ["womens gold hoop earrings small","mall thick gold hoops","small white gold huggie earrings","indian style gold hoop earrings","large gold hoop earrings uk"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && stone === 'diamond' && occasion === 'engagement') {
+    return {
+      url: "https://zoniraz.com/products?category=rings&stone=diamond&occasion=engagement",
+      primary: "diamond engagement ring",
+      secondary: ["yellow diamond engagement rings","custom diamond engagement rings","yellow diamond wedding ring"],
+      lsi: ["online custom engagement rings","custom unique engagement rings","diamond engagement ring uk","bridal ring sets uk","price of diamond ring in usa","diamond engagement ring uae"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && gender === 'men') {
+    return {
+      url: "https://zoniraz.com/products?category=rings&gender=men",
+      primary: "mens gold rings",
+      secondary: ["mens 10k gold rings","mens gold rings for sale","18k white gold engagement ring"],
+      lsi: ["ring gold price in india","latest gold ring design for male without stone","18 karat gold mens ring price","gents gold ring designs with price in india","mens gold rings uk","mens wedding rings uk gold"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && occasion === 'engagement') {
+    return {
+      url: "https://zoniraz.com/products?category=rings&occasion=engagement",
+      primary: "diamond engagement ring",
+      secondary: ["oval cut engagement rings","diamond anniversary","diamond wedding ring uk"],
+      lsi: ["mens diamond wedding rings uk","wedding ring sets australia","diamond stores","engagement ring store","engagement ring shops"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && metal === 'gold' && occasion === 'engagement') {
+    return {
+      url: "https://zoniraz.com/products?category=rings&metal=gold&occasion=engagement",
+      primary: "Buy Gold Engagement Rings Online",
+      secondary: ["14k white gold engagement ring","14k rose gold engagement ring","gold engagement rings with names"],
+      lsi: ["14k gold engagement ring","engagement couple rings gold with letters","engagement gold rings for couples with names","custom rose gold engagement rings","affordable engagement ring sets","engagement name rings gold"]
+    };
+  }
+  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && tag === 'office-wear') {
+    return {
+      url: "https://zoniraz.com/products?tag=office-wear&category=rings",
+      primary: "Daily wear finger ring design",
+      secondary: ["daily use finger ring design","daily use gold finger ring","daily wear rings artificial"],
+      lsi: ["daily wear unique simple gold ring design","daily wear rings for women","simple gold ring for daily use","lightweight gold finger rings","everyday wear gold ring designs","minimal gold ring designs for women","stylish daily wear rings for girls","affordable daily wear finger rings"]
+    };
+  }
+  if (currentView === 'rings' && collection === 'bridal') {
+    return {
+      url: "https://zoniraz.com/products?collection=bridal",
+      primary: "build engagement ring",
+      secondary: ["engagement ring and wedding band set","custom made engagement rings","diamond bridal"],
+      lsi: ["book jewellery appointment"]
+    };
+  }
+  if (currentView === 'gold-mine') {
+    return {
+      url: "https://zoniraz.com/plans/gold-mine",
+      primary: "gold saving scheme online",
+      secondary: ["gold installment scheme","gold installment plan","grt flexi gold plan"],
+      lsi: ["gold savings plan India","monthly gold investment scheme","digital gold saving scheme","systematic gold investment plan","flexible gold saving scheme","gold monthly installment scheme","jewelry gold saving plan","gold investment scheme online India","gold SIP plan India","easy gold savings plan"]
+    };
+  }
+  if (currentView === 'sell-gold') {
+    return {
+      url: "https://zoniraz.com/exchange",
+      primary: "old gold exchange",
+      secondary: ["old gold calculator","old gold price calculator","old gold rate calculator"],
+      lsi: ["old gold value calculator","gold exchange calculator","old gold valuation","gold exchange rate","gold rate today","gold purity calculator","gold price calculator 22k","gold exchange scheme","sell old gold","gold valuation calculator","jewellery buying consultation","jewellery sales enquiry","jewellery store customer care"]
+    };
+  }
+  if (currentView === 'franchise') {
+    return {
+      url: "https://zoniraz.com/franchise",
+      primary: "jewellery franchise",
+      secondary: ["jewellery showroom franchise","jewellery brand franchise","gold jewellery franchise"],
+      lsi: ["diamond jewellery franchise","luxury jewellery franchise","jewellery business franchise","jewellery store franchise","jewelry franchise india","jewellery dealership","jewellery retail franchise","jewellery franchise india"]
+    };
+  }
+  if (currentView === 'contact') {
+    return {
+      url: "https://zoniraz.com/contact",
+      primary: "contact jewellery store",
+      secondary: ["jewellery enquiry","contact jewellery expert","jewellery contact number"],
+      lsi: ["jewellery showroom near me","jewellery customer service","jewellery support team","jewellery appointment booking","gold jewellery consultation","diamond jewellery consultation","visit jewellery showroom","jewellery store location"]
+    };
+  }
+  if (currentView === 'about') {
+    return {
+      url: "https://zoniraz.com/about",
+      primary: "luxury jewellery brand",
+      secondary: ["bis hallmarked jewellery","famous jewellery brands","luxury diamond jewelry"],
+      lsi: ["jewellery shipping abroad","buy luxury jewellery online","certified diamond jewellery online","luxury diamond jewellery collection","trusted jewellery showroom","designer diamond jewellery","branded gold jewellery","luxury bridal jewellery","hallmarked jewellery online"]
+    };
+  }
+  if (currentView === 'delivery' && tab === 'giftcards') {
+    return {
+      url: "https://zoniraz.com/gift-cards",
+      primary: "jewellery e gift card",
+      secondary: ["digital gift cards","personalized birthday cards","happy birthday wishes for friend"],
+      lsi: ["purchase jewellery gift card"]
+    };
+  }
+  if (currentView === 'delivery' && tab === 'international') {
+    return {
+      url: "https://zoniraz.com/help?tab=international",
+      primary: "international jewellery shipping",
+      secondary: ["International Shipping","worldwide jewellery delivery","international jewellery orders"],
+      lsi: ["international jewellery delivery service","worldwide gold jewellery delivery","worldwide diamond jewellery shipping","jewellery shipping to USA UK UAE","secure overseas jewellery delivery"]
+    };
+  }
+  if (currentView === 'delivery' && tab === 'delivery') {
+    return {
+      url: "https://zoniraz.com/help?tab=delivery",
+      primary: "track order Delivery and Shopping",
+      secondary: ["order number tracker","tracking"],
+      lsi: []
+    };
+  }
+
+  return {
+    url: 'https://zoniraz.com/',
+    primary: 'luxury jewellery brand',
+    secondary: ['bis hallmarked jewellery', 'certified diamond jewellery online', 'famous jewellery brands'],
+    lsi: ['designer diamond jewellery', 'branded gold jewellery', 'luxury bridal jewellery', 'trusted jewellery showroom']
+  };
+};
+
 function AppContent() {
   const { isAuthModalOpen, setIsAuthModalOpen } = useContext(AuthContext);
   const [currentView, setCurrentView] = React.useState('home');
@@ -101,6 +331,7 @@ function AppContent() {
   const [helpCategory, setHelpCategory] = React.useState('delivery');
   const [selectedCategoryName, setSelectedCategoryName] = React.useState('Rings');
   const [termsTab, setTermsTab] = React.useState('terms');
+  const [selectedBlogSlug, setSelectedBlogSlug] = React.useState(null);
 
   const [allProducts, setAllProducts] = React.useState([]);
 
@@ -294,7 +525,8 @@ function AppContent() {
               making_charges: p.making_charges,
               solitaires_price: p.solitaires_price,
               product_code: p.product_code,
-              gallery: p.gallery
+              gallery: p.gallery,
+              product_slug: p.product_slug || p.slug || ''
             };
           });
 
@@ -322,119 +554,425 @@ function AppContent() {
   }, []);
 
   React.useEffect(() => {
-    const handleHashChange = () => {
-      const fullHash = window.location.hash.replace('#', '');
-      const [hashPath] = fullHash.split('?');
-      const hash = hashPath.toLowerCase();
+    if (currentView === 'product' && selectedProductId && allProducts.length > 0) {
+      const found = allProducts.find(p => 
+        String(p.product_slug || p.slug || '').toLowerCase() === String(selectedProductId).toLowerCase() ||
+        String(p.id).toLowerCase() === String(selectedProductId).toLowerCase()
+      );
+      if (found && String(found.id) !== String(selectedProductId)) {
+        setSelectedProductId(found.id);
+      }
+    }
+  }, [allProducts, selectedProductId, currentView]);
 
-      if (hash.startsWith('product-')) {
-        const id = hash.replace('product-', '');
-        setSelectedProductId(id);
+  React.useEffect(() => {
+    const handleNavigation = () => {
+      // Support legacy hash landing by redirecting to clean paths
+      if (window.location.hash) {
+        const fullHash = window.location.hash.replace('#', '');
+        const qIndex = fullHash.indexOf('?');
+        const legacyHash = qIndex !== -1 ? fullHash.substring(0, qIndex) : fullHash;
+        const hashSearch = qIndex !== -1 ? fullHash.substring(qIndex) : '';
+
+        if (legacyHash && !legacyHash.startsWith('my-') && !legacyHash.includes('=')) {
+          const cleanPath = (legacyHash.startsWith('/') ? legacyHash : '/' + legacyHash) + hashSearch;
+          window.history.replaceState(null, '', cleanPath);
+        }
+      }
+
+      const path = window.location.pathname.toLowerCase();
+      const search = window.location.search;
+      const searchParams = new URLSearchParams(search);
+
+      // Reset active selections
+      setSelectedProductId(null);
+
+      if (path.startsWith('/product-') || path.startsWith('/product/')) {
+        const slug = path.startsWith('/product-') ? path.replace('/product-', '') : path.replace('/product/', '');
+        const catalog = allProducts.length > 0 ? allProducts : products;
+        const found = catalog.find(p => 
+          String(p.product_slug || p.slug || '').toLowerCase() === decodeURIComponent(slug).toLowerCase() || 
+          String(p.id || '').toLowerCase() === decodeURIComponent(slug).toLowerCase()
+        );
+        if (found) {
+          const correctSlug = found.product_slug || found.slug || found.id;
+          const correctPath = `/product/${correctSlug}`;
+          if (window.location.pathname !== correctPath) {
+            window.history.replaceState(null, '', correctPath);
+          }
+          setSelectedProductId(found.id);
+        } else {
+          setSelectedProductId(slug);
+        }
         setCurrentView('product');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'trending-now' || hash === 'trending' || hash === 'trending-products') {
+      } else if (path === '/trending-now' || path === '/trending') {
         setSelectedCategoryName('Trending Now');
         setCurrentView('rings');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'collections' || hash === 'all-collections') {
+      } else if (path === '/collections' || path === '/all-collections') {
         setCurrentView('all-collections');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'wishlist') {
+      } else if (path === '/wishlist') {
         setCurrentView('wishlist');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'cart') {
+      } else if (path === '/cart') {
         setCurrentView('cart');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'profile') {
+      } else if (path === '/profile') {
         setCurrentView('profile');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'checkout') {
+      } else if (path === '/checkout') {
         setCurrentView('checkout');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'contact') {
+      } else if (path === '/contact') {
         setCurrentView('contact');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'blog' || hash === 'blogs') {
+      } else if (path === '/blog' || path === '/blogs') {
+        setCurrentView('blog');
+        setSelectedBlogSlug(null);
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (path.startsWith('/blog/')) {
+        const slug = path.replace('/blog/', '');
+        setSelectedBlogSlug(slug);
         setCurrentView('blog');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'about') {
+      } else if (path === '/about') {
         setCurrentView('about');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'franchise' || hash === 'franchise-enquiry') {
+      } else if (path === '/franchise') {
         setCurrentView('franchise');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'sell-gold') {
+      } else if (path === '/sell-gold' || path === '/exchange') {
         setCurrentView('sell-gold');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'buy-gold' || hash === 'digital-gold') {
+      } else if (path === '/buy-gold') {
         setCurrentView('buy-gold');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'gold-mine' || hash === 'goldmine' || hash === '10-plus-1-plan') {
+      } else if (path === '/gold-mine' || path === '/plans/gold-mine') {
         setCurrentView('gold-mine');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'delivery' || hash === 'delivery-information') {
+      } else if (path === '/delivery') {
         setHelpCategory('delivery');
         setCurrentView('delivery');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'shipping' || hash === 'international-shipping') {
+      } else if (path === '/shipping' || path === '/international-shipping') {
         setHelpCategory('international');
         setCurrentView('delivery');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'payment' || hash === 'payment-options') {
+      } else if (path === '/payment') {
         setHelpCategory('payment');
         setCurrentView('delivery');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'returns') {
+      } else if (path === '/returns') {
         setHelpCategory('returns');
         setCurrentView('delivery');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'giftcards') {
+      } else if (path === '/giftcards') {
         setHelpCategory('giftcards');
         setCurrentView('delivery');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'terms' || hash === 'terms-conditions') {
+      } else if (path === '/terms') {
         setCurrentView('terms');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'privacy' || hash === 'privacy-policy') {
+      } else if (path === '/privacy') {
         setCurrentView('privacy');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash === 'admin-call') {
+      } else if (path === '/admin-call') {
         setCurrentView('admin-call');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (hash) {
-        const routeOnly = hash.split('?')[0];
-        const cleanHash = routeOnly.toLowerCase().replace(/[^a-z0-9]/g, '');
+      } else if (path !== '/' && path !== '/index.html') {
+        // Match product categories
+        const routeOnly = path.substring(1);
+        const cleanPathSegment = routeOnly.replace(/[^a-z0-9]/g, '');
         const knownCategories = [
-          "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
-          "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
-          "Gold Coins", "Solitaires", "Coins", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
+          "Rings", "Bracelets", "Brooches", "Chains", "Chain", "Bangles", "Anklets", 
+          "Necklaces", "Pendants", "Pendant", "Mangalsutras", "Mangalsutra", "Nose Pins", "Nose pin", "Earrings", 
+          "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
         ];
         let matchedCategory = knownCategories.find(cat => 
-          cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanHash
+          cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanPathSegment
         );
         if (!matchedCategory) {
-          // Try prefix match for compound names like "necklaces-pendants" → "Necklaces"
-          matchedCategory = knownCategories.find(cat =>
-            cleanHash.startsWith(cat.toLowerCase().replace(/[^a-z0-9]/g, ''))
-          );
+          // Check if clean segment (e.g. 'chain') is a singular version of category (e.g. 'chains')
+          matchedCategory = knownCategories.find(cat => {
+            const cleanCat = cat.toLowerCase().replace(/[^a-z0-9]/g, '');
+            return cleanCat.startsWith(cleanPathSegment) || cleanPathSegment.startsWith(cleanCat);
+          });
         }
-        if (!matchedCategory) {
-          // Fallback: title-case the hash
-          matchedCategory = routeOnly.replace(/-/g, ' ').split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        if (matchedCategory) {
+          setSelectedCategoryName(matchedCategory);
+          setCurrentView('rings');
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        } else {
+          setCurrentView('home');
         }
-        setSelectedCategoryName(matchedCategory);
-        setCurrentView('rings');
-        window.scrollTo({ top: 0, behavior: 'instant' });
       } else {
+        // Home view, handle query parameters (e.g. ?category=rings)
+        if (searchParams.has('category')) {
+          const cat = searchParams.get('category');
+          const knownCategories = [
+            "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
+            "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
+            "Gold Coins", "Solitaires", "Coins", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
+          ];
+          const matched = knownCategories.find(k => k.toLowerCase() === cat.toLowerCase());
+          if (matched) {
+            setSelectedCategoryName(matched);
+            setCurrentView('rings');
+            return;
+          }
+        }
         setCurrentView('home');
-        setSelectedProductId(null);
       }
     };
 
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    handleNavigation();
+    window.addEventListener('popstate', handleNavigation);
+    window.addEventListener('hashchange', handleNavigation);
+
+    // Global click interceptor for local SPA link transitions
+    const handleLinkClick = (e) => {
+      const link = e.target.closest('a');
+      if (link && link.href && link.origin === window.location.origin) {
+        const targetAttr = link.getAttribute('target');
+        if (targetAttr === '_blank') return;
+        
+        const path = link.pathname + link.search + link.hash;
+        
+        if (path.startsWith('/') && !path.startsWith('/api') && !link.hasAttribute('download')) {
+          if (link.pathname === window.location.pathname && link.hash) {
+            return; // let native hash scrolls happen normally
+          }
+          e.preventDefault();
+          window.history.pushState(null, '', path);
+          handleNavigation();
+        }
+      }
+    };
+
+    document.addEventListener('click', handleLinkClick);
+
+    return () => {
+      window.removeEventListener('popstate', handleNavigation);
+      window.removeEventListener('hashchange', handleNavigation);
+      document.removeEventListener('click', handleLinkClick);
+    };
   }, []);
+
+  const parseHashParams = () => {
+    const params = {};
+    const searchString = window.location.search || '';
+    if (searchString) {
+      const searchParams = new URLSearchParams(searchString);
+      searchParams.forEach((value, key) => {
+        params[key.toLowerCase()] = value.toLowerCase();
+      });
+    }
+    
+    const fullHash = (window.location.hash || '').replace('#', '');
+    const queryIndex = fullHash.indexOf('?');
+    if (queryIndex !== -1) {
+      const queryString = fullHash.substring(queryIndex + 1);
+      const parts = queryString.split('&');
+      parts.forEach(part => {
+        const [k, v] = part.split('=');
+        if (k && v) params[k.toLowerCase()] = decodeURIComponent(v).toLowerCase();
+      });
+    }
+    return params;
+  };
+
+  React.useEffect(() => {
+    const params = parseHashParams();
+    const seoData = getKeywordsForView(currentView, params, selectedCategoryName);
+    
+    let title = '';
+    let description = '';
+    let canonical = seoData.url || 'https://zoniraz.com/';
+    let ogImage = 'https://zoniraz.com/zoni1.png';
+    let schemas = [];
+
+    if (currentView === 'product' && selectedProduct) {
+      title = `${selectedProduct.name} - Buy Certified Diamond & Gold Jewelry Online | Zoniraz Jewels`;
+      description = `Buy ${selectedProduct.name} online at Zoniraz Jewels. Crafted in premium ${selectedProduct.material || 'metal'} with exquisite design. Lifetime maintenance and certificate of authenticity included.`;
+      canonical = `https://zoniraz.com/product/${selectedProduct.product_slug || selectedProduct.slug || selectedProduct.id}`;
+      if (selectedProduct.image) {
+        ogImage = selectedProduct.image;
+      }
+      
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": selectedProduct.name,
+        "image": selectedProduct.images || [selectedProduct.image],
+        "description": selectedProduct.description || description,
+        "sku": selectedProduct.product_code || selectedProduct.id,
+        "offers": {
+          "@type": "Offer",
+          "url": canonical,
+          "priceCurrency": "INR",
+          "price": selectedProduct.price,
+          "priceValidUntil": "2027-12-31",
+          "itemCondition": "https://schema.org/NewCondition",
+          "availability": "https://schema.org/InStock"
+        }
+      });
+      
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://zoniraz.com/"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": selectedProduct.category || "Jewellery",
+            "item": `https://zoniraz.com/${(selectedProduct.category || "Jewellery").toLowerCase().replace(/ /g, '-')}`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": selectedProduct.name,
+            "item": canonical
+          }
+        ]
+      });
+    } else {
+      const primary = seoData.primary || 'luxury jewellery brand';
+      const secondary1 = seoData.secondary[0] || 'certified diamond jewellery online';
+      const secondary2 = seoData.secondary[1] || 'famous jewellery brands';
+      const lsi1 = seoData.lsi[0] || 'designer diamond jewellery';
+
+      title = `${primary.charAt(0).toUpperCase() + primary.slice(1)} | Zoniraz Jewels`;
+      description = `Discover premium collections for ${primary}. We feature high-quality ${secondary1}, elegant ${secondary2}, and beautiful ${lsi1} at best prices. Visit us now!`;
+      canonical = seoData.url || 'https://zoniraz.com/';
+      
+      // Home page schemas
+      if (currentView === 'home') {
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Zoniraz Jewels",
+          "url": "https://zoniraz.com/",
+          "logo": "https://zoniraz.com/zoni1.png",
+          "description": "Zoniraz Jewels is a premium luxury jewellery brand specializing in fine gold, diamond, and designer jewellery collections.",
+          "sameAs": [
+            "https://www.facebook.com/zonirazjewels",
+            "https://www.instagram.com/zonirazjewels"
+          ]
+        });
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Zoniraz Jewels",
+          "url": "https://zoniraz.com/",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://zoniraz.com/products?search={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        });
+      }
+
+      // Contact Page schemas
+      if (currentView === 'contact') {
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "LocalBusiness",
+          "name": "Zoniraz Jewels",
+          "image": "https://zoniraz.com/zoni1.png",
+          "telephone": "+91 97848 36060",
+          "email": "info@zoniraz.com",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "Zoniraz Jewel House",
+            "addressLocality": "Jaipur",
+            "addressRegion": "Rajasthan",
+            "postalCode": "302001",
+            "addressCountry": "IN"
+          },
+          "url": "https://zoniraz.com/contact"
+        });
+      }
+      
+      const pathSegments = [];
+      pathSegments.push({ name: "Home", item: "https://zoniraz.com/" });
+      if (currentView !== 'home') {
+        const pageName = currentView.charAt(0).toUpperCase() + currentView.slice(1);
+        pathSegments.push({ name: pageName, item: canonical });
+        
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": pathSegments.map((seg, idx) => ({
+            "@type": "ListItem",
+            "position": idx + 1,
+            "name": seg.name,
+            "item": seg.item
+          }))
+        });
+      }
+    }
+
+    document.title = title;
+    
+    const updateMeta = (selector, attribute, value) => {
+      let element = document.querySelector(selector);
+      if (!element) {
+        if (selector.startsWith('meta')) {
+          element = document.createElement('meta');
+          const matchName = selector.match(/name="([^"]+)"/);
+          const matchProperty = selector.match(/property="([^"]+)"/);
+          if (matchName) element.setAttribute('name', matchName[1]);
+          if (matchProperty) element.setAttribute('property', matchProperty[1]);
+          document.head.appendChild(element);
+        } else if (selector.startsWith('link')) {
+          element = document.createElement('link');
+          const matchRel = selector.match(/rel="([^"]+)"/);
+          if (matchRel) element.setAttribute('rel', matchRel[1]);
+          document.head.appendChild(element);
+        }
+      }
+      if (element) {
+        element.setAttribute(attribute, value);
+      }
+    };
+
+    updateMeta('meta[name="description"]', 'content', description);
+    updateMeta('link[rel="canonical"]', 'href', canonical);
+    
+    let robotsValue = 'index, follow';
+    if (['cart', 'checkout', 'wishlist', 'profile', 'admin-call'].includes(currentView)) {
+      robotsValue = 'noindex, follow';
+    }
+    updateMeta('meta[name="robots"]', 'content', robotsValue);
+    
+    updateMeta('meta[property="og:title"]', 'content', title);
+    updateMeta('meta[property="og:description"]', 'content', description);
+    updateMeta('meta[property="og:url"]', 'content', canonical);
+    updateMeta('meta[property="og:image"]', 'content', ogImage);
+    
+    updateMeta('meta[name="twitter:title"]', 'content', title);
+    updateMeta('meta[name="twitter:description"]', 'content', description);
+    updateMeta('meta[name="twitter:url"]', 'content', canonical);
+    updateMeta('meta[name="twitter:image"]', 'content', ogImage);
+
+    let scriptTag = document.getElementById('seo-dynamic-structured-data');
+    if (!scriptTag) {
+      scriptTag = document.createElement('script');
+      scriptTag.id = 'seo-dynamic-structured-data';
+      scriptTag.type = 'application/ld+json';
+      document.head.appendChild(scriptTag);
+    }
+    scriptTag.textContent = JSON.stringify(schemas, null, 2);
+
+  }, [currentView, selectedProductId, selectedCategoryName]);
 
   const selectedProduct = (allProducts.length > 0 ? allProducts : products).find(p => String(p.id) === String(selectedProductId)) || null;
 
@@ -456,7 +994,9 @@ function AppContent() {
       ) : currentView === 'contact' ? (
         <ContactPage />
       ) : currentView === 'blog' ? (
-        <BlogPage />
+        selectedBlogSlug 
+          ? <BlogDetailPage slug={selectedBlogSlug} onBack={() => { setSelectedBlogSlug(null); window.history.pushState(null, '', '/blog'); }} />
+          : <BlogPage />
       ) : currentView === 'about' ? (
         <AboutPage />
       ) : currentView === 'franchise' ? (

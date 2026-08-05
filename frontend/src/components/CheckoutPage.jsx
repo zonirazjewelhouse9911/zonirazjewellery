@@ -698,7 +698,7 @@ export default function CheckoutPage() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '30px' }}>
                   {cartList.map(item => (
                     <div key={item.id} style={{ display: 'flex', gap: '20px', paddingBottom: '16px', borderBottom: '1px solid #f2ebe8' }}>
-                      <img src={item.image} alt={item.name} style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #dbcfcb' }} />
+                      <img src={item.image} alt={item.name} loading="lazy" decoding="async" width="80" height="80" style={{ width: '80px', height: '80px', objectFit: 'cover', borderRadius: '12px', border: '1px solid #dbcfcb' }} />
                       <div style={{ flex: 1 }}>
                         <h4 style={{ margin: '0 0 4px 0', fontSize: '15px', color: '#2b221d', fontWeight: '600' }}>{item.name}</h4>
                         <p style={{ margin: '0', fontSize: '12.5px', color: '#8c7365' }}>Purity: {item.selectedPurity || '18KT'}</p>

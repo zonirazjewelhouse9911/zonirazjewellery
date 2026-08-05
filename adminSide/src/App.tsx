@@ -27,7 +27,6 @@ import {
   Building2, 
   LogOut,
   SlidersHorizontal,
-  ChevronDown,
   Search,
   Loader2,
   RefreshCw,
@@ -117,6 +116,27 @@ function App() {
   const handleEditProduct = (id: string) => {
     setSelectedProductId(id);
     setIsEditing(true);
+  };
+
+  const handleDeleteProduct = async (id: string, title: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete "${title}"?`)) {
+      return;
+    }
+    try {
+      const res = await fetch(`/api/admin/products/${id}`, {
+        method: 'DELETE'
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert('Product successfully deleted.');
+        fetchProducts();
+      } else {
+        alert(data.message || 'Failed to delete product.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('An error occurred while deleting the product.');
+    }
   };
 
   const handleCreateProduct = () => {
@@ -272,16 +292,6 @@ function App() {
                     className="w-full bg-[#f0f3f6] border-none rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
                   />
                 </div>
-                <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
-                  <button className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-5 py-3 bg-[#f5ebe2] hover:bg-[#ebdccf] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 cursor-pointer">
-                    <SlidersHorizontal size={14} className="text-slate-500" />
-                    <span>Filters</span>
-                  </button>
-                  <button className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-5 py-3 bg-[#f5ebe2] hover:bg-[#ebdccf] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 cursor-pointer">
-                    <span>Sort</span>
-                    <ChevronDown size={14} className="text-slate-500" />
-                  </button>
-                </div>
               </div>
 
               {/* Products Table/List */}
@@ -359,12 +369,18 @@ function App() {
                               </span>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-3">
+                          <div className="flex items-center space-x-2">
                             <button 
                               onClick={() => handleEditProduct(item._id)}
                               className="px-4 py-2 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] rounded-lg text-[10px] uppercase tracking-widest font-bold transition-all border border-slate-200/50 shadow-sm cursor-pointer"
                             >
                               Refine
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteProduct(item._id, item.product_title)}
+                              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] uppercase tracking-widest font-bold transition-all border border-red-100/30 shadow-sm cursor-pointer"
+                            >
+                              Delete
                             </button>
                           </div>
                         </div>

@@ -24,10 +24,17 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
   const productTypes = categoryProductTypesMap[category] || [category];
 
-  const parseHashParams = () => {
+  const parseQueryParams = () => {
+    const params = {};
+    const searchString = window.location.search || '';
+    if (searchString) {
+      const searchParams = new URLSearchParams(searchString);
+      searchParams.forEach((value, key) => {
+        params[key.toLowerCase()] = value.toLowerCase();
+      });
+    }
     const fullHash = (window.location.hash || '').replace('#', '');
     const queryIndex = fullHash.indexOf('?');
-    const params = {};
     if (queryIndex !== -1) {
       const queryString = fullHash.substring(queryIndex + 1);
       const parts = queryString.split('&');
@@ -42,7 +49,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   // Dynamic products from backend database
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [queryParams, setQueryParams] = useState(parseHashParams);
+  const [queryParams, setQueryParams] = useState(parseQueryParams);
 
   useEffect(() => {
     setLoading(true);
@@ -230,7 +237,8 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
               gemstone_price: p.gemstone_price,
               making_charges: p.making_charges,
               solitaires_price: p.solitaires_price,
-              product_code: p.product_code
+              product_code: p.product_code,
+              product_slug: p.product_slug || p.slug || ''
             };
           });
           
@@ -259,16 +267,20 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   }, []);
 
   useEffect(() => {
-    const handleHashChange = () => {
-      const params = parseHashParams();
-      console.log('CategoryPage HashChange Params:', params);
+    const handleURLChange = () => {
+      const params = parseQueryParams();
+      console.log('CategoryPage URLChange Params:', params);
       setQueryParams(params);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    handleHashChange();
-    window.addEventListener('hashchange', handleHashChange);
-    return () => window.removeEventListener('hashchange', handleHashChange);
+    handleURLChange();
+    window.addEventListener('hashchange', handleURLChange);
+    window.addEventListener('popstate', handleURLChange);
+    return () => {
+      window.removeEventListener('hashchange', handleURLChange);
+      window.removeEventListener('popstate', handleURLChange);
+    };
   }, [category]);
 
   // Filters State
@@ -373,7 +385,8 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
     
     // Clear URL query parameters
     const categorySlug = category.toLowerCase().replace(/ /g, '-');
-    window.location.hash = '#' + categorySlug;
+    window.history.pushState(null, '', '/' + categorySlug);
+    window.dispatchEvent(new Event('popstate'));
   };
 
   // Toggle wishlist — requires login
@@ -1613,7 +1626,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                       key={product.id}
                       onMouseEnter={() => setHoveredCard(product.id)}
                       onMouseLeave={() => setHoveredCard(null)}
-                      onClick={() => { window.location.hash = `product-${product.id}`; }}
+                      onClick={() => { window.history.pushState(null, '', `/product/${product.product_slug || product.slug || product.id}`); window.dispatchEvent(new Event('popstate')); }}
                       style={{ cursor: 'pointer' }}
                     >
                       {/* Wishlist Icon */}
@@ -1632,8 +1645,12 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                         {/* Static image */}
                         <img 
                           src={product.images[activeImgIndex]} 
-                          alt={product.name} 
+                          alt={`${product.name} - Premium ${product.category || 'Jewellery'} by Zoniraz Jewels`} 
                           className="product-img"
+                          loading="lazy"
+                          decoding="async"
+                          width="360"
+                          height="360"
                         />
                         
                         {/* Interactive rotation video on hover */}

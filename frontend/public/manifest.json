@@ -1,0 +1,20 @@
+{
+  "short_name": "Zoniraz",
+  "name": "Zoniraz Jewels",
+  "icons": [
+    {
+      "src": "/zoni.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/zoni1.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#ffffff",
+  "theme_color": "#634d40",
+  "display": "standalone"
+}

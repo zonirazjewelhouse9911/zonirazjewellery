@@ -1,86 +1,80 @@
 import React, { useState } from 'react';
-
-// Import images from assets to make it look premium
-import silverEarringsImg from '../assets/silver-earrings.png';
-import switchEarringsImg from '../assets/switch-earrings.png';
-import dancingHoopsImg from '../assets/dancing-hoops.png';
-import solitaireSetsImg from '../assets/solitaire-sets.png';
-import goldNecklaceSilkImg from '../assets/gold-necklace-silk.png';
-import layeredNecklacesImg from '../assets/layered-necklaces.png';
-import caratlaneIconicsImg from '../assets/caratlane-iconics.png';
-import infinityDiamondRingImg from '../assets/infinity_diamond_ring.png';
-import meshClusterRingImg from '../assets/mesh_cluster_ring.png';
 import weddingBanner from '../assets/WEDDING BANNER.png';
+import diamondRingImg from '../assets/infinity_diamond_ring.png';
+import goldSavingImg from '../assets/solitaire-sets.png';
+import pendantImg from '../assets/layered-necklaces.png';
 
-const blogArticles = [
+const categories = ["All Blogs", "Gold", "Diamond", "Earrings", "Rings", "Trending", "Bridal", "Daily Wear", "Styling", "Editor's Picks"];
+
+const blogPosts = [
   {
     id: 1,
-    title: "Why Simple Gold Earrings Are the Must-Have Accessory of 2026",
-    tags: ["Daily Wear", "Earrings", "Gold"],
-    description: "In 2026, jewellery is speaking softer and smarter. Gold earrings lead this quiet revolution of wearable luxury.",
-    date: "April 20, 2026",
-    readTime: "4 min read",
-    image: dancingHoopsImg
+    category: "GOLD \u00A0 DAILY WEAR",
+    tags: ["Gold", "Daily Wear", "Earrings"],
+    title: "10 Timeless Gold Earring Styles Every Woman Must Own in 2026",
+    excerpt: "Gold earrings have always been the cornerstone of Indian jewellery. Whether it's a pair of delicate studs for the office or bold jhumkas for a festive evening, the right gold earrings can elevate any look. In 2026, wearable luxury is all about pieces that move with you — lightweight, hallmarked, and crafted to last a lifetime.",
+    date: "July 28, 2026 \u2022 5 min read",
+    image: "https://images.unsplash.com/photo-1588444837495-c6cfeb53f32d?auto=format&fit=crop&q=80&w=800",
+    slug: "timeless-gold-earring-styles-2026"
   },
   {
     id: 2,
-    title: "From Dholna to Maang Tikka: Must-Have Bihari Bridal Jewellery",
-    tags: ["Bridal", "Trending"],
-    description: "In Bihar and Jharkhand, bridal adornment is nothing short of spectacular. Discover the traditions behind these unique pieces.",
-    date: "March 28, 2026",
-    readTime: "6 min read",
-    image: goldNecklaceSilkImg
+    category: "DIAMOND \u00A0 RINGS",
+    tags: ["Diamond", "Rings", "Trending"],
+    title: "How to Choose the Perfect Diamond Engagement Ring: The Complete 2026 Guide",
+    excerpt: "Choosing a diamond engagement ring is one of the most meaningful decisions you will ever make. From understanding the 4Cs — Cut, Clarity, Colour, and Carat — to picking the ideal setting style, every detail matters. At Zoniraz, our certified diamond jewellery is designed to tell your unique love story with unmatched brilliance and craftsmanship.",
+    date: "July 20, 2026 \u2022 7 min read",
+    image: diamondRingImg,
+    slug: "diamond-engagement-ring-complete-guide-2026"
   },
   {
     id: 3,
-    title: "Why Is Akshaya Tritiya the Most Auspicious Time to Buy Gold Jewellery?",
-    tags: ["Festive", "Gold"],
-    description: "At Zoniraz, we have always believed that certain days carry a special energy. Akshaya Tritiya is one of those rare occasions when tradition and beauty converge.",
-    date: "May 5, 2026",
-    readTime: "5 min read",
-    image: switchEarringsImg
+    category: "BRIDAL \u00A0 STYLING",
+    tags: ["Bridal", "Styling", "Gold"],
+    title: "The Ultimate Bridal Jewellery Guide: From Maang Tikka to Bangles",
+    excerpt: "Your wedding day deserves jewellery that tells a story. From the delicate shimmer of a maang tikka to the bold statement of stacked gold bangles, bridal jewellery is an art form. Discover how to build a complete bridal set that complements your lehenga, reflects your personality, and becomes a treasured heirloom for generations.",
+    date: "July 10, 2026 \u2022 8 min read",
+    image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800",
+    slug: "ultimate-bridal-jewellery-guide"
   },
   {
     id: 4,
-    title: "Queen of the Aisle: Wedding jewels that make a statement",
-    tags: ["Styling", "Bridal"],
-    description: "Your wedding day is your time to shine like the queen you are, and while you may have spent months searching for the perfect bridal ensemble, the right jewellery can elevate your entire look.",
-    date: "April 18, 2026",
-    readTime: "8 min read",
-    image: solitaireSetsImg
+    category: "GOLD \u00A0 INVESTMENT",
+    tags: ["Gold", "Trending", "Editor's Picks"],
+    title: "Gold Saving Scheme: The Smartest Way to Invest in Gold Monthly",
+    excerpt: "Buying gold all at once can be a heavy investment. That's why a smart gold saving scheme — where you invest a fixed amount every month — is the modern way to build your gold portfolio. Zoniraz's Gold Mine plan lets you accumulate gold systematically, benefiting from rupee-cost averaging and flexible redemption in jewellery.",
+    date: "June 28, 2026 \u2022 6 min read",
+    image: goldSavingImg,
+    slug: "gold-saving-scheme-smartest-investment"
   },
   {
     id: 5,
-    title: "The Ultimate Guide to Choosing a Diamond Engagement Ring",
-    tags: ["Diamond", "Rings"],
-    description: "Selecting the perfect diamond ring is a journey of emotion and precision. From the 4Cs to the setting style, every detail tells a story.",
-    date: "April 12, 2026",
-    readTime: "7 min read",
-    image: infinityDiamondRingImg
+    category: "GOLD \u00A0 EXCHANGE",
+    tags: ["Gold", "Styling"],
+    title: "Old Gold Exchange: How to Get the Best Value for Your Old Jewellery",
+    excerpt: "Is your old gold gathering dust in a locker? Turn it into something beautiful. The old gold exchange process at Zoniraz is transparent, fair, and hassle-free. We evaluate your gold at current market rates using certified BIS standards, giving you full value to upgrade into our latest hallmarked collections — diamonds, necklaces, or custom rings.",
+    date: "June 15, 2026 \u2022 5 min read",
+    image: "https://images.unsplash.com/photo-1569397288884-4d43d6738fbd?auto=format&fit=crop&q=80&w=800",
+    slug: "old-gold-exchange-best-value"
+  },
+  {
+    id: 6,
+    category: "STYLING \u00A0 PENDANTS",
+    tags: ["Gold", "Styling", "Daily Wear"],
+    title: "Gold Pendant Necklaces: The Art of Layering for Every Occasion",
+    excerpt: "A gold pendant necklace is the most versatile piece in any jewellery wardrobe. Whether you layer delicate chains for a bohemian office look or wear a single bold diamond pendant to a wedding, the right necklace frames your face and completes your outfit. Explore Zoniraz's curated range of 18k and 22k gold pendants designed for everyday luxury.",
+    date: "June 5, 2026 \u2022 4 min read",
+    image: pendantImg,
+    slug: "gold-pendant-necklace-layering-guide"
   }
 ];
 
-const categoryTags = [
-  "All Blogs",
-  "Gold",
-  "Diamond",
-  "Earrings",
-  "Rings",
-  "Trending",
-  "Bridal",
-  "Daily Wear",
-  "Styling",
-  "Editor's Picks"
-];
+const BlogPage = () => {
+  const [activeCategory, setActiveCategory] = useState("All Blogs");
 
-export default function BlogPage() {
-  const [selectedTag, setSelectedTag] = useState("All Blogs");
-
-  const filteredArticles = blogArticles.filter(article => {
-    if (selectedTag === "All Blogs") return true;
-    if (selectedTag === "Editor's Picks") return article.id === 4 || article.id === 1;
-    return article.tags.some(tag => tag.toLowerCase() === selectedTag.toLowerCase());
-  });
+  const filteredPosts = activeCategory === "All Blogs" 
+    ? blogPosts 
+    : blogPosts.filter(post => post.tags.some(tag => tag.toLowerCase() === activeCategory.toLowerCase()));
 
   return (
     <div className="blog-page-wrapper">
@@ -88,11 +82,11 @@ export default function BlogPage() {
 
       <style>{`
         .blog-page-wrapper {
-          background-color: #efe7e5;
+          background-color: #F5EEE6;
           font-family: 'Montserrat', sans-serif;
-          color: #2b221d;
+          color: #2a221b;
           min-height: 100vh;
-          padding: 40px 24px 80px 24px;
+          padding: 120px 24px 80px 24px;
         }
 
         .blog-container {
@@ -103,144 +97,166 @@ export default function BlogPage() {
         /* Breadcrumb */
         .blog-breadcrumb {
           font-size: 11px;
-          color: #8c7365;
+          color: #6b6259;
           text-transform: uppercase;
-          letter-spacing: 2px;
-          margin-bottom: 30px;
-          margin-top: 15px;
-          font-weight: 500;
-        }
-        .blog-breadcrumb a {
-          color: #8c7365;
-          text-decoration: none;
-          transition: color 0.3s;
-        }
-        .blog-breadcrumb a:hover {
-          color: #c5a880;
+          letter-spacing: 3px;
+          margin-bottom: 24px;
+          font-weight: 600;
         }
 
-        /* Title / Hero Banner */
+        /* Hero Banner */
         .blog-hero {
-          border-radius: 24px;
+          border-radius: 40px;
           padding: 80px 40px;
           text-align: center;
           margin-bottom: 40px;
-          box-shadow: 0 8px 32px rgba(43, 34, 29, 0.15);
-          border: 1px solid #dbcfcb;
+          box-shadow: 0 10px 30px rgba(158, 98, 64, 0.15);
           position: relative;
-          overflow: hidden;
+          color: #ffffff;
           display: flex;
           flex-direction: column;
+          align-items: center;
           justify-content: center;
+          min-height: 320px;
+          overflow: hidden;
+          background-color: #9e6240;
+        }
+
+        .blog-hero-bg {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          object-position: center;
+          z-index: 0;
+        }
+
+        .blog-hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: rgba(60, 30, 10, 0.45);
+          z-index: 1;
+          border-radius: 40px;
+        }
+
+        .blog-hero-content {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          flex-direction: column;
           align-items: center;
         }
 
-        .blog-hero-label {
-          font-size: 11px;
-          letter-spacing: 4px;
+        .blog-hero-tag {
+          font-size: 12px;
+          letter-spacing: 5px;
           text-transform: uppercase;
-          color: #c5a880;
-          font-weight: 700;
-          margin-bottom: 12px;
-          text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-          z-index: 2;
+          color: rgba(255, 255, 255, 0.9);
+          font-weight: 500;
+          margin-bottom: 16px;
         }
 
         .blog-hero-title {
           font-family: 'Playfair Display', serif;
-          font-size: 44px;
-          font-weight: 600;
-          color: #ffffff;
-          margin: 0 0 16px 0;
-          text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-          z-index: 2;
+          font-size: 56px;
+          font-weight: 400;
+          margin: 0 0 20px 0;
+          line-height: 1.2;
         }
 
-        .blog-hero-subtitle {
-          font-size: 15px;
-          color: rgba(255, 255, 255, 0.9);
-          letter-spacing: 1px;
+        .blog-hero-desc {
+          font-family: 'Playfair Display', serif;
+          font-size: 18px;
+          font-style: italic;
+          color: rgba(255, 255, 255, 0.95);
+          max-width: 700px;
           margin: 0 auto;
-          max-width: 600px;
           line-height: 1.6;
-          text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-          z-index: 2;
         }
 
-        /* Tag Filters Bar */
-        .blog-tags-bar {
+        /* Filters */
+        .blog-filters {
           display: flex;
+          flex-wrap: wrap;
           justify-content: center;
           gap: 10px;
-          margin-bottom: 50px;
-          flex-wrap: wrap;
+          margin-bottom: 48px;
         }
 
-        .blog-tag-btn {
+        .filter-btn {
           background-color: #ffffff;
-          border: 1px solid #d4c5bd;
-          color: #2b221d;
-          padding: 8px 20px;
+          color: #5c544d;
+          border: 1px solid #e2d8cf;
           border-radius: 30px;
+          padding: 10px 24px;
           font-size: 12px;
           font-weight: 500;
           cursor: pointer;
-          transition: all 0.3s ease;
+          transition: all 0.2s ease;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
         }
 
-        .blog-tag-btn:hover {
-          border-color: #2b221d;
-          background-color: #fcfbfa;
+        .filter-btn:hover {
+          border-color: #c29867;
+          color: #2b221d;
         }
 
-        .blog-tag-btn.active {
-          background-color: #2b221d;
-          border-color: #2b221d;
+        .filter-btn.active {
+          background-color: #221c17;
           color: #ffffff;
-          box-shadow: 0 4px 12px rgba(43, 34, 29, 0.25);
+          border-color: #221c17;
         }
 
-        /* Grid Layout */
+        /* Blog Grid */
         .blog-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-          gap: 30px;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 32px;
         }
 
-        @media (max-width: 480px) {
+        @media (max-width: 1024px) {
           .blog-grid {
-            grid-template-columns: 1fr;
+            grid-template-columns: repeat(2, 1fr);
           }
         }
 
-        /* Blog Card Style */
+        @media (max-width: 768px) {
+          .blog-grid {
+            grid-template-columns: 1fr;
+          }
+          .blog-hero-title {
+            font-size: 36px;
+          }
+          .blog-hero {
+            padding: 50px 20px;
+            min-height: auto;
+          }
+        }
+
+        /* Blog Card */
         .blog-card {
           background-color: #ffffff;
-          border-radius: 20px;
+          border-radius: 28px;
           overflow: hidden;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.02);
-          border: 1px solid #dbcfcb;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
           display: flex;
           flex-direction: column;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+          transition: all 0.3s ease;
         }
 
         .blog-card:hover {
-          transform: translateY(-6px);
-          box-shadow: 0 12px 30px rgba(99, 77, 64, 0.12);
+          transform: translateY(-4px);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
         }
 
         .blog-card-img-wrapper {
-          position: relative;
-          padding-top: 60%; /* Aspect Ratio */
+          height: 240px;
           overflow: hidden;
-          background-color: #f7f1ef;
+          width: 100%;
         }
 
         .blog-card-img {
-          position: absolute;
-          top: 0;
-          left: 0;
           width: 100%;
           height: 100%;
           object-fit: cover;
@@ -248,153 +264,175 @@ export default function BlogPage() {
         }
 
         .blog-card:hover .blog-card-img {
-          transform: scale(1.06);
+          transform: scale(1.03);
         }
 
         .blog-card-content {
-          padding: 30px;
+          padding: 32px;
           display: flex;
           flex-direction: column;
           flex-grow: 1;
         }
 
-        .blog-card-meta {
-          display: flex;
-          gap: 12px;
-          margin-bottom: 14px;
-          font-size: 11px;
-          color: #8c7365;
+        .blog-card-tag {
+          font-size: 10px;
+          font-weight: 700;
+          color: #9e7a56;
+          letter-spacing: 2px;
           text-transform: uppercase;
-          letter-spacing: 1px;
-          font-weight: 600;
+          margin-bottom: 16px;
         }
 
         .blog-card-title {
           font-family: 'Playfair Display', serif;
-          font-size: 20px;
-          font-weight: 500;
+          font-size: 22px;
           line-height: 1.4;
-          color: #2b221d;
-          margin: 0 0 12px 0;
-          min-height: 56px;
+          color: #2a221b;
+          margin: 0 0 16px 0;
+          font-weight: 500;
         }
 
-        .blog-card-desc {
+        .blog-card-title a {
+          color: #2a221b;
+          text-decoration: none;
+          transition: color 0.2s ease;
+        }
+
+        .blog-card-title a:hover {
+          color: #9e7a56;
+        }
+
+        .blog-card-excerpt {
           font-size: 13.5px;
-          line-height: 1.6;
-          color: #746380;
-          margin: 0 0 24px 0;
+          line-height: 1.7;
+          color: #6e6359;
+          margin-bottom: 32px;
           flex-grow: 1;
+          font-weight: 400;
         }
 
         .blog-card-footer {
           display: flex;
-          justify-content: space-between;
           align-items: center;
-          border-top: 1px solid #f2ebe8;
+          justify-content: space-between;
+          border-top: 1px solid #f2eae1;
           padding-top: 20px;
           margin-top: auto;
         }
 
-        .blog-card-date-time {
+        .blog-card-date {
           font-size: 11px;
-          color: #a39084;
+          color: #9e9286;
+          font-weight: 500;
         }
 
-        .blog-read-link {
-          font-size: 12px;
-          font-weight: 600;
-          color: #c5a880;
-          text-decoration: none;
+        .blog-card-link {
+          font-size: 11px;
+          font-weight: 700;
+          color: #9e7a56;
           text-transform: uppercase;
-          letter-spacing: 1px;
-          transition: color 0.2s;
+          letter-spacing: 1.5px;
+          text-decoration: none;
+          transition: color 0.2s ease;
         }
 
-        .blog-read-link:hover {
-          color: #2b221d;
+        .blog-card-link:hover {
+          color: #7d5f40;
         }
 
-        .empty-blogs {
+        /* Empty State */
+        .blog-empty {
           text-align: center;
           padding: 60px 20px;
-          background: #ffffff;
-          border-radius: 20px;
-          border: 1px dashed #d4c5bd;
+          background-color: #ffffff;
+          border-radius: 28px;
+          border: 1px solid #e2d8cf;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.02);
         }
-        .empty-blogs h3 {
+        .blog-empty p {
+          color: #6e6359;
+          font-size: 16px;
           font-family: 'Playfair Display', serif;
-          font-size: 20px;
-          color: #2b221d;
-          margin-bottom: 10px;
         }
       `}</style>
 
       <div className="blog-container">
         {/* Breadcrumb */}
         <div className="blog-breadcrumb">
-          <a href="#">Home</a> &gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>Zoniraz Journal</span>
+          HOME &nbsp;&gt;&nbsp; ZONIRAZ JOURNAL
         </div>
 
         {/* Hero Banner */}
-        <div 
-          className="blog-hero"
-          style={{
-            backgroundImage: `url(${weddingBanner})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            minHeight: '320px'
-          }}
-        />
+        <div className="blog-hero">
+          <img src={weddingBanner} alt="Wedding Banner" className="blog-hero-bg" />
+        </div>
 
-        {/* Categories Bar */}
-        <div className="blog-tags-bar">
-          {categoryTags.map(tag => (
+        {/* Filters */}
+        <div className="blog-filters">
+          {categories.map((cat, index) => (
             <button
-              key={tag}
-              className={`blog-tag-btn ${selectedTag === tag ? 'active' : ''}`}
-              onClick={() => setSelectedTag(tag)}
+              key={index}
+              onClick={() => setActiveCategory(cat)}
+              className={`filter-btn ${activeCategory === cat ? 'active' : ''}`}
             >
-              {tag}
+              {cat}
             </button>
           ))}
         </div>
 
         {/* Blog Grid */}
-        {filteredArticles.length === 0 ? (
-          <div className="empty-blogs">
-            <h3>No articles found</h3>
-            <p>Try selecting another category to discover our stories.</p>
-          </div>
-        ) : (
-          <div className="blog-grid">
-            {filteredArticles.map(article => (
-              <article key={article.id} className="blog-card">
-                <div className="blog-card-img-wrapper">
-                  <img src={article.image} alt={article.title} className="blog-card-img" />
+        <div className="blog-grid">
+          {filteredPosts.map((post) => (
+            <article key={post.id} className="blog-card">
+              {/* Image Container */}
+              <div className="blog-card-img-wrapper">
+                <img 
+                  src={post.image} 
+                  alt={post.title} 
+                  className="blog-card-img"
+                />
+              </div>
+
+              {/* Content */}
+              <div className="blog-card-content">
+                <div className="blog-card-tag">
+                  {post.category}
                 </div>
-                <div className="blog-card-content">
-                  <div className="blog-card-meta">
-                    {article.tags.slice(0, 2).map(tag => (
-                      <span key={tag} className="blog-card-tag">{tag}</span>
-                    ))}
-                  </div>
-                  <h3 className="blog-card-title">{article.title}</h3>
-                  <p className="blog-card-desc">{article.description}</p>
-                  <div className="blog-card-footer">
-                    <span className="blog-card-date-time">
-                      {article.date} &bull; {article.readTime}
-                    </span>
-                    <a href="#blog" className="blog-read-link" onClick={(e) => { e.preventDefault(); alert("Story Reading Simulation: Full article coming soon!"); }}>
-                      Read Story
-                    </a>
-                  </div>
+                
+                <h2 className="blog-card-title">
+                  <a href={`/blog/${post.slug}`}>
+                    {post.title}
+                  </a>
+                </h2>
+                
+                <p className="blog-card-excerpt">
+                  {post.excerpt}
+                </p>
+                
+                <div className="blog-card-footer">
+                  <span className="blog-card-date">
+                    {post.date}
+                  </span>
+                  <a
+                    href={`/blog/${post.slug}`}
+                    className="blog-card-link"
+                  >
+                    READ STORY
+                  </a>
                 </div>
-              </article>
-            ))}
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {filteredPosts.length === 0 && (
+          <div className="blog-empty">
+            <p>No articles found in this category yet.</p>
           </div>
         )}
       </div>
     </div>
   );
-}
+};
+
+export default BlogPage;

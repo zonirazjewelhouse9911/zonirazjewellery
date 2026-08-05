@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 const helpCategories = [
   {
     id: 'delivery',
-    label: 'Order Delivery and Shopping',
+    label: 'Track Package Delivery',
     icon: (
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
         <path strokeLinecap="round" strokeLinejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8l1 12a2 2 0 002 2h8a2 2 0 002-2L19 8M10 12l2 2 4-4" />
@@ -21,7 +21,7 @@ const helpCategories = [
   },
   {
     id: 'payment',
-    label: 'Payment',
+    label: 'Payment & Duties',
     icon: (
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -39,7 +39,7 @@ const helpCategories = [
   },
   {
     id: 'international',
-    label: 'International Shipping',
+    label: 'International Jewellery Shipping',
     icon: (
       <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
@@ -60,8 +60,8 @@ const helpCategories = [
 const categoryFAQs = {
   delivery: [
     {
-      q: "How can I know the status of my order?",
-      a: "You can track your order by logging into your account and visiting the 'My Orders' section. You will also receive regular email and SMS updates about your order status."
+      q: "How can I track package delivery for my order?",
+      a: "You can track package delivery by logging into your account and visiting the 'My Orders' section. You can use our order number tracker to check live shipment updates with our courier partner."
     },
     {
       q: "What happens if my order is lost in transit?",
@@ -209,8 +209,8 @@ const categoryFAQs = {
   ],
   international: [
     {
-      q: "Which are the international shipping destinations covered?",
-      a: "Australia | Bahrain | Canada | Germany | Italy | Kenya | Kuwait | Malaysia | Netherlands | New Zealand | Oman | Portugal | Qatar | Romania | Saudi Arabia | Singapore | South Africa | Spain | United Arab Emirates | United Kingdom | United States of America"
+      q: "What destinations are covered for international jewellery shipping?",
+      a: "We offer worldwide jewellery delivery and secure overseas jewellery delivery to: Australia, Bahrain, Canada, Germany, Italy, Kenya, Kuwait, Malaysia, Netherlands, New Zealand, Oman, Portugal, Qatar, Romania, Saudi Arabia, Singapore, South Africa, Spain, United Arab Emirates, United Kingdom, and the United States of America (USA)."
     },
     {
       q: "What is the minimum order value for an international order?",

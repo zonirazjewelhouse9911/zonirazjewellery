@@ -764,10 +764,10 @@ export default function CartPage({ cart = {}, setCart, wishlist = {}, setWishlis
 
                       {/* Image Thumbnail */}
                       <div className="cart-item-img-wrap">
-                        <img src={pImage} alt={pName} className="cart-item-img" />
+                        <img src={pImage} alt={pName} className="cart-item-img" loading="lazy" decoding="async" width="120" height="120" />
                         <span className="cart-item-badge">★ 1k+ bought this</span>
                       </div>
-
+ 
                       {/* Details */}
                       <div className="cart-item-details">
                         <h3 className="cart-item-title">{pName}</h3>
@@ -782,7 +782,7 @@ export default function CartPage({ cart = {}, setCart, wishlist = {}, setWishlis
                             </span>
                           )}
                         </div>
-
+ 
                         {/* Action controllers */}
                         <div className="cart-item-actions">
                           <div>
@@ -813,7 +813,7 @@ export default function CartPage({ cart = {}, setCart, wishlist = {}, setWishlis
                   );
                 })}
               </div>
-
+ 
               {/* Frequently Bought Together Panel */}
               <div className="frequently-bought-card">
                 <h4 className="fbt-title">
@@ -826,7 +826,7 @@ export default function CartPage({ cart = {}, setCart, wishlist = {}, setWishlis
                     const fbtOrigPrice = Number(item.originalPrice || fbtPrice);
                     return (
                       <div className="fbt-item" key={item.id}>
-                        <img src={item.image} alt={item.name} className="fbt-img" />
+                        <img src={item.image} alt={item.name} className="fbt-img" loading="lazy" decoding="async" width="120" height="120" />
                         <h5 className="fbt-name">{item.name}</h5>
                         <div className="fbt-price-row">
                           <span className="fbt-price">₹{fbtPrice.toLocaleString('en-IN')}</span>

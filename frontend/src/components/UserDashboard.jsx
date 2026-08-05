@@ -128,7 +128,8 @@ export default function UserDashboard() {
     if (window.confirm("Are you absolutely sure you want to delete your account? This action is irreversible.")) {
       try {
         await deleteAccount();
-        window.location.hash = '';
+        window.history.pushState(null, '', '/');
+        window.dispatchEvent(new Event('popstate'));
       } catch (err) {
         alert(err.message);
       }
@@ -200,7 +201,7 @@ export default function UserDashboard() {
       <div style={{ textAlign: 'center', padding: '80px 24px', backgroundColor: '#efe7e5', minHeight: '60vh' }}>
         <h2 style={{ fontFamily: "'Playfair Display', serif", color: '#2b221d' }}>Please Login to view Dashboard</h2>
         <button 
-          onClick={() => window.location.hash = ''} 
+          onClick={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new Event('popstate')); }} 
           style={{
             backgroundColor: '#2b221d', color: '#fff', padding: '12px 30px', borderRadius: '30px', border: 'none', cursor: 'pointer', marginTop: '20px', fontFamily: "'Montserrat', sans-serif"
           }}
@@ -380,7 +381,7 @@ export default function UserDashboard() {
                         <p style={{ color: '#746380', fontSize: '14px', margin: '0 0 12px 0' }}>
                           No gold credits recorded in your wallet yet. Start a 10+1 Gold Mine scheme to accumulate gold every month!
                         </p>
-                        <button onClick={() => window.location.hash = 'gold-mine'} style={saveBtnStyle}>
+                        <button onClick={() => { window.history.pushState(null, '', '/gold-mine'); window.dispatchEvent(new Event('popstate')); }} style={saveBtnStyle}>
                           START 10+1 GOLD PLAN NOW
                         </button>
                       </div>
@@ -451,10 +452,10 @@ export default function UserDashboard() {
                         </p>
                       </div>
                       <div style={{ display: 'flex', gap: '10px' }}>
-                        <button onClick={() => window.location.hash = 'gold-mine'} style={saveBtnStyle}>
+                        <button onClick={() => { window.history.pushState(null, '', '/gold-mine'); window.dispatchEvent(new Event('popstate')); }} style={saveBtnStyle}>
                           10+1 GOLD SCHEME
                         </button>
-                        <button onClick={() => window.location.hash = ''} style={{ ...saveBtnStyle, backgroundColor: '#8c7365' }}>
+                        <button onClick={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new Event('popstate')); }} style={{ ...saveBtnStyle, backgroundColor: '#8c7365' }}>
                           BROWSE JEWELLERY
                         </button>
                       </div>

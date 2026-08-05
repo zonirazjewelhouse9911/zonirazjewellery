@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 import { Sparkles, Gift, CheckCircle, Calculator, Clock, ChevronRight, ShieldCheck, ArrowRight, RefreshCw, AlertCircle, Heart, Calendar, Award } from 'lucide-react';
-import ringImg from '../assets/heart_fusion_ring-removebg-preview.png';
+import ringImg from '../assets/heart_fusion_ring.png';
 
 export default function GoldMinePage() {
   const { user, token } = useContext(AuthContext);
@@ -382,6 +382,10 @@ export default function GoldMinePage() {
             <img
               src={ringImg}
               alt="Zoniraz Gold Mine Jewellery"
+              loading="lazy"
+              decoding="async"
+              width="220"
+              height="220"
               style={{
                 maxWidth: '70%',
                 maxHeight: '220px',
@@ -409,7 +413,7 @@ export default function GoldMinePage() {
               letterSpacing: '2px',
               marginBottom: '10px'
             }}>
-              Gold Mine
+              Gold Savings Plan India
             </div>
 
             <div style={{
@@ -420,16 +424,16 @@ export default function GoldMinePage() {
               fontFamily: "'Playfair Display', serif",
               margin: '0 0 10px'
             }}>
-              10+1 <span style={{ fontSize: '15px', fontWeight: '600', color: '#4A5568', letterSpacing: '2px', display: 'block', marginTop: '4px', fontFamily: "'Outfit', sans-serif" }}>MONTHLY INSTALLMENT PLAN</span>
+              10+1 <span style={{ fontSize: '15px', fontWeight: '600', color: '#4A5568', letterSpacing: '2px', display: 'block', marginTop: '4px', fontFamily: "'Outfit', sans-serif" }}>GOLD SAVING SCHEME ONLINE</span>
             </div>
 
             <hr style={{ width: '100px', border: 'none', borderTop: '2px solid #C8A359', margin: '0 0 12px' }} />
 
             <p style={{ fontSize: '15px', color: '#2D3748', margin: '0 0 6px', fontWeight: '500' }}>
-              Pay 10 installments, get <strong>100% OFF on 11th installment!</strong>
+              Subscribe to our flexible gold monthly installment scheme: pay 10 installments, get <strong>100% OFF on the 11th installment!</strong>
             </p>
             <p style={{ fontSize: '12px', color: '#718096', margin: '0 0 16px' }}>
-              *Redeemable from 6th month | BIS Hallmarked Gold & Diamond Jewellery
+              *Redeemable from the 6th month onwards | BIS Hallmarked Gold & Diamond Jewellery
             </p>
           </div>
 
@@ -596,7 +600,7 @@ export default function GoldMinePage() {
       <section style={{ background: '#ffffff', padding: '40px 20px', borderTop: '1px solid #ebd8d4', borderBottom: '1px solid #ebd8d4' }}>
         <div style={{ maxWidth: '1100px', margin: '0 auto', textAlign: 'center' }}>
           <h2 style={{ fontSize: '24px', fontFamily: "'Playfair Display', serif", fontWeight: '700', color: '#1A202C', margin: '0 0 24px' }}>
-            Why Gold Mine Plan?
+            Why Choose Our Gold Saving Scheme Online?
           </h2>
 
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
@@ -606,9 +610,9 @@ export default function GoldMinePage() {
               <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#EBF8FF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <Calendar size={22} color="#3182CE" />
               </div>
-              <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#2D3748', margin: '0 0 6px' }}>Plan Ahead</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#2D3748', margin: '0 0 6px' }}>Systematic Gold Investment Plan</h3>
               <p style={{ fontSize: '13px', color: '#718096', lineHeight: '1.5', margin: 0 }}>
-                Systematic monthly gold accumulation. Lock in live gold rates at every single installment.
+                Build your assets with a systematic gold investment plan. Secure and accumulate digital gold saving scheme benefits month by month.
               </p>
             </div>
 
@@ -617,9 +621,9 @@ export default function GoldMinePage() {
               <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#FEEBC8', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <Heart size={22} color="#DD6B20" />
               </div>
-              <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#2D3748', margin: '0 0 6px' }}>For Special Moments</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#2D3748', margin: '0 0 6px' }}>Easy Gold Savings Plan</h3>
               <p style={{ fontSize: '13px', color: '#718096', lineHeight: '1.5', margin: 0 }}>
-                Ideal for upcoming weddings, anniversaries, and milestone gifts for your loved ones.
+                An easy gold savings plan designed for upcoming weddings, special anniversaries, and luxury bridal jewellery purchases.
               </p>
             </div>
 
@@ -628,9 +632,9 @@ export default function GoldMinePage() {
               <div style={{ width: '44px', height: '44px', borderRadius: '50%', background: '#FED7D7', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
                 <Award size={22} color="#E53E3E" />
               </div>
-              <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#2D3748', margin: '0 0 6px' }}>11th Month FREE Bonus</h3>
+              <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#2D3748', margin: '0 0 6px' }}>Gold Monthly Installment Scheme Bonus</h3>
               <p style={{ fontSize: '13px', color: '#718096', lineHeight: '1.5', margin: 0 }}>
-                Pay 10 monthly installments, and Zoniraz credits the 11th installment 100% FREE!
+                Pay 10 monthly installments under our gold installment scheme, and we will credit the 11th month's installment completely free.
               </p>
             </div>
 

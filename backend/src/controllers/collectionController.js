@@ -1,4 +1,5 @@
 const collectionService = require('../services/collectionService');
+const { generateSitemap } = require('../utils/sitemapGenerator');
 
 class CollectionController {
   getCollections = async (req, res) => {
@@ -27,6 +28,7 @@ class CollectionController {
   createCollection = async (req, res) => {
     try {
       const collection = await collectionService.createCollection(req.body);
+      generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(201).json({
         success: true,
         message: 'Collection successfully created',
@@ -41,6 +43,7 @@ class CollectionController {
   updateCollection = async (req, res) => {
     try {
       const collection = await collectionService.updateCollection(req.params.id, req.body);
+      generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(200).json({
         success: true,
         message: 'Collection successfully updated',

@@ -31,5 +31,6 @@ router.get('/admin/products', productController.getProducts);
 router.get('/admin/products/:id', productController.getProductById);
 router.post('/admin/products', productController.createProduct);
 router.patch('/admin/products/:id', productController.updateProduct);
+router.delete('/admin/products/:id', productController.deleteProduct);
 
 module.exports = router;

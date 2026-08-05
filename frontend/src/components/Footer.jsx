@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="footer-top-row">
         {/* Logo & Tagline */}
         <div className="footer-col brand-col">
-          <a href="#" className="footer-brand-logo" style={{ display: 'inline-block', marginBottom: '-50px' }}>
+          <a href="/" className="footer-brand-logo" style={{ display: 'inline-block', marginBottom: '-50px' }}>
             <img src="/zoni.png" alt="Zoniraz Logo" loading="lazy" decoding="async" width="150" height="150" style={{ height: '150px', objectFit: 'contain', display: 'block', marginLeft: '-22px' }} />
           </a>
           <p className="footer-tagline">Crafting brilliance for generations.</p>
@@ -16,11 +16,11 @@ export default function Footer() {
         <div className="footer-col">
           <h4 className="footer-col-title">Useful Links</h4>
           <ul className="footer-links-list">
-            <li><a href="#delivery">Delivery Information</a></li>
-            <li><a href="#shipping">International Shipping</a></li>
-            <li><a href="#payment">Payment Options</a></li>
-            <li><a href="#returns">Returns</a></li>
-            <li><a href="#giftcards">Gift Cards</a></li>
+            <li><a href="/delivery">Track Package Delivery</a></li>
+            <li><a href="/shipping">International Jewellery Shipping</a></li>
+            <li><a href="/payment">Payment Options</a></li>
+            <li><a href="/returns">Returns</a></li>
+            <li><a href="/giftcards">Gift Cards</a></li>
           </ul>
         </div>
 
@@ -28,10 +28,10 @@ export default function Footer() {
         <div className="footer-col">
           <h4 className="footer-col-title">Information</h4>
           <ul className="footer-links-list">
-            <li><a href="#gold-mine" style={{ color: '#c5a880', fontWeight: 'bold' }}>✨ Gold Mine (10+1 Plan)</a></li>
-            <li><a href="#blog">Blog</a></li>
-            <li><a href="#contact">Contact Us</a></li>
-            <li><a href="#about">About Zoniraz</a></li>
+            <li><a href="/gold-mine" style={{ color: '#c5a880', fontWeight: 'bold' }}>✨ Gold Saving Scheme Online</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+            <li><a href="/about">About Zoniraz</a></li>
           </ul>
         </div>
 
@@ -55,6 +55,7 @@ export default function Footer() {
                 href="mailto:zonirazjewelhose@gmail.com"
                 onClick={(e) => { e.stopPropagation(); window.location.href = 'mailto:zonirazjewelhose@gmail.com'; }}
                 title="zonirazjewelhose@gmail.com"
+                aria-label="Send email to Zoniraz Jewel House"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -84,6 +85,7 @@ export default function Footer() {
               <a
                 href="tel:+919784836060"
                 title="+91 97848 36060"
+                aria-label="Call Zoniraz customer support"
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -129,7 +131,7 @@ export default function Footer() {
         {/* Partnership */}
         <div className="footer-col partnership-col">
           <h4 className="footer-col-title">Partnership</h4>
-          <a href="#franchise" className="franchise-btn">
+          <a href="/franchise" className="franchise-btn">
             FRANCHISE ENQUIRY
           </a>
           <p className="partnership-tagline">JOIN THE LEGACY OF EXCELLENCE AND TRUST.</p>
