@@ -8,6 +8,10 @@ const DIAMOND_RATE_FIELD_BY_GRADE = {
     "GH-VS": "diamond_rate_gh_vs",
     "EF-VVS": "diamond_rate_ef_vvs",
     "FG-SI": "diamond_rate_fg_si",
+    "1": "diamond_rate_ij_si",
+    "2": "diamond_rate_gh_vs",
+    "3": "diamond_rate_ef_vvs",
+    "4": "diamond_rate_fg_si",
 };
 
 exports.productPricing = async (req, res) => {
@@ -57,18 +61,13 @@ exports.productPricing = async (req, res) => {
         const solitaire_price = product_data.solitaires_price || 0;
         const gemstone_price = product_data.gemstone_price || 0;
 
-        // Resolve diamond rate based on purity grade, falling back to the
-        // generic diamond_rate if the grade is missing/unrecognized.
+        // Resolve diamond rate purely from product manual rates
         const diamondRateField = DIAMOND_RATE_FIELD_BY_GRADE[rawDiamond];
-        let diamond_rate = current_price.diamond_rate || 0;
-        if (diamondRateField) {
-            if (current_price[diamondRateField] !== undefined && current_price[diamondRateField] !== null) {
-                diamond_rate = current_price[diamondRateField];
-            } else {
-                console.log(`Missing rate field "${diamondRateField}" on current_price doc, falling back to diamond_rate`);
-            }
-        } else if (rawDiamond) {
-            console.log(`Unrecognized diamond purity grade: ${rawDiamond}, falling back to diamond_rate`);
+        let diamond_rate = 0;
+        if (diamondRateField && product_data[diamondRateField] !== undefined) {
+            diamond_rate = product_data[diamondRateField] || 0;
+        } else {
+            diamond_rate = product_data.diamond_rate_ij_si || 0;
         }
 
         if (product_data.product_type && product_data.product_type.toLowerCase() === "diamond") {
@@ -169,22 +168,26 @@ exports.productPricing = async (req, res) => {
             const net_gold_weight = Math.max(0, gross_gold_weight - diamond_weight_g - gemstone_weight_g);
             real_gold_weight = net_gold_weight;
 
-            // diamond rate calculation for custom
+            // diamond rate calculation for custom (strictly manual per product)
             switch (rawDiamond) {
                 case "IJ-SI":
-                    diamond_rate = current_price.diamond_rate_ij_si;
+                case "1":
+                    diamond_rate = product_data.diamond_rate_ij_si || 0;
                     break;
                 case "GH-VS":
-                    diamond_rate = current_price.diamond_rate_gh_vs;
+                case "2":
+                    diamond_rate = product_data.diamond_rate_gh_vs || 0;
                     break;
                 case "EF-VVS":
-                    diamond_rate = current_price.diamond_rate_ef_vvs;
+                case "3":
+                    diamond_rate = product_data.diamond_rate_ef_vvs || 0;
                     break;
                 case "FG-SI":
-                    diamond_rate = current_price.diamond_rate_fg_si;
+                case "4":
+                    diamond_rate = product_data.diamond_rate_fg_si || 0;
                     break;
                 default:
-                    diamond_rate = current_price.diamond_rate_ij_si;
+                    diamond_rate = product_data.diamond_rate_ij_si || 0;
             }
 
             // 14k is the base weight reference; convert weight + rate for the selected karat

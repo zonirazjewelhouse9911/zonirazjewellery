@@ -47,8 +47,8 @@ exports.productBasePricing = async (req, res) => {
                 const gold_rate_14k = Math.floor(current_price.gold_rate_24k * 58.5 / 100);
                 console.log(gold_rate_14k, "gold_rate_14k");
 
-                item_gold_price = Math.floor(net_gold_weight * gold_rate_14k);
-                item_diamond_price = total_diamond_weight * current_price.diamond_rate_ij_si;
+                const item_diamond_rate = item.diamond_rate_ij_si || 0;
+                item_diamond_price = total_diamond_weight * item_diamond_rate;
 
                 // Making charges = Net Gold Weight * 24K Gold Rate * Making Percentage / 100
                 const gold_cost_24k = net_gold_weight * current_price.gold_rate_24k;

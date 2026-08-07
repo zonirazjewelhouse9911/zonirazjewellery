@@ -34,10 +34,10 @@ const KARATS = [
 ];
 
 const DIAMOND_QUALITIES = [
-  { id: '1', name: 'IJ-SI' },
-  { id: '2', name: 'GH-VS' },
-  { id: '3', name: 'EF-VVS' },
-  { id: '4', name: 'FG-SI' }
+  { id: '1', name: 'IJ-SI', rateKey: 'diamond_rate_ij_si' },
+  { id: '2', name: 'GH-VS', rateKey: 'diamond_rate_gh_vs' },
+  { id: '3', name: 'EF-VVS', rateKey: 'diamond_rate_ef_vvs' },
+  { id: '4', name: 'FG-SI', rateKey: 'diamond_rate_fg_si' }
 ];
 
 const GENDERS = [
@@ -107,6 +107,10 @@ interface ProductFormData {
   gallery: Record<string, string[]>;
   height: number;
   diamond_quality: string;
+  diamond_rate_ij_si?: number;
+  diamond_rate_gh_vs?: number;
+  diamond_rate_ef_vvs?: number;
+  diamond_rate_fg_si?: number;
   width: number;
   noof_gem: number;
   gold_weight: number;
@@ -177,6 +181,10 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     gallery: {},
     height: 0,
     diamond_quality: '',
+    diamond_rate_ij_si: 0,
+    diamond_rate_gh_vs: 0,
+    diamond_rate_ef_vvs: 0,
+    diamond_rate_fg_si: 0,
     width: 0,
     noof_gem: 0,
     gold_weight: 0,
@@ -263,6 +271,10 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       gallery: normalizedGallery,
       metal_type: resolvedMetalType,
       gender: resolvedGender,
+      diamond_rate_ij_si: Number(product.diamond_rate_ij_si || 0),
+      diamond_rate_gh_vs: Number(product.diamond_rate_gh_vs || 0),
+      diamond_rate_ef_vvs: Number(product.diamond_rate_ef_vvs || 0),
+      diamond_rate_fg_si: Number(product.diamond_rate_fg_si || 0),
       making_charges: Number(product.making_charges || 0),
       makingCharges: Number(product.makingCharges || 0)
     };
@@ -469,10 +481,14 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     setFormData({ ...formData, size_id: newSizes.join(',') });
   };
 
-  const handleDiamondQualityToggle = (qualityId: string) => {
-    const newQualities = activeDiamondQualities.includes(qualityId)
-      ? activeDiamondQualities.filter(id => id !== qualityId)
-      : [...activeDiamondQualities, qualityId];
+  const handleDiamondQualityToggle = (qualityId: string, qualityName?: string) => {
+    const isCurrentlySelected = activeDiamondQualities.includes(qualityId) || (qualityName ? activeDiamondQualities.includes(qualityName) : false);
+    let newQualities: string[];
+    if (isCurrentlySelected) {
+      newQualities = activeDiamondQualities.filter(id => id !== qualityId && id !== (qualityName || ''));
+    } else {
+      newQualities = [...activeDiamondQualities, qualityId];
+    }
     setFormData({ ...formData, diamond_quality: newQualities.join(',') });
   };
 
@@ -989,6 +1005,75 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                         />
                       </div>
                     </div>
+
+                    {/* Diamond Quality Selection with Manual Quality Prices */}
+                    <div className="space-y-4 pt-6 border-t border-slate-200/60">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">
+                          Select Diamond Quality & Price per Carat (₹/ct) *
+                        </label>
+                        <span className="text-[10px] text-slate-400 font-medium italic">
+                          Select active qualities and set their price per carat
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
+                        {DIAMOND_QUALITIES.map(dq => {
+                          const isChecked = activeDiamondQualities.includes(dq.id) || activeDiamondQualities.includes(dq.name);
+                          const manualRate = (formData[dq.rateKey as keyof ProductFormData] as number) || 0;
+                          const estCost = (formData.diamond_weight || 0) * manualRate;
+
+                          return (
+                            <div
+                              key={dq.id}
+                              className={cn(
+                                'flex flex-col justify-between p-4 rounded-2xl border text-left transition-all duration-300 space-y-3',
+                                isChecked
+                                  ? 'bg-white border-[#5d463c] shadow-md ring-2 ring-[#5d463c]/30'
+                                  : 'bg-slate-50 border-slate-200 opacity-70 hover:opacity-100'
+                              )}
+                            >
+                              <div
+                                onClick={() => handleDiamondQualityToggle(dq.id, dq.name)}
+                                className="w-full flex items-center justify-between cursor-pointer select-none"
+                              >
+                                <span className="text-[13px] font-extrabold uppercase tracking-wider text-[#5d463c]">{dq.name}</span>
+                                <span className={cn(
+                                  'w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-black',
+                                  isChecked ? 'bg-[#5d463c] text-white border-[#5d463c]' : 'border-slate-300 bg-white'
+                                )}>
+                                  {isChecked ? '✓' : ''}
+                                </span>
+                              </div>
+
+                              <div className="w-full border-t border-slate-100 pt-3 space-y-2">
+                                <label className="text-[9px] uppercase tracking-wider font-bold text-slate-500 block">
+                                  Price / Carat (₹)
+                                </label>
+                                <div className="relative">
+                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                  <input
+                                    type="number"
+                                    min="0"
+                                    step="500"
+                                    placeholder="e.g. 85000"
+                                    value={manualRate || ''}
+                                    onChange={(e) => setFormData({ ...formData, [dq.rateKey]: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-7 pr-3 text-[13px] font-bold text-[#12100e] focus:bg-white focus:border-[#5d463c] transition-all"
+                                  />
+                                </div>
+
+                                {formData.diamond_weight > 0 && manualRate > 0 && (
+                                  <div className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-lg flex items-center justify-between mt-1">
+                                    <span>Est. Total:</span>
+                                    <span className="font-bold">₹{Math.round(estCost).toLocaleString('en-IN')}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 )}
 
@@ -1173,22 +1258,45 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
 
             {/* Diamond Quality Configuration */}
             <div className="space-y-6 pt-10 border-t border-slate-200/80">
-              <h3 className="text-lg font-serif font-bold text-[#12100e]">Diamond Qualities</h3>
+              <div className="flex items-center justify-between">
+                <h3 className="text-lg font-serif font-bold text-[#12100e]">Diamond Qualities & Prices</h3>
+                <span className="text-[9px] uppercase tracking-widest text-[#5d463c] font-bold">
+                  {activeDiamondQualities.length} Selected
+                </span>
+              </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 {DIAMOND_QUALITIES.map(dq => {
-                  const isChecked = activeDiamondQualities.includes(dq.id);
+                  const isChecked = activeDiamondQualities.includes(dq.id) || activeDiamondQualities.includes(dq.name);
+                  const manualRate = (formData[dq.rateKey as keyof ProductFormData] as number) || 0;
                   return (
                     <button
                       key={dq.id}
-                      onClick={() => handleDiamondQualityToggle(dq.id)}
+                      type="button"
+                      onClick={() => handleDiamondQualityToggle(dq.id, dq.name)}
                       className={cn(
-                        'flex items-center justify-center p-4 rounded-2xl border text-center transition-all duration-300 cursor-pointer',
+                        'flex flex-col items-start justify-between p-4 rounded-2xl border text-left transition-all duration-300 cursor-pointer space-y-2',
                         isChecked
-                          ? 'bg-[#5d463c]/15 border-[#5d463c] text-[#5d463c] font-bold'
-                          : 'bg-slate-50 border border-slate-200 text-[#12100e]/60'
+                          ? 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c] shadow-md'
+                          : 'bg-slate-50 border border-slate-200 text-[#12100e]/70 hover:border-slate-300'
                       )}
                     >
-                      <span className="text-[12px] uppercase tracking-wider">{dq.name}</span>
+                      <div className="w-full flex items-center justify-between">
+                        <span className="text-[12px] font-bold uppercase tracking-wider">{dq.name}</span>
+                        <span className={cn(
+                          'w-4 h-4 rounded-full border flex items-center justify-center text-[10px] font-black',
+                          isChecked ? 'bg-[#efe7e5] text-[#5d463c] border-[#efe7e5]' : 'border-slate-300 bg-white'
+                        )}>
+                          {isChecked ? '✓' : ''}
+                        </span>
+                      </div>
+                      <div className="w-full border-t border-current/15 pt-2 text-[11px]">
+                        <div className="opacity-75 uppercase text-[9px] tracking-wider font-bold">
+                          Price / Carat
+                        </div>
+                        <div className="font-extrabold text-[13px]">
+                          {manualRate > 0 ? `₹${manualRate.toLocaleString('en-IN')}` : 'No price set'}
+                        </div>
+                      </div>
                     </button>
                   );
                 })}
