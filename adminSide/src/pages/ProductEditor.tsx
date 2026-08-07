@@ -131,6 +131,8 @@ interface ProductFormData {
   solitaire_price_gh_vs?: number;
   solitaire_price_ef_vvs?: number;
   solitaire_price_fg_si?: number;
+  solitaire_setting?: string;
+  solitaires_setting?: string;
   product_weight: number;
   center_diamond_weight: number | null;
   center_diamond_price: number | null;
@@ -209,6 +211,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     solitaire_price_gh_vs: 0,
     solitaire_price_ef_vvs: 0,
     solitaire_price_fg_si: 0,
+    solitaire_setting: 'Prong Setting',
+    solitaires_setting: 'Prong Setting',
     product_weight: 0,
     center_diamond_weight: null,
     center_diamond_price: null,
@@ -294,6 +298,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       solitaire_price_gh_vs: Number(product.solitaire_price_gh_vs || 0),
       solitaire_price_ef_vvs: Number(product.solitaire_price_ef_vvs || 0),
       solitaire_price_fg_si: Number(product.solitaire_price_fg_si || 0),
+      solitaire_setting: product.solitaire_setting || product.solitaires_setting || 'Prong Setting',
+      solitaires_setting: product.solitaires_setting || product.solitaire_setting || 'Prong Setting',
       making_charges: Number(product.making_charges || 0),
       makingCharges: Number(product.makingCharges || 0)
     };
@@ -1055,6 +1061,17 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                             setFormData({ ...formData, solitaires_weight: val, solitaire_weight: val });
                           }}
                           placeholder="e.g. 0.50"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+
+                      <div className="space-y-3 md:w-1/2">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Setting *</label>
+                        <input
+                          type="text"
+                          value={formData.solitaire_setting || formData.solitaires_setting || ''}
+                          onChange={(e) => setFormData({ ...formData, solitaire_setting: e.target.value, solitaires_setting: e.target.value })}
+                          placeholder="e.g. Prong Setting, Bezel Setting, Pave Setting"
                           className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                         />
                       </div>

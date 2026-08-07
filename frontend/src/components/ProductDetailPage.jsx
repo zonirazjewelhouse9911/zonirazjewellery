@@ -2390,7 +2390,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   </div>
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Setting</span>
-                    <span className="pdp-detail-val">Prong Setting</span>
+                    <span className="pdp-detail-val">{product.solitaire_setting || product.solitaires_setting || 'Prong Setting'}</span>
                   </div>
                 </div>
               )}

@@ -168,6 +168,14 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  solitaire_setting: {
+    type: String,
+    default: "Prong Setting"
+  },
+  solitaires_setting: {
+    type: String,
+    default: "Prong Setting"
+  },
   product_weight: {
     type: Number,
     default: 0

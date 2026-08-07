@@ -532,6 +532,8 @@ function AppContent() {
               solitaire_price_gh_vs: p.solitaire_price_gh_vs,
               solitaire_price_ef_vvs: p.solitaire_price_ef_vvs,
               solitaire_price_fg_si: p.solitaire_price_fg_si,
+              solitaire_setting: p.solitaire_setting || p.solitaires_setting || 'Prong Setting',
+              solitaires_setting: p.solitaires_setting || p.solitaire_setting || 'Prong Setting',
               product_code: p.product_code,
               gallery: p.gallery,
               product_slug: p.product_slug || p.slug || ''
