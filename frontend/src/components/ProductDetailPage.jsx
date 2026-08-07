@@ -318,7 +318,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
     if (!isCustomized) {
       if (product?._id || product?.id) {
-        const prodId = product?._id || product?.id;
+        const prodId = product?._id || product?.product_id || product?.id;
         fetch(`${API_BASE_URL}/api/productBasePricing`)
           .then(res => res.json())
           .then(data => {
@@ -326,20 +326,22 @@ export default function ProductDetailPage({ product, products: propProducts = []
               const matched = data.data.find(item => String(item._id) === String(prodId) || String(item.product_id) === String(prodId));
               if (matched) {
                 const price = matched.base_price_withGST;
-                const goldCost = matched.gold_price || 0;
-                const diamondCost = matched.diamond_price || 0;
+                const goldCost = matched.gold_price !== undefined ? matched.gold_price : 0;
+                const diamondCost = matched.diamond_price !== undefined ? matched.diamond_price : 0;
+                const solitaireCost = (matched.solitaire_price && matched.solitaire_price > 0) ? matched.solitaire_price : initialSolitaireCost;
                 const gemstoneCost = (product.gemstone_weight || 0) * 1500;
                 const makingCharges = matched.making_charges !== undefined ? matched.making_charges : (product.making_charges || 0);
-                const subtotal = goldCost + diamondCost + gemstoneCost + makingCharges;
-                const gst = price - subtotal;
+                const subtotal = goldCost + diamondCost + solitaireCost + gemstoneCost + makingCharges;
+                const gst = matched.gst_amount !== undefined ? matched.gst_amount : Math.round(subtotal * 0.03);
 
                 setPricingDetails({
                   price: price,
                   goldCost: goldCost,
                   diamondCost: diamondCost,
+                  solitaireCost: solitaireCost,
                   gemstoneCost: gemstoneCost,
                   makingCharges: makingCharges,
-                  gst: Math.max(0, gst),
+                  gst: gst,
                   subtotal: subtotal,
                   goldWeight: matched.gold_weight !== undefined ? matched.gold_weight : (product?.gold_weight || 0)
                 });
@@ -2290,17 +2292,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 <Shield size={26} style={{ color: '#A98E73' }} />
               </div>
               <div className="pdp-trust-label">One Year Warranty</div>
-            </div>
-          </div>
-
-          {/* xCLusive Points */}
-          <div className="pdp-xclusive-banner">
-            <div className="pdp-xclusive-text">
-              Earn <strong>{xPoints} xCLusive points</strong> with this order<br />
-              <span style={{ fontSize: '10px', color: '#837890' }}>1 xCLusive point = ₹1</span>
-            </div>
-            <div className="pdp-xclusive-coin">
-              <Coins size={28} style={{ color: '#A98E73' }} />
             </div>
           </div>
         </div>
