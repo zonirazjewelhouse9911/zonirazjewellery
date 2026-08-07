@@ -32,7 +32,7 @@ exports.productBasePricing = async (req, res) => {
             const makingCharges = item.making_charges || 0;
             const gst_percent = current_price.gst_percent || 3;
             const gold_weight = item.gold_weight || 0;
-            const solitaire_price = item.solitaires_price || 0;
+            const solitaire_price = item.solitaire_price_ij_si || item.solitaires_price || 0;
             const gemstone_price = item.gemstone_price || 0;
 
             if (item.product_type && item.product_type.toLowerCase() === "diamond") {
@@ -47,7 +47,7 @@ exports.productBasePricing = async (req, res) => {
                 const gold_rate_14k = Math.floor(current_price.gold_rate_24k * 58.5 / 100);
                 console.log(gold_rate_14k, "gold_rate_14k");
 
-                const item_diamond_rate = item.diamond_rate_ij_si || 0;
+                const item_diamond_rate = item.diamond_rate_ij_si || current_price.diamond_rate_ij_si || 0;
                 item_diamond_price = total_diamond_weight * item_diamond_rate;
 
                 // Making charges = Net Gold Weight * 24K Gold Rate * Making Percentage / 100

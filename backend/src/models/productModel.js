@@ -152,6 +152,22 @@ const productSchema = new mongoose.Schema({
   solitaires_quality: {
     type: String
   },
+  solitaire_price_ij_si: {
+    type: Number,
+    default: 0
+  },
+  solitaire_price_gh_vs: {
+    type: Number,
+    default: 0
+  },
+  solitaire_price_ef_vvs: {
+    type: Number,
+    default: 0
+  },
+  solitaire_price_fg_si: {
+    type: Number,
+    default: 0
+  },
   product_weight: {
     type: Number,
     default: 0

@@ -40,6 +40,13 @@ const DIAMOND_QUALITIES = [
   { id: '4', name: 'FG-SI', rateKey: 'diamond_rate_fg_si' }
 ];
 
+const SOLITAIRE_QUALITIES = [
+  { id: '1', name: 'IJ-SI', key: 'solitaire_price_ij_si' },
+  { id: '2', name: 'GH-VS', key: 'solitaire_price_gh_vs' },
+  { id: '3', name: 'EF-VVS', key: 'solitaire_price_ef_vvs' },
+  { id: '4', name: 'FG-SI', key: 'solitaire_price_fg_si' }
+];
+
 const GENDERS = [
   { id: '1', name: 'Male' },
   { id: '2', name: 'Female' },
@@ -120,6 +127,10 @@ interface ProductFormData {
   solitaire_weight?: number;
   solitaires_price: number;
   solitaires_quality: string;
+  solitaire_price_ij_si?: number;
+  solitaire_price_gh_vs?: number;
+  solitaire_price_ef_vvs?: number;
+  solitaire_price_fg_si?: number;
   product_weight: number;
   center_diamond_weight: number | null;
   center_diamond_price: number | null;
@@ -194,6 +205,10 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     solitaire_weight: 0,
     solitaires_price: 0,
     solitaires_quality: '0',
+    solitaire_price_ij_si: 0,
+    solitaire_price_gh_vs: 0,
+    solitaire_price_ef_vvs: 0,
+    solitaire_price_fg_si: 0,
     product_weight: 0,
     center_diamond_weight: null,
     center_diamond_price: null,
@@ -275,6 +290,10 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       diamond_rate_gh_vs: Number(product.diamond_rate_gh_vs || 0),
       diamond_rate_ef_vvs: Number(product.diamond_rate_ef_vvs || 0),
       diamond_rate_fg_si: Number(product.diamond_rate_fg_si || 0),
+      solitaire_price_ij_si: Number(product.solitaire_price_ij_si || 0),
+      solitaire_price_gh_vs: Number(product.solitaire_price_gh_vs || 0),
+      solitaire_price_ef_vvs: Number(product.solitaire_price_ef_vvs || 0),
+      solitaire_price_fg_si: Number(product.solitaire_price_fg_si || 0),
       making_charges: Number(product.making_charges || 0),
       makingCharges: Number(product.makingCharges || 0)
     };
@@ -459,6 +478,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
   const activeKarats = formData.karat_id ? formData.karat_id.split(',').map(s => s.trim()).filter(Boolean) : [];
   const activeSizes = formData.size_id ? formData.size_id.split(',').map(s => s.trim()).filter(Boolean) : [];
   const activeDiamondQualities = formData.diamond_quality ? formData.diamond_quality.split(',').map(s => s.trim()).filter(Boolean) : [];
+  const activeSolitaireQualities = formData.solitaires_quality ? formData.solitaires_quality.split(',').map(s => s.trim()).filter(Boolean) : [];
 
   const handleMetalToggle = (metalId: string) => {
     const newMetals = activeMetals.includes(metalId)
@@ -490,6 +510,17 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       newQualities = [...activeDiamondQualities, qualityId];
     }
     setFormData({ ...formData, diamond_quality: newQualities.join(',') });
+  };
+
+  const handleSolitaireQualityToggle = (qualityId: string, qualityName?: string) => {
+    const isCurrentlySelected = activeSolitaireQualities.includes(qualityId) || (qualityName ? activeSolitaireQualities.includes(qualityName) : false);
+    let newQualities: string[];
+    if (isCurrentlySelected) {
+      newQualities = activeSolitaireQualities.filter(id => id !== qualityId && id !== (qualityName || ''));
+    } else {
+      newQualities = [...activeSolitaireQualities, qualityId];
+    }
+    setFormData({ ...formData, solitaires_quality: newQualities.join(',') });
   };
 
   const handleBackClick = (e: React.MouseEvent) => {
@@ -1005,75 +1036,6 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                         />
                       </div>
                     </div>
-
-                    {/* Diamond Quality Selection with Manual Quality Prices */}
-                    <div className="space-y-4 pt-6 border-t border-slate-200/60">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">
-                          Select Diamond Quality & Price per Carat (₹/ct) *
-                        </label>
-                        <span className="text-[10px] text-slate-400 font-medium italic">
-                          Select active qualities and set their price per carat
-                        </span>
-                      </div>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                        {DIAMOND_QUALITIES.map(dq => {
-                          const isChecked = activeDiamondQualities.includes(dq.id) || activeDiamondQualities.includes(dq.name);
-                          const manualRate = (formData[dq.rateKey as keyof ProductFormData] as number) || 0;
-                          const estCost = (formData.diamond_weight || 0) * manualRate;
-
-                          return (
-                            <div
-                              key={dq.id}
-                              className={cn(
-                                'flex flex-col justify-between p-4 rounded-2xl border text-left transition-all duration-300 space-y-3',
-                                isChecked
-                                  ? 'bg-white border-[#5d463c] shadow-md ring-2 ring-[#5d463c]/30'
-                                  : 'bg-slate-50 border-slate-200 opacity-70 hover:opacity-100'
-                              )}
-                            >
-                              <div
-                                onClick={() => handleDiamondQualityToggle(dq.id, dq.name)}
-                                className="w-full flex items-center justify-between cursor-pointer select-none"
-                              >
-                                <span className="text-[13px] font-extrabold uppercase tracking-wider text-[#5d463c]">{dq.name}</span>
-                                <span className={cn(
-                                  'w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-black',
-                                  isChecked ? 'bg-[#5d463c] text-white border-[#5d463c]' : 'border-slate-300 bg-white'
-                                )}>
-                                  {isChecked ? '✓' : ''}
-                                </span>
-                              </div>
-
-                              <div className="w-full border-t border-slate-100 pt-3 space-y-2">
-                                <label className="text-[9px] uppercase tracking-wider font-bold text-slate-500 block">
-                                  Price / Carat (₹)
-                                </label>
-                                <div className="relative">
-                                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
-                                  <input
-                                    type="number"
-                                    min="0"
-                                    step="500"
-                                    placeholder="e.g. 85000"
-                                    value={manualRate || ''}
-                                    onChange={(e) => setFormData({ ...formData, [dq.rateKey]: parseFloat(e.target.value) || 0 })}
-                                    className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-7 pr-3 text-[13px] font-bold text-[#12100e] focus:bg-white focus:border-[#5d463c] transition-all"
-                                  />
-                                </div>
-
-                                {formData.diamond_weight > 0 && manualRate > 0 && (
-                                  <div className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 border border-emerald-200/60 px-2.5 py-1 rounded-lg flex items-center justify-between mt-1">
-                                    <span>Est. Total:</span>
-                                    <span className="font-bold">₹{Math.round(estCost).toLocaleString('en-IN')}</span>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
                   </div>
                 )}
 
@@ -1081,18 +1043,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 {includeSolitaire && (
                   <div className="space-y-6 pt-6 border-t border-slate-200/60 col-span-1 md:col-span-3">
                     <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Solitaire Requirements</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="space-y-3">
-                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Price (₹)</label>
-                        <input
-                          type="number"
-                          value={formData.solitaires_price || ''}
-                          onChange={(e) => setFormData({ ...formData, solitaires_price: parseFloat(e.target.value) || 0 })}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                        />
-                      </div>
-                      <div className="space-y-3">
-                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Weight</label>
+                    <div className="grid grid-cols-1 gap-8">
+                      <div className="space-y-3 md:w-1/2">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Weight (ct) *</label>
                         <input
                           type="number"
                           step="any"
@@ -1104,6 +1057,74 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                           placeholder="e.g. 0.50"
                           className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                         />
+                      </div>
+
+                      {/* Select Solitaire Quality & Add Price for Each */}
+                      <div className="space-y-4 pt-4 border-t border-slate-100">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                          <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">
+                            Select Solitaire Quality & Particular Price (₹) *
+                          </label>
+                          <span className="text-[10px] text-slate-400 font-medium italic">
+                            Select active solitaire qualities and enter their individual price
+                          </span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
+                          {SOLITAIRE_QUALITIES.map(sq => {
+                            const isChecked = activeSolitaireQualities.includes(sq.id) || activeSolitaireQualities.includes(sq.name);
+                            const qualityPrice = (formData[sq.key as keyof ProductFormData] as number) || 0;
+
+                            return (
+                              <div
+                                key={sq.id}
+                                className={cn(
+                                  'flex flex-col justify-between p-4 rounded-2xl border text-left transition-all duration-300 space-y-3',
+                                  isChecked
+                                    ? 'bg-white border-[#5d463c] shadow-md ring-2 ring-[#5d463c]/30'
+                                    : 'bg-slate-50 border-slate-200 opacity-70 hover:opacity-100'
+                                )}
+                              >
+                                <div
+                                  onClick={() => handleSolitaireQualityToggle(sq.id, sq.name)}
+                                  className="w-full flex items-center justify-between cursor-pointer select-none"
+                                >
+                                  <span className="text-[13px] font-extrabold uppercase tracking-wider text-[#5d463c]">{sq.name}</span>
+                                  <span className={cn(
+                                    'w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-black',
+                                    isChecked ? 'bg-[#5d463c] text-white border-[#5d463c]' : 'border-slate-300 bg-white'
+                                  )}>
+                                    {isChecked ? '✓' : ''}
+                                  </span>
+                                </div>
+
+                                <div className="w-full border-t border-slate-100 pt-3 space-y-2">
+                                  <label className="text-[9px] uppercase tracking-wider font-bold text-slate-500 block">
+                                    Solitaire Price (₹)
+                                  </label>
+                                  <div className="relative">
+                                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      step="500"
+                                      placeholder="e.g. 25000"
+                                      value={qualityPrice || ''}
+                                      onChange={(e) => {
+                                        const val = parseFloat(e.target.value) || 0;
+                                        setFormData({
+                                          ...formData,
+                                          [sq.key]: val,
+                                          solitaires_price: val > 0 ? val : formData.solitaires_price
+                                        });
+                                      }}
+                                      className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-7 pr-3 text-[13px] font-bold text-[#12100e] focus:bg-white focus:border-[#5d463c] transition-all"
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
