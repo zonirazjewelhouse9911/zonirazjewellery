@@ -498,6 +498,7 @@ function AppContent() {
             const storePickup = p.topselling === '1';
 
             return {
+              ...p,
               id,
               productId: p.product_id || String(id),
               name,
@@ -524,6 +525,13 @@ function AppContent() {
               gemstone_price: p.gemstone_price,
               making_charges: p.making_charges,
               solitaires_price: p.solitaires_price,
+              solitaire_weight: p.solitaire_weight || p.solitaires_weight || 0,
+              solitaires_weight: p.solitaires_weight || p.solitaire_weight || 0,
+              solitaires_quality: p.solitaires_quality,
+              solitaire_price_ij_si: p.solitaire_price_ij_si,
+              solitaire_price_gh_vs: p.solitaire_price_gh_vs,
+              solitaire_price_ef_vvs: p.solitaire_price_ef_vvs,
+              solitaire_price_fg_si: p.solitaire_price_fg_si,
               product_code: p.product_code,
               gallery: p.gallery,
               product_slug: p.product_slug || p.slug || ''

@@ -23,7 +23,6 @@ exports.productBasePricing = async (req, res) => {
         }
 
         const calculated_products = product_data.map((item) => {
-            console.log(item.product_type);
             let item_gold_price = 0;
             let item_diamond_price = 0;
             let item_base_price = 0;
@@ -32,7 +31,26 @@ exports.productBasePricing = async (req, res) => {
             const makingCharges = item.making_charges || 0;
             const gst_percent = current_price.gst_percent || 3;
             const gold_weight = item.gold_weight || 0;
-            const solitaire_price = item.solitaire_price_ij_si || item.solitaires_price || 0;
+            let rawSolitaire = item.solitaires_quality ? String(item.solitaires_quality) : '1';
+            if (rawSolitaire.includes(',')) {
+                const parts = rawSolitaire.split(',').map(s => s.trim()).filter(s => s !== '0');
+                rawSolitaire = parts.length > 0 ? parts[0] : '1';
+            } else if (rawSolitaire === '0' || !rawSolitaire) {
+                rawSolitaire = '1';
+            }
+
+            let solitaire_price = 0;
+            if (rawSolitaire === "IJ-SI" || rawSolitaire === "1") {
+                solitaire_price = item.solitaire_price_ij_si || item.solitaire_price_gh_vs || item.solitaire_price_ef_vvs || item.solitaire_price_fg_si || item.solitaires_price || 0;
+            } else if (rawSolitaire === "GH-VS" || rawSolitaire === "2") {
+                solitaire_price = item.solitaire_price_gh_vs || item.solitaire_price_ij_si || item.solitaire_price_ef_vvs || item.solitaire_price_fg_si || item.solitaires_price || 0;
+            } else if (rawSolitaire === "EF-VVS" || rawSolitaire === "3") {
+                solitaire_price = item.solitaire_price_ef_vvs || item.solitaire_price_ij_si || item.solitaire_price_gh_vs || item.solitaire_price_fg_si || item.solitaires_price || 0;
+            } else if (rawSolitaire === "FG-SI" || rawSolitaire === "4") {
+                solitaire_price = item.solitaire_price_fg_si || item.solitaire_price_ij_si || item.solitaire_price_gh_vs || item.solitaire_price_ef_vvs || item.solitaires_price || 0;
+            } else {
+                solitaire_price = item.solitaire_price_ij_si || item.solitaire_price_gh_vs || item.solitaire_price_ef_vvs || item.solitaire_price_fg_si || item.solitaires_price || 0;
+            }
             const gemstone_price = item.gemstone_price || 0;
 
             if (item.product_type && item.product_type.toLowerCase() === "diamond") {
@@ -41,11 +59,12 @@ exports.productBasePricing = async (req, res) => {
                 const gemstone_weight_g = (item.gemstone_weight || 0) * 0.2;
 
                 const raw_gold_weight = item.gold_weight || item.weight || 0;
-                // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Gemstone Weight (g)
-                const net_gold_weight = Math.max(0, raw_gold_weight - diamond_weight_g - gemstone_weight_g);
+                const solitaire_weight_g = (item.solitaires_weight || item.solitaire_weight || 0) * 0.2;
+                // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Solitaire Weight (g) - Gemstone Weight (g)
+                const net_gold_weight = Math.max(0, raw_gold_weight - diamond_weight_g - solitaire_weight_g - gemstone_weight_g);
 
                 const gold_rate_14k = Math.floor(current_price.gold_rate_24k * 58.5 / 100);
-                console.log(gold_rate_14k, "gold_rate_14k");
+                item_gold_price = Math.floor(net_gold_weight * gold_rate_14k);
 
                 const item_diamond_rate = item.diamond_rate_ij_si || current_price.diamond_rate_ij_si || 0;
                 item_diamond_price = total_diamond_weight * item_diamond_rate;
@@ -56,7 +75,8 @@ exports.productBasePricing = async (req, res) => {
 
                 const materials_cost = item_gold_price + item_diamond_price + solitaire_price + gemstone_price;
                 item_base_price = materials_cost + making_charges_amount;
-                item_base_price_withGST = item_base_price + (item_base_price * gst_percent / 100);
+                const gst_amount = Math.round(item_base_price * (gst_percent / 100));
+                item_base_price_withGST = Math.round(item_base_price + gst_amount);
 
                 return {
                     _id: item._id,
@@ -65,7 +85,9 @@ exports.productBasePricing = async (req, res) => {
                     product_type: item.product_type,
                     gold_price: Math.round(item_gold_price),
                     diamond_price: Math.round(item_diamond_price),
+                    solitaire_price: Math.round(solitaire_price),
                     making_charges: Math.round(making_charges_amount),
+                    gst_amount: gst_amount,
                     base_price_withGST: Math.round(item_base_price_withGST),
                     gold_weight: net_gold_weight
                 };

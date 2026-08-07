@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Product = require('../models/productModel');
 const livePrice = require('../models/jewelleryPricingModel');
 
@@ -37,8 +38,20 @@ exports.productPricing = async (req, res) => {
         let item_base_price_withGST = 0;
         let item_making_charges = 0;
         let making_charges_amount = 0;
+        let gst_amount = 0;
 
-        const product_data = await Product.findById(product_id);
+        let product_data = null;
+        if (mongoose.Types.ObjectId.isValid(product_id)) {
+            product_data = await Product.findById(product_id);
+        }
+        if (!product_data) {
+            product_data = await Product.findOne({
+                $or: [
+                    { product_id: product_id },
+                    { product_slug: product_id }
+                ]
+            });
+        }
         if (!product_data) {
             return res.status(404).json({
                 success: false,
@@ -56,16 +69,27 @@ exports.productPricing = async (req, res) => {
             });
         }
 
-        const makingCharges = product_data.making_charges || 0;
-        let solitaire_price = product_data.solitaires_price || 0;
-        if (rawDiamond === "IJ-SI" || rawDiamond === "1") {
-            solitaire_price = product_data.solitaire_price_ij_si || product_data.solitaires_price || 0;
-        } else if (rawDiamond === "GH-VS" || rawDiamond === "2") {
-            solitaire_price = product_data.solitaire_price_gh_vs || product_data.solitaires_price || 0;
-        } else if (rawDiamond === "EF-VVS" || rawDiamond === "3") {
-            solitaire_price = product_data.solitaire_price_ef_vvs || product_data.solitaires_price || 0;
-        } else if (rawDiamond === "FG-SI" || rawDiamond === "4") {
-            solitaire_price = product_data.solitaire_price_fg_si || product_data.solitaires_price || 0;
+        const gst_percent = current_price.gst_percent || 3;
+        const reqSolitaire = req.body.solitaire || req.body.solitaires_quality;
+        let rawSolitaire = reqSolitaire || product_data.solitaires_quality || rawDiamond;
+        if (typeof rawSolitaire === 'string' && rawSolitaire.includes(',')) {
+            const parts = rawSolitaire.split(',').map(s => s.trim()).filter(s => s !== '0');
+            rawSolitaire = parts.length > 0 ? parts[0] : '1';
+        } else if (rawSolitaire === '0' || !rawSolitaire) {
+            rawSolitaire = '1';
+        }
+
+        let solitaire_price = 0;
+        if (rawSolitaire === "IJ-SI" || rawSolitaire === "1") {
+            solitaire_price = product_data.solitaire_price_ij_si || product_data.solitaire_price_gh_vs || product_data.solitaire_price_ef_vvs || product_data.solitaire_price_fg_si || product_data.solitaires_price || 0;
+        } else if (rawSolitaire === "GH-VS" || rawSolitaire === "2") {
+            solitaire_price = product_data.solitaire_price_gh_vs || product_data.solitaire_price_ij_si || product_data.solitaire_price_ef_vvs || product_data.solitaire_price_fg_si || product_data.solitaires_price || 0;
+        } else if (rawSolitaire === "EF-VVS" || rawSolitaire === "3") {
+            solitaire_price = product_data.solitaire_price_ef_vvs || product_data.solitaire_price_ij_si || product_data.solitaire_price_gh_vs || product_data.solitaire_price_fg_si || product_data.solitaires_price || 0;
+        } else if (rawSolitaire === "FG-SI" || rawSolitaire === "4") {
+            solitaire_price = product_data.solitaire_price_fg_si || product_data.solitaire_price_ij_si || product_data.solitaire_price_gh_vs || product_data.solitaire_price_ef_vvs || product_data.solitaires_price || 0;
+        } else {
+            solitaire_price = product_data.solitaire_price_ij_si || product_data.solitaire_price_gh_vs || product_data.solitaire_price_ef_vvs || product_data.solitaire_price_fg_si || product_data.solitaires_price || 0;
         }
         const gemstone_price = product_data.gemstone_price || 0;
 
@@ -176,10 +200,11 @@ exports.productPricing = async (req, res) => {
                 }
             }
 
-            // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Gemstone Weight (g)
+            // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Solitaire Weight (g) - Gemstone Weight (g)
             const diamond_weight_g = total_diamond_weight * 0.2;
+            const solitaire_weight_g = (product_data.solitaires_weight || product_data.solitaire_weight || 0) * 0.2;
             const gemstone_weight_g = (product_data.gemstone_weight || 0) * 0.2;
-            const net_gold_weight = Math.max(0, gross_gold_weight - diamond_weight_g - gemstone_weight_g);
+            const net_gold_weight = Math.max(0, gross_gold_weight - diamond_weight_g - solitaire_weight_g - gemstone_weight_g);
             real_gold_weight = net_gold_weight;
 
             // diamond rate calculation for custom (prioritize product manual rate, fallback to live rate)
@@ -250,7 +275,8 @@ exports.productPricing = async (req, res) => {
 
             const materials_cost = item_gold_price + item_diamond_price + solitaire_price + gemstone_price;
             item_base_price = materials_cost + making_charges_amount;
-            item_base_price_withGST = Math.round(item_base_price + (item_base_price * gst_percent / 100));
+            gst_amount = Math.round(item_base_price * (gst_percent / 100));
+            item_base_price_withGST = Math.round(item_base_price + gst_amount);
 
         } else {
             console.log(`No pricing branch defined for product_type: ${product_data.product_type}`);
@@ -265,11 +291,16 @@ exports.productPricing = async (req, res) => {
             success: true,
             message: "product data",
             gold_weight: real_gold_weight,
+            gold_price: Math.round(item_gold_price),
             price: item_base_price_withGST,
             diamond_weight: real_diamond_weight,
+            diamond_price: Math.round(item_diamond_price),
             diamond_rate_used: diamond_rate,
             diamond_grade: rawDiamond || null,
-            making_charges: making_charges_amount
+            solitaire_price: Math.round(solitaire_price),
+            making_charges: making_charges_amount,
+            gst_amount: gst_amount,
+            gst_percent: gst_percent
         });
 
     } catch (error) {
