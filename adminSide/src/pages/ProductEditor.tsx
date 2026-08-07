@@ -113,6 +113,7 @@ interface ProductFormData {
   diamond_weight: number;
   diamond_count: number;
   solitaires_weight: number;
+  solitaire_weight?: number;
   solitaires_price: number;
   solitaires_quality: string;
   product_weight: number;
@@ -182,6 +183,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     diamond_weight: 0,
     diamond_count: 0,
     solitaires_weight: 0,
+    solitaire_weight: 0,
     solitaires_price: 0,
     solitaires_quality: '0',
     product_weight: 0,
@@ -251,7 +253,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       gold_weight: Number(product.gold_weight || 0),
       diamond_weight: Number(product.diamond_weight || 0),
       diamond_count: Number(product.diamond_count || 0),
-      solitaires_weight: Number(product.solitaires_weight || 0),
+      solitaires_weight: Number(product.solitaires_weight || product.solitaire_weight || 0),
+      solitaire_weight: Number(product.solitaire_weight || product.solitaires_weight || 0),
       solitaires_price: Number(product.solitaires_price || 0),
       product_weight: Number(product.product_weight || 0),
       center_diamond_weight: product.center_diamond_weight !== null ? Number(product.center_diamond_weight) : null,
@@ -345,6 +348,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
 
     if (includeSolitaire) {
       numberFields.push({ key: 'solitaires_price', label: 'Solitaire Price' });
+      numberFields.push({ key: 'solitaires_weight', label: 'Solitaire Weight' });
     }
 
     for (const f of numberFields) {
@@ -376,7 +380,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       // Handle solitaire presence
       solitaires_price: includeSolitaire ? Number(formData.solitaires_price || 0) : 0,
       solitaires_quality: includeSolitaire ? formData.solitaires_quality : '0',
-      solitaires_weight: 0,
+      solitaires_weight: includeSolitaire ? Number(formData.solitaires_weight || formData.solitaire_weight || 0) : 0,
+      solitaire_weight: includeSolitaire ? Number(formData.solitaire_weight || formData.solitaires_weight || 0) : 0,
       // Handle diamond presence
       diamond_weight: includeDiamond ? Number(formData.diamond_weight || 0) : 0,
       diamond_count: includeDiamond ? Number(formData.diamond_count || 0) : 0,
@@ -1002,12 +1007,16 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                         />
                       </div>
                       <div className="space-y-3">
-                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Quality</label>
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Solitaire Weight</label>
                         <input
-                          type="text"
-                          value={formData.solitaires_quality}
-                          onChange={(e) => setFormData({ ...formData, solitaires_quality: e.target.value })}
-                          placeholder="e.g. VVS1-F"
+                          type="number"
+                          step="any"
+                          value={formData.solitaires_weight || formData.solitaire_weight || ''}
+                          onChange={(e) => {
+                            const val = parseFloat(e.target.value) || 0;
+                            setFormData({ ...formData, solitaires_weight: val, solitaire_weight: val });
+                          }}
+                          placeholder="e.g. 0.50"
                           className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                         />
                       </div>

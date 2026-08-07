@@ -136,6 +136,12 @@ class ProductService {
       productData.metal_type = getMetalTypeName(productData.metal_type);
     }
 
+    if (productData.solitaire_weight !== undefined || productData.solitaires_weight !== undefined) {
+      const weight = Number(productData.solitaire_weight || productData.solitaires_weight || 0);
+      productData.solitaire_weight = weight;
+      productData.solitaires_weight = weight;
+    }
+
     const product = new Product(productData);
     return await product.save();
   }
@@ -186,6 +192,12 @@ class ProductService {
 
     if (updateData.metal_type) {
       updateData.metal_type = getMetalTypeName(updateData.metal_type);
+    }
+
+    if (updateData.solitaire_weight !== undefined || updateData.solitaires_weight !== undefined) {
+      const weight = Number(updateData.solitaire_weight ?? updateData.solitaires_weight ?? 0);
+      updateData.solitaire_weight = weight;
+      updateData.solitaires_weight = weight;
     }
 
     // Assign fields dynamically

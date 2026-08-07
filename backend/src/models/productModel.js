@@ -124,6 +124,10 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  solitaire_weight: {
+    type: Number,
+    default: 0
+  },
   solitaires_price: {
     type: Number,
     default: 0
