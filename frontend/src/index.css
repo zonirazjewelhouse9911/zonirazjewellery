@@ -1967,6 +1967,14 @@ button {
   background-color: var(--color-light-bg);
 }
 
+.ge-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
 .ge-grid {
   max-width: 1200px;
   margin: 0 auto;
@@ -1990,9 +1998,113 @@ button {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  min-height: 380px;
+  min-height: auto;
   border: 1px solid rgba(219, 207, 203, 0.5);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ge-sell-card {
+  min-height: 340px;
+  width: 100%;
+}
+
+.ge-trust-card {
+  width: 100%;
+  padding: 45px;
+  background-color: #ffffff;
+}
+
+.ge-trust-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 32px;
+}
+
+.ge-trust-header .ge-card-icon-wrap {
+  margin-bottom: 0;
+  flex-shrink: 0;
+}
+
+.ge-trust-title {
+  max-width: 100%;
+  margin-bottom: 6px;
+  font-size: 28px;
+}
+
+.ge-trust-desc {
+  max-width: 650px;
+  margin-bottom: 0;
+  font-size: 14px;
+}
+
+.ge-cert-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 20px;
+  width: 100%;
+  z-index: 2;
+}
+
+.ge-cert-badge-item {
+  background: #fdfcfb;
+  border: 1px solid rgba(219, 207, 203, 0.6);
+  border-radius: 20px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(93, 70, 60, 0.03);
+  height: 120px;
+}
+
+.ge-cert-badge-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(197, 168, 128, 0.22);
+  border-color: #c5a880;
+  background: #ffffff;
+}
+
+.ge-cert-img-box {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ge-cert-badge-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.02));
+  transition: transform 0.3s ease;
+}
+
+.ge-cert-badge-item:hover .ge-cert-badge-img {
+  transform: scale(1.05);
+}
+
+@media (max-width: 768px) {
+  .ge-trust-card {
+    padding: 30px 20px;
+    border-radius: 28px;
+  }
+  .ge-trust-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .ge-cert-grid {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 12px;
+  }
+  .ge-cert-badge-item {
+    height: 100px;
+    padding: 10px 14px;
+    border-radius: 16px;
+  }
 }
 
 .ge-card:hover {

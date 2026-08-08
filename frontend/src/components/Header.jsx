@@ -1183,7 +1183,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                 { name: "Solitaires", desc: "For Engagement, Anniversaries & Milestones", hash: "/solitaires", img: solitaireSetsImg },
                 { name: "Mangalsutras", desc: "Browse by neckwear, bracelets & more", hash: "/mangalsutras", img: trendyMangalsutrasImg },
                 { name: "Necklaces & Pendants", desc: "Browse by Style, Metal & Price", hash: "/necklaces", img: infinityNecklacesImg },
-                { name: "Silver by Shaya", desc: "Sterling silver collection", hash: "/silver", img: silverEarringsImg },
+                { name: "Silver Collection", desc: "Sterling silver collection", hash: "/silver", img: silverEarringsImg },
                 { name: "Gifting", desc: "For All Relationships & Occasions", hash: "/gifting", img: giftsForMomImg },
                 { name: "Trending", desc: "Most loved designs", hash: "/trending", img: gulnaaraImg }
               ].map((category, idx) => (

@@ -4,23 +4,22 @@ import { products } from '../data/products';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { useCurrency } from '../context/CurrencyContext';
-import { 
-  Star, 
-  Sparkles, 
-  Heart, 
-  Share2, 
-  MapPin, 
-  Calendar, 
-  Store, 
-  ShieldCheck, 
-  RotateCcw, 
-  Repeat, 
-  Shield, 
-  Coins, 
-  Gem, 
-  Ruler, 
-  Info, 
-  Award, 
+import {
+  Star,
+  Sparkles,
+  Heart,
+  Share2,
+  MapPin,
+  Calendar,
+  ShieldCheck,
+  RotateCcw,
+  Repeat,
+  Shield,
+  Coins,
+  Gem,
+  Ruler,
+  Info,
+  Award,
   Maximize2,
   X,
   Mic,
@@ -55,7 +54,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const isTennisBracelet = categoryName === 'tennis bracelets' || categoryName === 'tennis bracelet' || categoryName === 'bracelets' || categoryName === 'bracelet';
   const isChain = categoryName === 'chains' || categoryName === 'chain';
   const isMangalsutra = categoryName === 'mangalsutra' || categoryName === 'mangalsutras';
-  
+
   const isAanaSizeProduct = isChain || isMangalsutra || isTennisBracelet;
   const showSizing = isRing || isBangleOrBracelet || isAanaSizeProduct;
 
@@ -272,7 +271,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             const price = matched.base_price_withGST;
             const goldCost = matched.gold_price !== undefined ? matched.gold_price : 0;
             const diamondCost = matched.diamond_price !== undefined ? matched.diamond_price : 0;
-            
+
             const solitaireCost = (matched.solitaire_price && matched.solitaire_price > 0) ? matched.solitaire_price : initialSolitaireCost;
             const gemstoneCost = (product.gemstone_weight || 0) * 1500;
             const makingCharges = matched.making_charges !== undefined ? matched.making_charges : (product.making_charges || 0);
@@ -404,10 +403,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
           const makingCharges = data.making_charges !== undefined ? data.making_charges : (product.making_charges || 0);
           const fallbackSolitaireCost =
             selectedSolitaire === "IJ-SI" ? (product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_ef_vvs || product.solitaire_price_fg_si || product.solitaires_price || 0) :
-            selectedSolitaire === "GH-VS" ? (product.solitaire_price_gh_vs || product.solitaire_price_ij_si || product.solitaire_price_ef_vvs || product.solitaire_price_fg_si || product.solitaires_price || 0) :
-            selectedSolitaire === "EF-VVS" ? (product.solitaire_price_ef_vvs || product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_fg_si || product.solitaires_price || 0) :
-            selectedSolitaire === "FG-SI" ? (product.solitaire_price_fg_si || product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_ef_vvs || product.solitaires_price || 0) :
-            (product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaires_price || 0);
+              selectedSolitaire === "GH-VS" ? (product.solitaire_price_gh_vs || product.solitaire_price_ij_si || product.solitaire_price_ef_vvs || product.solitaire_price_fg_si || product.solitaires_price || 0) :
+                selectedSolitaire === "EF-VVS" ? (product.solitaire_price_ef_vvs || product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_fg_si || product.solitaires_price || 0) :
+                  selectedSolitaire === "FG-SI" ? (product.solitaire_price_fg_si || product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_ef_vvs || product.solitaires_price || 0) :
+                    (product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaires_price || 0);
 
           const solitaireCost = (data.solitaire_price && data.solitaire_price > 0)
             ? data.solitaire_price
@@ -425,7 +424,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
             makingCharges: makingCharges,
             gst: gst,
             subtotal: subtotal,
-            goldWeight: data.gold_weight || product?.gold_weight || 0
+            grossWeight: data.gross_weight || data.gold_weight || product?.gross_weight || product?.gold_weight || 0,
+            goldWeight: data.gold_weight || data.net_gold_weight || product?.gold_weight || 0
           });
         }
       } catch (err) {
@@ -1179,7 +1179,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
           margin-bottom: 16px;
         }
 
-        /* Try at Home + Store Availability cards */
+        /* Service & Delivery cards */
         .pdp-trial-store-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
@@ -1883,7 +1883,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             </div>
 
             {/* Main image */}
-            <div 
+            <div
               className="pdp-main-img-wrap"
               onMouseEnter={() => setIsZoomed(true)}
               onMouseLeave={() => setIsZoomed(false)}
@@ -1904,10 +1904,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   cursor: 'zoom-in'
                 }}
               />
-              <div className="pdp-popular-badge">
-                <Star size={11} style={{ display: 'inline', verticalAlign: '-1px', fill: 'currentColor', marginRight: '4px' }} />
-                9k+ bought this
-              </div>
+
               <div className="pdp-main-zoom-icon" title="Zoom image">
                 <Maximize2 size={16} />
               </div>
@@ -1927,8 +1924,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
             {allImages.length > 1 && (
               <div className="pdp-mobile-dots">
                 {allImages.map((_, i) => (
-                  <div 
-                    key={i} 
+                  <div
+                    key={i}
                     className={`pdp-mobile-dot ${selectedImage === i ? 'active' : ''}`}
                   />
                 ))}
@@ -1939,19 +1936,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
         {/* RIGHT: Product Info */}
         <div className="pdp-info-col">
-          {/* Popular badge */}
-          <div className="pdp-popular-tag">
-            <Star size={12} style={{ display: 'inline', fill: 'currentColor', verticalAlign: 'middle', marginRight: '4px' }} />
-            9k+ bought this
-          </div>
 
-          {/* Rating */}
-          <div className="pdp-rating-row">
-            <div className="pdp-rating-pill">
-              <Star size={14} className="pdp-star-icon" style={{ fill: 'currentColor' }} />
-              {rating} &nbsp;|&nbsp; {reviews.toLocaleString('en-IN')} Ratings
-            </div>
-          </div>
 
           {/* Price */}
           <div className="pdp-price-row">
@@ -1988,8 +1973,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 >
                   {activeSizes.map(s => (
                     <option key={s} value={s}>
-                      {isAanaSizeProduct 
-                        ? `${s} Aana (${(Number(s) * 0.0625).toFixed(1).replace(/\.0$/, '')}")` 
+                      {isAanaSizeProduct
+                        ? `${s} Aana (${(Number(s) * 0.0625).toFixed(1).replace(/\.0$/, '')}")`
                         : s}
                     </option>
                   ))}
@@ -2099,8 +2084,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   <div>
                     <strong>{isAanaSizeProduct ? 'Length' : 'Size'}</strong>
                     <span>
-                      {isAanaSizeProduct 
-                        ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")` 
+                      {isAanaSizeProduct
+                        ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")`
                         : selectedSize}
                     </span>
                   </div>
@@ -2215,8 +2200,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
           <div className="pdp-divider" />
 
-          {/* Delivery, Stores & Trial */}
-          <div className="pdp-section-title">Delivery, Stores &amp; Trial</div>
+          {/* Delivery Details */}
+          <div className="pdp-section-title">Delivery Details</div>
 
           <form onSubmit={handlePincodeCheck}>
             <div className="pdp-pincode-row">
@@ -2250,22 +2235,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
             <span>Expected Delivery Date — Enter pincode to check</span>
           </div>
 
-          {/* Service Cards */}
-          <div className="pdp-trial-store-grid" style={{ gridTemplateColumns: '1fr' }}>
-            <div className="pdp-service-card">
-              <div className="pdp-service-icon">
-                <Store size={22} style={{ color: '#A98E73' }} />
-              </div>
-              <div className="pdp-service-title">Store Availability</div>
-              <div className="pdp-service-sub">Find designs in store</div>
-              <button
-                className="pdp-service-btn orange-outline"
-                onClick={() => alert('Store locator — finding nearest stores...')}
-              >
-                FIND IN STORE
-              </button>
-            </div>
-          </div>
 
           {/* Trust Strip */}
           <div className="pdp-trust-strip">
@@ -2321,14 +2290,32 @@ export default function ProductDetailPage({ product, products: propProducts = []
         </div>
 
         {activeTab === 'details' && (() => {
-          const grossWeight = product.gross_weight || product.gold_weight || product.weight || 0;
+          const grossWeight = (pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
+            ? pricingDetails.grossWeight
+            : (product.gross_weight || product.gold_weight || product.weight || 0);
           const diamondW_g = (product.diamond_weight || 0) * 0.2;
           const gemstoneW_g = (product.gemstone_weight || 0) * 0.2;
-          const netWeight = Math.max(0, grossWeight - diamondW_g - gemstoneW_g);
+          const netWeight = (pricingDetails.goldWeight && pricingDetails.goldWeight > 0)
+            ? pricingDetails.goldWeight
+            : Math.max(0, grossWeight - diamondW_g - gemstoneW_g);
 
           const displayKarat = selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : `${selectedMetal.split(' ')[0]} KT`);
           const displayColor = selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : (selectedMetal.includes('Yellow') ? 'Yellow' : selectedMetal.includes('Rose') ? 'Rose' : 'White'));
-          
+
+          const metalMaterial = selectedKarat === 'Platinum'
+            ? 'Platinum'
+            : `${displayKarat} ${displayColor} Gold`;
+
+          const hasDiamond = Number(product.diamond_weight || 0) > 0;
+          const hasGem = Number(product.gemstone_weight || 0) > 0;
+
+          let matParts = [metalMaterial];
+          if (hasDiamond) matParts.push('Diamond');
+          if (hasSolitaire) matParts.push('Solitaire');
+          if (hasGem) matParts.push('Gemstone');
+
+          const selectedMaterialDisplay = matParts.join(' & ');
+
           return (
             <div className="pdp-details-grid">
               <div className="pdp-detail-group">
@@ -2344,12 +2331,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   <span className="pdp-detail-val">{displayColor}</span>
                 </div>
                 <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Net Weight</span>
-                  <span className="pdp-detail-val">{netWeight.toFixed(3)} g</span>
-                </div>
-                <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Gross Weight</span>
                   <span className="pdp-detail-val">{grossWeight.toFixed(3)} g</span>
+                </div>
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Net Weight</span>
+                  <span className="pdp-detail-val">{netWeight.toFixed(3)} g</span>
                 </div>
               </div>
 
@@ -2404,8 +2391,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
                     {isChain ? 'Chain Length' : isMangalsutra ? 'Mangalsutra Length' : isTennisBracelet ? 'Bracelet Length' : isBangleOrBracelet ? 'Bangle Size' : 'Ring Size'}
                   </span>
                   <span className="pdp-detail-val">
-                    {isAanaSizeProduct 
-                      ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")` 
+                    {isAanaSizeProduct
+                      ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")`
                       : selectedSize}
                   </span>
                 </div>
@@ -2429,11 +2416,11 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Material</span>
-                  <span className="pdp-detail-val">{product.material || product.product_type || 'Gold & Diamond'}</span>
+                  <span className="pdp-detail-val">{selectedMaterialDisplay}</span>
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Manufacturer</span>
-                  <span className="pdp-detail-val">Zoniraz Pvt. Ltd.</span>
+                  <span className="pdp-detail-val">Zoniraz Jewelhouse Pvt Ltd</span>
                 </div>
               </div>
             </div>
@@ -2492,9 +2479,13 @@ export default function ProductDetailPage({ product, products: propProducts = []
           const gemstoneW_ct = product.gemstone_weight || 0;
           const gemstoneW_g = gemstoneW_ct * 0.2;
 
-          const grossW = product.gross_weight || product.gold_weight || product.weight || 0;
-          const netW = Math.max(0, grossW - diamondW_g - solitaireW_g - gemstoneW_g);
-          const goldW = netW;
+          const grossW = (pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
+            ? pricingDetails.grossWeight
+            : (product.gross_weight || product.gold_weight || product.weight || 0);
+          const goldW = (pricingDetails.goldWeight && pricingDetails.goldWeight > 0)
+            ? pricingDetails.goldWeight
+            : Math.max(0, grossW - diamondW_g - solitaireW_g - gemstoneW_g);
+          const netW = goldW;
 
           return (
             <div className="pdp-details-grid animate-in fade-in duration-300">
@@ -2576,23 +2567,23 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   }}
                 >
                   <div className="pdp-related-img-wrapper">
-                    <img 
-                      src={(p.images && p.images.length > 0) ? p.images[activeImgIndex] : p.image} 
-                      alt={p.name} 
-                      className="pdp-related-img" 
+                    <img
+                      src={(p.images && p.images.length > 0) ? p.images[activeImgIndex] : p.image}
+                      alt={p.name}
+                      className="pdp-related-img"
                     />
-                    
+
                     {p.images && p.images.length > 1 && (
                       <div className="card-arrow-overlay" onClick={e => e.stopPropagation()}>
-                        <button 
-                          className="card-slider-arrow" 
+                        <button
+                          className="card-slider-arrow"
                           onClick={(e) => prevRelatedCardImage(e, p.id, p.images.length)}
                           aria-label="Previous image"
                         >
                           ‹
                         </button>
-                        <button 
-                          className="card-slider-arrow" 
+                        <button
+                          className="card-slider-arrow"
                           onClick={(e) => nextRelatedCardImage(e, p.id, p.images.length)}
                           aria-label="Next image"
                         >
@@ -2707,18 +2698,18 @@ export default function ProductDetailPage({ product, products: propProducts = []
       {/* Sizing Video Modal */}
       {sizingVideoOpen && (
         <div className="pdp-modal-overlay" onClick={() => setSizingVideoOpen(false)}>
-          <div 
-            className="pdp-modal-box" 
-            style={{ 
-              width: '1470px', 
-              maxWidth: '95vw', 
-              height: '1000px', 
-              maxHeight: '90vh', 
-              padding: '24px', 
-              display: 'flex', 
+          <div
+            className="pdp-modal-box"
+            style={{
+              width: '1470px',
+              maxWidth: '95vw',
+              height: '1000px',
+              maxHeight: '90vh',
+              padding: '24px',
+              display: 'flex',
               flexDirection: 'column',
               boxSizing: 'border-box'
-            }} 
+            }}
             onClick={e => e.stopPropagation()}
           >
             <button className="pdp-modal-close" onClick={() => setSizingVideoOpen(false)} aria-label="Close modal">✕</button>

@@ -477,9 +477,6 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
                 {/* Product image */}
                 <div className="wishlist-img-wrapper">
                   <img src={product.image} alt={product.name} className="wishlist-img" loading="lazy" decoding="async" width="280" height="280" />
-                  <div className="popular-tag">
-                    <span>★</span> 9k+ bought this
-                  </div>
                 </div>
 
                 {/* Info */}

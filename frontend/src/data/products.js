@@ -404,7 +404,7 @@ export const products = [
   // Collections
   {
     id: 23,
-    name: "Caratlane Iconics Diamond Set",
+    name: "Zoniraz Iconics Diamond Set",
     price: 125000,
     originalPrice: 150000,
     image: caratlaneIconicsImg,

@@ -170,6 +170,9 @@ exports.payInstallment = async ({ planId, userEmail, paymentMethod, transactionI
     plan.bonusLapsedReason = `Installment #${nextNum} was paid past the due date (${dueDate.toLocaleDateString('en-IN')}).`;
   }
 
+  const resolvedMethod = paymentMethod || 'Razorpay (UPI / Card / Netbanking)';
+  const resolvedTxnId = razorpayPaymentId || transactionId || `TXN_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+
   const newInstallment = {
     installmentNumber: nextNum,
     amount: amount,

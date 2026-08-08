@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 const nodemailer = require('nodemailer');
 const GoldMine = require('../models/goldMineModel');
 
@@ -9,6 +11,33 @@ const transporter = nodemailer.createTransport({
     pass: 'wtqe znhi gtmv oyfa'
   }
 });
+
+// Helper to load image asset as Base64 Data URI
+function getBadgeBase64(filename) {
+  try {
+    const filePath = path.join(__dirname, '../../../frontend/src/assets', filename);
+    if (fs.existsSync(filePath)) {
+      const fileData = fs.readFileSync(filePath);
+      return `data:image/jpeg;base64,${fileData.toString('base64')}`;
+    }
+  } catch (err) {
+    console.error('Error loading invoice badge image:', filename, err.message);
+  }
+  return '';
+}
+
+// Load and cache all 9 trust/certification images
+const badgeImages = {
+  purityBadge: getBadgeBase64('WhatsApp Image 2026-07-24 at 12.32.04 PM (1).jpeg'),
+  purityMark: getBadgeBase64('WhatsApp Image 2026-07-24 at 12.32.04 PM.jpeg'),
+  sglCert: getBadgeBase64('WhatsApp Image 2026-07-24 at 12.32.05 PM (1).jpeg'),
+  igiCert: getBadgeBase64('WhatsApp Image 2026-07-24 at 12.32.05 PM.jpeg'),
+  trustSafety: getBadgeBase64('WhatsApp Image 2026-07-24 at 12.32.06 PM (1).jpeg'),
+  certQuality: getBadgeBase64('WhatsApp Image 2026-07-24 at 12.32.06 PM (2).jpeg'),
+  naturalDiamond: getBadgeBase64('WhatsApp Image 2026-07-24 at 12.32.06 PM.jpeg'),
+  bisLogo: getBadgeBase64('WhatsApp Image 2026-07-24 at 12.32.07 PM (1).jpeg'),
+  authenticJewellery: getBadgeBase64('WhatsApp Image 2026-07-24 at 12.32.07 PM.jpeg')
+};
 
 // Helper to convert amount to words
 function convertNumberToWords(amount) {
@@ -210,14 +239,46 @@ function generatePassbookHtml(plan, actionType = 'EMI_PAYMENT') {
         </tr>
       </table>
 
-      <!-- Footer Quality Badges -->
-      <div style="text-align: center; border-top: 1px solid #CBD5E0; padding-top: 10px; font-size: 10px; color: #718096;">
-        <span style="display: inline-block; margin: 0 8px; font-weight: bold; color: #1A202C;">★ BIS LOGO</span> |
-        <span style="display: inline-block; margin: 0 8px; font-weight: bold; color: #1A202C;">💎 CERTIFIED DIAMOND</span> |
-        <span style="display: inline-block; margin: 0 8px; font-weight: bold; color: #1A202C;">🏆 IGI CERTIFIED</span> |
-        <span style="display: inline-block; margin: 0 8px; font-weight: bold; color: #1A202C;">✔ ASSURED PURITY (22K916)</span> |
-        <span style="display: inline-block; margin: 0 8px; font-weight: bold; color: #1A202C;">🛡 SGL CERTIFIED</span> |
-        <span style="display: inline-block; margin: 0 8px; font-weight: bold; color: #1A202C;">✨ TRUST & SAFE</span>
+      <!-- Footer Quality & Certification Badges -->
+      <div style="border-top: 2px solid #1A202C; padding-top: 16px; margin-top: 20px; text-align: center;">
+        <div style="font-weight: 900; font-size: 12px; color: #1A202C; letter-spacing: 0.5px; margin-bottom: 12px; text-transform: uppercase;">
+          Our Trust, Quality & Purity Assurances
+        </div>
+        <table style="width: 100%; border-collapse: separate; border-spacing: 8px; margin: 0 auto;">
+          <tr>
+            <td style="width: 33.33%; text-align: center; vertical-align: middle; background-color: #FFFFFF; border: 1px solid #CBD5E0; border-radius: 10px; padding: 8px; height: 75px;">
+              <img src="${badgeImages.purityBadge}" alt="Assured Purity" style="max-width: 100%; max-height: 65px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </td>
+            <td style="width: 33.33%; text-align: center; vertical-align: middle; background-color: #FFFFFF; border: 1px solid #CBD5E0; border-radius: 10px; padding: 8px; height: 75px;">
+              <img src="${badgeImages.purityMark}" alt="Purity Mark" style="max-width: 100%; max-height: 65px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </td>
+            <td style="width: 33.33%; text-align: center; vertical-align: middle; background-color: #FFFFFF; border: 1px solid #CBD5E0; border-radius: 10px; padding: 8px; height: 75px;">
+              <img src="${badgeImages.sglCert}" alt="SGL Certified" style="max-width: 100%; max-height: 65px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 33.33%; text-align: center; vertical-align: middle; background-color: #FFFFFF; border: 1px solid #CBD5E0; border-radius: 10px; padding: 8px; height: 75px;">
+              <img src="${badgeImages.igiCert}" alt="IGI Certified" style="max-width: 100%; max-height: 65px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </td>
+            <td style="width: 33.33%; text-align: center; vertical-align: middle; background-color: #FFFFFF; border: 1px solid #CBD5E0; border-radius: 10px; padding: 8px; height: 75px;">
+              <img src="${badgeImages.trustSafety}" alt="Trust & Safety" style="max-width: 100%; max-height: 65px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </td>
+            <td style="width: 33.33%; text-align: center; vertical-align: middle; background-color: #FFFFFF; border: 1px solid #CBD5E0; border-radius: 10px; padding: 8px; height: 75px;">
+              <img src="${badgeImages.certQuality}" alt="Certified Quality" style="max-width: 100%; max-height: 65px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 33.33%; text-align: center; vertical-align: middle; background-color: #FFFFFF; border: 1px solid #CBD5E0; border-radius: 10px; padding: 8px; height: 75px;">
+              <img src="${badgeImages.naturalDiamond}" alt="Natural Diamond" style="max-width: 100%; max-height: 65px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </td>
+            <td style="width: 33.33%; text-align: center; vertical-align: middle; background-color: #FFFFFF; border: 1px solid #CBD5E0; border-radius: 10px; padding: 8px; height: 75px;">
+              <img src="${badgeImages.bisLogo}" alt="BIS Logo" style="max-width: 100%; max-height: 65px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </td>
+            <td style="width: 33.33%; text-align: center; vertical-align: middle; background-color: #FFFFFF; border: 1px solid #CBD5E0; border-radius: 10px; padding: 8px; height: 75px;">
+              <img src="${badgeImages.authenticJewellery}" alt="Authentic Jewellery" style="max-width: 100%; max-height: 65px; width: auto; height: auto; display: block; margin: 0 auto; object-fit: contain;" />
+            </td>
+          </tr>
+        </table>
       </div>
 
     </div>

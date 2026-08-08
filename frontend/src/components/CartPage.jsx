@@ -29,7 +29,7 @@ const frequentlyBoughtItems = [
   }
 ];
 
-export default function CartPage({ cart = {}, setCart, wishlist = {}, setWishlist }) {
+export default function CartPage({ products: propProducts = [], cart = {}, setCart, wishlist = {}, setWishlist }) {
   const { formatPrice } = useCurrency();
   const [couponCode, setCouponCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
@@ -765,7 +765,6 @@ export default function CartPage({ cart = {}, setCart, wishlist = {}, setWishlis
                       {/* Image Thumbnail */}
                       <div className="cart-item-img-wrap">
                         <img src={pImage} alt={pName} className="cart-item-img" loading="lazy" decoding="async" width="120" height="120" />
-                        <span className="cart-item-badge">★ 1k+ bought this</span>
                       </div>
  
                       {/* Details */}

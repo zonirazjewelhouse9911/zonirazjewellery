@@ -83,6 +83,10 @@ export function VideoCallProvider({ children }) {
       }
     });
 
+    socket.on('connect_error', () => {
+      // Gracefully handle socket connection retry when server is starting up
+    });
+
     // Initial admin status poll
     fetch(`${API_BASE_URL}/api/video-call/admin-status`)
       .then(r => r.json())
@@ -90,7 +94,10 @@ export function VideoCallProvider({ children }) {
       .catch(() => {});
 
     return () => {
-      socket.disconnect();
+      if (socket) {
+        socket.off();
+        socket.disconnect();
+      }
     };
   }, []);
 
