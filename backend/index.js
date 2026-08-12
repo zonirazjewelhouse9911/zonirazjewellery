@@ -170,6 +170,10 @@ app.use('/api', goldMineRoutes);
 const razorpayRoutes = require('./src/routes/razorpayRoutes');
 app.use('/api/razorpay', razorpayRoutes);
 
+const looseStoneRoutes = require('./src/routes/looseStoneRoutes');
+app.use('/api/admin/loose-stones', looseStoneRoutes);
+app.use('/api/loose-stones', looseStoneRoutes);
+
 // ─── Video Call Admin Status REST endpoint ────────────────────────────────────
 // Track online admins in memory (socketId -> adminInfo)
 const onlineAdmins = new Map();

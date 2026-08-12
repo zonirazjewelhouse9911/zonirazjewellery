@@ -34,6 +34,7 @@ class JewelleryPricingController {
         diamond_rate_gh_vs,
         diamond_rate_ef_vvs,
         diamond_rate_fg_si,
+        custom_diamond_rates,
         gemstone_rate, 
         gst_percent 
       } = req.body;
@@ -53,6 +54,7 @@ class JewelleryPricingController {
         diamond_rate_gh_vs,
         diamond_rate_ef_vvs,
         diamond_rate_fg_si,
+        custom_diamond_rates,
         gemstone_rate,
         gst_percent
       });

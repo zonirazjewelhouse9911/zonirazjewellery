@@ -5,16 +5,19 @@ const testimonials = [
   {
     name: 'Priya S.',
     role: 'Bride-to-be',
+    location: 'Mumbai, India',
     quote: 'The detailing was exquisite and the finish felt so premium. It made my bridal look feel complete.'
   },
   {
     name: 'Aarav & Meera',
     role: 'Engagement gift',
+    location: 'Bengaluru, India',
     quote: 'We chose this piece for a special occasion and the craftsmanship exceeded all expectations.'
   },
   {
     name: 'Nisha K.',
     role: 'Loyal customer',
+    location: 'London, UK',
     quote: 'Every time I shop here, I feel like I’m choosing something timeless and beautifully made.'
   }
 ];
@@ -41,7 +44,7 @@ export default function TestimonialSection() {
                 “The moment I wore it, I knew it was exactly the kind of piece I had been searching for.
                 Elegant, light, and full of charm.”
               </p>
-              <span>— Ayesha, Delhi</span>
+              <span>— Ayesha, Delhi, India</span>
             </div>
           </article>
 
@@ -52,7 +55,7 @@ export default function TestimonialSection() {
                 <p>“{item.quote}”</p>
                 <div className="testimonial-card-footer">
                   <strong>{item.name}</strong>
-                  <span>{item.role}</span>
+                  <span>{item.role} • {item.location}</span>
                 </div>
               </article>
             ))}

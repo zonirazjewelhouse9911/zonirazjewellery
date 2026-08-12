@@ -44,7 +44,6 @@ const colorOptions = [
   { id: 'Rose', name: 'Rose Gold', colorCode: '#E09B8D' },
   { id: 'White', name: 'White Gold', colorCode: '#D5D9E0' }
 ];
-const diamondOptions = ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
 
 export default function ProductDetailPage({ product, products: propProducts = [], wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
   const { formatPrice } = useCurrency();
@@ -76,17 +75,24 @@ export default function ProductDetailPage({ product, products: propProducts = []
     }
     const rawList = String(product.solitaires_quality).split(',').map(s => s.trim());
     const mapped = rawList.map(item => {
-      if (item === '0') return null;
+      if (item === '0' || !item) return null;
       if (item === '1' || item.toUpperCase() === 'IJ-SI') return 'IJ-SI';
       if (item === '2' || item.toUpperCase() === 'GH-VS') return 'GH-VS';
       if (item === '3' || item.toUpperCase() === 'EF-VVS') return 'EF-VVS';
       if (item === '4' || item.toUpperCase() === 'FG-SI') return 'FG-SI';
-      const upper = item.toUpperCase();
-      if (['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'].includes(upper)) return upper;
-      return null;
+      return item;
     }).filter(Boolean);
+
+    if (product?.custom_solitaire_prices && typeof product.custom_solitaire_prices === 'object') {
+      Object.keys(product.custom_solitaire_prices).forEach(k => {
+        if (k && !mapped.includes(k)) {
+          mapped.push(k);
+        }
+      });
+    }
+
     return mapped.length > 0 ? mapped : ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
-  }, [product?.solitaires_quality]);
+  }, [product?.solitaires_quality, product?.custom_solitaire_prices]);
 
   const getProductSizes = () => {
     if (!product) return [];
@@ -187,10 +193,43 @@ export default function ProductDetailPage({ product, products: propProducts = []
     setSelectedColor(active[0]?.id || 'Yellow');
   }, [product]);
 
+  const diamondOptions = useMemo(() => {
+    if (!product?.diamond_quality) {
+      return ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
+    }
+    const rawList = String(product.diamond_quality).split(',').map(s => s.trim());
+    const mapped = rawList.map(item => {
+      if (item === '0' || !item) return null;
+      if (item === '1' || item.toUpperCase() === 'IJ-SI') return 'IJ-SI';
+      if (item === '2' || item.toUpperCase() === 'GH-VS') return 'GH-VS';
+      if (item === '3' || item.toUpperCase() === 'EF-VVS') return 'EF-VVS';
+      if (item === '4' || item.toUpperCase() === 'FG-SI') return 'FG-SI';
+      return item;
+    }).filter(Boolean);
+
+    if (product?.custom_diamond_rates && typeof product.custom_diamond_rates === 'object') {
+      Object.keys(product.custom_diamond_rates).forEach(k => {
+        if (k && !mapped.includes(k)) {
+          mapped.push(k);
+        }
+      });
+    }
+
+    return mapped.length > 0 ? mapped : ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
+  }, [product?.diamond_quality, product?.custom_diamond_rates]);
+
   const [selectedKarat, setSelectedKarat] = useState('14 KT');
   const selectedMetal = selectedKarat === 'Platinum' ? 'Platinum' : `${selectedKarat} ${selectedColor}`;
   const [selectedDiamond, setSelectedDiamond] = useState('IJ-SI');
   const [selectedSolitaire, setSelectedSolitaire] = useState('IJ-SI');
+
+  useEffect(() => {
+    if (diamondOptions && diamondOptions.length > 0) {
+      if (!selectedDiamond || !diamondOptions.includes(selectedDiamond)) {
+        setSelectedDiamond(diamondOptions[0] || 'IJ-SI');
+      }
+    }
+  }, [diamondOptions]);
 
   useEffect(() => {
     if (solitaireOptions && solitaireOptions.length > 0) {
@@ -397,11 +436,29 @@ export default function ProductDetailPage({ product, products: propProducts = []
           else if (metalKey === "22k") goldRate = rates.gold_rate_24k * 22 / 24;
           else if (metalKey === "24k") goldRate = rates.gold_rate_24k * 24 / 24;
 
-          const goldCost = data.gold_price !== undefined ? data.gold_price : Math.round((data.gold_weight || 0) * goldRate);
-          const diamondCost = data.diamond_price !== undefined ? data.diamond_price : Math.round((data.diamond_weight || 0) * (data.diamond_rate_used || rates.diamond_rate || 85000));
-          const gemstoneCost = (product.gemstone_weight || 0) * (rates.gemstone_rate || 1500);
+          const customDiamondPrice = (product.custom_diamond_rates && product.custom_diamond_rates[selectedDiamond] !== undefined)
+            ? Number(product.custom_diamond_rates[selectedDiamond])
+            : 0;
+
+          const fallbackDiamondRate = customDiamondPrice > 0 ? customDiamondPrice :
+            selectedDiamond === "IJ-SI" ? (product.diamond_rate_ij_si || rates.diamond_rate || 85000) :
+              selectedDiamond === "GH-VS" ? (product.diamond_rate_gh_vs || product.diamond_rate_ij_si || rates.diamond_rate || 85000) :
+                selectedDiamond === "EF-VVS" ? (product.diamond_rate_ef_vvs || product.diamond_rate_gh_vs || rates.diamond_rate || 85000) :
+                  selectedDiamond === "FG-SI" ? (product.diamond_rate_fg_si || product.diamond_rate_ij_si || rates.diamond_rate || 85000) :
+                    (rates.diamond_rate || 85000);
+
+          const diamondRateUsed = (data.diamond_rate_used && data.diamond_rate_used > 0) ? data.diamond_rate_used : fallbackDiamondRate;
+          const diamondCost = data.diamond_price !== undefined ? data.diamond_price : Math.round((data.diamond_weight || product.diamond_weight || 0) * diamondRateUsed);
+          const gemstoneCost = (product.gemstone_price && product.gemstone_price > 0)
+            ? product.gemstone_price
+            : (product.gemstone_weight || 0) * (rates.gemstone_rate || 1500);
+          const colorStoneCost = product.color_stone_price || 0;
           const makingCharges = data.making_charges !== undefined ? data.making_charges : (product.making_charges || 0);
-          const fallbackSolitaireCost =
+          const customSolPrice = (product.custom_solitaire_prices && product.custom_solitaire_prices[selectedSolitaire] !== undefined)
+            ? Number(product.custom_solitaire_prices[selectedSolitaire])
+            : 0;
+
+          const fallbackSolitaireCost = customSolPrice > 0 ? customSolPrice :
             selectedSolitaire === "IJ-SI" ? (product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_ef_vvs || product.solitaire_price_fg_si || product.solitaires_price || 0) :
               selectedSolitaire === "GH-VS" ? (product.solitaire_price_gh_vs || product.solitaire_price_ij_si || product.solitaire_price_ef_vvs || product.solitaire_price_fg_si || product.solitaires_price || 0) :
                 selectedSolitaire === "EF-VVS" ? (product.solitaire_price_ef_vvs || product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_fg_si || product.solitaires_price || 0) :
@@ -412,7 +469,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             ? data.solitaire_price
             : fallbackSolitaireCost;
 
-          const subtotal = goldCost + diamondCost + gemstoneCost + makingCharges + solitaireCost;
+          const subtotal = goldCost + diamondCost + gemstoneCost + colorStoneCost + makingCharges + solitaireCost;
           const gst = data.gst_amount !== undefined ? data.gst_amount : Math.round(subtotal * 0.03);
 
           setPricingDetails({
@@ -421,6 +478,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             diamondCost: diamondCost,
             solitaireCost: solitaireCost,
             gemstoneCost: gemstoneCost,
+            colorStoneCost: colorStoneCost,
             makingCharges: makingCharges,
             gst: gst,
             subtotal: subtotal,
@@ -2451,6 +2509,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   <span className="pdp-detail-val">{formatPrice(pricingDetails.gemstoneCost)}</span>
                 </div>
               )}
+              {pricingDetails.colorStoneCost > 0 && (
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Color Stone Value</span>
+                  <span className="pdp-detail-val">{formatPrice(pricingDetails.colorStoneCost)}</span>
+                </div>
+              )}
               <div className="pdp-detail-row">
                 <span className="pdp-detail-key">Making Charges</span>
                 <span className="pdp-detail-val">{formatPrice(pricingDetails.makingCharges)}</span>
@@ -2479,12 +2543,15 @@ export default function ProductDetailPage({ product, products: propProducts = []
           const gemstoneW_ct = product.gemstone_weight || 0;
           const gemstoneW_g = gemstoneW_ct * 0.2;
 
+          const colorStoneW_ct = product.color_stone_weight || 0;
+          const colorStoneW_g = colorStoneW_ct * 0.2;
+
           const grossW = (pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
             ? pricingDetails.grossWeight
             : (product.gross_weight || product.gold_weight || product.weight || 0);
           const goldW = (pricingDetails.goldWeight && pricingDetails.goldWeight > 0)
             ? pricingDetails.goldWeight
-            : Math.max(0, grossW - diamondW_g - solitaireW_g - gemstoneW_g);
+            : Math.max(0, grossW - diamondW_g - solitaireW_g - gemstoneW_g - colorStoneW_g);
           const netW = goldW;
 
           return (
@@ -2520,6 +2587,13 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Gemstone Weight</span>
                     <span className="pdp-detail-val">{gemstoneW_ct.toFixed(2)} ct</span>
+                  </div>
+                )}
+
+                {colorStoneW_ct > 0 && (
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Color Stone Weight</span>
+                    <span className="pdp-detail-val">{colorStoneW_ct.toFixed(2)} ct</span>
                   </div>
                 )}
 

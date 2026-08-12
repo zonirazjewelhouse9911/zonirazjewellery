@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, TrendingUp, Sparkles, Receipt, RefreshCw } from 'lucide-react';
+import { Loader2, TrendingUp, Sparkles, Receipt, RefreshCw, Plus, Trash2 } from 'lucide-react';
 
 interface RatesData {
   gold_rate_24k: number;
@@ -8,6 +8,7 @@ interface RatesData {
   diamond_rate_gh_vs: number;
   diamond_rate_ef_vvs: number;
   diamond_rate_fg_si: number;
+  custom_diamond_rates?: Record<string, number>;
   gemstone_rate: number;
   gst_percent: number;
 }
@@ -20,9 +21,13 @@ const PricingSettings: React.FC = () => {
     diamond_rate_gh_vs: 0,
     diamond_rate_ef_vvs: 0,
     diamond_rate_fg_si: 0,
+    custom_diamond_rates: {},
     gemstone_rate: 0,
     gst_percent: 3
   });
+
+  const [customPurityInput, setCustomPurityInput] = useState('');
+  const [customPriceInput, setCustomPriceInput] = useState('');
   
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -42,6 +47,7 @@ const PricingSettings: React.FC = () => {
           diamond_rate_gh_vs: data.data.diamond_rate_gh_vs || 0,
           diamond_rate_ef_vvs: data.data.diamond_rate_ef_vvs || 0,
           diamond_rate_fg_si: data.data.diamond_rate_fg_si || 0,
+          custom_diamond_rates: data.data.custom_diamond_rates || {},
           gemstone_rate: data.data.gemstone_rate || 0,
           gst_percent: data.data.gst_percent !== undefined ? data.data.gst_percent : 3
         });
@@ -57,6 +63,29 @@ const PricingSettings: React.FC = () => {
   useEffect(() => {
     fetchRates();
   }, []);
+
+  const handleAddCustomPurity = () => {
+    const name = customPurityInput.trim();
+    if (!name) return;
+    const price = parseFloat(customPriceInput) || 0;
+    const currentMap = { ...(rates.custom_diamond_rates || {}) };
+    currentMap[name] = price;
+    setRates(prev => ({
+      ...prev,
+      custom_diamond_rates: currentMap
+    }));
+    setCustomPurityInput('');
+    setCustomPriceInput('');
+  };
+
+  const handleRemoveCustomPurity = (name: string) => {
+    const currentMap = { ...(rates.custom_diamond_rates || {}) };
+    delete currentMap[name];
+    setRates(prev => ({
+      ...prev,
+      custom_diamond_rates: currentMap
+    }));
+  };
 
   const handleInputChange = (field: keyof RatesData, value: string) => {
     const numValue = value === '' ? 0 : Number(value);
@@ -176,8 +205,8 @@ const PricingSettings: React.FC = () => {
             </div>
 
             {/* Individual Diamond Quality Rates */}
-            <div className="border-t border-slate-100 pt-6">
-              <h3 className="text-xs uppercase tracking-widest font-black text-slate-500 mb-4">Individual Diamond Quality Rates (₹ / Carat)</h3>
+            <div className="border-t border-slate-100 pt-6 space-y-6">
+              <h3 className="text-xs uppercase tracking-widest font-black text-slate-500">Individual Diamond Quality Rates (₹ / Carat)</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* IJ-SI Rate Input */}
                 <div className="space-y-2">
@@ -253,6 +282,83 @@ const PricingSettings: React.FC = () => {
                       className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-8 pr-6 text-sm text-slate-800 font-bold transition-all"
                     />
                   </div>
+                </div>
+
+                {/* Render Custom Daily Diamond Purities */}
+                {Object.keys(rates.custom_diamond_rates || {}).map(purityName => {
+                  const val = rates.custom_diamond_rates?.[purityName] || 0;
+                  return (
+                    <div key={purityName} className="space-y-2 relative group">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[10px] uppercase tracking-widest font-black text-slate-500 flex items-center gap-1.5">
+                          <span>{purityName} Rate</span>
+                          <span className="text-[8px] bg-amber-100 text-amber-800 font-bold px-1.5 py-0.5 rounded-full">Manual</span>
+                        </label>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveCustomPurity(purityName)}
+                          className="text-slate-400 hover:text-red-500 transition-colors p-1 cursor-pointer"
+                          title="Remove Daily Purity"
+                        >
+                          <Trash2 size={14} />
+                        </button>
+                      </div>
+                      <div className="relative">
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">₹</span>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder="0.00"
+                          value={val || ''}
+                          onChange={e => {
+                            const newRate = e.target.value === '' ? 0 : Number(e.target.value);
+                            const updatedMap = { ...(rates.custom_diamond_rates || {}) };
+                            updatedMap[purityName] = newRate;
+                            setRates(prev => ({ ...prev, custom_diamond_rates: updatedMap }));
+                          }}
+                          className="w-full bg-[#f8f9fa] border border-slate-200 focus:border-[#C5A880] focus:ring-1 focus:ring-[#C5A880]/30 rounded-2xl py-4 pl-8 pr-6 text-sm text-slate-800 font-bold transition-all"
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Add Manual Diamond Purity Form */}
+              <div className="bg-amber-50/50 border border-amber-200/80 rounded-2xl p-5 space-y-3 mt-4">
+                <label className="text-[10px] uppercase tracking-[0.25em] font-black text-[#5d463c] block">
+                  + Add Manual Diamond Purity Daily Benchmark Rate
+                </label>
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <input
+                    type="text"
+                    placeholder="Purity Name (e.g. VVS1, FL, VS2, IF, D-VVS1)"
+                    value={customPurityInput}
+                    onChange={e => setCustomPurityInput(e.target.value)}
+                    className="flex-1 bg-white border border-slate-200 rounded-xl py-3 px-4 text-xs text-slate-800 focus:ring-1 focus:ring-[#5d463c]/50 focus:border-[#5d463c] transition-all shadow-sm"
+                  />
+                  <div className="relative w-full sm:w-48">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                    <input
+                      type="number"
+                      min="0"
+                      step="500"
+                      placeholder="Rate / Carat (e.g. 95000)"
+                      value={customPriceInput}
+                      onChange={e => setCustomPriceInput(e.target.value)}
+                      className="w-full bg-white border border-slate-200 rounded-xl py-3 pl-7 pr-3 text-xs font-bold text-slate-800 focus:ring-1 focus:ring-[#5d463c]/50 focus:border-[#5d463c] transition-all shadow-sm"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleAddCustomPurity}
+                    disabled={!customPurityInput.trim()}
+                    className="flex items-center justify-center space-x-2 px-6 py-3 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all disabled:opacity-40 shadow-sm cursor-pointer"
+                  >
+                    <Plus size={14} />
+                    <span>Add Purity</span>
+                  </button>
                 </div>
               </div>
             </div>

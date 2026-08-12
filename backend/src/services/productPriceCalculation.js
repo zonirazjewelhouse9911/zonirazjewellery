@@ -92,7 +92,9 @@ exports.productPricing = async (req, res) => {
         }
 
         let solitaire_price = 0;
-        if (rawSolitaire === "IJ-SI" || rawSolitaire === "1") {
+        if (product_data.custom_solitaire_prices && product_data.custom_solitaire_prices[rawSolitaire] !== undefined) {
+            solitaire_price = Number(product_data.custom_solitaire_prices[rawSolitaire]) || 0;
+        } else if (rawSolitaire === "IJ-SI" || rawSolitaire === "1") {
             solitaire_price = product_data.solitaire_price_ij_si || product_data.solitaire_price_gh_vs || product_data.solitaire_price_ef_vvs || product_data.solitaire_price_fg_si || product_data.solitaires_price || 0;
         } else if (rawSolitaire === "GH-VS" || rawSolitaire === "2") {
             solitaire_price = product_data.solitaire_price_gh_vs || product_data.solitaire_price_ij_si || product_data.solitaire_price_ef_vvs || product_data.solitaire_price_fg_si || product_data.solitaires_price || 0;
@@ -101,9 +103,18 @@ exports.productPricing = async (req, res) => {
         } else if (rawSolitaire === "FG-SI" || rawSolitaire === "4") {
             solitaire_price = product_data.solitaire_price_fg_si || product_data.solitaire_price_ij_si || product_data.solitaire_price_gh_vs || product_data.solitaire_price_ef_vvs || product_data.solitaires_price || 0;
         } else {
-            solitaire_price = product_data.solitaire_price_ij_si || product_data.solitaire_price_gh_vs || product_data.solitaire_price_ef_vvs || product_data.solitaire_price_fg_si || product_data.solitaires_price || 0;
+            if (product_data.custom_solitaire_prices) {
+                const foundKey = Object.keys(product_data.custom_solitaire_prices).find(k => k.toLowerCase() === String(rawSolitaire).toLowerCase());
+                if (foundKey && product_data.custom_solitaire_prices[foundKey] !== undefined) {
+                    solitaire_price = Number(product_data.custom_solitaire_prices[foundKey]) || 0;
+                }
+            }
+            if (!solitaire_price) {
+                solitaire_price = product_data.solitaire_price_ij_si || product_data.solitaire_price_gh_vs || product_data.solitaire_price_ef_vvs || product_data.solitaire_price_fg_si || product_data.solitaires_price || 0;
+            }
         }
         const gemstone_price = product_data.gemstone_price || 0;
+        const color_stone_price = product_data.color_stone_price || 0;
 
         // Resolve diamond rate based on purity grade
         const diamondRateField = DIAMOND_RATE_FIELD_BY_GRADE[normalizedDiamond];
@@ -175,33 +186,63 @@ exports.productPricing = async (req, res) => {
 
         gross_gold_weight = gross_gold_weight * karat_weight_multiplier;
 
-        // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Solitaire Weight (g) - Gemstone Weight (g)
+        // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Solitaire Weight (g) - Gemstone Weight (g) - Color Stone Weight (g)
         const diamond_weight_g = total_diamond_weight * 0.2;
         const solitaire_weight_g = (product_data.solitaires_weight || product_data.solitaire_weight || 0) * 0.2;
         const gemstone_weight_g = (product_data.gemstone_weight || 0) * 0.2;
-        const net_gold_weight = Math.max(0, gross_gold_weight - diamond_weight_g - solitaire_weight_g - gemstone_weight_g);
+        const color_stone_weight_g = (product_data.color_stone_weight || 0) * 0.2;
+        const net_gold_weight = Math.max(0, gross_gold_weight - diamond_weight_g - solitaire_weight_g - gemstone_weight_g - color_stone_weight_g);
         real_gold_weight = net_gold_weight;
 
         // Diamond rate calculation
-        switch (normalizedDiamond) {
-            case "IJ-SI":
-            case "1":
-                diamond_rate = product_data.diamond_rate_ij_si || current_price.diamond_rate_ij_si || 0;
-                break;
-            case "GH-VS":
-            case "2":
-                diamond_rate = product_data.diamond_rate_gh_vs || current_price.diamond_rate_gh_vs || 0;
-                break;
-            case "EF-VVS":
-            case "3":
-                diamond_rate = product_data.diamond_rate_ef_vvs || current_price.diamond_rate_ef_vvs || 0;
-                break;
-            case "FG-SI":
-            case "4":
-                diamond_rate = product_data.diamond_rate_fg_si || current_price.diamond_rate_fg_si || 0;
-                break;
-            default:
-                diamond_rate = product_data.diamond_rate_ij_si || current_price.diamond_rate_ij_si || current_price.diamond_rate || 0;
+        if (product_data.custom_diamond_rates && product_data.custom_diamond_rates[rawDiamond] !== undefined) {
+            diamond_rate = Number(product_data.custom_diamond_rates[rawDiamond]) || 0;
+        } else if (product_data.custom_diamond_rates && product_data.custom_diamond_rates[normalizedDiamond] !== undefined) {
+            diamond_rate = Number(product_data.custom_diamond_rates[normalizedDiamond]) || 0;
+        }
+
+        if (!diamond_rate && product_data.custom_diamond_rates) {
+            const foundKey = Object.keys(product_data.custom_diamond_rates).find(k => k.toLowerCase() === String(rawDiamond).toLowerCase() || k.toLowerCase() === String(normalizedDiamond).toLowerCase());
+            if (foundKey && product_data.custom_diamond_rates[foundKey] !== undefined) {
+                diamond_rate = Number(product_data.custom_diamond_rates[foundKey]) || 0;
+            }
+        }
+
+        // Check Daily Pricing benchmarks for custom diamond rates
+        if (!diamond_rate && current_price && current_price.custom_diamond_rates) {
+            if (current_price.custom_diamond_rates[rawDiamond] !== undefined) {
+                diamond_rate = Number(current_price.custom_diamond_rates[rawDiamond]) || 0;
+            } else if (current_price.custom_diamond_rates[normalizedDiamond] !== undefined) {
+                diamond_rate = Number(current_price.custom_diamond_rates[normalizedDiamond]) || 0;
+            } else {
+                const foundKey = Object.keys(current_price.custom_diamond_rates).find(k => k.toLowerCase() === String(rawDiamond).toLowerCase() || k.toLowerCase() === String(normalizedDiamond).toLowerCase());
+                if (foundKey && current_price.custom_diamond_rates[foundKey] !== undefined) {
+                    diamond_rate = Number(current_price.custom_diamond_rates[foundKey]) || 0;
+                }
+            }
+        }
+
+        if (!diamond_rate) {
+            switch (normalizedDiamond) {
+                case "IJ-SI":
+                case "1":
+                    diamond_rate = product_data.diamond_rate_ij_si || current_price.diamond_rate_ij_si || 0;
+                    break;
+                case "GH-VS":
+                case "2":
+                    diamond_rate = product_data.diamond_rate_gh_vs || current_price.diamond_rate_gh_vs || 0;
+                    break;
+                case "EF-VVS":
+                case "3":
+                    diamond_rate = product_data.diamond_rate_ef_vvs || current_price.diamond_rate_ef_vvs || 0;
+                    break;
+                case "FG-SI":
+                case "4":
+                    diamond_rate = product_data.diamond_rate_fg_si || current_price.diamond_rate_fg_si || 0;
+                    break;
+                default:
+                    diamond_rate = product_data.diamond_rate_ij_si || current_price.diamond_rate_ij_si || current_price.diamond_rate || 0;
+            }
         }
 
         item_gold_price = net_gold_weight * gold_rate_used;
@@ -211,7 +252,16 @@ exports.productPricing = async (req, res) => {
         const gold_cost_24k = net_gold_weight * current_price.gold_rate_24k;
         making_charges_amount = Math.round(gold_cost_24k * (product_data.making_charges || 0) / 100);
 
-        const materials_cost = item_gold_price + item_diamond_price + solitaire_price + gemstone_price;
+        // Check if item is Silver or Platinum
+        const pType = String(product_data.product_type || '').toLowerCase();
+        const isSilverOrPlatinum = pType === 'silver' || pType === 'platinum' || normalizedMetal === 'silver' || normalizedMetal === 'platinum';
+
+        let baseProductPrice = 0;
+        if (isSilverOrPlatinum) {
+            baseProductPrice = Number(product_data.price || product_data.basePrice || 0);
+        }
+
+        const materials_cost = baseProductPrice + item_gold_price + item_diamond_price + solitaire_price + gemstone_price + color_stone_price;
         item_base_price = materials_cost + making_charges_amount;
         gst_amount = Math.round(item_base_price * (gst_percent / 100));
         item_base_price_withGST = Math.round(item_base_price + gst_amount);

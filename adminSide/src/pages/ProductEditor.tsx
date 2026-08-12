@@ -13,7 +13,9 @@ import {
   Eye,
   EyeOff,
   ExternalLink,
-  FileText
+  FileText,
+  Plus,
+  Trash2
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -118,8 +120,8 @@ interface ProductFormData {
   diamond_rate_gh_vs?: number;
   diamond_rate_ef_vvs?: number;
   diamond_rate_fg_si?: number;
+  custom_diamond_rates?: Record<string, number>;
   width: number;
-  noof_gem: number;
   gold_weight: number;
   diamond_weight: number;
   diamond_count: number;
@@ -131,6 +133,7 @@ interface ProductFormData {
   solitaire_price_gh_vs?: number;
   solitaire_price_ef_vvs?: number;
   solitaire_price_fg_si?: number;
+  custom_solitaire_prices?: Record<string, number>;
   solitaire_setting?: string;
   solitaires_setting?: string;
   product_weight: number;
@@ -138,7 +141,13 @@ interface ProductFormData {
   center_diamond_price: number | null;
   custom_type: string;
   color_stone: string | null;
+  color_stone_weight?: number;
+  color_stone_count?: number;
+  color_stone_price?: number;
+  gemstone_info?: string | null;
   gemstone_weight: number;
+  gemstone_price: number;
+  noof_gem: number;
   status: string;
   feature: string;
   topselling: string;
@@ -167,10 +176,16 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
+  const [includeMetal, setIncludeMetal] = useState(true);
   const [includeSolitaire, setIncludeSolitaire] = useState(false);
   const [includeDiamond, setIncludeDiamond] = useState(false);
   const [includeGemstone, setIncludeGemstone] = useState(false);
+  const [includeColorStone, setIncludeColorStone] = useState(false);
   const [isCustomCategory, setIsCustomCategory] = useState(false);
+
+  // Manual custom solitaire purity input states
+  const [customPurityInput, setCustomPurityInput] = useState('');
+  const [customPurityPriceInput, setCustomPurityPriceInput] = useState('');
 
   // Form State matching productModel.js fields
   const [formData, setFormData] = useState<ProductFormData>({
@@ -198,8 +213,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     diamond_rate_gh_vs: 0,
     diamond_rate_ef_vvs: 0,
     diamond_rate_fg_si: 0,
+    custom_diamond_rates: {},
     width: 0,
-    noof_gem: 0,
     gold_weight: 0,
     diamond_weight: 0,
     diamond_count: 0,
@@ -211,6 +226,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     solitaire_price_gh_vs: 0,
     solitaire_price_ef_vvs: 0,
     solitaire_price_fg_si: 0,
+    custom_solitaire_prices: {},
     solitaire_setting: 'Prong Setting',
     solitaires_setting: 'Prong Setting',
     product_weight: 0,
@@ -218,7 +234,13 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     center_diamond_price: null,
     custom_type: '0',
     color_stone: null,
+    color_stone_weight: 0,
+    color_stone_count: 0,
+    color_stone_price: 0,
+    gemstone_info: null,
     gemstone_weight: 0,
+    gemstone_price: 0,
+    noof_gem: 0,
     status: '1',
     feature: '0',
     topselling: '0',
@@ -241,6 +263,32 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
         }
       } else if (typeof product.gallery === 'object') {
         parsedGallery = product.gallery;
+      }
+    }
+
+    let parsedCustomSolPrices: Record<string, number> = {};
+    if (product.custom_solitaire_prices) {
+      if (typeof product.custom_solitaire_prices === 'string') {
+        try {
+          parsedCustomSolPrices = JSON.parse(product.custom_solitaire_prices);
+        } catch (e) {
+          console.error('Failed to parse custom_solitaire_prices JSON string', e);
+        }
+      } else if (typeof product.custom_solitaire_prices === 'object') {
+        parsedCustomSolPrices = product.custom_solitaire_prices;
+      }
+    }
+
+    let parsedCustomDiamondRates: Record<string, number> = {};
+    if (product.custom_diamond_rates) {
+      if (typeof product.custom_diamond_rates === 'string') {
+        try {
+          parsedCustomDiamondRates = JSON.parse(product.custom_diamond_rates);
+        } catch (e) {
+          console.error('Failed to parse custom_diamond_rates JSON string', e);
+        }
+      } else if (typeof product.custom_diamond_rates === 'object') {
+        parsedCustomDiamondRates = product.custom_diamond_rates;
       }
     }
 
@@ -276,7 +324,6 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       stock: Number(product.stock || 0),
       height: Number(product.height || 0),
       width: Number(product.width || 0),
-      noof_gem: Number(product.noof_gem || 0),
       gold_weight: Number(product.gold_weight || 0),
       diamond_weight: Number(product.diamond_weight || 0),
       diamond_count: Number(product.diamond_count || 0),
@@ -286,7 +333,14 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       product_weight: Number(product.product_weight || 0),
       center_diamond_weight: product.center_diamond_weight !== null ? Number(product.center_diamond_weight) : null,
       center_diamond_price: product.center_diamond_price !== null ? Number(product.center_diamond_price) : null,
+      gemstone_info: product.gemstone_info || null,
       gemstone_weight: Number(product.gemstone_weight || 0),
+      gemstone_price: Number(product.gemstone_price || 0),
+      noof_gem: Number(product.noof_gem || 0),
+      color_stone: product.color_stone || null,
+      color_stone_weight: Number(product.color_stone_weight || 0),
+      color_stone_count: Number(product.color_stone_count || 0),
+      color_stone_price: Number(product.color_stone_price || 0),
       gallery: normalizedGallery,
       metal_type: resolvedMetalType,
       gender: resolvedGender,
@@ -294,10 +348,12 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       diamond_rate_gh_vs: Number(product.diamond_rate_gh_vs || 0),
       diamond_rate_ef_vvs: Number(product.diamond_rate_ef_vvs || 0),
       diamond_rate_fg_si: Number(product.diamond_rate_fg_si || 0),
+      custom_diamond_rates: parsedCustomDiamondRates,
       solitaire_price_ij_si: Number(product.solitaire_price_ij_si || 0),
       solitaire_price_gh_vs: Number(product.solitaire_price_gh_vs || 0),
       solitaire_price_ef_vvs: Number(product.solitaire_price_ef_vvs || 0),
       solitaire_price_fg_si: Number(product.solitaire_price_fg_si || 0),
+      custom_solitaire_prices: parsedCustomSolPrices,
       solitaire_setting: product.solitaire_setting || product.solitaires_setting || 'Prong Setting',
       solitaires_setting: product.solitaires_setting || product.solitaire_setting || 'Prong Setting',
       making_charges: Number(product.making_charges || 0),
@@ -305,7 +361,22 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     };
   };
 
+  const [dailyRates, setDailyRates] = useState<any>(null);
+
   useEffect(() => {
+    const fetchDailyRates = async () => {
+      try {
+        const res = await fetch('/api/jewellery-pricing');
+        const data = await res.json();
+        if (data.success && data.data) {
+          setDailyRates(data.data);
+        }
+      } catch (e) {
+        console.error('Failed to fetch daily rates in ProductEditor', e);
+      }
+    };
+    fetchDailyRates();
+
     const fetchProduct = async () => {
       try {
         const res = await fetch(`/api/admin/products/${currentId}`);
@@ -314,9 +385,11 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
           const product = data.data;
           const sanitized = sanitizeIncomingProduct(product);
           setFormData(sanitized);
+          setIncludeMetal(Number(product.gold_weight || 0) > 0 || isNew);
           setIncludeSolitaire(Number(product.solitaires_price || 0) > 0);
           setIncludeDiamond(Number(product.diamond_weight || 0) > 0 || Number(product.diamond_count || 0) > 0);
-          setIncludeGemstone(Number(product.gemstone_weight || 0) > 0 || Number(product.noof_gem || 0) > 0);
+          setIncludeGemstone(Number(product.gemstone_weight || 0) > 0 || Number(product.noof_gem || 0) > 0 || Number(product.gemstone_price || 0) > 0 || !!product.gemstone_info);
+          setIncludeColorStone(Number(product.color_stone_weight || 0) > 0 || Number(product.color_stone_count || 0) > 0 || Number(product.color_stone_price || 0) > 0 || !!product.color_stone);
         } else {
           setError('Failed to load product data.');
         }
@@ -331,6 +404,17 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       fetchProduct();
     }
   }, [currentId, isNew]);
+
+  const getMetalWeightLabel = () => {
+    const pt = (formData.product_type || '').toLowerCase();
+    if (pt === 'silver' || activeMetals.includes('5')) {
+      return 'Silver Weight (g) *';
+    }
+    if (pt === 'platinum' || activeMetals.includes('4')) {
+      return 'Platinum Weight (g) *';
+    }
+    return 'Gold Weight (14k) *';
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -369,9 +453,12 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       { key: 'height', label: 'Height (mm)' },
       { key: 'width', label: 'Width (mm)' },
       { key: 'product_weight', label: 'Product Weight' },
-      { key: 'gold_weight', label: 'Gold Weight (14k)' },
       { key: 'making_charges', label: 'Making Charges' }
     ];
+
+    if (includeMetal) {
+      numberFields.push({ key: 'gold_weight', label: getMetalWeightLabel().replace(' *', '') });
+    }
 
     if (includeDiamond) {
       numberFields.push({ key: 'diamond_weight', label: 'Diamond Weight' });
@@ -381,6 +468,13 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     if (includeGemstone) {
       numberFields.push({ key: 'gemstone_weight', label: 'Gemstone Weight' });
       numberFields.push({ key: 'noof_gem', label: 'Total Number Of GEM' });
+      numberFields.push({ key: 'gemstone_price', label: 'Gemstone Price' });
+    }
+
+    if (includeColorStone) {
+      numberFields.push({ key: 'color_stone_weight', label: 'Color Stone Weight' });
+      numberFields.push({ key: 'color_stone_count', label: 'Color Stone Count' });
+      numberFields.push({ key: 'color_stone_price', label: 'Color Stone Price' });
     }
 
     if (includeSolitaire) {
@@ -417,16 +511,24 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       // Handle solitaire presence
       solitaires_price: includeSolitaire ? Number(formData.solitaires_price || 0) : 0,
       solitaires_quality: includeSolitaire ? formData.solitaires_quality : '0',
+      custom_solitaire_prices: includeSolitaire ? (formData.custom_solitaire_prices || {}) : {},
       solitaires_weight: includeSolitaire ? Number(formData.solitaires_weight || formData.solitaire_weight || 0) : 0,
       solitaire_weight: includeSolitaire ? Number(formData.solitaire_weight || formData.solitaires_weight || 0) : 0,
       // Handle diamond presence
       diamond_weight: includeDiamond ? Number(formData.diamond_weight || 0) : 0,
       diamond_count: includeDiamond ? Number(formData.diamond_count || 0) : 0,
       diamond_quality: includeDiamond ? formData.diamond_quality : '',
+      custom_diamond_rates: includeDiamond ? (formData.custom_diamond_rates || {}) : {},
       // Handle gemstone presence
+      gemstone_info: includeGemstone ? (formData.gemstone_info || null) : null,
       gemstone_weight: includeGemstone ? Number(formData.gemstone_weight || 0) : 0,
-      color_stone: includeGemstone ? formData.color_stone : null,
+      gemstone_price: includeGemstone ? Number(formData.gemstone_price || 0) : 0,
       noof_gem: includeGemstone ? Number(formData.noof_gem || 0) : 0,
+      // Handle color stone presence
+      color_stone: includeColorStone ? (formData.color_stone || null) : null,
+      color_stone_weight: includeColorStone ? Number(formData.color_stone_weight || 0) : 0,
+      color_stone_count: includeColorStone ? Number(formData.color_stone_count || 0) : 0,
+      color_stone_price: includeColorStone ? Number(formData.color_stone_price || 0) : 0,
       // Remove other deprecated fields
       custom_type: '0',
       center_diamond_weight: null,
@@ -455,7 +557,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
           setFormData(sanitized);
           setIncludeSolitaire(Number(data.data.solitaires_price || 0) > 0);
           setIncludeDiamond(Number(data.data.diamond_weight || 0) > 0 || Number(data.data.diamond_count || 0) > 0);
-          setIncludeGemstone(Number(data.data.gemstone_weight || 0) > 0 || Number(data.data.noof_gem || 0) > 0);
+          setIncludeGemstone(Number(data.data.gemstone_weight || 0) > 0 || Number(data.data.noof_gem || 0) > 0 || Number(data.data.gemstone_price || 0) > 0 || !!data.data.gemstone_info);
+          setIncludeColorStone(Number(data.data.color_stone_weight || 0) > 0 || Number(data.data.color_stone_count || 0) > 0 || Number(data.data.color_stone_price || 0) > 0 || !!data.data.color_stone);
         }
       } else {
         setError(data.message || 'The vault rejected the update.');
@@ -527,6 +630,45 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       newQualities = [...activeSolitaireQualities, qualityId];
     }
     setFormData({ ...formData, solitaires_quality: newQualities.join(',') });
+  };
+
+  const handleAddCustomSolitairePurity = () => {
+    const trimmed = customPurityInput.trim();
+    if (!trimmed) return;
+    const price = parseFloat(customPurityPriceInput) || 0;
+    const currentCustomMap = { ...(formData.custom_solitaire_prices || {}) };
+    currentCustomMap[trimmed] = price;
+
+    const currentQualities = formData.solitaires_quality && formData.solitaires_quality !== '0'
+      ? formData.solitaires_quality.split(',').map(s => s.trim()).filter(Boolean)
+      : [];
+
+    if (!currentQualities.includes(trimmed)) {
+      currentQualities.push(trimmed);
+    }
+
+    setFormData({
+      ...formData,
+      custom_solitaire_prices: currentCustomMap,
+      solitaires_quality: currentQualities.join(','),
+      solitaires_price: price > 0 ? price : formData.solitaires_price
+    });
+    setCustomPurityInput('');
+    setCustomPurityPriceInput('');
+  };
+
+  const handleRemoveCustomSolitairePurity = (purityName: string) => {
+    const currentCustomMap = { ...(formData.custom_solitaire_prices || {}) };
+    delete currentCustomMap[purityName];
+
+    const currentQualities = formData.solitaires_quality ? formData.solitaires_quality.split(',').map(s => s.trim()).filter(Boolean) : [];
+    const newQualities = currentQualities.filter(q => q !== purityName);
+
+    setFormData({
+      ...formData,
+      custom_solitaire_prices: currentCustomMap,
+      solitaires_quality: newQualities.join(',')
+    });
   };
 
   const handleBackClick = (e: React.MouseEvent) => {
@@ -737,6 +879,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   <option value="gold">Plain Gold Jewelry</option>
                   <option value="solitaire">Solitaire Jewelry</option>
                   <option value="gemstone">Gemstone Jewelry</option>
+                  <option value="silver">Silver Jewelry</option>
+                  <option value="platinum">Platinum Jewelry</option>
                 </select>
               </div>
               <div className="space-y-4">
@@ -946,6 +1090,16 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 <label className="flex items-center space-x-3 cursor-pointer select-none">
                   <input
                     type="checkbox"
+                    checked={includeMetal}
+                    onChange={(e) => setIncludeMetal(e.target.checked)}
+                    className="w-5 h-5 accent-[#5d463c] rounded"
+                  />
+                  <span className="text-[12px] uppercase tracking-wider font-bold text-[#12100e]">Includes Gold</span>
+                </label>
+
+                <label className="flex items-center space-x-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
                     checked={includeDiamond}
                     onChange={(e) => setIncludeDiamond(e.target.checked)}
                     className="w-5 h-5 accent-[#5d463c] rounded"
@@ -972,6 +1126,16 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   />
                   <span className="text-[12px] uppercase tracking-wider font-bold text-[#12100e]">Includes Gemstones</span>
                 </label>
+
+                <label className="flex items-center space-x-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={includeColorStone}
+                    onChange={(e) => setIncludeColorStone(e.target.checked)}
+                    className="w-5 h-5 accent-[#5d463c] rounded"
+                  />
+                  <span className="text-[12px] uppercase tracking-wider font-bold text-[#12100e]">Includes Color Stones</span>
+                </label>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -986,16 +1150,18 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                     className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                   />
                 </div>
-                <div className="space-y-3">
-                  <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Gold Weight (14k) *</label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    value={formData.gold_weight || ''}
-                    onChange={(e) => setFormData({ ...formData, gold_weight: parseFloat(e.target.value) || 0 })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
-                  />
-                </div>
+                {includeMetal && (
+                  <div className="space-y-3">
+                    <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">{getMetalWeightLabel()}</label>
+                    <input
+                      type="number"
+                      step="0.01"
+                      value={formData.gold_weight || ''}
+                      onChange={(e) => setFormData({ ...formData, gold_weight: parseFloat(e.target.value) || 0 })}
+                      className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                    />
+                  </div>
+                )}
                 <div className="space-y-3">
                   <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Height (mm) *</label>
                   <input
@@ -1141,6 +1307,139 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                               </div>
                             );
                           })}
+
+                          {/* Custom / Manually Added Solitaire Purities */}
+                          {(() => {
+                            const standardKeys = ['1', '2', '3', '4', 'IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
+                            const customPurityKeys = Array.from(new Set([
+                              ...Object.keys(formData.custom_solitaire_prices || {}),
+                              ...activeSolitaireQualities.filter(q => !standardKeys.includes(q))
+                            ]));
+
+                            return customPurityKeys.map(purityName => {
+                              const isChecked = activeSolitaireQualities.includes(purityName);
+                              const qualityPrice = (formData.custom_solitaire_prices || {})[purityName] || 0;
+
+                              const toggleCustomPurity = () => {
+                                let newQualities: string[];
+                                if (isChecked) {
+                                  newQualities = activeSolitaireQualities.filter(q => q !== purityName);
+                                } else {
+                                  newQualities = [...activeSolitaireQualities, purityName];
+                                }
+                                setFormData({ ...formData, solitaires_quality: newQualities.join(',') });
+                              };
+
+                              return (
+                                <div
+                                  key={purityName}
+                                  className={cn(
+                                    'flex flex-col justify-between p-4 rounded-2xl border text-left transition-all duration-300 space-y-3 relative group',
+                                    isChecked
+                                      ? 'bg-white border-[#5d463c] shadow-md ring-2 ring-[#5d463c]/30'
+                                      : 'bg-slate-50 border-slate-200 opacity-70 hover:opacity-100'
+                                  )}
+                                >
+                                  <div className="w-full flex items-center justify-between">
+                                    <div
+                                      onClick={toggleCustomPurity}
+                                      className="flex items-center space-x-2 cursor-pointer select-none flex-1"
+                                    >
+                                      <span className="text-[13px] font-extrabold uppercase tracking-wider text-[#5d463c]">
+                                        {purityName}
+                                      </span>
+                                      <span className="text-[9px] bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">
+                                        Manual
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <div
+                                        onClick={toggleCustomPurity}
+                                        className={cn(
+                                          'w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-black cursor-pointer',
+                                          isChecked ? 'bg-[#5d463c] text-white border-[#5d463c]' : 'border-slate-300 bg-white'
+                                        )}
+                                      >
+                                        {isChecked ? '✓' : ''}
+                                      </div>
+                                      <button
+                                        type="button"
+                                        title="Remove Purity"
+                                        onClick={() => handleRemoveCustomSolitairePurity(purityName)}
+                                        className="text-slate-400 hover:text-red-500 transition-colors p-1"
+                                      >
+                                        <Trash2 size={14} />
+                                      </button>
+                                    </div>
+                                  </div>
+
+                                  <div className="w-full border-t border-slate-100 pt-3 space-y-2">
+                                    <label className="text-[9px] uppercase tracking-wider font-bold text-slate-500 block">
+                                      Solitaire Price (₹)
+                                    </label>
+                                    <div className="relative">
+                                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                                      <input
+                                        type="number"
+                                        min="0"
+                                        step="500"
+                                        placeholder="e.g. 25000"
+                                        value={qualityPrice || ''}
+                                        onChange={(e) => {
+                                          const val = parseFloat(e.target.value) || 0;
+                                          const newMap = { ...(formData.custom_solitaire_prices || {}) };
+                                          newMap[purityName] = val;
+                                          setFormData({
+                                            ...formData,
+                                            custom_solitaire_prices: newMap,
+                                            solitaires_price: val > 0 ? val : formData.solitaires_price
+                                          });
+                                        }}
+                                        className="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-7 pr-3 text-[13px] font-bold text-[#12100e] focus:bg-white focus:border-[#5d463c] transition-all"
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            });
+                          })()}
+                        </div>
+
+                        {/* Add Manual Solitaire Purity Form */}
+                        <div className="bg-amber-50/50 border border-amber-200/80 rounded-2xl p-5 space-y-3 mt-4">
+                          <label className="text-[10px] uppercase tracking-[0.25em] font-black text-[#5d463c] block">
+                            + Add Manual Solitaire Purity / Quality
+                          </label>
+                          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                            <input
+                              type="text"
+                              placeholder="Purity Name (e.g. VVS1, FL, SI1, D-VVS1)"
+                              value={customPurityInput}
+                              onChange={(e) => setCustomPurityInput(e.target.value)}
+                              className="flex-1 bg-white border border-slate-200 rounded-xl py-2.5 px-4 text-[13px] text-[#12100e] focus:ring-1 focus:ring-[#5d463c]/50 focus:border-[#5d463c] transition-all shadow-sm"
+                            />
+                            <div className="relative w-full sm:w-48">
+                              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                              <input
+                                type="number"
+                                min="0"
+                                step="500"
+                                placeholder="Price (e.g. 35000)"
+                                value={customPurityPriceInput}
+                                onChange={(e) => setCustomPurityPriceInput(e.target.value)}
+                                className="w-full bg-white border border-slate-200 rounded-xl py-2.5 pl-7 pr-3 text-[13px] font-bold text-[#12100e] focus:ring-1 focus:ring-[#5d463c]/50 focus:border-[#5d463c] transition-all shadow-sm"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              onClick={handleAddCustomSolitairePurity}
+                              disabled={!customPurityInput.trim()}
+                              className="flex items-center justify-center space-x-2 px-6 py-2.5 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all disabled:opacity-40 shadow-sm cursor-pointer"
+                            >
+                              <Plus size={14} />
+                              <span>Add Purity</span>
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1150,8 +1449,62 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 {/* Conditional Gemstone Requirements */}
                 {includeGemstone && (
                   <div className="space-y-6 pt-6 border-t border-slate-200/60 col-span-1 md:col-span-3">
-                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Gemstone / Color Stone Requirements</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Gemstone Requirements</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Gemstone Info</label>
+                        <input
+                          type="text"
+                          value={formData.gemstone_info ?? ''}
+                          onChange={(e) => setFormData({ ...formData, gemstone_info: e.target.value || null })}
+                          placeholder="e.g. Blue Sapphire, Tanzanite"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Gemstone Weight (ct)</label>
+                        <input
+                          type="number"
+                          step="0.01"
+                          value={formData.gemstone_weight || ''}
+                          onChange={(e) => setFormData({ ...formData, gemstone_weight: parseFloat(e.target.value) || 0 })}
+                          placeholder="e.g. 0.85"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Total Number Of GEM *</label>
+                        <input
+                          type="number"
+                          value={formData.noof_gem || ''}
+                          onChange={(e) => setFormData({ ...formData, noof_gem: parseInt(e.target.value) || 0 })}
+                          placeholder="e.g. 2"
+                          className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
+                        />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Gemstone Price (₹) *</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                          <input
+                            type="number"
+                            step="500"
+                            value={formData.gemstone_price || ''}
+                            onChange={(e) => setFormData({ ...formData, gemstone_price: parseFloat(e.target.value) || 0 })}
+                            placeholder="e.g. 15000"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-8 pr-6 text-[13px] font-bold text-[#12100e]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Conditional Color Stone Requirements */}
+                {includeColorStone && (
+                  <div className="space-y-6 pt-6 border-t border-slate-200/60 col-span-1 md:col-span-3">
+                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-brand-gold">Color Stone Requirements</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                       <div className="space-y-3">
                         <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Color Stone Info</label>
                         <input
@@ -1163,23 +1516,39 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                         />
                       </div>
                       <div className="space-y-3">
-                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Gemstone Weight (ct)</label>
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Color Stone Weight (ct)</label>
                         <input
                           type="number"
                           step="0.01"
-                          value={formData.gemstone_weight || ''}
-                          onChange={(e) => setFormData({ ...formData, gemstone_weight: parseFloat(e.target.value) || 0 })}
+                          value={formData.color_stone_weight || ''}
+                          onChange={(e) => setFormData({ ...formData, color_stone_weight: parseFloat(e.target.value) || 0 })}
+                          placeholder="e.g. 0.50"
                           className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                         />
                       </div>
                       <div className="space-y-3">
-                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Total Number Of GEM *</label>
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Color Stone Count</label>
                         <input
                           type="number"
-                          value={formData.noof_gem || ''}
-                          onChange={(e) => setFormData({ ...formData, noof_gem: parseInt(e.target.value) || 0 })}
+                          value={formData.color_stone_count || ''}
+                          onChange={(e) => setFormData({ ...formData, color_stone_count: parseInt(e.target.value) || 0 })}
+                          placeholder="e.g. 4"
                           className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-6 text-[13px] text-[#12100e]"
                         />
+                      </div>
+                      <div className="space-y-3">
+                        <label className="text-[9px] uppercase tracking-[0.3em] font-black text-brand-gold ml-2 block">Color Stone Price (₹)</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-bold">₹</span>
+                          <input
+                            type="number"
+                            step="500"
+                            value={formData.color_stone_price || ''}
+                            onChange={(e) => setFormData({ ...formData, color_stone_price: parseFloat(e.target.value) || 0 })}
+                            placeholder="e.g. 12000"
+                            className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 pl-8 pr-6 text-[13px] font-bold text-[#12100e]"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1296,16 +1665,25 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
 
             {/* Diamond Quality Configuration */}
             <div className="space-y-6 pt-10 border-t border-slate-200/80">
-              <div className="flex items-center justify-between">
-                <h3 className="text-lg font-serif font-bold text-[#12100e]">Diamond Qualities & Prices</h3>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h3 className="text-lg font-serif font-bold text-[#12100e]">Diamond Qualities & Prices</h3>
+                  <p className="text-[11px] text-slate-500 font-medium">
+                    Select active diamond qualities for this product. Rates are automatically benchmarked from Daily Pricing.
+                  </p>
+                </div>
                 <span className="text-[9px] uppercase tracking-widest text-[#5d463c] font-bold">
                   {activeDiamondQualities.length} Selected
                 </span>
               </div>
+
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {/* Preset Diamond Qualities */}
                 {DIAMOND_QUALITIES.map(dq => {
                   const isChecked = activeDiamondQualities.includes(dq.id) || activeDiamondQualities.includes(dq.name);
-                  const manualRate = (formData[dq.rateKey as keyof ProductFormData] as number) || 0;
+                  const dailyRateKey = dq.rateKey;
+                  const dailyRate = dailyRates ? Number(dailyRates[dailyRateKey] || 0) : 0;
+
                   return (
                     <button
                       key={dq.id}
@@ -1329,15 +1707,75 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                       </div>
                       <div className="w-full border-t border-current/15 pt-2 text-[11px]">
                         <div className="opacity-75 uppercase text-[9px] tracking-wider font-bold">
-                          Price / Carat
+                          Daily Benchmark Rate
                         </div>
                         <div className="font-extrabold text-[13px]">
-                          {manualRate > 0 ? `₹${manualRate.toLocaleString('en-IN')}` : 'No price set'}
+                          {dailyRate > 0 ? `₹${dailyRate.toLocaleString('en-IN')} / ct` : 'No price set'}
                         </div>
                       </div>
                     </button>
                   );
                 })}
+
+                {/* Custom Daily Diamond Purities */}
+                {(() => {
+                  const standardKeys = ['1', '2', '3', '4', 'IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
+                  const customDailyMap = dailyRates?.custom_diamond_rates || {};
+                  const customPurityKeys = Array.from(new Set([
+                    ...Object.keys(customDailyMap),
+                    ...activeDiamondQualities.filter(q => !standardKeys.includes(q))
+                  ]));
+
+                  return customPurityKeys.map(purityName => {
+                    const isChecked = activeDiamondQualities.includes(purityName);
+                    const dailyRate = customDailyMap[purityName] || 0;
+
+                    const toggleCustomPurity = () => {
+                      let newQualities: string[];
+                      if (isChecked) {
+                        newQualities = activeDiamondQualities.filter(q => q !== purityName);
+                      } else {
+                        newQualities = [...activeDiamondQualities, purityName];
+                      }
+                      setFormData({ ...formData, diamond_quality: newQualities.join(',') });
+                    };
+
+                    return (
+                      <button
+                        key={purityName}
+                        type="button"
+                        onClick={toggleCustomPurity}
+                        className={cn(
+                          'flex flex-col items-start justify-between p-4 rounded-2xl border text-left transition-all duration-300 cursor-pointer space-y-2',
+                          isChecked
+                            ? 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c] shadow-md'
+                            : 'bg-slate-50 border border-slate-200 text-[#12100e]/70 hover:border-slate-300'
+                        )}
+                      >
+                        <div className="w-full flex items-center justify-between">
+                          <div className="flex items-center space-x-1.5">
+                            <span className="text-[12px] font-bold uppercase tracking-wider">{purityName}</span>
+                            <span className="text-[8px] bg-amber-200 text-amber-900 font-bold px-1.5 py-0.5 rounded-full uppercase">Manual</span>
+                          </div>
+                          <span className={cn(
+                            'w-4 h-4 rounded-full border flex items-center justify-center text-[10px] font-black',
+                            isChecked ? 'bg-[#efe7e5] text-[#5d463c] border-[#efe7e5]' : 'border-slate-300 bg-white'
+                          )}>
+                            {isChecked ? '✓' : ''}
+                          </span>
+                        </div>
+                        <div className="w-full border-t border-current/15 pt-2 text-[11px]">
+                          <div className="opacity-75 uppercase text-[9px] tracking-wider font-bold">
+                            Daily Benchmark Rate
+                          </div>
+                          <div className="font-extrabold text-[13px]">
+                            {dailyRate > 0 ? `₹${Number(dailyRate).toLocaleString('en-IN')} / ct` : 'No price set'}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  });
+                })()}
               </div>
             </div>
 

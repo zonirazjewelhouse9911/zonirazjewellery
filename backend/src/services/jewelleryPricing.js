@@ -29,6 +29,7 @@ class JewelleryPricingService {
         diamond_rate_gh_vs: 0,
         diamond_rate_ef_vvs: 0,
         diamond_rate_fg_si: 0,
+        custom_diamond_rates: {},
         gemstone_rate: 0,
         gst_percent: 3
       };
@@ -38,6 +39,7 @@ class JewelleryPricingService {
     const g14 = ratesObj.gold_rate_14k || 0;
     ratesObj.gold_rate_24k = g24 > 0 ? g24 : Math.round(g14 * 24 / 14);
     ratesObj.gold_rate_14k = g14 > 0 ? g14 : Math.round(g24 * 14 / 24);
+    ratesObj.custom_diamond_rates = ratesObj.custom_diamond_rates || {};
     return ratesObj;
   }
 
@@ -49,6 +51,19 @@ class JewelleryPricingService {
     const gold_rate_24k = Number(rateData.gold_rate_24k) || 0;
     const gold_rate_14k = Math.round(gold_rate_24k * 14 / 24);
 
+    let customDiamondRates = {};
+    if (rateData.custom_diamond_rates) {
+      if (typeof rateData.custom_diamond_rates === 'string') {
+        try {
+          customDiamondRates = JSON.parse(rateData.custom_diamond_rates);
+        } catch (e) {
+          console.error("Failed to parse custom_diamond_rates string in updateRates", e);
+        }
+      } else if (typeof rateData.custom_diamond_rates === 'object') {
+        customDiamondRates = rateData.custom_diamond_rates;
+      }
+    }
+
     if (rates) {
       rates.gold_rate_24k = gold_rate_24k;
       rates.gold_rate_14k = gold_rate_14k;
@@ -57,8 +72,9 @@ class JewelleryPricingService {
       rates.diamond_rate_gh_vs = Number(rateData.diamond_rate_gh_vs) || 0;
       rates.diamond_rate_ef_vvs = Number(rateData.diamond_rate_ef_vvs) || 0;
       rates.diamond_rate_fg_si = Number(rateData.diamond_rate_fg_si) || 0;
+      rates.custom_diamond_rates = customDiamondRates;
       rates.gemstone_rate = Number(rateData.gemstone_rate) || 0;
-      rates.gst_percent = Number(rateData.gst_percent) ?? 3;
+      rates.gst_percent = (rateData.gst_percent !== undefined && !isNaN(Number(rateData.gst_percent))) ? Number(rateData.gst_percent) : (rates.gst_percent || 3);
       await rates.save();
     } else {
       rates = new JewelleryPricing({
@@ -69,8 +85,9 @@ class JewelleryPricingService {
         diamond_rate_gh_vs: Number(rateData.diamond_rate_gh_vs) || 0,
         diamond_rate_ef_vvs: Number(rateData.diamond_rate_ef_vvs) || 0,
         diamond_rate_fg_si: Number(rateData.diamond_rate_fg_si) || 0,
+        custom_diamond_rates: customDiamondRates,
         gemstone_rate: Number(rateData.gemstone_rate) || 0,
-        gst_percent: Number(rateData.gst_percent) ?? 3
+        gst_percent: (rateData.gst_percent !== undefined && !isNaN(Number(rateData.gst_percent))) ? Number(rateData.gst_percent) : 3
       });
       await rates.save();
     }
@@ -120,8 +137,15 @@ class JewelleryPricingService {
         }
       }
 
+      const pType = String(product.product_type || '').toLowerCase();
+      const isSilverOrPlatinum = pType === 'silver' || pType === 'platinum';
+      let baseProductPrice = 0;
+      if (isSilverOrPlatinum) {
+        baseProductPrice = Number(product.price || product.basePrice || 0);
+      }
+
       let makingCharges = 0;
-      const baseCost = goldCost + diamondCost + gemstoneCost + solitaireCost;
+      const baseCost = baseProductPrice + goldCost + diamondCost + gemstoneCost + solitaireCost;
       
       if (product.making_charges || product.makingCharges) {
         const mcPercent = product.making_charges || product.makingCharges || 0;
@@ -136,7 +160,7 @@ class JewelleryPricingService {
       }
 
       // 6. Total Cost before Tax
-      const subtotal = goldCost + diamondCost + gemstoneCost + makingCharges + solitaireCost;
+      const subtotal = baseCost + makingCharges;
 
       // 6. Add GST Tax (standard is 3%)
       const gstPercent = rates.gst_percent ?? 3;

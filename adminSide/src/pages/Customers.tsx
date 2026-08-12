@@ -35,6 +35,10 @@ interface Customer {
   status: string;
   isActive: boolean;
   phone?: string;
+  userName?: string;
+  userEmail?: string;
+  userPhone?: string;
+  mobile?: string;
   gender?: string;
   createdAt: string;
   lastLogin?: string;
@@ -162,10 +166,11 @@ export default function Customers() {
   };
 
   const filteredCustomers = customers.filter(c => {
-    const name = c.name.toLowerCase();
-    const email = c.email.toLowerCase();
-    const phone = (c.phone || '').toLowerCase();
-    const query = searchQuery.toLowerCase();
+    if (!c) return false;
+    const name = (c.name || c.userName || '').toLowerCase();
+    const email = (c.email || c.userEmail || '').toLowerCase();
+    const phone = (c.phone || c.userPhone || c.mobile || '').toLowerCase();
+    const query = (searchQuery || '').toLowerCase();
     return name.includes(query) || email.includes(query) || phone.includes(query);
   });
 
@@ -221,7 +226,7 @@ export default function Customers() {
           <div className="lg:col-span-1 space-y-6">
             <div className="bg-white border border-slate-200/60 rounded-[32px] p-8 flex flex-col items-center text-center space-y-6 shadow-sm">
               <div className="w-24 h-24 rounded-full bg-[#efe7e5]/40 border border-slate-200 flex items-center justify-center relative shadow-inner">
-                <span className="text-3xl font-serif italic text-[#5d463c] font-black">{c.name[0].toUpperCase()}</span>
+                <span className="text-3xl font-serif italic text-[#5d463c] font-black">{((c.name || c.email || 'C')[0] || 'C').toUpperCase()}</span>
                 
                 {/* Micro status dot */}
                 <span className={cn(
@@ -235,9 +240,9 @@ export default function Customers() {
                   'inline-block px-2.5 py-0.5 rounded-full text-[8px] font-black tracking-widest uppercase border',
                   c.status === 'active' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' : 'bg-red-500/10 border-red-500/20 text-red-500'
                 )}>
-                  {c.status}
+                  {c.status || 'active'}
                 </span>
-                <h3 className="font-serif text-xl font-bold text-slate-800 mt-3">{c.name}</h3>
+                <h3 className="font-serif text-xl font-bold text-slate-800 mt-3">{c.name || c.email || 'Valued Customer'}</h3>
                 <p className="text-xs text-slate-400 mt-1 select-all">{c.email}</p>
               </div>
 
@@ -429,6 +434,8 @@ export default function Customers() {
               const lastSeenDate = customer.lastLogin ? new Date(customer.lastLogin).toLocaleDateString('en-US', {
                 month: 'numeric', day: 'numeric', year: 'numeric'
               }) : 'N/A';
+              const cName = customer.name || customer.userName || customer.email || 'Valued Customer';
+              const initialLetter = (cName[0] || 'C').toUpperCase();
 
               return (
                 <div key={customer._id} className="p-6 grid grid-cols-12 gap-4 items-center hover:bg-slate-50/30 transition-colors">
@@ -436,15 +443,15 @@ export default function Customers() {
                   {/* Patron Info */}
                   <div className="col-span-3 flex items-center space-x-4 min-w-0">
                     <div className="w-12 h-12 rounded-full bg-[#efe7e5]/40 border border-slate-200/60 flex items-center justify-center shrink-0 shadow-sm">
-                      <span className="text-lg font-serif italic text-[#5d463c] font-black">{customer.name[0].toUpperCase()}</span>
+                      <span className="text-lg font-serif italic text-[#5d463c] font-black">{initialLetter}</span>
                     </div>
                     <div className="min-w-0 text-left">
-                      <h4 className="font-serif text-md font-bold text-slate-800 truncate">{customer.name}</h4>
+                      <h4 className="font-serif text-md font-bold text-slate-800 truncate">{cName}</h4>
                       <span className={cn(
                         'inline-block px-2.5 py-0.5 rounded-md text-[8px] font-black tracking-widest uppercase mt-1 border',
                         customer.status === 'active' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' : 'bg-red-500/10 border-red-500/20 text-red-500'
                       )}>
-                        {customer.status}
+                        {customer.status || 'active'}
                       </span>
                     </div>
                   </div>

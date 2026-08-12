@@ -33,6 +33,7 @@ import PrivacyPage from './components/PrivacyPage';
 import SellGoldPage from './components/SellGoldPage';
 import BuyGoldPage from './components/BuyGoldPage';
 import GoldMinePage from './components/GoldMinePage';
+import LooseStonesPage from './components/LooseStonesPage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -662,6 +663,9 @@ function AppContent() {
       } else if (path === '/gold-mine' || path === '/plans/gold-mine') {
         setCurrentView('gold-mine');
         window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (path === '/loose-stones' || path === '/buy-loose-stones' || path === '/loose-diamonds') {
+        setCurrentView('loose-stones');
+        window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (path === '/delivery') {
         setHelpCategory('delivery');
         setCurrentView('delivery');
@@ -1033,6 +1037,8 @@ function AppContent() {
         <BuyGoldPage onBack={() => { window.location.hash = ''; }} />
       ) : currentView === 'gold-mine' ? (
         <GoldMinePage />
+      ) : currentView === 'loose-stones' ? (
+        <LooseStonesPage />
       ) : currentView === 'admin-call' ? (
         <AdminVideoPanel />
       ) : (

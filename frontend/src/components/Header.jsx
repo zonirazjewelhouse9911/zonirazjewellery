@@ -774,9 +774,8 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
           <nav className="bottom-category-nav">
             <div className="nav-item-container">
               <a
-                href="/profile"
-                className="nav-item-trigger"
-                style={{ color: '#c8a359', fontWeight: '700' }}
+                href="#gold-mine"
+                className="nav-item-trigger gold-mine-nav-badge"
                 onClick={(e) => {
                   e.preventDefault();
                   if (!user) {
@@ -788,6 +787,20 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                 }}
               >
                 GOLD WALLET
+              </a>
+            </div>
+            <div className="nav-item-container nav-gold-mine-link">
+              <a
+                href="/loose-stones"
+                className="nav-item-trigger gold-mine-nav-badge"
+                style={{ color: '#c5a880', fontWeight: '800' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.history.pushState(null, '', '/loose-stones');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+              >
+                BUY STONES
               </a>
             </div>
             {categories

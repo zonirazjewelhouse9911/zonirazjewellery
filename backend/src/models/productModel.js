@@ -116,6 +116,10 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  custom_diamond_rates: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
   width: {
     type: Number,
     default: 0
@@ -168,6 +172,10 @@ const productSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  custom_solitaire_prices: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
   solitaire_setting: {
     type: String,
     default: "Prong Setting"
@@ -193,6 +201,22 @@ const productSchema = new mongoose.Schema({
     default: "0"
   },
   color_stone: {
+    type: String,
+    default: null
+  },
+  color_stone_weight: {
+    type: Number,
+    default: 0
+  },
+  color_stone_count: {
+    type: Number,
+    default: 0
+  },
+  color_stone_price: {
+    type: Number,
+    default: 0
+  },
+  gemstone_info: {
     type: String,
     default: null
   },

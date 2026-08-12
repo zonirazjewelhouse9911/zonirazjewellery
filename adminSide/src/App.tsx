@@ -13,6 +13,7 @@ import Banners from './pages/Banners';
 import PricingSettings from './pages/PricingSettings';
 import VideoCallPanel from './pages/VideoCallPanel';
 import GoldMineWallets from './pages/GoldMineWallets';
+import LooseStones from './pages/LooseStones';
 import { resolveProductImage } from './lib/imageResolver';
 import { 
   Grid, 
@@ -22,8 +23,6 @@ import {
   Users, 
   Layers, 
   Ticket, 
-  Gift, 
-  Compass, 
   Building2, 
   LogOut,
   SlidersHorizontal,
@@ -32,7 +31,8 @@ import {
   RefreshCw,
   Coins,
   Image as ImageIcon,
-  Video
+  Video,
+  Gem
 } from 'lucide-react';
 import './App.css';
 
@@ -40,6 +40,7 @@ import './App.css';
 const MENU_ITEMS = [
   { id: 'overview', label: 'Overview', icon: Grid },
   { id: 'products', label: 'Products', icon: Package },
+  { id: 'loosestones', label: 'Loose Stones', icon: Gem },
   { id: 'orders', label: 'Orders', icon: ShoppingBag },
   { id: 'goldmine', label: '10+1 Gold Wallets', icon: Coins },
   { id: 'categories', label: 'Categories', icon: Tag },
@@ -47,8 +48,6 @@ const MENU_ITEMS = [
   { id: 'collections', label: 'Collections', icon: Layers },
   { id: 'coupons', label: 'Coupons', icon: Ticket },
   { id: 'banners', label: 'Hero Banners', icon: ImageIcon },
-  { id: 'giftcards', label: 'Gift Cards', icon: Gift },
-  { id: 'luckywheel', label: 'Lucky Wheel', icon: Compass },
   { id: 'franchiseleads', label: 'Franchise Leads', icon: Building2 },
   { id: 'exchange', label: 'Exchange Leads', icon: RefreshCw },
   { id: 'sellgold', label: 'Sell Gold Leads', icon: Coins },
@@ -77,19 +76,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
-  // If not authenticated, render Admin Login screen
-  if (!adminToken) {
-    return (
-      <AdminLogin 
-        onLoginSuccess={(token) => {
-          localStorage.setItem('adminToken', token);
-          setAdminToken(token);
-          setActiveMenu('overview');
-        }} 
-      />
-    );
-  }
-
   const fetchProducts = async () => {
     setLoading(true);
     try {
@@ -108,10 +94,23 @@ function App() {
   };
 
   useEffect(() => {
-    if (activeMenu === 'products' && !isEditing) {
+    if (adminToken && activeMenu === 'products' && !isEditing) {
       fetchProducts();
     }
-  }, [activeMenu, isEditing]);
+  }, [adminToken, activeMenu, isEditing]);
+
+  // If not authenticated, render Admin Login screen
+  if (!adminToken) {
+    return (
+      <AdminLogin 
+        onLoginSuccess={(token) => {
+          localStorage.setItem('adminToken', token);
+          setAdminToken(token);
+          setActiveMenu('overview');
+        }} 
+      />
+    );
+  }
 
   const handleEditProduct = (id: string) => {
     setSelectedProductId(id);
@@ -392,6 +391,8 @@ function App() {
             </div>
           ) : activeMenu === 'overview' ? (
             <Dashboard onNavigate={(page) => setActiveMenu(page)} />
+          ) : activeMenu === 'loosestones' ? (
+            <LooseStones />
           ) : activeMenu === 'orders' ? (
             <Orders />
           ) : activeMenu === 'goldmine' ? (

@@ -26,6 +26,10 @@ const jewelleryPricingSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  custom_diamond_rates: {
+    type: mongoose.Schema.Types.Mixed,
+    default: {}
+  },
   gemstone_rate: {
     type: Number,
     default: 0
