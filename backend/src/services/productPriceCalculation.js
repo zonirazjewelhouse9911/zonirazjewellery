@@ -136,7 +136,7 @@ exports.productPricing = async (req, res) => {
         // Convert size from Aana to Inches (1 Aana = 0.0625 Inch)
         const sizeInInches = size * 0.0625;
 
-        if (!isNaN(size)) {
+        if (!isNaN(size) && size > 0) {
             const catStr = (product_data.category || product_data.product_category || product_data.category_id || '').toLowerCase();
 
             if (catStr === "chains" || catStr === "chain") {
@@ -151,6 +151,10 @@ exports.productPricing = async (req, res) => {
                 const baseLength = product_data.base_length || 20;
                 const weightPerInch = base_gold_weight / baseLength;
                 gross_gold_weight = weightPerInch * sizeInInches;
+            } else if (catStr.includes("bangle")) {
+                const baseBangleSize = Number(product_data.banglesize_id || 2.4);
+                const weightPerStep = 0.5;
+                gross_gold_weight = base_gold_weight + ((size - baseBangleSize) / 0.2) * weightPerStep;
             } else {
                 const weight_differenceINsize_g = 0.140;
                 gross_gold_weight = size === 12 ? base_gold_weight : base_gold_weight + (size - 12) * weight_differenceINsize_g;

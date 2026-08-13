@@ -38,7 +38,6 @@ const lifestyleImages = [
 ];
 
 const sizeOptions = [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16];
-const karatOptions = ['14 KT', '18 KT', '22 KT', '24 KT', 'Platinum'];
 const colorOptions = [
   { id: 'Yellow', name: 'Yellow Gold', colorCode: '#E5C158' },
   { id: 'Rose', name: 'Rose Gold', colorCode: '#E09B8D' },
@@ -218,8 +217,68 @@ export default function ProductDetailPage({ product, products: propProducts = []
     return mapped.length > 0 ? mapped : ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
   }, [product?.diamond_quality, product?.custom_diamond_rates]);
 
-  const [selectedKarat, setSelectedKarat] = useState('14 KT');
+  const karatOptions = useMemo(() => {
+    if (!product) return ['14 KT', '18 KT'];
+
+    const rawKarat = product.karat_id ? String(product.karat_id) : '';
+    const rawMetal = product.metal_type ? String(product.metal_type) : '';
+    const productType = product.product_type ? String(product.product_type).toLowerCase() : '';
+
+    let options = [];
+
+    // Parse karat_id (1 = 18K, 2 = 22K, 3 = 14K, 4 = 9K)
+    if (rawKarat) {
+      const parts = rawKarat.split(',').map(s => s.trim());
+      parts.forEach(p => {
+        if (!p || p === '0') return;
+        if (p === '1' || p.toLowerCase().includes('18')) {
+          if (!options.includes('18 KT')) options.push('18 KT');
+        } else if (p === '2' || p.toLowerCase().includes('22')) {
+          if (!options.includes('22 KT')) options.push('22 KT');
+        } else if (p === '3' || p.toLowerCase().includes('14')) {
+          if (!options.includes('14 KT')) options.push('14 KT');
+        } else if (p === '4' || p.toLowerCase().includes('9')) {
+          if (!options.includes('9 KT')) options.push('9 KT');
+        } else if (p.toLowerCase().includes('24')) {
+          if (!options.includes('24 KT')) options.push('24 KT');
+        }
+      });
+    }
+
+    // Parse metal_type (4 = Platinum) or product_type for Platinum
+    if (rawMetal) {
+      const metalParts = rawMetal.split(',').map(s => s.trim());
+      metalParts.forEach(m => {
+        if (m === '4' || m.toLowerCase().includes('platinum')) {
+          if (!options.includes('Platinum')) options.push('Platinum');
+        }
+      });
+    }
+
+    if (productType === 'platinum' && !options.includes('Platinum')) {
+      options.push('Platinum');
+    }
+
+    if (options.length === 0) {
+      options = ['14 KT', '18 KT'];
+    }
+
+    const order = ['14 KT', '18 KT', '22 KT', '24 KT', '9 KT', 'Platinum'];
+    options.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+
+    return options;
+  }, [product?.karat_id, product?.metal_type, product?.product_type]);
+
+  const [selectedKarat, setSelectedKarat] = useState(() => karatOptions[0] || '14 KT');
   const selectedMetal = selectedKarat === 'Platinum' ? 'Platinum' : `${selectedKarat} ${selectedColor}`;
+
+  useEffect(() => {
+    if (karatOptions && karatOptions.length > 0) {
+      if (!selectedKarat || !karatOptions.includes(selectedKarat)) {
+        setSelectedKarat(karatOptions[0]);
+      }
+    }
+  }, [karatOptions]);
   const [selectedDiamond, setSelectedDiamond] = useState('IJ-SI');
   const [selectedSolitaire, setSelectedSolitaire] = useState('IJ-SI');
 
@@ -349,9 +408,14 @@ export default function ProductDetailPage({ product, products: propProducts = []
       : isBangleOrBracelet
         ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
         : 12;
-    const isCustomized = selectedSize !== defaultSize ||
-      selectedMetal !== '14 KT Yellow' ||
-      selectedDiamond !== 'IJ-SI' ||
+    const defaultKarat = karatOptions[0] || '14 KT';
+    const defaultColor = availableColors[0]?.id || 'Yellow';
+    const defaultDiamond = diamondOptions[0] || 'IJ-SI';
+
+    const isCustomized = String(selectedSize) !== String(defaultSize) ||
+      selectedKarat !== defaultKarat ||
+      selectedColor !== defaultColor ||
+      selectedDiamond !== defaultDiamond ||
       (hasSolitaire && selectedSolitaire !== (solitaireOptions && solitaireOptions[0] ? solitaireOptions[0] : 'IJ-SI'));
 
     if (!isCustomized) {
@@ -435,6 +499,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
           else if (metalKey === "9k") goldRate = rates.gold_rate_24k * 9 / 24;
           else if (metalKey === "22k") goldRate = rates.gold_rate_24k * 22 / 24;
           else if (metalKey === "24k") goldRate = rates.gold_rate_24k * 24 / 24;
+
+          const goldCost = data.gold_price !== undefined ? data.gold_price : Math.round((data.gold_weight || product.gold_weight || 0) * goldRate);
 
           const customDiamondPrice = (product.custom_diamond_rates && product.custom_diamond_rates[selectedDiamond] !== undefined)
             ? Number(product.custom_diamond_rates[selectedDiamond])
