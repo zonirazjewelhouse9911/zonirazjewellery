@@ -191,7 +191,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
         style={{
           position: 'absolute',
           top: '100%',
-          left: '20px',
+          left: '0',
           width: '380px',
           maxWidth: 'calc(100vw - 32px)',
           marginTop: '4px',
@@ -225,7 +225,14 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                 return (
                   <div
                     key={prodId}
-                    onClick={() => handleSelectSearchResult(prod)}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleSelectSearchResult(prod);
+                    }}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleSelectSearchResult(prod);
+                    }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -473,6 +480,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                 </button>
               )}
             </div>
+            {renderSearchResultsDropdown()}
           </div>
 
           {/* Center: Brand Logo */}
@@ -767,6 +775,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
               </div>
             )}
           </div>
+          {renderSearchResultsDropdown()}
         </div>
 
         {/* Bottom Tier: Category Links */}
@@ -1028,8 +1037,6 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
               })}
           </nav>
         </div>
-
-        {renderSearchResultsDropdown()}
       </header>
 
       {/* Digital Gold Modal */}

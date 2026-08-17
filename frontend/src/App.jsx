@@ -603,15 +603,15 @@ function AppContent() {
         const catalog = allProducts.length > 0 ? allProducts : products;
         const found = catalog.find(p => 
           String(p.product_slug || p.slug || '').toLowerCase() === decodeURIComponent(slug).toLowerCase() || 
-          String(p.id || '').toLowerCase() === decodeURIComponent(slug).toLowerCase()
+          String(p.id || p._id || p.product_id || '').toLowerCase() === decodeURIComponent(slug).toLowerCase()
         );
         if (found) {
-          const correctSlug = found.product_slug || found.slug || found.id;
+          const correctSlug = found.product_slug || found.slug || found.id || found._id || found.product_id;
           const correctPath = `/product/${correctSlug}`;
           if (window.location.pathname !== correctPath) {
             window.history.replaceState(null, '', correctPath);
           }
-          setSelectedProductId(found.id);
+          setSelectedProductId(found.id || found._id || found.product_id || correctSlug);
         } else {
           setSelectedProductId(slug);
         }
@@ -988,7 +988,10 @@ function AppContent() {
 
   }, [currentView, selectedProductId, selectedCategoryName]);
 
-  const selectedProduct = (allProducts.length > 0 ? allProducts : products).find(p => String(p.id) === String(selectedProductId)) || null;
+  const selectedProduct = (allProducts.length > 0 ? allProducts : products).find(p => 
+    String(p.id || p._id || p.product_id) === String(selectedProductId) ||
+    String(p.product_slug || p.slug || '').toLowerCase() === String(selectedProductId).toLowerCase()
+  ) || null;
 
   return (
     <>
