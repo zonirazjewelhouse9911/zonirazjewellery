@@ -32,7 +32,8 @@ import {
   Coins,
   Image as ImageIcon,
   Video,
-  Gem
+  Gem,
+  Trash2
 } from 'lucide-react';
 import './App.css';
 
@@ -75,6 +76,10 @@ function App() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Selection state for Bulk Actions
+  const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -181,6 +186,55 @@ function App() {
     const query = searchQuery.toLowerCase();
     return title.includes(query) || code.includes(query) || slug.includes(query);
   });
+
+  const handleToggleSelectProduct = (id: string) => {
+    setSelectedProductIds(prev => 
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
+  };
+
+  const isAllFilteredSelected = filteredProducts.length > 0 && filteredProducts.every(p => selectedProductIds.includes(p._id));
+
+  const handleToggleSelectAll = () => {
+    if (isAllFilteredSelected) {
+      const filteredIds = new Set(filteredProducts.map(p => p._id));
+      setSelectedProductIds(prev => prev.filter(id => !filteredIds.has(id)));
+    } else {
+      const filteredIds = filteredProducts.map(p => p._id);
+      setSelectedProductIds(prev => Array.from(new Set([...prev, ...filteredIds])));
+    }
+  };
+
+  const handleBulkDeleteProducts = async () => {
+    if (selectedProductIds.length === 0) return;
+
+    const confirmMsg = `Are you sure you want to permanently delete the ${selectedProductIds.length} selected product(s)? This action cannot be undone.`;
+    if (!window.confirm(confirmMsg)) return;
+
+    setIsBulkDeleting(true);
+    try {
+      const res = await fetch('/api/admin/products/bulk-delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids: selectedProductIds }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message || 'Selected products deleted successfully.');
+        setSelectedProductIds([]);
+        fetchProducts();
+      } else {
+        alert(data.message || 'Failed to delete selected products.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('An error occurred while deleting selected products.');
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen bg-[#efe7e5] text-[#12100e] font-sans antialiased overflow-hidden">
@@ -295,11 +349,44 @@ function App() {
 
               {/* Products Table/List */}
               <div className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm">
-                <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                  <span className="text-[10px] uppercase tracking-widest font-black text-slate-400">Masterpiece Directory</span>
-                  <span className="text-[9px] text-slate-500 uppercase tracking-widest">
-                    Showing {filteredProducts.length} items
-                  </span>
+                <div className="p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-4 bg-slate-50/50">
+                  <div className="flex items-center space-x-4">
+                    <label className="flex items-center space-x-2 cursor-pointer select-none">
+                      <input 
+                        type="checkbox"
+                        checked={isAllFilteredSelected}
+                        onChange={handleToggleSelectAll}
+                        className="w-4 h-4 accent-red-600 rounded cursor-pointer"
+                      />
+                      <span className="text-[10px] uppercase tracking-widest font-black text-slate-500">
+                        Select All ({filteredProducts.length})
+                      </span>
+                    </label>
+                    {selectedProductIds.length > 0 && (
+                      <span className="px-2.5 py-1 bg-red-100 text-red-700 rounded-full text-[10px] font-bold">
+                        {selectedProductIds.length} Selected
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-4">
+                    {selectedProductIds.length > 0 && (
+                      <button
+                        onClick={handleBulkDeleteProducts}
+                        disabled={isBulkDeleting}
+                        className="px-4 py-2 bg-red-600 hover:bg-red-700 active:scale-95 disabled:opacity-50 text-white rounded-xl text-[10px] uppercase tracking-widest font-bold transition-all shadow-sm flex items-center gap-2 cursor-pointer"
+                      >
+                        {isBulkDeleting ? (
+                          <Loader2 className="animate-spin" size={13} />
+                        ) : (
+                          <Trash2 size={13} />
+                        )}
+                        Delete Selected ({selectedProductIds.length})
+                      </button>
+                    )}
+                    <span className="text-[9px] text-slate-500 uppercase tracking-widest">
+                      Showing {filteredProducts.length} items
+                    </span>
+                  </div>
                 </div>
                 
                 {loading ? (
@@ -319,72 +406,88 @@ function App() {
                   </div>
                 ) : (
                   <div className="divide-y divide-slate-100">
-                    {filteredProducts.map((item) => (
-                      <div key={item._id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-slate-50/30 transition-colors">
-                        <div className="flex items-center space-x-5 flex-1 min-w-0">
-                          <div className="w-20 h-20 bg-[#efe7e5]/40 rounded-2xl flex items-center justify-center border border-slate-200/60 shadow-sm shrink-0 overflow-hidden relative group/img">
-                            {getProductImage(item) ? (
-                              <img 
-                                src={resolveProductImage(getProductImage(item))} 
-                                className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-125" 
-                                alt={item.product_title} 
-                              />
-                            ) : (
-                              <span className="text-xl font-serif italic text-brand-gold font-bold">{item.product_title ? item.product_title[0] : 'P'}</span>
-                            )}
-                          </div>
-                          <div className="min-w-0">
-                            <h3 className="font-serif text-md font-bold text-[#12100e] truncate">{item.product_title}</h3>
-                            <p className="text-[9px] text-slate-400 uppercase tracking-widest mt-1 truncate">{item.product_code}</p>
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-6 md:gap-14 shrink-0 text-left md:text-right">
-                          <div>
-                            <p className="text-[9px] text-slate-400 uppercase tracking-widest">Category</p>
-                            <p className="text-xs font-bold text-slate-800 mt-0.5">{getCategoryName(item.category_id)}</p>
-                            <p className="text-[8px] text-slate-400 uppercase tracking-wider mt-0.5">{item.product_type}</p>
-                          </div>
-                          <div>
-                            <p className="text-[9px] text-slate-400 uppercase tracking-widest">Price (Base)</p>
-                            <p className="text-xs font-bold text-slate-800 mt-0.5">
-                              {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(item.price || 0)}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-[9px] text-slate-400 uppercase tracking-widest">Stock Status</p>
-                            <span className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide mt-1 ${item.stock > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${item.stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
-                              {item.stock > 0 ? `${item.stock} Available` : 'Out of Stock'}
-                            </span>
-                          </div>
-                          <div>
-                            <p className="text-[9px] text-slate-400 uppercase tracking-widest">Visibility</p>
-                            <div className="flex items-center space-x-2 mt-1">
-                              <span className={`w-7 h-4 rounded-full border flex items-center p-0.5 ${item.status === '1' ? 'bg-emerald-100 border-emerald-300 justify-end' : 'bg-slate-100 border-slate-300 justify-start'}`}>
-                                <span className={`w-2.5 h-2.5 rounded-full ${item.status === '1' ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
-                              </span>
-                              <span className={`text-[10px] font-bold uppercase ${item.status === '1' ? 'text-emerald-600' : 'text-slate-400'}`}>
-                                {item.status === '1' ? 'Live' : 'Archived'}
-                              </span>
+                    {filteredProducts.map((item) => {
+                      const isSelected = selectedProductIds.includes(item._id);
+                      return (
+                        <div 
+                          key={item._id} 
+                          className={`p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 transition-colors ${
+                            isSelected 
+                              ? 'bg-red-50/40 border-l-4 border-l-red-600' 
+                              : 'hover:bg-slate-50/30'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-5 flex-1 min-w-0">
+                            <input 
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => handleToggleSelectProduct(item._id)}
+                              className="w-5 h-5 accent-red-600 rounded cursor-pointer shrink-0 transition-transform active:scale-90"
+                            />
+                            <div className="w-20 h-20 bg-[#efe7e5]/40 rounded-2xl flex items-center justify-center border border-slate-200/60 shadow-sm shrink-0 overflow-hidden relative group/img">
+                              {getProductImage(item) ? (
+                                <img 
+                                  src={resolveProductImage(getProductImage(item))} 
+                                  className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-125" 
+                                  alt={item.product_title} 
+                                />
+                              ) : (
+                                <span className="text-xl font-serif italic text-brand-gold font-bold">{item.product_title ? item.product_title[0] : 'P'}</span>
+                              )}
+                            </div>
+                            <div className="min-w-0">
+                              <h3 className="font-serif text-md font-bold text-[#12100e] truncate">{item.product_title}</h3>
+                              <p className="text-[9px] text-slate-400 uppercase tracking-widest mt-1 truncate">{item.product_code}</p>
                             </div>
                           </div>
-                          <div className="flex items-center space-x-2">
-                            <button 
-                              onClick={() => handleEditProduct(item._id)}
-                              className="px-4 py-2 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] rounded-lg text-[10px] uppercase tracking-widest font-bold transition-all border border-slate-200/50 shadow-sm cursor-pointer"
-                            >
-                              Refine
-                            </button>
-                            <button 
-                              onClick={() => handleDeleteProduct(item._id, item.product_title)}
-                              className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] uppercase tracking-widest font-bold transition-all border border-red-100/30 shadow-sm cursor-pointer"
-                            >
-                              Delete
-                            </button>
+                          <div className="flex flex-wrap items-center gap-6 md:gap-14 shrink-0 text-left md:text-right">
+                            <div>
+                              <p className="text-[9px] text-slate-400 uppercase tracking-widest">Category</p>
+                              <p className="text-xs font-bold text-slate-800 mt-0.5">{getCategoryName(item.category_id)}</p>
+                              <p className="text-[8px] text-slate-400 uppercase tracking-wider mt-0.5">{item.product_type}</p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] text-slate-400 uppercase tracking-widest">Price (Base)</p>
+                              <p className="text-xs font-bold text-slate-800 mt-0.5">
+                                {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(item.price || 0)}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[9px] text-slate-400 uppercase tracking-widest">Stock Status</p>
+                              <span className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide mt-1 ${item.stock > 0 ? 'text-emerald-600' : 'text-red-500'}`}>
+                                <span className={`w-1.5 h-1.5 rounded-full ${item.stock > 0 ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
+                                {item.stock > 0 ? `${item.stock} Available` : 'Out of Stock'}
+                              </span>
+                            </div>
+                            <div>
+                              <p className="text-[9px] text-slate-400 uppercase tracking-widest">Visibility</p>
+                              <div className="flex items-center space-x-2 mt-1">
+                                <span className={`w-7 h-4 rounded-full border flex items-center p-0.5 ${item.status === '1' ? 'bg-emerald-100 border-emerald-300 justify-end' : 'bg-slate-100 border-slate-300 justify-start'}`}>
+                                  <span className={`w-2.5 h-2.5 rounded-full ${item.status === '1' ? 'bg-emerald-500' : 'bg-slate-400'}`}></span>
+                                </span>
+                                <span className={`text-[10px] font-bold uppercase ${item.status === '1' ? 'text-emerald-600' : 'text-slate-400'}`}>
+                                  {item.status === '1' ? 'Live' : 'Archived'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <button 
+                                onClick={() => handleEditProduct(item._id)}
+                                className="px-4 py-2 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] rounded-lg text-[10px] uppercase tracking-widest font-bold transition-all border border-slate-200/50 shadow-sm cursor-pointer"
+                              >
+                                Refine
+                              </button>
+                              <button 
+                                onClick={() => handleDeleteProduct(item._id, item.product_title)}
+                                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-[10px] uppercase tracking-widest font-bold transition-all border border-red-100/30 shadow-sm cursor-pointer"
+                              >
+                                Delete
+                              </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>

@@ -32,5 +32,6 @@ router.get('/admin/products/:id', productController.getProductById);
 router.post('/admin/products', productController.createProduct);
 router.patch('/admin/products/:id', productController.updateProduct);
 router.delete('/admin/products/:id', productController.deleteProduct);
+router.post('/admin/products/bulk-delete', productController.deleteMultipleProducts);
 
 module.exports = router;

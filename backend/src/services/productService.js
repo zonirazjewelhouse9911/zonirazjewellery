@@ -227,6 +227,23 @@ class ProductService {
     }
     return product;
   }
+
+  async deleteMultipleProducts(ids) {
+    if (!Array.isArray(ids) || ids.length === 0) {
+      throw new Error('An array of product IDs must be provided.');
+    }
+
+    const objectIds = ids.filter(id => typeof id === 'string' && id.match(/^[0-9a-fA-F]{24}$/));
+    
+    const result = await Product.deleteMany({
+      $or: [
+        { _id: { $in: objectIds } },
+        { product_id: { $in: ids } }
+      ]
+    });
+
+    return result;
+  }
 }
 
 module.exports = new ProductService();
