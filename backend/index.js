@@ -174,6 +174,10 @@ const looseStoneRoutes = require('./src/routes/looseStoneRoutes');
 app.use('/api/admin/loose-stones', looseStoneRoutes);
 app.use('/api/loose-stones', looseStoneRoutes);
 
+const blogRoutes = require('./src/routes/blogRoutes');
+app.use('/api', blogRoutes);
+
+
 // ─── Video Call Admin Status REST endpoint ────────────────────────────────────
 // Track online admins in memory (socketId -> adminInfo)
 const onlineAdmins = new Map();

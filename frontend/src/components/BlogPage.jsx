@@ -71,12 +71,43 @@ const blogPosts = [
 
 const BlogPage = () => {
   const [activeCategory, setActiveCategory] = useState("All Blogs");
+  const [posts, setPosts] = useState(blogPosts);
+
+  React.useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch('/api/blogs');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+          // Ensure posts are sorted latest first
+          const sorted = [...data.data].sort((a, b) => {
+            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+            return dateB - dateA;
+          });
+          setPosts(sorted);
+        }
+      } catch (err) {
+        console.error("Failed to load dynamic blogs:", err);
+      }
+    };
+    fetchBlogs();
+  }, []);
 
   const filteredPosts = activeCategory === "All Blogs" 
-    ? blogPosts 
-    : blogPosts.filter(post => post.tags.some(tag => tag.toLowerCase() === activeCategory.toLowerCase()));
+    ? posts 
+    : posts.filter(post => {
+        if (Array.isArray(post.tags)) {
+          return post.tags.some(tag => tag.toLowerCase() === activeCategory.toLowerCase());
+        }
+        if (post.category) {
+          return post.category.toLowerCase().includes(activeCategory.toLowerCase());
+        }
+        return false;
+      });
 
   return (
+
     <div className="blog-page-wrapper">
       <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 

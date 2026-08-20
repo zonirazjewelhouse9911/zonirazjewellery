@@ -135,9 +135,30 @@ const allBlogContent = [
 ];
 
 const BlogDetailPage = ({ slug, onBack }) => {
-  const blog = allBlogContent.find(b => b.slug === slug);
+  const [blog, setBlog] = React.useState(() => allBlogContent.find(b => b.slug === slug));
+  const [loading, setLoading] = React.useState(false);
 
-  if (!blog) {
+  React.useEffect(() => {
+    const fetchSingleBlog = async () => {
+      if (!slug) return;
+      try {
+        setLoading(true);
+        const res = await fetch(`/api/blogs/${slug}`);
+        const data = await res.json();
+        if (data.success && data.data) {
+          setBlog(data.data);
+        }
+      } catch (err) {
+        console.error("Error fetching single blog from API:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSingleBlog();
+  }, [slug]);
+
+  if (!blog && !loading) {
+
     return (
       <div className="blog-detail-wrapper">
         <style>{`
@@ -415,13 +436,23 @@ const BlogDetailPage = ({ slug, onBack }) => {
         </div>
 
         {/* Content */}
-        {blog.content.map((block, i) => {
-          if (block.type === 'intro') return <div key={i} className="blog-content-intro">{block.text}</div>;
-          if (block.type === 'heading') return <h2 key={i} className="blog-content-heading">{block.text}</h2>;
-          if (block.type === 'para') return <p key={i} className="blog-content-para">{block.text}</p>;
-          if (block.type === 'tip') return <div key={i} className="blog-content-tip">💡 {block.text}</div>;
-          return null;
-        })}
+        {Array.isArray(blog.content) ? (
+          blog.content.map((block, i) => {
+            if (block.type === 'intro') return <div key={i} className="blog-content-intro">{block.text}</div>;
+            if (block.type === 'heading') return <h2 key={i} className="blog-content-heading">{block.text}</h2>;
+            if (block.type === 'para') return <p key={i} className="blog-content-para">{block.text}</p>;
+            if (block.type === 'tip') return <div key={i} className="blog-content-tip">💡 {block.text}</div>;
+            return <p key={i} className="blog-content-para">{block.text || (typeof block === 'string' ? block : '')}</p>;
+          })
+        ) : typeof blog.content === 'string' ? (
+          blog.content.trim().startsWith('<') ? (
+            <div className="blog-html-content leading-relaxed space-y-4" dangerouslySetInnerHTML={{ __html: blog.content }} />
+          ) : (
+            <p className="blog-content-para">{blog.content}</p>
+          )
+        ) : null}
+
+
 
         {/* CTA */}
         <div className="blog-detail-cta">

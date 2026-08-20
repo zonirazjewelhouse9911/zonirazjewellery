@@ -14,6 +14,7 @@ import PricingSettings from './pages/PricingSettings';
 import VideoCallPanel from './pages/VideoCallPanel';
 import GoldMineWallets from './pages/GoldMineWallets';
 import LooseStones from './pages/LooseStones';
+import Blogs from './pages/Blogs';
 import { resolveProductImage } from './lib/imageResolver';
 import { 
   Grid, 
@@ -33,7 +34,8 @@ import {
   Image as ImageIcon,
   Video,
   Gem,
-  Trash2
+  Trash2,
+  FileText
 } from 'lucide-react';
 import './App.css';
 
@@ -41,6 +43,7 @@ import './App.css';
 const MENU_ITEMS = [
   { id: 'overview', label: 'Overview', icon: Grid },
   { id: 'products', label: 'Products', icon: Package },
+  { id: 'blogs', label: 'Blogs & Journal', icon: FileText },
   { id: 'loosestones', label: 'Loose Stones', icon: Gem },
   { id: 'orders', label: 'Orders', icon: ShoppingBag },
   { id: 'goldmine', label: '10+1 Gold Wallets', icon: Coins },
@@ -55,6 +58,7 @@ const MENU_ITEMS = [
   { id: 'pricing', label: 'Daily Pricing', icon: SlidersHorizontal },
   { id: 'videocall', label: 'Video Calls', icon: Video },
 ];
+
 
 const CATEGORIES = [
   { id: '1', name: 'Rings' },
@@ -494,7 +498,10 @@ function App() {
             </div>
           ) : activeMenu === 'overview' ? (
             <Dashboard onNavigate={(page) => setActiveMenu(page)} />
+          ) : activeMenu === 'blogs' ? (
+            <Blogs />
           ) : activeMenu === 'loosestones' ? (
+
             <LooseStones />
           ) : activeMenu === 'orders' ? (
             <Orders />

@@ -7,6 +7,7 @@ dotenv.config();
 
 const Product = require("./src/models/productModel");
 const Category = require("./src/models/categoryModel");
+const Blog = require("./src/models/blogModel");
 
 // Static routes list (primary pages)
 const staticPages = [
@@ -59,8 +60,8 @@ const categorySlugs = [
   "kids-jewellery"
 ];
 
-// Blog slugs static array
-const blogSlugs = [
+// Blog slugs static array fallback
+const fallbackBlogSlugs = [
   "timeless-gold-earring-styles-2026",
   "diamond-engagement-ring-complete-guide-2026",
   "ultimate-bridal-jewellery-guide",
@@ -79,6 +80,19 @@ async function run() {
     // Get database categories
     const dbCategories = await Category.find().lean();
     
+    // Get database blogs
+    let activeBlogSlugs = [];
+    try {
+      const dbBlogs = await Blog.find({ isPublished: true }).select("slug").lean();
+      if (dbBlogs && dbBlogs.length > 0) {
+        activeBlogSlugs = dbBlogs.map(b => b.slug);
+      } else {
+        activeBlogSlugs = [...fallbackBlogSlugs];
+      }
+    } catch (bErr) {
+      activeBlogSlugs = [...fallbackBlogSlugs];
+    }
+
     // Format db categories
     dbCategories.forEach(cat => {
       const slug = cat.name.toLowerCase()
@@ -112,13 +126,14 @@ async function run() {
     });
 
     // 3. Blogs Pages
-    blogSlugs.forEach(b => {
+    activeBlogSlugs.forEach(b => {
       sitemapUrls.push({
         loc: `${baseDomain}/blog/${b}`,
         changefreq: "weekly",
         priority: "0.7"
       });
     });
+
 
     // 4. Product Pages
     products.forEach(p => {
@@ -164,7 +179,8 @@ async function run() {
       totalUrls: sitemapUrls.length,
       staticCount: staticPages.length,
       categoryCount: categorySlugs.length,
-      blogCount: blogSlugs.length,
+      blogCount: activeBlogSlugs.length,
+
       productCount: products.length,
       urls: sitemapUrls.map(u => u.loc)
     }));

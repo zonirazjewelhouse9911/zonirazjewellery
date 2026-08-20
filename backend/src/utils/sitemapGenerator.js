@@ -56,8 +56,10 @@ const categorySlugs = [
   "kids-jewellery"
 ];
 
-// Blog slugs static array
-const blogSlugs = [
+const Blog = require("../models/blogModel");
+
+// Blog slugs static array fallback
+const fallbackBlogSlugs = [
   "timeless-gold-earring-styles-2026",
   "diamond-engagement-ring-complete-guide-2026",
   "ultimate-bridal-jewellery-guide",
@@ -73,6 +75,20 @@ async function generateSitemap() {
     
     // Get database categories
     const dbCategories = await Category.find().lean();
+
+    // Get database blogs (published only)
+    let activeBlogSlugs = [];
+    try {
+      const dbBlogs = await Blog.find({ isPublished: true }).select("slug").lean();
+      if (dbBlogs && dbBlogs.length > 0) {
+        activeBlogSlugs = dbBlogs.map(b => b.slug);
+      } else {
+        activeBlogSlugs = [...fallbackBlogSlugs];
+      }
+    } catch (blogErr) {
+      console.error("[Sitemap] Could not fetch blogs from DB, using fallback:", blogErr.message);
+      activeBlogSlugs = [...fallbackBlogSlugs];
+    }
     
     const activeCategorySlugs = [...categorySlugs];
     // Format db categories
@@ -108,13 +124,14 @@ async function generateSitemap() {
     });
 
     // 3. Blogs Pages
-    blogSlugs.forEach(b => {
+    activeBlogSlugs.forEach(b => {
       sitemapUrls.push({
         loc: `${baseDomain}/blog/${b}`,
         changefreq: "weekly",
         priority: "0.7"
       });
     });
+
 
     // 4. Product Pages
     products.forEach(p => {
