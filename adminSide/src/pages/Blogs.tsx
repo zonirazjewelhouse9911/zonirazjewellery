@@ -60,10 +60,10 @@ const CATEGORIES_LIST = [
 
 const TEXT_COLORS = [
   { label: 'Black', value: '#12100e' },
+  { label: 'Brown', value: '#5d463c' },
+  { label: 'Gold', value: '#C5A880' },
   { label: 'Dark Gray', value: '#4b5563' },
   { label: 'Blue', value: '#2563eb' },
-  { label: 'Purple', value: '#7c3aed' },
-  { label: 'Pink', value: '#ec4899' },
   { label: 'Red', value: '#ef4444' },
   { label: 'Orange', value: '#f97316' },
   { label: 'Green', value: '#10b981' }
@@ -71,11 +71,11 @@ const TEXT_COLORS = [
 
 const HIGHLIGHT_COLORS = [
   { label: 'None', value: 'transparent' },
+  { label: 'Gold Cream', value: '#fcf8f2' },
   { label: 'Yellow', value: '#fef08a' },
   { label: 'Green', value: '#bbf7d0' },
   { label: 'Blue', value: '#bfdbfe' },
-  { label: 'Pink', value: '#fbcfe8' },
-  { label: 'Orange', value: '#fed7aa' }
+  { label: 'Pink', value: '#fbcfe8' }
 ];
 
 export default function Blogs() {
@@ -174,9 +174,9 @@ export default function Blogs() {
       initialHtml = blog.content;
     } else if (Array.isArray(blog.content)) {
       initialHtml = blog.content.map((block: any) => {
-        if (block.type === 'intro') return `<div class="blog-intro" style="padding:16px; background:#f8fafc; border-left:4px solid #7c3aed; margin-bottom:16px;">${block.text}</div>`;
-        if (block.type === 'heading') return `<h2 style="font-size:22px; font-weight:bold; margin-top:20px; margin-bottom:10px;">${block.text}</h2>`;
-        if (block.type === 'tip') return `<blockquote style="padding:12px; background:#fef08a; border-left:4px solid #f97316; margin:16px 0;"><strong>Pro Tip:</strong> ${block.text}</blockquote>`;
+        if (block.type === 'intro') return `<div class="blog-intro" style="padding:16px; background:#f8fafc; border-left:4px solid #5d463c; margin-bottom:16px;">${block.text}</div>`;
+        if (block.type === 'heading') return `<h2 style="font-size:22px; font-weight:bold; color:#5d463c; margin-top:20px; margin-bottom:10px;">${block.text}</h2>`;
+        if (block.type === 'tip') return `<blockquote style="padding:12px; background:#fcf8f2; border-left:4px solid #C5A880; margin:16px 0;"><strong>Pro Tip:</strong> ${block.text}</blockquote>`;
         return `<p style="margin-bottom:12px; line-height:1.7;">${block.text}</p>`;
       }).join('');
     }
@@ -208,7 +208,6 @@ export default function Blogs() {
 
   const handleApplyFontSize = (sizeStr: string) => {
     setFontSize(sizeStr);
-    // execCommand fontSize supports values 1-7
     let sizeVal = '3';
     if (sizeStr === '12px') sizeVal = '1';
     if (sizeStr === '14px') sizeVal = '2';
@@ -336,32 +335,32 @@ export default function Blogs() {
   });
 
   return (
-    <div className="min-h-screen bg-[#f3f4f8] text-[#1e1b4b] font-sans p-2 md:p-6 antialiased">
+    <div className="min-h-screen bg-[#efe7e5] text-[#12100e] font-sans p-2 md:p-6 antialiased">
       
-      {/* ── EDITOR VIEW (Matching User Reference Design) ───────────────────── */}
+      {/* ── EDITOR VIEW (Zoniraz Warm Theme Matching Original Admin) ───────── */}
       {viewMode === 'editor' ? (
         <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-300">
           
           {/* Top Control Header Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 bg-white/80 backdrop-blur-md p-4 rounded-3xl border border-white/60 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-4 bg-white/90 backdrop-blur-md p-4 rounded-3xl border border-slate-200/80 shadow-sm">
             <div className="flex items-center space-x-3">
               <button 
                 onClick={() => setViewMode('list')}
-                className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-2xl transition-colors cursor-pointer"
+                className="p-2.5 bg-[#efe7e5] hover:bg-slate-200 text-[#5d463c] rounded-2xl transition-colors cursor-pointer"
                 title="Back to Journal List"
               >
                 <ArrowLeft size={18} />
               </button>
 
               {/* View Switcher Pills */}
-              <div className="flex items-center bg-slate-100 p-1 rounded-2xl">
+              <div className="flex items-center bg-[#efe7e5] p-1 rounded-2xl">
                 <button
                   type="button"
                   onClick={() => setEditorTab('ms-word')}
                   className={`flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                     editorTab === 'ms-word' 
-                      ? 'bg-white text-[#7c3aed] shadow-sm' 
-                      : 'text-slate-500 hover:text-slate-800'
+                      ? 'bg-[#5d463c] text-[#efe7e5] shadow-sm' 
+                      : 'text-[#5d463c]/70 hover:text-[#5d463c]'
                   }`}
                 >
                   <Edit3 size={14} />
@@ -372,8 +371,8 @@ export default function Blogs() {
                   onClick={() => setEditorTab('preview')}
                   className={`flex items-center space-x-2 px-5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${
                     editorTab === 'preview' 
-                      ? 'bg-white text-[#7c3aed] shadow-sm' 
-                      : 'text-slate-500 hover:text-slate-800'
+                      ? 'bg-[#5d463c] text-[#efe7e5] shadow-sm' 
+                      : 'text-[#5d463c]/70 hover:text-[#5d463c]'
                   }`}
                 >
                   <Eye size={14} />
@@ -386,7 +385,7 @@ export default function Blogs() {
             <button
               onClick={handleSaveArticle}
               disabled={saving}
-              className="px-8 py-3 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-bold text-xs uppercase tracking-widest rounded-2xl shadow-md flex items-center space-x-2 transition-all cursor-pointer disabled:opacity-50"
+              className="px-8 py-3 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-widest rounded-2xl shadow-md flex items-center space-x-2 transition-all cursor-pointer disabled:opacity-50"
             >
               {saving ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
               <span>{editingBlog ? 'Update Article' : 'Publish Article'}</span>
@@ -395,16 +394,16 @@ export default function Blogs() {
 
           {/* READER PREVIEW MODE */}
           {editorTab === 'preview' ? (
-            <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm max-w-4xl mx-auto space-y-8 border border-slate-100">
+            <div className="bg-white rounded-3xl p-8 md:p-12 shadow-sm max-w-4xl mx-auto space-y-8 border border-slate-200/80">
               <div className="space-y-4">
-                <span className="px-3.5 py-1 bg-purple-100 text-[#7c3aed] rounded-full text-[10px] font-black uppercase tracking-widest">
+                <span className="px-3.5 py-1 bg-[#efe7e5] text-[#5d463c] rounded-full text-[10px] font-black uppercase tracking-widest border border-[#5d463c]/20">
                   {formCategory}
                 </span>
                 <h1 className="text-3xl md:text-5xl font-serif font-bold text-[#12100e] leading-tight">
                   {formTitle || 'Untitled Blog Article'}
                 </h1>
                 {formExcerpt && (
-                  <p className="text-lg text-slate-600 font-serif italic leading-relaxed border-l-4 border-[#7c3aed] pl-4 py-1">
+                  <p className="text-lg text-slate-600 font-serif italic leading-relaxed border-l-4 border-[#5d463c] pl-4 py-1">
                     {formExcerpt}
                   </p>
                 )}
@@ -424,7 +423,7 @@ export default function Blogs() {
               )}
 
               <div 
-                className="prose prose-purple max-w-none text-slate-800 leading-relaxed font-sans text-base"
+                className="prose prose-stone max-w-none text-slate-800 leading-relaxed font-sans text-base"
                 dangerouslySetInnerHTML={{ __html: editorRef.current ? editorRef.current.innerHTML : htmlContent }}
               />
             </div>
@@ -436,9 +435,9 @@ export default function Blogs() {
               <div className="lg:col-span-2 space-y-6">
                 
                 {/* Article Header Details Card */}
-                <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm space-y-5">
+                <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/80 shadow-sm space-y-5">
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.2em] font-black text-[#7c3aed] mb-2">
+                    <label className="block text-[10px] uppercase tracking-[0.2em] font-black text-[#5d463c] mb-2">
                       Article Title *
                     </label>
                     <input 
@@ -446,12 +445,12 @@ export default function Blogs() {
                       value={formTitle}
                       onChange={(e) => handleTitleChange(e.target.value)}
                       placeholder="Enter powerful blog title here..."
-                      className="w-full bg-[#f8fafc] border border-slate-200/80 rounded-2xl px-5 py-4 text-base md:text-lg font-serif font-bold text-[#12100e] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/40 transition-all"
+                      className="w-full bg-[#f8fafc] border border-slate-200 rounded-2xl px-5 py-4 text-base md:text-lg font-serif font-bold text-[#12100e] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5d463c]/40 transition-all"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.2em] font-black text-[#7c3aed] mb-2">
+                    <label className="block text-[10px] uppercase tracking-[0.2em] font-black text-[#5d463c] mb-2">
                       Subheading / Brief Summary
                     </label>
                     <input 
@@ -459,24 +458,24 @@ export default function Blogs() {
                       value={formExcerpt}
                       onChange={(e) => setFormExcerpt(e.target.value)}
                       placeholder="Brief excerpt or sub-headline..."
-                      className="w-full bg-[#f8fafc] border border-slate-200/80 rounded-2xl px-5 py-3.5 text-xs md:text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/40 transition-all"
+                      className="w-full bg-[#f8fafc] border border-slate-200 rounded-2xl px-5 py-3.5 text-xs md:text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5d463c]/40 transition-all"
                     />
                   </div>
                 </div>
 
                 {/* MS Word Style Content Editor Card */}
-                <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-100 shadow-sm space-y-5">
+                <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200/80 shadow-sm space-y-5">
                   <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                     <div className="flex items-center space-x-2">
-                      <Sparkles size={16} className="text-[#7c3aed]" />
-                      <span className="text-[11px] uppercase tracking-[0.2em] font-black text-[#7c3aed]">
+                      <Sparkles size={16} className="text-[#5d463c]" />
+                      <span className="text-[11px] uppercase tracking-[0.2em] font-black text-[#5d463c]">
                         MS Word Style Content Editor
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={handleInsertInlineImage}
-                      className="text-[10px] uppercase tracking-wider font-bold text-[#7c3aed] bg-purple-50 hover:bg-purple-100 px-3.5 py-2 rounded-xl transition-colors flex items-center space-x-1.5 cursor-pointer"
+                      className="text-[10px] uppercase tracking-wider font-bold text-[#efe7e5] bg-[#5d463c] hover:bg-[#4c3931] px-3.5 py-2 rounded-xl transition-colors flex items-center space-x-1.5 cursor-pointer shadow-sm"
                     >
                       <Upload size={13} />
                       <span>Insert Image into Article</span>
@@ -521,9 +520,9 @@ export default function Blogs() {
 
                       {/* Paragraph & Headings Quick Blocks */}
                       <button type="button" onClick={() => handleApplyBlock('P')} className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-black text-slate-700 cursor-pointer">P</button>
-                      <button type="button" onClick={() => handleApplyBlock('H1')} className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-black text-purple-700 cursor-pointer">H1</button>
-                      <button type="button" onClick={() => handleApplyBlock('H2')} className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-black text-purple-700 cursor-pointer">H2</button>
-                      <button type="button" onClick={() => handleApplyBlock('H3')} className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-black text-purple-700 cursor-pointer">H3</button>
+                      <button type="button" onClick={() => handleApplyBlock('H1')} className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-black text-[#5d463c] cursor-pointer">H1</button>
+                      <button type="button" onClick={() => handleApplyBlock('H2')} className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-black text-[#5d463c] cursor-pointer">H2</button>
+                      <button type="button" onClick={() => handleApplyBlock('H3')} className="px-2.5 py-1 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-xs font-black text-[#5d463c] cursor-pointer">H3</button>
                       <button type="button" onClick={() => handleApplyBlock('BLOCKQUOTE')} className="p-1.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-lg text-slate-700 cursor-pointer" title="Blockquote"><Quote size={13} /></button>
                     </div>
 
@@ -591,7 +590,7 @@ export default function Blogs() {
                     ref={editorRef}
                     contentEditable
                     onInput={(e) => setHtmlContent(e.currentTarget.innerHTML)}
-                    className="w-full min-h-[360px] max-h-[600px] overflow-y-auto bg-white border border-slate-200/80 rounded-2xl p-6 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/30 leading-relaxed"
+                    className="w-full min-h-[360px] max-h-[600px] overflow-y-auto bg-white border border-slate-200 rounded-2xl p-6 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#5d463c]/30 leading-relaxed"
                     style={{ fontFamily }}
                   />
                 </div>
@@ -602,10 +601,10 @@ export default function Blogs() {
               <div className="space-y-6">
                 
                 {/* Cover Feature Image Card */}
-                <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-4">
+                <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
                   <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
-                    <ImageIcon size={16} className="text-[#7c3aed]" />
-                    <span className="text-[11px] uppercase tracking-[0.2em] font-black text-[#7c3aed]">
+                    <ImageIcon size={16} className="text-[#5d463c]" />
+                    <span className="text-[11px] uppercase tracking-[0.2em] font-black text-[#5d463c]">
                       Cover Feature Image
                     </span>
                   </div>
@@ -621,11 +620,11 @@ export default function Blogs() {
                   {/* Upload Dropzone */}
                   <div 
                     onClick={() => fileInputRef.current?.click()}
-                    className="border-2 border-dashed border-purple-200 hover:border-[#7c3aed] bg-purple-50/40 rounded-2xl p-6 text-center cursor-pointer transition-all space-y-3"
+                    className="border-2 border-dashed border-[#5d463c]/30 hover:border-[#5d463c] bg-[#efe7e5]/30 rounded-2xl p-6 text-center cursor-pointer transition-all space-y-3"
                   >
                     {uploadingImage ? (
                       <div className="py-6 flex flex-col items-center">
-                        <Loader2 className="animate-spin text-[#7c3aed]" size={28} />
+                        <Loader2 className="animate-spin text-[#5d463c]" size={28} />
                         <span className="text-xs font-bold text-slate-500 mt-2">Uploading image...</span>
                       </div>
                     ) : formImage ? (
@@ -635,21 +634,21 @@ export default function Blogs() {
                         </div>
                         <button 
                           type="button" 
-                          className="px-4 py-2 bg-purple-100 text-[#7c3aed] hover:bg-purple-200 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                          className="px-4 py-2 bg-[#efe7e5] text-[#5d463c] hover:bg-slate-200 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer"
                         >
                           Change Header Image
                         </button>
                       </div>
                     ) : (
                       <div className="py-4 space-y-2">
-                        <Upload size={32} className="mx-auto text-[#7c3aed]" />
+                        <Upload size={32} className="mx-auto text-[#5d463c]" />
                         <div>
                           <p className="text-xs font-bold text-slate-700">Upload Header Image</p>
                           <p className="text-[10px] text-slate-400">JPEG or PNG up to 5MB</p>
                         </div>
                         <button 
                           type="button" 
-                          className="px-5 py-2 bg-[#7c3aed] text-white rounded-xl text-xs font-bold uppercase tracking-wider shadow-sm cursor-pointer"
+                          className="px-5 py-2 bg-[#5d463c] text-[#efe7e5] rounded-xl text-xs font-bold uppercase tracking-wider shadow-sm cursor-pointer"
                         >
                           Choose File
                         </button>
@@ -670,10 +669,10 @@ export default function Blogs() {
                 </div>
 
                 {/* Publishing Settings Card */}
-                <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm space-y-5">
+                <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-5">
                   <div className="flex items-center space-x-2 border-b border-slate-100 pb-3">
-                    <Sliders size={16} className="text-[#7c3aed]" />
-                    <span className="text-[11px] uppercase tracking-[0.2em] font-black text-[#7c3aed]">
+                    <Sliders size={16} className="text-[#5d463c]" />
+                    <span className="text-[11px] uppercase tracking-[0.2em] font-black text-[#5d463c]">
                       Publishing Settings
                     </span>
                   </div>
@@ -684,7 +683,7 @@ export default function Blogs() {
                     <select 
                       value={formCategory}
                       onChange={(e) => setFormCategory(e.target.value)}
-                      className="w-full bg-[#f8fafc] border border-slate-200/80 rounded-2xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/40 cursor-pointer"
+                      className="w-full bg-[#f8fafc] border border-slate-200 rounded-2xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#5d463c]/40 cursor-pointer"
                     >
                       {CATEGORIES_LIST.map((c) => (
                         <option key={c} value={c}>{c}</option>
@@ -698,7 +697,7 @@ export default function Blogs() {
                     <select 
                       value={formStatus}
                       onChange={(e) => setFormStatus(e.target.value)}
-                      className="w-full bg-[#f8fafc] border border-slate-200/80 rounded-2xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/40 cursor-pointer"
+                      className="w-full bg-[#f8fafc] border border-slate-200 rounded-2xl px-4 py-3 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-[#5d463c]/40 cursor-pointer"
                     >
                       <option value="Published (Public)">Published (Public)</option>
                       <option value="Draft (Private)">Draft (Private)</option>
@@ -714,7 +713,7 @@ export default function Blogs() {
                       value={formTags}
                       onChange={(e) => setFormTags(e.target.value)}
                       placeholder="Marketing, Growth, Tips"
-                      className="w-full bg-[#f8fafc] border border-slate-200/80 rounded-2xl px-4 py-3 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/40"
+                      className="w-full bg-[#f8fafc] border border-slate-200 rounded-2xl px-4 py-3 text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5d463c]/40"
                     />
                   </div>
 
@@ -756,16 +755,16 @@ export default function Blogs() {
           {/* Dashboard Title & Create Button */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
-              <span className="text-[10px] uppercase tracking-[0.4em] font-black text-[#7c3aed]">
+              <span className="text-[10px] uppercase tracking-[0.4em] font-black text-[#5d463c]">
                 Journal & Content Studio
               </span>
-              <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#1e1b4b] mt-2">
+              <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#12100e] mt-2">
                 Blog Articles <span className="text-slate-400 font-normal italic not-serif text-2xl ml-2">({blogs.length})</span>
               </h1>
             </div>
             <button 
               onClick={handleOpenCreate}
-              className="px-8 py-4 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-bold text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-md flex items-center space-x-2 cursor-pointer"
+              className="px-8 py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-md flex items-center space-x-2 cursor-pointer"
             >
               <Plus size={16} /> <span>Write New Story</span>
             </button>
@@ -780,14 +779,14 @@ export default function Blogs() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search blog articles by title, tag, or category..."
-                className="w-full bg-[#f8fafc] border-none rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-[#7c3aed]/40"
+                className="w-full bg-[#f8fafc] border-none rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-400 focus:ring-2 focus:ring-[#5d463c]/40"
               />
             </div>
             
             <div className="flex items-center space-x-2 w-full md:w-auto overflow-x-auto">
               <button 
                 onClick={() => setFilterCategory('All')} 
-                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${filterCategory === 'All' ? 'bg-[#7c3aed] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer ${filterCategory === 'All' ? 'bg-[#5d463c] text-[#efe7e5]' : 'bg-[#efe7e5] text-[#5d463c] hover:bg-slate-200'}`}
               >
                 All
               </button>
@@ -795,7 +794,7 @@ export default function Blogs() {
                 <button 
                   key={cat} 
                   onClick={() => setFilterCategory(cat)}
-                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors cursor-pointer ${filterCategory === cat ? 'bg-[#7c3aed] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider whitespace-nowrap transition-colors cursor-pointer ${filterCategory === cat ? 'bg-[#5d463c] text-[#efe7e5]' : 'bg-[#efe7e5] text-[#5d463c] hover:bg-slate-200'}`}
                 >
                   {cat.split(' ')[0]}
                 </button>
@@ -807,7 +806,7 @@ export default function Blogs() {
           <div className="bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm">
             {loading ? (
               <div className="py-20 flex flex-col items-center justify-center space-y-4">
-                <Loader2 className="animate-spin text-[#7c3aed]" size={36} />
+                <Loader2 className="animate-spin text-[#5d463c]" size={36} />
                 <span className="text-xs uppercase tracking-[0.2em] text-slate-400 font-bold">Querying blog archive...</span>
               </div>
             ) : filteredBlogs.length === 0 ? (
@@ -816,7 +815,7 @@ export default function Blogs() {
                 <span className="text-xs uppercase tracking-widest text-slate-450 font-bold block">No blog articles found</span>
                 <button 
                   onClick={handleOpenCreate}
-                  className="px-6 py-3 bg-[#7c3aed] text-white rounded-2xl text-xs uppercase tracking-widest font-bold hover:bg-[#6d28d9] cursor-pointer shadow-sm"
+                  className="px-6 py-3 bg-[#5d463c] text-[#efe7e5] rounded-2xl text-xs uppercase tracking-widest font-bold hover:bg-[#4c3931] cursor-pointer shadow-sm"
                 >
                   Create First Article
                 </button>
@@ -826,7 +825,7 @@ export default function Blogs() {
                 {filteredBlogs.map((blog) => (
                   <div 
                     key={blog._id || blog.slug}
-                    className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-purple-50/30 transition-colors"
+                    className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-[#efe7e5]/20 transition-colors"
                   >
                     {/* Left: Cover Thumbnail & Details */}
                     <div className="flex items-center space-x-5 flex-1 min-w-0">
@@ -839,14 +838,14 @@ export default function Blogs() {
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center space-x-3 mb-1.5">
-                          <span className="text-[9px] uppercase tracking-widest font-black bg-purple-50 text-[#7c3aed] border border-purple-200/60 px-3 py-0.5 rounded-full">
+                          <span className="text-[9px] uppercase tracking-widest font-black bg-[#efe7e5] text-[#5d463c] border border-[#5d463c]/20 px-3 py-0.5 rounded-full">
                             {blog.category}
                           </span>
                           <span className="text-[10px] text-slate-400 flex items-center gap-1 font-medium">
                             <Clock size={12} /> {blog.readTime || '5 min'}
                           </span>
                         </div>
-                        <h3 className="font-serif text-lg font-bold text-[#1e1b4b] truncate">{blog.title}</h3>
+                        <h3 className="font-serif text-lg font-bold text-[#12100e] truncate">{blog.title}</h3>
                         <p className="text-xs text-slate-500 truncate mt-1">{blog.excerpt}</p>
                         <div className="flex items-center space-x-3 mt-2 text-[10px] text-slate-400 font-mono">
                           <span>/blog/{blog.slug}</span>
@@ -866,7 +865,7 @@ export default function Blogs() {
 
                       <button
                         onClick={() => handleOpenEdit(blog)}
-                        className="px-4 py-2.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white rounded-xl text-xs uppercase tracking-widest font-bold transition-all shadow-sm flex items-center space-x-1.5 cursor-pointer"
+                        className="px-4 py-2.5 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] rounded-xl text-xs uppercase tracking-widest font-bold transition-all shadow-sm flex items-center space-x-1.5 cursor-pointer"
                       >
                         <Edit3 size={14} />
                         <span>Edit</span>
