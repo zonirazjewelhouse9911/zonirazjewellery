@@ -1,26 +1,31 @@
 const user_model = require("../../models/userModel");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
+const axios = require("axios");
 
-const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-        user: "vikasjangid3352@gmail.com",
-        pass: "wtqe znhi gtmv oyfa",
-    },
-});
-
-const sendOTP = (email, otp) => {
-    const mailOptions = {
-        from: "vikasjangid3352@gmail.com",
-        to: email,
-        subject: "Your OTP Code",
-        text: `Your OTP code is ${otp}`,
-    };
-
-    return transporter.sendMail(mailOptions);
+const sendOTP = async (email, otp) => {
+    const response = await axios.post(
+        "https://api.brevo.com/v3/smtp/email",
+        {
+            sender: { email: "rizeworldcode@gmail.com", name: "RizeWorld" },
+            to: [{ email: email }],
+            subject: "Password Reset Verification Code",
+            textContent: `Dear User,
+Your verification code is: ${otp}
+This code is valid for 10 minutes.
+If you did not request a password reset, please ignore this email.
+Thank you, RizeWorld Team`,
+        },
+        {
+            headers: {
+                "api-key": process.env.BREVO_API_KEY,
+                "Content-Type": "application/json",
+            },
+        }
+    );
+    return response.data;
 };
+
 
 exports.register = async (req, res) => {
     const { user_name, email, password, phone_number } = req.body;
