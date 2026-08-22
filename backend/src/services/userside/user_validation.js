@@ -67,22 +67,27 @@ exports.register = async (req, res) => {
             patient = await newUser.save();
         }
 
-        const otp_send = await sendOTP(email, otp);
+        try {
+            await sendOTP(email, otp);
+        } catch (otpErr) {
+            console.error("[OTP Email Error]:", otpErr.message || otpErr);
+        }
 
-        if (patient || otp_send) {
+        if (patient) {
             return {
-                message: "OTP send successfully",
+                message: "OTP sent successfully",
                 success: true,
             };
         }
     } catch (error) {
-        console.log(error);
+        console.error("Register Error:", error);
         return {
-            message: error,
+            message: typeof error === 'string' ? error : (error.message || "Registration failed. Please try again."),
             success: false,
         };
     }
 };
+
 
 exports.verifyOtp = async (req, res) => {
     const { email, otp } = req.body;

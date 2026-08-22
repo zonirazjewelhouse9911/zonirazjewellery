@@ -5,14 +5,10 @@ import {
   Edit3, 
   Trash2, 
   Eye, 
-  EyeOff, 
   Loader2, 
   FileText, 
   Upload,
-  Check, 
-  X, 
   Clock, 
-  Tag as TagIcon,
   Sparkles,
   ArrowLeft,
   Link as LinkIcon,
@@ -27,8 +23,9 @@ import {
   Send,
   Image as ImageIcon,
   Sliders,
-  Folder,
-  Layers
+  Key,
+  Lock,
+  UserCheck
 } from 'lucide-react';
 
 interface BlogPost {
@@ -45,6 +42,15 @@ interface BlogPost {
   author: string;
   isPublished: boolean;
   createdAt?: string;
+}
+
+interface BlogAccessUser {
+  _id?: string;
+  email: string;
+  username: string;
+  name: string;
+  isActive: boolean;
+  role: string;
 }
 
 const CATEGORIES_LIST = [
@@ -78,7 +84,13 @@ const HIGHLIGHT_COLORS = [
   { label: 'Pink', value: '#fbcfe8' }
 ];
 
-export default function Blogs() {
+interface BlogsProps {
+  userRole?: string;
+}
+
+export default function Blogs({ userRole }: BlogsProps) {
+  const isWriter = userRole === 'blog_writer' || localStorage.getItem('userRole') === 'blog_writer';
+
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -105,6 +117,15 @@ export default function Blogs() {
   const [formReadTime, setFormReadTime] = useState('5 min read');
   const [formAuthor, setFormAuthor] = useState('Zoniraz Team');
 
+  // Access Credentials Management Modal State
+  const [showAccessModal, setShowAccessModal] = useState<boolean>(false);
+  const [writerEmail, setWriterEmail] = useState('');
+  const [writerUsername, setWriterUsername] = useState('');
+  const [writerPassword, setWriterPassword] = useState('');
+  const [writerName, setWriterName] = useState('Blog Writer');
+  const [savingAccess, setSavingAccess] = useState<boolean>(false);
+  const [existingWriters, setExistingWriters] = useState<BlogAccessUser[]>([]);
+
   // Rich Text Editor Ref & State
   const editorRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -127,8 +148,27 @@ export default function Blogs() {
     }
   };
 
+  const fetchBlogAccessList = async () => {
+    try {
+      const res = await fetch('/api/admin/blogs/access');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data)) {
+        setExistingWriters(data.data);
+        if (data.data.length > 0) {
+          const first = data.data[0];
+          setWriterEmail(first.email || '');
+          setWriterUsername(first.username || '');
+          setWriterName(first.name || 'Blog Writer');
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching blog access:', err);
+    }
+  };
+
   useEffect(() => {
     fetchBlogs();
+    fetchBlogAccessList();
   }, []);
 
   // Synchronize HTML content to contentEditable area when switching to editor view
@@ -324,6 +364,44 @@ export default function Blogs() {
     } catch (err) {
       console.error(err);
       alert('Failed to delete blog.');
+    }
+  };
+
+  const handleSaveBlogWriterAccess = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!writerEmail.trim() || !writerPassword.trim()) {
+      alert('Please enter both Username/Email and Password for the Blog Writer account.');
+      return;
+    }
+
+    setSavingAccess(true);
+    try {
+      const res = await fetch('/api/admin/blogs/access', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: writerEmail,
+          username: writerUsername || writerEmail.split('@')[0],
+          password: writerPassword,
+          name: writerName || 'Blog Writer',
+          isActive: true
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        alert(`Blog Writer access credentials configured successfully!\n\nUsername/Email: ${writerEmail}\nPassword: ${writerPassword}`);
+        setShowAccessModal(false);
+        setWriterPassword('');
+        fetchBlogAccessList();
+      } else {
+        alert(data.message || 'Failed to set credentials.');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to update blog access credentials.');
+    } finally {
+      setSavingAccess(false);
     }
   };
 
@@ -752,7 +830,7 @@ export default function Blogs() {
         /* ── DASHBOARD LIST VIEW ─────────────────────────────────────────── */
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-300">
           
-          {/* Dashboard Title & Create Button */}
+          {/* Dashboard Title & Actions */}
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
               <span className="text-[10px] uppercase tracking-[0.4em] font-black text-[#5d463c]">
@@ -762,12 +840,27 @@ export default function Blogs() {
                 Blog Articles <span className="text-slate-400 font-normal italic not-serif text-2xl ml-2">({blogs.length})</span>
               </h1>
             </div>
-            <button 
-              onClick={handleOpenCreate}
-              className="px-8 py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-md flex items-center space-x-2 cursor-pointer"
-            >
-              <Plus size={16} /> <span>Write New Story</span>
-            </button>
+            
+            <div className="flex items-center space-x-3">
+              {!isWriter && (
+                <button 
+                  onClick={() => setShowAccessModal(true)}
+                  className="px-5 py-4 bg-[#efe7e5] hover:bg-[#e2d8d5] text-[#5d463c] border border-[#5d463c]/30 font-bold text-xs uppercase tracking-[0.15em] rounded-2xl transition-all shadow-sm flex items-center space-x-2 cursor-pointer"
+                  title="Configure Username & Password for Blog Writer Access"
+                >
+                  <Key size={16} />
+                  <span>Writer Access Credentials</span>
+                </button>
+              )}
+
+              <button 
+                onClick={handleOpenCreate}
+
+                className="px-8 py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-md flex items-center space-x-2 cursor-pointer"
+              >
+                <Plus size={16} /> <span>Write New Story</span>
+              </button>
+            </div>
           </div>
 
           {/* Search Bar & Category Filters */}
@@ -885,6 +978,109 @@ export default function Blogs() {
             )}
           </div>
 
+        </div>
+      )}
+
+      {/* ── MANAGE WRITER ACCESS CREDENTIALS MODAL ───────────────────────── */}
+      {showAccessModal && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-8 space-y-6 shadow-2xl border border-slate-200">
+            
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#efe7e5] text-[#5d463c] flex items-center justify-center">
+                  <Lock size={20} />
+                </div>
+                <div>
+                  <h3 className="font-serif font-bold text-lg text-[#12100e]">Writer Access Credentials</h3>
+                  <p className="text-[10px] text-slate-400 uppercase tracking-wider">Set Username & Password for Blog Section Access</p>
+                </div>
+              </div>
+              <button 
+                onClick={() => setShowAccessModal(false)}
+                className="p-2 text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveBlogWriterAccess} className="space-y-4">
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest font-black text-slate-500 mb-1">
+                  Writer Account Name
+                </label>
+                <input 
+                  type="text" 
+                  value={writerName}
+                  onChange={(e) => setWriterName(e.target.value)}
+                  placeholder="e.g. Lead Blog Writer"
+                  className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest font-black text-[#5d463c] mb-1">
+                  Username / Login Email *
+                </label>
+                <input 
+                  type="text" 
+                  value={writerEmail}
+                  onChange={(e) => {
+                    setWriterEmail(e.target.value);
+                    setWriterUsername(e.target.value.split('@')[0]);
+                  }}
+                  placeholder="e.g. writer@zoniraz.com or blogwriter"
+                  className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl p-3 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-[#5d463c]/30 outline-none"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase tracking-widest font-black text-[#5d463c] mb-1">
+                  Login Password *
+                </label>
+                <input 
+                  type="text" 
+                  value={writerPassword}
+                  onChange={(e) => setWriterPassword(e.target.value)}
+                  placeholder="Set secret password for writer..."
+                  className="w-full bg-[#f8fafc] border border-slate-200 rounded-xl p-3 text-xs font-mono font-bold text-slate-800 focus:ring-2 focus:ring-[#5d463c]/30 outline-none"
+                  required
+                />
+              </div>
+
+              {existingWriters.length > 0 && (
+                <div className="p-4 bg-[#efe7e5]/40 rounded-2xl border border-[#5d463c]/20 space-y-1">
+                  <span className="text-[9px] uppercase tracking-widest font-black text-[#5d463c] block">Configured Writer Accounts:</span>
+                  {existingWriters.map((w) => (
+                    <div key={w._id} className="flex items-center justify-between text-xs font-mono text-slate-700">
+                      <span>{w.email} ({w.name})</span>
+                      <span className="text-[9px] bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-sans font-bold">Active</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              <div className="pt-2 flex items-center justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAccessModal(false)}
+                  className="px-5 py-2.5 bg-slate-100 text-slate-700 font-bold text-xs uppercase tracking-wider rounded-xl cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingAccess}
+                  className="px-6 py-2.5 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-wider rounded-xl shadow-md cursor-pointer flex items-center space-x-2 disabled:opacity-50"
+                >
+                  {savingAccess ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} />}
+                  <span>Save Credentials</span>
+                </button>
+              </div>
+            </form>
+
+          </div>
         </div>
       )}
 

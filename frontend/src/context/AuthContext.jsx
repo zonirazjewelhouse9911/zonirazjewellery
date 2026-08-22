@@ -64,8 +64,14 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
-    const data = await res.json();
-    if (!res.ok || !data.success) throw new Error(data.message || 'Login failed');
+    const responseText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseErr) {
+      throw new Error("Unable to parse server response. Please verify backend service connection.");
+    }
+    if (!res.ok || !data.success) throw new Error(typeof data.message === 'string' ? data.message : 'Login failed');
     
     localStorage.setItem('zoniraz_token', data.token);
     setToken(data.token);
@@ -79,10 +85,17 @@ export const AuthProvider = ({ children }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ user_name, email, password, phone_number: mobile })
     });
-    const data = await res.json();
-    if (!res.ok || !data.success) throw new Error(data.message || 'Registration failed');
+    const responseText = await res.text();
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseErr) {
+      throw new Error("Unable to parse server response. Please verify backend service connection.");
+    }
+    if (!res.ok || !data.success) throw new Error(typeof data.message === 'string' ? data.message : 'Registration failed');
     return data;
   };
+
 
   const logout = () => {
     localStorage.removeItem('zoniraz_token');

@@ -72,7 +72,8 @@ const CATEGORIES = [
 
 function App() {
   const [adminToken, setAdminToken] = useState<string | null>(() => localStorage.getItem('adminToken'));
-  const [activeMenu, setActiveMenu] = useState('overview');
+  const [userRole, setUserRole] = useState<string>(() => localStorage.getItem('userRole') || 'admin');
+  const [activeMenu, setActiveMenu] = useState(() => (localStorage.getItem('userRole') === 'blog_writer' ? 'blogs' : 'overview'));
   const [selectedProductId, setSelectedProductId] = useState<string | undefined>(undefined);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -112,14 +113,26 @@ function App() {
   if (!adminToken) {
     return (
       <AdminLogin 
-        onLoginSuccess={(token) => {
+        onLoginSuccess={(token, adminData) => {
           localStorage.setItem('adminToken', token);
+          const role = adminData?.role || 'admin';
+          localStorage.setItem('userRole', role);
           setAdminToken(token);
-          setActiveMenu('overview');
+          setUserRole(role);
+          if (role === 'blog_writer') {
+            setActiveMenu('blogs');
+          } else {
+            setActiveMenu('overview');
+          }
         }} 
       />
     );
   }
+
+  const navMenuItems = userRole === 'blog_writer'
+    ? MENU_ITEMS.filter(i => i.id === 'blogs')
+    : MENU_ITEMS;
+
 
   const handleEditProduct = (id: string) => {
     setSelectedProductId(id);
@@ -261,7 +274,7 @@ function App() {
 
         {/* Sidebar Menu Items */}
         <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto">
-          {MENU_ITEMS.map((item) => {
+          {navMenuItems.map((item) => {
             const isActive = activeMenu === item.id;
             return (
               <button
@@ -294,9 +307,12 @@ function App() {
             onClick={() => {
               localStorage.removeItem('adminToken');
               localStorage.removeItem('adminUser');
+              localStorage.removeItem('userRole');
               setAdminToken(null);
+              setUserRole('admin');
             }}
             className="w-full flex items-center space-x-4 px-5 py-3.5 rounded-xl text-left text-xs uppercase tracking-widest font-black text-[#efe7e5]/60 hover:text-red-300 hover:bg-red-500/10 transition-all cursor-pointer"
+
           >
             <LogOut size={16} className="shrink-0" />
             <span>Sign Out</span>
@@ -499,8 +515,9 @@ function App() {
           ) : activeMenu === 'overview' ? (
             <Dashboard onNavigate={(page) => setActiveMenu(page)} />
           ) : activeMenu === 'blogs' ? (
-            <Blogs />
+            <Blogs userRole={userRole} />
           ) : activeMenu === 'loosestones' ? (
+
 
             <LooseStones />
           ) : activeMenu === 'orders' ? (
