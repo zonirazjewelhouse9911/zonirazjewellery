@@ -160,8 +160,21 @@ const BlogDetailPage = ({ slug, onBack }) => {
     fetchSingleBlog();
   }, [slug]);
 
-  if (!blog && !loading) {
+  if (loading) {
+    return (
+      <div className="blog-detail-wrapper" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '80vh', backgroundColor: '#F5EEE6' }}>
+        <style>{`
+          @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        `}</style>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ width: '40px', height: '40px', border: '3px solid #c5a880', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite', margin: '0 auto 16px' }} />
+          <p style={{ fontFamily: 'Montserrat, sans-serif', color: '#6b6259', fontSize: '13px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase' }}>Loading Article...</p>
+        </div>
+      </div>
+    );
+  }
 
+  if (!blog) {
     return (
       <div className="blog-detail-wrapper">
         <style>{`
@@ -207,6 +220,7 @@ const BlogDetailPage = ({ slug, onBack }) => {
       </div>
     );
   }
+
 
   return (
     <div className="blog-detail-wrapper">
@@ -413,33 +427,33 @@ const BlogDetailPage = ({ slug, onBack }) => {
           &gt;
           <span onClick={onBack}>ZONIRAZ JOURNAL</span>
           &gt;
-          <span style={{ color: '#2a221b' }}>{blog.category}</span>
+          <span style={{ color: '#2a221b' }}>{blog?.category || 'JOURNAL'}</span>
         </div>
 
         {/* Hero Image */}
         <img
-          src={blog.image}
-          alt={blog.title}
+          src={blog?.image}
+          alt={blog?.title || 'Blog Article'}
           className="blog-detail-hero-img"
         />
 
         {/* Category */}
-        <div className="blog-detail-tag">{blog.category}</div>
+        <div className="blog-detail-tag">{blog?.category || 'JEWELLERY'}</div>
 
         {/* Title */}
-        <h1 className="blog-detail-title">{blog.title}</h1>
+        <h1 className="blog-detail-title">{blog?.title}</h1>
 
         {/* Meta */}
         <div className="blog-detail-meta">
-          <span>📅 {blog.date}</span>
+          <span>📅 {blog?.date}</span>
           <div className="blog-detail-meta-dot"></div>
-          <span>🕐 {blog.readTime}</span>
+          <span>🕐 {blog?.readTime || '5 min read'}</span>
           <div className="blog-detail-meta-dot"></div>
-          <span>✍️ Zoniraz Journal</span>
+          <span>✍️ {blog?.author || 'Zoniraz Journal'}</span>
         </div>
 
         {/* Content */}
-        {Array.isArray(blog.content) ? (
+        {Array.isArray(blog?.content) ? (
           blog.content.map((block, i) => {
             if (block.type === 'intro') return <div key={i} className="blog-content-intro">{block.text}</div>;
             if (block.type === 'heading') return <h2 key={i} className="blog-content-heading">{block.text}</h2>;
@@ -447,13 +461,14 @@ const BlogDetailPage = ({ slug, onBack }) => {
             if (block.type === 'tip') return <div key={i} className="blog-content-tip">💡 {block.text}</div>;
             return <p key={i} className="blog-content-para">{block.text || (typeof block === 'string' ? block : '')}</p>;
           })
-        ) : typeof blog.content === 'string' ? (
+        ) : typeof blog?.content === 'string' ? (
           blog.content.trim().startsWith('<') ? (
             <div className="blog-html-content leading-relaxed space-y-4" dangerouslySetInnerHTML={{ __html: blog.content }} />
           ) : (
             <p className="blog-content-para">{blog.content}</p>
           )
         ) : null}
+
 
 
 
