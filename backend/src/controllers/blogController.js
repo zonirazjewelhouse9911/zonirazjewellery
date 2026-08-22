@@ -1,5 +1,11 @@
 const Blog = require("../models/blogModel");
+const BlogAccess = require("../models/blogAccessModel");
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 const { generateSitemap } = require("../utils/sitemapGenerator");
+
+const SECRET_KEY = process.env.SECRET_KEY || "zoniraz_admin_secret_key_9911";
+
 
 // Helper function to create URL slug from string
 const slugify = (text) => {
@@ -435,3 +441,129 @@ exports.deleteBlog = async (req, res) => {
     });
   }
 };
+
+// ── Blog Writer Access Credentials Management ────────────────────────────────
+
+// GET /api/admin/blogs/access - Fetch current Blog Writer Access accounts
+exports.getBlogAccessCredentials = async (req, res) => {
+  try {
+    const accessList = await BlogAccess.find().select("-password").sort({ createdAt: -1 });
+    return res.status(200).json({
+      success: true,
+      count: accessList.length,
+      data: accessList
+    });
+  } catch (error) {
+    console.error("Error fetching blog access credentials:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch blog access credentials",
+      error: error.message
+    });
+  }
+};
+
+// POST /api/admin/blogs/access - Set / Update Blog Writer credentials
+exports.setBlogAccessCredentials = async (req, res) => {
+  try {
+    const { email, username, password, name, isActive } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email/Username and Password are required"
+      });
+    }
+
+    const trimmedEmail = email.toLowerCase().trim();
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    let writer = await BlogAccess.findOne({ email: trimmedEmail });
+    if (writer) {
+      writer.password = hashedPassword;
+      if (username !== undefined) writer.username = username;
+      if (name !== undefined) writer.name = name;
+      if (isActive !== undefined) writer.isActive = isActive;
+      await writer.save();
+    } else {
+      writer = await BlogAccess.create({
+        email: trimmedEmail,
+        username: username || trimmedEmail.split("@")[0],
+        password: hashedPassword,
+        name: name || "Blog Writer",
+        role: "blog_writer",
+        isActive: isActive !== undefined ? isActive : true
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: `Blog Writer credentials for '${trimmedEmail}' updated successfully`,
+      data: {
+        id: writer._id,
+        email: writer.email,
+        username: writer.username,
+        name: writer.name,
+        isActive: writer.isActive,
+        role: writer.role
+      }
+    });
+
+  } catch (error) {
+    console.error("Error setting blog access credentials:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to set blog access credentials",
+      error: error.message
+    });
+  }
+};
+
+// POST /api/blogs/login - Dedicated login endpoint for Blog Writer
+exports.blogWriterLogin = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Username/Email and password required" });
+    }
+
+    const input = email.toLowerCase().trim();
+    const writer = await BlogAccess.findOne({
+      $or: [{ email: input }, { username: input }],
+      isActive: true
+    });
+
+    if (!writer) {
+      return res.status(401).json({ success: false, message: "Invalid credentials or inactive account" });
+    }
+
+    const isMatch = await bcrypt.compare(password, writer.password);
+    if (!isMatch) {
+      return res.status(401).json({ success: false, message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { userId: writer._id, email: writer.email, role: "blog_writer" },
+      SECRET_KEY,
+      { expiresIn: "7d" }
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: "Blog Writer authentication successful",
+      token,
+      user: {
+        id: writer._id,
+        email: writer.email,
+        username: writer.username,
+        name: writer.name,
+        role: "blog_writer"
+      }
+    });
+
+  } catch (error) {
+    console.error("Error in blogWriterLogin:", error);
+    return res.status(500).json({ success: false, message: "Internal server error during authentication" });
+  }
+};
+

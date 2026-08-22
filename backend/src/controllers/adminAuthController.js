@@ -1,7 +1,9 @@
 const Admin = require('../models/adminModel');
+const BlogAccess = require('../models/blogAccessModel');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const nodemailer = require('nodemailer');
+
 
 const SECRET_KEY = process.env.SECRET_KEY || 'zoniraz_admin_secret_key_9911';
 
@@ -55,9 +57,38 @@ exports.login = async (req, res) => {
 
     const trimmedEmail = email.toLowerCase().trim();
 
-    // Check if any admin exists in database, if not, auto-seed default admin
+    // Check if main admin exists in database
     let admin = await Admin.findOne({ email: trimmedEmail });
     if (!admin) {
+      // Check if this matches a Blog Writer Access account!
+      const writer = await BlogAccess.findOne({
+        $or: [{ email: trimmedEmail }, { username: trimmedEmail }],
+        isActive: true
+      });
+
+      if (writer) {
+        const isMatch = await bcrypt.compare(password, writer.password);
+        if (isMatch) {
+          const token = jwt.sign(
+            { userId: writer._id, email: writer.email, role: 'blog_writer' },
+            SECRET_KEY,
+            { expiresIn: '7d' }
+          );
+          return res.status(200).json({
+            success: true,
+            message: 'Blog Writer authentication successful',
+            token,
+            admin: {
+              id: writer._id,
+              email: writer.email,
+              username: writer.username,
+              name: writer.name,
+              role: 'blog_writer'
+            }
+          });
+        }
+      }
+
       const count = await Admin.countDocuments();
       if (count === 0 && trimmedEmail === 'admin@zoniraz.com') {
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -66,9 +97,10 @@ exports.login = async (req, res) => {
           password: hashedPassword
         });
       } else {
-        return res.status(401).json({ success: false, message: 'Invalid admin credentials' });
+        return res.status(401).json({ success: false, message: 'Invalid credentials' });
       }
     }
+
 
     // Compare Password (supports hashed or direct plain password during seed)
     let isMatch = false;

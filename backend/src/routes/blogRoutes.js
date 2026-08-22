@@ -6,10 +6,18 @@ const blogController = require("../controllers/blogController");
 router.get("/blogs", blogController.getAllBlogs);
 router.get("/blogs/:slug", blogController.getBlogBySlug);
 
+// Dedicated Blog Writer Login
+router.post("/blogs/login", blogController.blogWriterLogin);
+
 // Admin routes for portal
 router.get("/admin/blogs", blogController.getAdminBlogs);
 router.post("/admin/blogs", blogController.createBlog);
 router.put("/admin/blogs/:id", blogController.updateBlog);
 router.delete("/admin/blogs/:id", blogController.deleteBlog);
 
+// Blog Writer Access Management routes
+router.get("/admin/blogs/access", blogController.getBlogAccessCredentials);
+router.post("/admin/blogs/access", blogController.setBlogAccessCredentials);
+
 module.exports = router;
+
