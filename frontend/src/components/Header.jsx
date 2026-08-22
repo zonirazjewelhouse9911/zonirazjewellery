@@ -653,16 +653,22 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
 
             <div className="icon-actions">
 
-              {/* Profile Icon (Opens Login/Register Popup directly on click) */}
+              {/* Profile Icon */}
               <div className="nav-item-container nav-profile-wrapper">
                 <a
-                  href="#profile"
+                  href="/profile"
                   className="action-link-icon nav-item-trigger"
                   aria-label="Profile"
                   title="My Profile"
                   onClick={(e) => {
                     e.preventDefault();
-                    setShowAuthModal(true);
+                    if (!user) {
+                      setShowAuthModal(true);
+                    } else {
+                      window.history.pushState(null, '', '/profile#profile');
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                      window.dispatchEvent(new HashChangeEvent('hashchange'));
+                    }
                   }}
                   style={{ cursor: 'pointer' }}
                 >
@@ -676,7 +682,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
               {/* Gold Wallet Icon */}
               <div className="nav-item-container nav-wallet-wrapper">
                 <a
-                  href="#profile"
+                  href="/profile#wallet"
                   className="action-link-icon nav-item-trigger"
                   aria-label="Gold Wallet"
                   title="My Gold Wallet"
@@ -685,7 +691,9 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                     if (!user) {
                       setShowAuthModal(true);
                     } else {
-                      window.location.hash = 'profile';
+                      window.history.pushState(null, '', '/profile#wallet');
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                      window.dispatchEvent(new HashChangeEvent('hashchange'));
                     }
                   }}
                   style={{ cursor: 'pointer', color: '#c8a359' }}
@@ -783,15 +791,16 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
           <nav className="bottom-category-nav">
             <div className="nav-item-container">
               <a
-                href="#gold-mine"
+                href="/profile#wallet"
                 className="nav-item-trigger gold-mine-nav-badge"
                 onClick={(e) => {
                   e.preventDefault();
                   if (!user) {
                     setShowAuthModal(true);
                   } else {
-                    window.history.pushState(null, '', '/profile');
+                    window.history.pushState(null, '', '/profile#wallet');
                     window.dispatchEvent(new PopStateEvent('popstate'));
+                    window.dispatchEvent(new HashChangeEvent('hashchange'));
                   }
                 }}
               >
@@ -1171,7 +1180,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
               </button>
 
               <div className="drawer-quick-actions">
-                <a href="#profile" className="drawer-action-box" onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); if (!user) { setShowAuthModal(true); } else { window.location.hash = 'profile'; } }}>
+                <a href="/profile#wallet" className="drawer-action-box" onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); if (!user) { setShowAuthModal(true); } else { window.history.pushState(null, '', '/profile#wallet'); window.dispatchEvent(new PopStateEvent('popstate')); window.dispatchEvent(new HashChangeEvent('hashchange')); } }}>
                   <span className="box-icon">💰</span>
                   <span className="box-label">Wallet</span>
                 </a>
@@ -1196,7 +1205,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
             {/* Middle: Category list with arrows */}
             <div className="drawer-categories-list">
               {[
-                { name: "Gold Wallet (10+1 Scheme)", desc: "View accumulated 24K gold balance & passbook", hash: "/profile", img: null },
+                { name: "Gold Wallet (10+1 Scheme)", desc: "View accumulated 24K gold balance & passbook", hash: "/profile#wallet", img: null },
                 { name: "Rings", desc: "Browse by Style, Metals & Stones", hash: "/rings", img: silverRingsImg },
                 { name: "Earrings", desc: "Browse by Style, Price & More..", hash: "/earrings", img: dancingHoopsImg },
                 { name: "Bracelets & Bangles", desc: "Browse by Style, Metal & Kids", hash: "/bracelets", img: stretchableBanglesImg },
@@ -1211,7 +1220,19 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                   key={idx}
                   href={category.hash}
                   className="drawer-category-item"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    setMobileMenuOpen(false);
+                    if (category.hash.includes('profile')) {
+                      e.preventDefault();
+                      if (!user) {
+                        setShowAuthModal(true);
+                      } else {
+                        window.history.pushState(null, '', category.hash);
+                        window.dispatchEvent(new PopStateEvent('popstate'));
+                        window.dispatchEvent(new HashChangeEvent('hashchange'));
+                      }
+                    }
+                  }}
                 >
                   <div className="drawer-item-left-content">
                     {category.img && <img src={category.img} alt={category.name} className="drawer-category-icon-img" loading="lazy" decoding="async" width="24" height="24" />}
