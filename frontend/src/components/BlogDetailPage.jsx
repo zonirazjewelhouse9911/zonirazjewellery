@@ -1,5 +1,7 @@
 import React from 'react';
+import { API_BASE_URL } from '../config';
 import diamondRingImg from '../assets/infinity_diamond_ring.png';
+
 import goldSavingImg from '../assets/solitaire-sets.png';
 import pendantImg from '../assets/layered-necklaces.png';
 
@@ -143,7 +145,8 @@ const BlogDetailPage = ({ slug, onBack }) => {
       if (!slug) return;
       try {
         setLoading(true);
-        const res = await fetch(`/api/blogs/${slug}`);
+        const res = await fetch(`${API_BASE_URL}/api/blogs/${slug}`);
+
         const data = await res.json();
         if (data.success && data.data) {
           setBlog(data.data);

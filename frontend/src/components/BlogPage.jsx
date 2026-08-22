@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { API_BASE_URL } from '../config';
 import weddingBanner from '../assets/WEDDING BANNER.png';
+
 import diamondRingImg from '../assets/infinity_diamond_ring.png';
 import goldSavingImg from '../assets/solitaire-sets.png';
 import pendantImg from '../assets/layered-necklaces.png';
@@ -76,7 +78,8 @@ const BlogPage = () => {
   React.useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch('/api/blogs');
+        const res = await fetch(`${API_BASE_URL}/api/blogs`);
+
         const data = await res.json();
         if (data.success && Array.isArray(data.data) && data.data.length > 0) {
           // Ensure posts are sorted latest first

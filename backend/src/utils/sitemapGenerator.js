@@ -76,19 +76,17 @@ async function generateSitemap() {
     // Get database categories
     const dbCategories = await Category.find().lean();
 
-    // Get database blogs (published only)
+    // Get database blogs (published or active)
     let activeBlogSlugs = [];
     try {
-      const dbBlogs = await Blog.find({ isPublished: true }).select("slug").lean();
-      if (dbBlogs && dbBlogs.length > 0) {
-        activeBlogSlugs = dbBlogs.map(b => b.slug);
-      } else {
-        activeBlogSlugs = [...fallbackBlogSlugs];
-      }
+      const dbBlogs = await Blog.find({ isPublished: { $ne: false } }).select("slug").lean();
+      const dbSlugs = (dbBlogs || []).map(b => b.slug).filter(Boolean);
+      activeBlogSlugs = Array.from(new Set([...dbSlugs, ...fallbackBlogSlugs]));
     } catch (blogErr) {
       console.error("[Sitemap] Could not fetch blogs from DB, using fallback:", blogErr.message);
       activeBlogSlugs = [...fallbackBlogSlugs];
     }
+
     
     const activeCategorySlugs = [...categorySlugs];
     // Format db categories
