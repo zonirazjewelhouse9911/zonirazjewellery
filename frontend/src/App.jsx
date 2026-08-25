@@ -34,6 +34,7 @@ import SellGoldPage from './components/SellGoldPage';
 import BuyGoldPage from './components/BuyGoldPage';
 import GoldMinePage from './components/GoldMinePage';
 import LooseStonesPage from './components/LooseStonesPage';
+import ZonirazAlwarPage from './components/ZonirazAlwarPage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -266,6 +267,14 @@ const getKeywordsForView = (currentView, queryParams, categoryName) => {
       primary: "contact jewellery store",
       secondary: ["jewellery enquiry","contact jewellery expert","jewellery contact number"],
       lsi: ["jewellery showroom near me","jewellery customer service","jewellery support team","jewellery appointment booking","gold jewellery consultation","diamond jewellery consultation","visit jewellery showroom","jewellery store location"]
+    };
+  }
+  if (currentView === 'zoniraz-alwar') {
+    return {
+      url: "https://zoniraz.com/zoniraz-alwar",
+      primary: "Zoniraz Jewellery Store Alwar",
+      secondary: ["gold jewellery shop alwar", "diamond jewellery showroom alwar", "zoniraz alwar store"],
+      lsi: ["jewellery store in alwar", "bis hallmarked gold alwar", "best jewellery shop in alwar rajasthan", "old gold exchange alwar"]
     };
   }
   if (currentView === 'about') {
@@ -585,8 +594,7 @@ function AppContent() {
         const legacyHash = qIndex !== -1 ? fullHash.substring(0, qIndex) : fullHash;
         const hashSearch = qIndex !== -1 ? fullHash.substring(qIndex) : '';
 
-        const isProfileTab = ['wallet', 'orders', 'addresses', 'profile'].includes(legacyHash.toLowerCase());
-        if (legacyHash && !isProfileTab && !legacyHash.startsWith('my-') && !legacyHash.includes('=')) {
+        if (legacyHash && !legacyHash.startsWith('my-') && !legacyHash.includes('=')) {
           const cleanPath = (legacyHash.startsWith('/') ? legacyHash : '/' + legacyHash) + hashSearch;
           window.history.replaceState(null, '', cleanPath);
         }
@@ -631,7 +639,7 @@ function AppContent() {
       } else if (path === '/cart') {
         setCurrentView('cart');
         window.scrollTo({ top: 0, behavior: 'instant' });
-      } else if (path === '/profile' || path === '/wallet' || path === '/gold-wallet' || path === '/my-wallet') {
+      } else if (path === '/profile') {
         setCurrentView('profile');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (path === '/checkout') {
@@ -651,6 +659,9 @@ function AppContent() {
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (path === '/about') {
         setCurrentView('about');
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (path === '/zoniraz-alwar' || path === '/zoniraz-alwar/' || path.includes('zoniraz-alwar') || path.includes('alwar')) {
+        setCurrentView('zoniraz-alwar');
         window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (path === '/franchise') {
         setCurrentView('franchise');
@@ -749,19 +760,25 @@ function AppContent() {
     // Global click interceptor for local SPA link transitions
     const handleLinkClick = (e) => {
       const link = e.target.closest('a');
-      if (link && link.href && link.origin === window.location.origin) {
+      if (link && link.href) {
         const targetAttr = link.getAttribute('target');
         if (targetAttr === '_blank') return;
         
-        const path = link.pathname + link.search + link.hash;
-        
-        if (path.startsWith('/') && !path.startsWith('/api') && !link.hasAttribute('download')) {
-          if (link.pathname === window.location.pathname && link.hash) {
-            return; // let native hash scrolls happen normally
+        const isInternalDomain = link.origin === window.location.origin || 
+                                 link.hostname === 'zoniraz.com' || 
+                                 link.hostname === 'www.zoniraz.com';
+
+        if (isInternalDomain) {
+          const path = link.pathname + link.search + link.hash;
+          
+          if (path.startsWith('/') && !path.startsWith('/api') && !link.hasAttribute('download')) {
+            if (link.pathname === window.location.pathname && link.hash) {
+              return; // let native hash scrolls happen normally
+            }
+            e.preventDefault();
+            window.history.pushState(null, '', path);
+            handleNavigation();
           }
-          e.preventDefault();
-          window.history.pushState(null, '', path);
-          handleNavigation();
         }
       }
     };
@@ -1043,6 +1060,8 @@ function AppContent() {
         <GoldMinePage />
       ) : currentView === 'loose-stones' ? (
         <LooseStonesPage />
+      ) : currentView === 'zoniraz-alwar' ? (
+        <ZonirazAlwarPage />
       ) : currentView === 'admin-call' ? (
         <AdminVideoPanel />
       ) : (

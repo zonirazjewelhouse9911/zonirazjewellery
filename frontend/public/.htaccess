@@ -6,8 +6,6 @@
   RewriteCond %{REQUEST_URI} ^/api [NC]
   RewriteRule ^ - [L]
 
-  # Redirect sitemap.xml to the dynamic backend sitemap
-  RewriteRule ^sitemap\.xml$ https://zonirazjewellery.onrender.com/sitemap.xml [R=301,L]
 
   RewriteRule ^index\.html$ - [L]
   RewriteCond %{REQUEST_FILENAME} !-f

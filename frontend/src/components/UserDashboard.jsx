@@ -4,31 +4,13 @@ import { AuthContext } from '../context/AuthContext';
 
 export default function UserDashboard() {
   const { user, token, logout, updateProfile, deleteAccount } = useContext(AuthContext);
-  const getTabFromLocation = () => {
+  const [activeTab, setActiveTab] = useState(() => {
     const hash = window.location.hash.toLowerCase();
-    const path = window.location.pathname.toLowerCase();
-    if (hash.includes('wallet') || path.includes('wallet')) return 'wallet';
-    if (hash.includes('order') || path.includes('order')) return 'orders';
-    if (hash.includes('address') || path.includes('address')) return 'addresses';
+    if (hash.includes('wallet')) return 'wallet';
+    if (hash.includes('order')) return 'orders';
+    if (hash.includes('address')) return 'addresses';
     return 'profile';
-  };
-
-  const [activeTab, setActiveTab] = useState(getTabFromLocation);
-
-  useEffect(() => {
-    const syncTabFromUrl = () => {
-      setActiveTab(getTabFromLocation());
-    };
-
-    syncTabFromUrl();
-    window.addEventListener('hashchange', syncTabFromUrl);
-    window.addEventListener('popstate', syncTabFromUrl);
-    return () => {
-      window.removeEventListener('hashchange', syncTabFromUrl);
-      window.removeEventListener('popstate', syncTabFromUrl);
-    };
-  }, []);
-
+  }); // 'profile' | 'wallet' | 'addresses' | 'orders'
   const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', email: '', mobile: '' });
   const [addresses, setAddresses] = useState([]);
   const [orders, setOrders] = useState([]);
@@ -246,10 +228,10 @@ export default function UserDashboard() {
         <div className="dashboard-main-grid" style={{ gap: '30px', alignItems: 'start', gridTemplateColumns: undefined }}>
           {/* SIDEBAR TABS */}
           <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #dbcfcb', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-            <button onClick={() => { setActiveTab('profile'); window.location.hash = 'profile'; }} style={{ ...tabBtnStyle, ...(activeTab === 'profile' ? activeTabStyle : {}) }}>👤 My Profile</button>
-            <button onClick={() => { setActiveTab('wallet'); window.location.hash = 'wallet'; }} style={{ ...tabBtnStyle, ...(activeTab === 'wallet' ? activeTabStyle : {}), backgroundColor: activeTab === 'wallet' ? '#2b221d' : '#fffdf7', color: activeTab === 'wallet' ? '#ffffff' : '#a37b34', fontWeight: '600' }}>✨ Gold Wallet</button>
-            <button onClick={() => { setActiveTab('addresses'); window.location.hash = 'addresses'; }} style={{ ...tabBtnStyle, ...(activeTab === 'addresses' ? activeTabStyle : {}) }}>📍 Saved Addresses</button>
-            <button onClick={() => { setActiveTab('orders'); window.location.hash = 'orders'; }} style={{ ...tabBtnStyle, ...(activeTab === 'orders' ? activeTabStyle : {}) }}>📦 Order History</button>
+            <button onClick={() => setActiveTab('profile')} style={{ ...tabBtnStyle, ...(activeTab === 'profile' ? activeTabStyle : {}) }}>👤 My Profile</button>
+            <button onClick={() => setActiveTab('wallet')} style={{ ...tabBtnStyle, ...(activeTab === 'wallet' ? activeTabStyle : {}), backgroundColor: activeTab === 'wallet' ? '#2b221d' : '#fffdf7', color: activeTab === 'wallet' ? '#ffffff' : '#a37b34', fontWeight: '600' }}>✨ Gold Wallet</button>
+            <button onClick={() => setActiveTab('addresses')} style={{ ...tabBtnStyle, ...(activeTab === 'addresses' ? activeTabStyle : {}) }}>📍 Saved Addresses</button>
+            <button onClick={() => setActiveTab('orders')} style={{ ...tabBtnStyle, ...(activeTab === 'orders' ? activeTabStyle : {}) }}>📦 Order History</button>
             <button onClick={logout} style={{ ...tabBtnStyle, color: '#ff4d4f' }}>🚪 Secure Logout</button>
             <button onClick={handleDeleteAccount} style={{ ...tabBtnStyle, color: '#8c7365', fontSize: '11px', borderTop: '1px solid #f2ebe8' }}>Delete Account</button>
           </div>
