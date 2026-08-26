@@ -34,6 +34,7 @@ import SellGoldPage from './components/SellGoldPage';
 import BuyGoldPage from './components/BuyGoldPage';
 import GoldMinePage from './components/GoldMinePage';
 import LooseStonesPage from './components/LooseStonesPage';
+import ZonirazAlwarPage from './components/ZonirazAlwarPage';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -266,6 +267,14 @@ const getKeywordsForView = (currentView, queryParams, categoryName) => {
       primary: "contact jewellery store",
       secondary: ["jewellery enquiry","contact jewellery expert","jewellery contact number"],
       lsi: ["jewellery showroom near me","jewellery customer service","jewellery support team","jewellery appointment booking","gold jewellery consultation","diamond jewellery consultation","visit jewellery showroom","jewellery store location"]
+    };
+  }
+  if (currentView === 'zoniraz-alwar') {
+    return {
+      url: "https://zoniraz.com/zoniraz-alwar",
+      primary: "best brand for jewellery in alwar",
+      secondary: ["best jewellery shop in alwar", "gold jewellery in alwar", "diamond jewellery in alwar"],
+      lsi: ["top jewellery brands in alwar", "alwar jewellery shop", "jewellery manufacturers in alwar", "gold exchange shop in alwar", "buy wedding jewellery in alwar", "jewellery at best prices in alwar"]
     };
   }
   if (currentView === 'about') {
@@ -651,6 +660,9 @@ function AppContent() {
       } else if (path === '/about') {
         setCurrentView('about');
         window.scrollTo({ top: 0, behavior: 'instant' });
+      } else if (path === '/zoniraz-alwar' || path === '/zoniraz-alwar/' || path.includes('zoniraz-alwar') || path.includes('alwar')) {
+        setCurrentView('zoniraz-alwar');
+        window.scrollTo({ top: 0, behavior: 'instant' });
       } else if (path === '/franchise') {
         setCurrentView('franchise');
         window.scrollTo({ top: 0, behavior: 'instant' });
@@ -748,19 +760,25 @@ function AppContent() {
     // Global click interceptor for local SPA link transitions
     const handleLinkClick = (e) => {
       const link = e.target.closest('a');
-      if (link && link.href && link.origin === window.location.origin) {
+      if (link && link.href) {
         const targetAttr = link.getAttribute('target');
         if (targetAttr === '_blank') return;
         
-        const path = link.pathname + link.search + link.hash;
-        
-        if (path.startsWith('/') && !path.startsWith('/api') && !link.hasAttribute('download')) {
-          if (link.pathname === window.location.pathname && link.hash) {
-            return; // let native hash scrolls happen normally
+        const isInternalDomain = link.origin === window.location.origin || 
+                                 link.hostname === 'zoniraz.com' || 
+                                 link.hostname === 'www.zoniraz.com';
+
+        if (isInternalDomain) {
+          const path = link.pathname + link.search + link.hash;
+          
+          if (path.startsWith('/') && !path.startsWith('/api') && !link.hasAttribute('download')) {
+            if (link.pathname === window.location.pathname && link.hash) {
+              return; // let native hash scrolls happen normally
+            }
+            e.preventDefault();
+            window.history.pushState(null, '', path);
+            handleNavigation();
           }
-          e.preventDefault();
-          window.history.pushState(null, '', path);
-          handleNavigation();
         }
       }
     };
@@ -808,7 +826,7 @@ function AppContent() {
     let schemas = [];
 
     if (currentView === 'product' && selectedProduct) {
-      title = `${selectedProduct.name} - Buy Certified Diamond & Gold Jewelry Online | Zoniraz Jewels`;
+      title = `${selectedProduct.name} | ${selectedProduct.category || 'Jewellery'} | Zoniraz`;
       description = `Buy ${selectedProduct.name} online at Zoniraz Jewels. Crafted in premium ${selectedProduct.material || 'metal'} with exquisite design. Lifetime maintenance and certificate of authenticity included.`;
       canonical = `https://zoniraz.com/product/${selectedProduct.product_slug || selectedProduct.slug || selectedProduct.id}`;
       if (selectedProduct.image) {
@@ -821,7 +839,11 @@ function AppContent() {
         "name": selectedProduct.name,
         "image": selectedProduct.images || [selectedProduct.image],
         "description": selectedProduct.description || description,
-        "sku": selectedProduct.product_code || selectedProduct.id,
+        "sku": String(selectedProduct.product_code || selectedProduct.id || selectedProduct.productId),
+        "brand": {
+          "@type": "Brand",
+          "name": "Zoniraz"
+        },
         "offers": {
           "@type": "Offer",
           "url": canonical,
@@ -863,7 +885,7 @@ function AppContent() {
       const secondary2 = seoData.secondary[1] || 'famous jewellery brands';
       const lsi1 = seoData.lsi[0] || 'designer diamond jewellery';
 
-      title = `${primary.charAt(0).toUpperCase() + primary.slice(1)} | Zoniraz Jewels`;
+      title = `${primary.charAt(0).toUpperCase() + primary.slice(1)} | Zoniraz`;
       description = `Discover premium collections for ${primary}. We feature high-quality ${secondary1}, elegant ${secondary2}, and beautiful ${lsi1} at best prices. Visit us now!`;
       canonical = seoData.url || 'https://zoniraz.com/';
       
@@ -877,8 +899,13 @@ function AppContent() {
           "logo": "https://zoniraz.com/zoni1.png",
           "description": "Zoniraz Jewels is a premium luxury jewellery brand specializing in fine gold, diamond, and designer jewellery collections.",
           "sameAs": [
-            "https://www.facebook.com/zonirazjewels",
-            "https://www.instagram.com/zonirazjewels"
+            "https://www.facebook.com/zonirazjewel/",
+            "https://www.instagram.com/zonirazjewel/",
+            "https://www.youtube.com/@zonirazjewel",
+            "https://x.com/zonirazjewel",
+            "https://www.linkedin.com/company/zonirazjewel/",
+            "https://pin.it/4wDWdW6Nr",
+            "https://www.threads.com/@zonirazjewel/"
           ]
         });
         schemas.push({
@@ -894,24 +921,68 @@ function AppContent() {
         });
       }
 
-      // Contact Page schemas
-      if (currentView === 'contact') {
+      // Contact & Alwar Page schemas
+      if (currentView === 'contact' || currentView === 'zoniraz-alwar') {
         schemas.push({
           "@context": "https://schema.org",
           "@type": "LocalBusiness",
-          "name": "Zoniraz Jewels",
+          "@id": "https://zoniraz.com/zoniraz-alwar#localbusiness",
+          "name": "Zoniraz Jewel House",
           "image": "https://zoniraz.com/zoni1.png",
           "telephone": "+91 97848 36060",
           "email": "info@zoniraz.com",
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "Zoniraz Jewel House",
-            "addressLocality": "Jaipur",
+            "streetAddress": "Tilak Market, 7, Hanuman Burj, Kabir Colony",
+            "addressLocality": "Alwar",
             "addressRegion": "Rajasthan",
-            "postalCode": "302001",
+            "postalCode": "301001",
             "addressCountry": "IN"
           },
-          "url": "https://zoniraz.com/contact"
+          "openingHours": "Mo-Su 10:30-20:30",
+          "priceRange": "₹₹₹",
+          "url": currentView === 'zoniraz-alwar' ? "https://zoniraz.com/zoniraz-alwar" : "https://zoniraz.com/contact"
+        });
+      }
+
+      if (currentView === 'zoniraz-alwar') {
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Where is the Zoniraz Alwar showroom located?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Our Alwar showroom is located at Tilak Market, 7, Hanuman Burj, Kabir Colony, Alwar, Rajasthan 301001."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What are the store timings for Zoniraz Alwar?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "We are open all days from 10:30 AM to 8:30 PM."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I exchange my old gold at the Alwar store?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes! We offer 100% transparent old gold valuation with computerized karatmeter testing right at our Alwar store."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Do I need an appointment before visiting?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Walk-ins are always welcome! However, you can also book a prior appointment or WhatsApp us for personalized bridal consultation."
+              }
+            }
+          ]
         });
       }
       
@@ -1042,6 +1113,8 @@ function AppContent() {
         <GoldMinePage />
       ) : currentView === 'loose-stones' ? (
         <LooseStonesPage />
+      ) : currentView === 'zoniraz-alwar' ? (
+        <ZonirazAlwarPage />
       ) : currentView === 'admin-call' ? (
         <AdminVideoPanel />
       ) : (

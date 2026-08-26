@@ -9,6 +9,7 @@ const Category = require("../models/categoryModel");
 const staticPages = [
   "",
   "about",
+  "zoniraz-alwar",
   "contact",
   "franchise",
   "sell-gold",
@@ -16,6 +17,11 @@ const staticPages = [
   "buy-gold",
   "gold-mine",
   "plans/gold-mine",
+  "loose-stones",
+  "buy-loose-stones",
+  "loose-diamonds",
+  "trending-now",
+  "trending",
   "delivery",
   "shipping",
   "international-shipping",
@@ -61,7 +67,6 @@ const Blog = require("../models/blogModel");
 // Blog slugs static array fallback
 const fallbackBlogSlugs = [
   "timeless-gold-earring-styles-2026",
-  "diamond-engagement-ring-complete-guide-2026",
   "ultimate-bridal-jewellery-guide",
   "gold-saving-scheme-smartest-investment",
   "old-gold-exchange-best-value",

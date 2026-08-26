@@ -13,6 +13,10 @@ export const API_BASE_URL =
  */
 export const getUploadsUrl = (url, width) => {
   if (!url) return '';
+  if (typeof url !== 'string') return url;
+  if (url.startsWith('/src/') || url.startsWith('/@fs/') || url.startsWith('data:') || url.startsWith('blob:')) {
+    return url;
+  }
   let formatted = url;
   if (!url.startsWith('http://') && !url.startsWith('https://')) {
     if (url.startsWith('/')) formatted = `${API_BASE_URL}${url}`;

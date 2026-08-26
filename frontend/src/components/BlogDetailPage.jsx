@@ -1,5 +1,5 @@
 import React from 'react';
-import { API_BASE_URL } from '../config';
+import { API_BASE_URL, getUploadsUrl } from '../config';
 import diamondRingImg from '../assets/infinity_diamond_ring.png';
 
 import goldSavingImg from '../assets/solitaire-sets.png';
@@ -30,28 +30,7 @@ const allBlogContent = [
       { type: "para", text: "At Zoniraz Jewel House, every piece of gold jewellery undergoes rigorous quality checks. With 50+ years of craftsmanship and a commitment to customer transparency, we offer certified gold earrings at fair prices with flexible exchange options." },
     ]
   },
-  {
-    slug: "diamond-engagement-ring-complete-guide-2026",
-    category: "DIAMOND · RINGS",
-    title: "How to Choose the Perfect Diamond Engagement Ring: The Complete 2026 Guide",
-    date: "July 20, 2026",
-    readTime: "7 min read",
-    image: diamondRingImg,
-    content: [
-      { type: "intro", text: "Choosing a diamond engagement ring is one of the most meaningful decisions you will ever make. From understanding the 4Cs to picking the ideal setting style, every detail matters. At Zoniraz, our certified diamond jewellery is designed to tell your unique love story with unmatched brilliance and craftsmanship." },
-      { type: "heading", text: "Understanding the 4Cs of Diamonds" },
-      { type: "para", text: "The 4Cs — Cut, Clarity, Colour, and Carat — are the universal language of diamond quality. The Cut determines how brilliantly your diamond sparkles. Clarity refers to the absence of inclusions. Colour grades range from D (colourless) to Z. Carat is the weight of the diamond." },
-      { type: "heading", text: "Choosing the Right Cut" },
-      { type: "para", text: "The round brilliant cut is the most popular choice for engagement rings, offering maximum sparkle with 58 perfectly aligned facets. For those who prefer something unique, princess, oval, emerald, and cushion cuts offer distinct beauty. Zoniraz offers all major cuts in our certified diamond collection." },
-      { type: "heading", text: "Selecting the Perfect Setting" },
-      { type: "para", text: "The setting holds your diamond in place and determines its overall appearance. Solitaire settings showcase a single diamond in all its glory. Halo settings surround the centre stone with smaller diamonds for extra brilliance. Pavé settings line the band with tiny diamonds for continuous sparkle." },
-      { type: "tip", text: "Zoniraz Tip: For maximum value, choose a diamond that is eye-clean (VS1 or VS2 clarity) with a colour grade of G or H. You get near-colourless beauty at a much better price than D-F grades." },
-      { type: "heading", text: "Metal Choice: Gold vs Platinum" },
-      { type: "para", text: "18k yellow gold gives a warm, classic look that complements diamond brilliance. 18k white gold offers a contemporary, silvery appearance. Rose gold adds a romantic, feminine touch. Platinum, though more expensive, is the most durable metal for engagement rings." },
-      { type: "heading", text: "Budget Planning" },
-      { type: "para", text: "A common guideline is 2-3 months' salary, but the perfect ring is one that you can afford comfortably. At Zoniraz, we have beautiful certified diamond engagement rings starting at competitive prices, with EMI options available." },
-    ]
-  },
+
   {
     slug: "ultimate-bridal-jewellery-guide",
     category: "BRIDAL · STYLING",
@@ -258,15 +237,52 @@ const BlogDetailPage = ({ slug, onBack }) => {
         }
         .blog-detail-breadcrumb span:hover { color: #9e7a56; }
 
-        /* Hero Image */
-        .blog-detail-hero-img {
+        /* Hero Image Container */
+        .blog-detail-hero-wrapper {
           width: 100%;
-          height: 420px;
-          object-fit: cover;
+          max-height: 440px;
+          position: relative;
           border-radius: 28px;
+          overflow: hidden;
           margin-bottom: 40px;
-          display: block;
-          box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #f6f5f3;
+          padding: 12px;
+          box-sizing: border-box;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+          border: 1px solid #ece4dc;
+        }
+
+        .blog-detail-hero-bg {
+          position: absolute;
+          inset: -10px;
+          width: calc(100% + 20px);
+          height: calc(100% + 20px);
+          object-fit: cover;
+          filter: blur(28px) brightness(0.96);
+          opacity: 0.35;
+          z-index: 1;
+          pointer-events: none;
+        }
+
+        .blog-detail-hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(246, 245, 243, 0.4) 100%);
+          z-index: 2;
+        }
+
+        .blog-detail-hero-img-main {
+          position: relative;
+          z-index: 3;
+          width: 100%;
+          height: auto;
+          max-height: 420px;
+          object-fit: contain;
+          object-position: center;
+          border-radius: 16px;
         }
 
         /* Category Tag */
@@ -430,12 +446,20 @@ const BlogDetailPage = ({ slug, onBack }) => {
           <span style={{ color: '#2a221b' }}>{blog?.category || 'JOURNAL'}</span>
         </div>
 
-        {/* Hero Image */}
-        <img
-          src={blog?.image}
-          alt={blog?.title || 'Blog Article'}
-          className="blog-detail-hero-img"
-        />
+        {/* Dynamic Hero Image */}
+        <div className="blog-detail-hero-wrapper">
+          <img
+            src={getUploadsUrl(blog?.image)}
+            alt=""
+            className="blog-detail-hero-bg"
+          />
+          <div className="blog-detail-hero-overlay" />
+          <img
+            src={getUploadsUrl(blog?.image)}
+            alt={blog?.title || 'Blog Article'}
+            className="blog-detail-hero-img-main"
+          />
+        </div>
 
         {/* Category */}
         <div className="blog-detail-tag">{blog?.category || 'JEWELLERY'}</div>

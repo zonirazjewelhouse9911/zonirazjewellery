@@ -11,6 +11,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://zoniraz.com/zoniraz-alwar</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://zoniraz.com/contact</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
@@ -42,6 +47,31 @@
   </url>
   <url>
     <loc>https://zoniraz.com/plans/gold-mine</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zoniraz.com/loose-stones</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zoniraz.com/buy-loose-stones</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zoniraz.com/loose-diamonds</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zoniraz.com/trending-now</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zoniraz.com/trending</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -221,11 +251,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://zoniraz.com/blog/diamond-engagement-ring-complete-guide-2026</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://zoniraz.com/blog/ultimate-bridal-jewellery-guide</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
@@ -246,7 +271,7 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://zoniraz.com/blog/demo</loc>
+    <loc>https://zoniraz.com/blog/top-5-jewellers-in-alwar</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

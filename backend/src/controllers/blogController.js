@@ -46,32 +46,7 @@ const initialBlogs = [
       { type: "para", text: "At Zoniraz Jewel House, every piece of gold jewellery undergoes rigorous quality checks. With 50+ years of craftsmanship and a commitment to customer transparency, we offer certified gold earrings at fair prices with flexible exchange options." }
     ]
   },
-  {
-    title: "How to Choose the Perfect Diamond Engagement Ring: The Complete 2026 Guide",
-    slug: "diamond-engagement-ring-complete-guide-2026",
-    category: "DIAMOND RINGS",
-    tags: ["Diamond", "Rings", "Trending"],
-    excerpt: "Choosing a diamond engagement ring is one of the most meaningful decisions you will ever make. From understanding the 4Cs — Cut, Clarity, Colour, and Carat — to picking the ideal setting style, every detail matters. At Zoniraz, our certified diamond jewellery is designed to tell your unique love story with unmatched brilliance and craftsmanship.",
-    date: "July 20, 2026",
-    readTime: "7 min read",
-    image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=800",
-    author: "Zoniraz Team",
-    isPublished: true,
-    content: [
-      { type: "intro", text: "Choosing a diamond engagement ring is one of the most meaningful decisions you will ever make. From understanding the 4Cs to picking the ideal setting style, every detail matters. At Zoniraz, our certified diamond jewellery is designed to tell your unique love story with unmatched brilliance and craftsmanship." },
-      { type: "heading", text: "Understanding the 4Cs of Diamonds" },
-      { type: "para", text: "The 4Cs — Cut, Clarity, Colour, and Carat — are the universal language of diamond quality. The Cut determines how brilliantly your diamond sparkles. Clarity refers to the absence of inclusions. Colour grades range from D (colourless) to Z. Carat is the weight of the diamond." },
-      { type: "heading", text: "Choosing the Right Cut" },
-      { type: "para", text: "The round brilliant cut is the most popular choice for engagement rings, offering maximum sparkle with 58 perfectly aligned facets. For those who prefer something unique, princess, oval, emerald, and cushion cuts offer distinct beauty. Zoniraz offers all major cuts in our certified diamond collection." },
-      { type: "heading", text: "Selecting the Perfect Setting" },
-      { type: "para", text: "The setting holds your diamond in place and determines its overall appearance. Solitaire settings showcase a single diamond in all its glory. Halo settings surround the centre stone with smaller diamonds for extra brilliance. Pavé settings line the band with tiny diamonds for continuous sparkle." },
-      { type: "tip", text: "Zoniraz Tip: For maximum value, choose a diamond that is eye-clean (VS1 or VS2 clarity) with a colour grade of G or H. You get near-colourless beauty at a much better price than D-F grades." },
-      { type: "heading", text: "Metal Choice: Gold vs Platinum" },
-      { type: "para", text: "18k yellow gold gives a warm, classic look that complements diamond brilliance. 18k white gold offers a contemporary, silvery appearance. Rose gold adds a romantic, feminine touch. Platinum, though more expensive, is the most durable metal for engagement rings." },
-      { type: "heading", text: "Budget Planning" },
-      { type: "para", text: "A common guideline is 2-3 months' salary, but the perfect ring is one that you can afford comfortably. At Zoniraz, we have beautiful certified diamond engagement rings starting at competitive prices, with EMI options available." }
-    ]
-  },
+
   {
     title: "The Ultimate Bridal Jewellery Guide: From Maang Tikka to Bangles",
     slug: "ultimate-bridal-jewellery-guide",
@@ -175,6 +150,7 @@ const initialBlogs = [
 // Helper to seed initial blogs if database is empty
 const seedInitialBlogs = async () => {
   try {
+    await Blog.deleteMany({ slug: "diamond-engagement-ring-complete-guide-2026" });
     const count = await Blog.countDocuments();
     if (count === 0) {
       await Blog.insertMany(initialBlogs);
@@ -196,7 +172,7 @@ exports.getAllBlogs = async (req, res) => {
     await seedInitialBlogs();
     const { category, tag, search } = req.query;
 
-    let query = { isPublished: true };
+    let query = { isPublished: true, slug: { $ne: "diamond-engagement-ring-complete-guide-2026" } };
 
     if (category && category !== "All Blogs") {
       query.category = { $regex: new RegExp(category, "i") };

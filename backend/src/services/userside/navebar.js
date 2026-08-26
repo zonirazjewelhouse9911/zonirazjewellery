@@ -58,7 +58,7 @@ exports.navbar = async (req, res) => {
             }
         ]);
 
-        console.log(data, "dataaaaaaaa");
+
 
         return {
             message: "NAVEBAR",
