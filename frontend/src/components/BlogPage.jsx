@@ -267,6 +267,7 @@ const BlogPage = () => {
         /* Blog Card - Reference Design Style */
         .blog-card {
           background-color: #ffffff;
+<<<<<<< HEAD
           border-radius: 28px;
           padding: 16px;
           border: 1px solid #eae3db;
@@ -274,17 +275,32 @@ const BlogPage = () => {
           flex-direction: column;
           box-shadow: 0 4px 18px rgba(42, 34, 27, 0.03);
           transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+=======
+          border: 1px solid #ece4dc;
+          border-radius: 24px;
+          overflow: hidden;
+          display: flex;
+          flex-direction: column;
+          box-shadow: 0 8px 24px rgba(42, 34, 27, 0.04);
+          transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+>>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
           position: relative;
         }
 
         .blog-card:hover {
+<<<<<<< HEAD
           transform: translateY(-6px);
           box-shadow: 0 16px 36px rgba(42, 34, 27, 0.08);
+=======
+          transform: translateY(-8px);
+          box-shadow: 0 20px 45px rgba(42, 34, 27, 0.12);
+>>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
           border-color: #c5a880;
         }
 
         .blog-card-img-wrapper {
           width: 100%;
+<<<<<<< HEAD
           aspect-ratio: 1.95 / 1;
           border-radius: 20px;
           overflow: hidden;
@@ -313,11 +329,60 @@ const BlogPage = () => {
 
         .blog-card-content {
           padding: 18px 8px 6px 8px;
+=======
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #f7f2ed;
+        }
+
+        .blog-card-img-bg {
+          position: absolute;
+          inset: -10px;
+          width: calc(100% + 20px);
+          height: calc(100% + 20px);
+          object-fit: cover;
+          filter: blur(24px) brightness(0.92);
+          opacity: 0.55;
+          z-index: 1;
+          pointer-events: none;
+          transition: opacity 0.4s ease;
+        }
+
+        .blog-card-img-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, rgba(247, 242, 237, 0.45) 100%);
+          z-index: 2;
+          pointer-events: none;
+        }
+
+        .blog-card-img-main {
+          position: relative;
+          z-index: 3;
+          max-width: 90%;
+          max-height: 90%;
+          width: auto;
+          height: auto;
+          object-fit: contain;
+          filter: drop-shadow(0 6px 14px rgba(0,0,0,0.15));
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .blog-card:hover .blog-card-img-main {
+          transform: scale(1.06);
+        }
+
+        .blog-card-content {
+          padding: 28px 28px 24px 28px;
+>>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
           display: flex;
           flex-direction: column;
           flex-grow: 1;
         }
 
+<<<<<<< HEAD
         .blog-card-date {
           font-size: 11px;
           color: #8c7f72;
@@ -325,20 +390,45 @@ const BlogPage = () => {
           letter-spacing: 1.5px;
           text-transform: uppercase;
           margin-bottom: 10px;
+=======
+        .blog-card-tag {
+          align-self: flex-start;
+          font-size: 10px;
+          font-weight: 700;
+          color: #a67c52;
+          letter-spacing: 2px;
+          text-transform: uppercase;
+          background-color: #f7ede2;
+          border: 1px solid #e9d9ca;
+          border-radius: 20px;
+          padding: 4px 12px;
+          margin-bottom: 16px;
+>>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
         }
 
         .blog-card-title {
           font-family: 'Playfair Display', serif;
+<<<<<<< HEAD
           font-size: 20px;
           line-height: 1.35;
           color: #1e1712;
           margin: 0 0 10px 0;
+=======
+          font-size: 21px;
+          line-height: 1.4;
+          color: #2a221b;
+          margin: 0 0 14px 0;
+>>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
           font-weight: 600;
           display: -webkit-box;
           -webkit-line-clamp: 2;
           -webkit-box-orient: vertical;
           overflow: hidden;
+<<<<<<< HEAD
           min-height: 54px;
+=======
+          height: 58px;
+>>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
         }
 
         .blog-card-title a {
@@ -353,9 +443,15 @@ const BlogPage = () => {
 
         .blog-card-excerpt {
           font-size: 13.5px;
+<<<<<<< HEAD
           line-height: 1.6;
           color: #645a51;
           margin-bottom: 18px;
+=======
+          line-height: 1.65;
+          color: #6b6055;
+          margin-bottom: 24px;
+>>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
           flex-grow: 1;
           font-weight: 400;
           display: -webkit-box;
@@ -368,7 +464,12 @@ const BlogPage = () => {
           display: flex;
           align-items: center;
           justify-content: space-between;
+<<<<<<< HEAD
           padding-top: 8px;
+=======
+          border-top: 1px solid #f2eae1;
+          padding-top: 18px;
+>>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
           margin-top: auto;
         }
 
@@ -446,10 +547,23 @@ const BlogPage = () => {
         <div className="blog-grid">
           {filteredPosts.map((post) => (
             <article key={post._id || post.id || post.slug} className="blog-card">
+<<<<<<< HEAD
               {/* Curved Top Thumbnail (Reference Style) */}
               <div className="blog-card-img-wrapper">
                 <img 
                   src={getUploadsUrl(post.image)} 
+=======
+              {/* Dynamic Image Container */}
+              <div className="blog-card-img-wrapper">
+                <img 
+                  src={getUploadsUrl(post.image)} 
+                  alt="" 
+                  className="blog-card-img-bg"
+                />
+                <div className="blog-card-img-overlay" />
+                <img 
+                  src={getUploadsUrl(post.image)} 
+>>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
                   alt={post.title} 
                   className="blog-card-img-main"
                 />
