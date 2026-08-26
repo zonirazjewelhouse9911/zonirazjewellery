@@ -272,15 +272,9 @@ const getKeywordsForView = (currentView, queryParams, categoryName) => {
   if (currentView === 'zoniraz-alwar') {
     return {
       url: "https://zoniraz.com/zoniraz-alwar",
-<<<<<<< HEAD
-      primary: "best brand for jewellery in alwar",
-      secondary: ["best jewellery shop in alwar", "gold jewellery in alwar", "diamond jewellery in alwar"],
-      lsi: ["top jewellery brands in alwar", "alwar jewellery shop", "jewellery manufacturers in alwar", "gold exchange shop in alwar", "buy wedding jewellery in alwar", "jewellery at best prices in alwar"]
-=======
       primary: "Zoniraz Jewellery Store Alwar",
-      secondary: ["gold jewellery shop alwar", "diamond jewellery showroom alwar", "zoniraz alwar store"],
-      lsi: ["jewellery store in alwar", "bis hallmarked gold alwar", "best jewellery shop in alwar rajasthan", "old gold exchange alwar"]
->>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
+      secondary: ["best jewellery shop in alwar", "gold jewellery in alwar", "diamond jewellery in alwar", "gold jewellery shop alwar", "diamond jewellery showroom alwar", "zoniraz alwar store"],
+      lsi: ["top jewellery brands in alwar", "alwar jewellery shop", "jewellery manufacturers in alwar", "gold exchange shop in alwar", "buy wedding jewellery in alwar", "jewellery at best prices in alwar", "jewellery store in alwar", "bis hallmarked gold alwar", "best jewellery shop in alwar rajasthan", "old gold exchange alwar"]
     };
   }
   if (currentView === 'about') {

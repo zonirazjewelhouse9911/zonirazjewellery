@@ -240,11 +240,7 @@ const BlogDetailPage = ({ slug, onBack }) => {
         /* Hero Image Container */
         .blog-detail-hero-wrapper {
           width: 100%;
-<<<<<<< HEAD
           max-height: 440px;
-=======
-          height: 420px;
->>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
           position: relative;
           border-radius: 28px;
           overflow: hidden;
@@ -252,13 +248,9 @@ const BlogDetailPage = ({ slug, onBack }) => {
           display: flex;
           align-items: center;
           justify-content: center;
-<<<<<<< HEAD
-          background-color: #f6f5f3;
+          background-color: #f7f2ed;
           padding: 12px;
           box-sizing: border-box;
-=======
-          background-color: #f7f2ed;
->>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
           box-shadow: 0 10px 30px rgba(0,0,0,0.06);
           border: 1px solid #ece4dc;
         }
@@ -269,13 +261,8 @@ const BlogDetailPage = ({ slug, onBack }) => {
           width: calc(100% + 20px);
           height: calc(100% + 20px);
           object-fit: cover;
-<<<<<<< HEAD
-          filter: blur(28px) brightness(0.96);
-          opacity: 0.35;
-=======
-          filter: blur(28px) brightness(0.92);
-          opacity: 0.6;
->>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
+          filter: blur(28px) brightness(0.94);
+          opacity: 0.5;
           z-index: 1;
           pointer-events: none;
         }
@@ -283,32 +270,21 @@ const BlogDetailPage = ({ slug, onBack }) => {
         .blog-detail-hero-overlay {
           position: absolute;
           inset: 0;
-<<<<<<< HEAD
-          background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(246, 245, 243, 0.4) 100%);
-=======
           background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, rgba(247, 242, 237, 0.4) 100%);
->>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
           z-index: 2;
         }
 
         .blog-detail-hero-img-main {
           position: relative;
           z-index: 3;
-<<<<<<< HEAD
           width: 100%;
+          max-width: 92%;
           height: auto;
           max-height: 420px;
           object-fit: contain;
           object-position: center;
           border-radius: 16px;
-=======
-          max-width: 92%;
-          max-height: 92%;
-          width: auto;
-          height: auto;
-          object-fit: contain;
           filter: drop-shadow(0 8px 20px rgba(0,0,0,0.16));
->>>>>>> dd9a02c6d16755e4d1eac91df61adc5e7d73a032
         }
 
         /* Category Tag */
