@@ -81,16 +81,21 @@ const { generateSitemap } = require('./src/utils/sitemapGenerator');
 // Dynamic sitemap generation routes
 app.get(['/sitemap.xml', '/sitemap-blogs.xml', '/sitemap-products.xml', '/sitemap-categories.xml', '/sitemap-static.xml'], async (req, res) => {
   try {
-    await generateSitemap();
+    const fileMap = await generateSitemap();
+    res.header('Content-Type', 'application/xml');
+    res.header('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.header('Pragma', 'no-cache');
+    res.header('Expires', '0');
+
     const reqFile = req.path.substring(1);
+    if (fileMap && fileMap[reqFile]) {
+      return res.status(200).send(fileMap[reqFile]);
+    }
     const backendFilePath = path.join(__dirname, 'public', reqFile);
     if (fs.existsSync(backendFilePath)) {
-      res.header('Content-Type', 'application/xml');
       return res.status(200).sendFile(backendFilePath);
     }
-    const xml = await generateSitemap();
-    res.header('Content-Type', 'application/xml');
-    return res.status(200).send(xml);
+    return res.status(404).send('Sitemap not found');
   } catch (error) {
     console.error('Dynamic sitemap serving error:', error);
     return res.status(500).send('Error generating sitemap');

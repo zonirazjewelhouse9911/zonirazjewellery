@@ -586,7 +586,7 @@ function AppContent() {
   }, [allProducts, selectedProductId, currentView]);
 
   React.useEffect(() => {
-    const handleNavigation = () => {
+    const handleNavigation = (isPopState = false) => {
       // Support legacy hash landing by redirecting to clean paths
       if (window.location.hash) {
         const fullHash = window.location.hash.replace('#', '');
@@ -603,6 +603,21 @@ function AppContent() {
       const path = window.location.pathname.toLowerCase();
       const search = window.location.search;
       const searchParams = new URLSearchParams(search);
+
+      const restoreOrScrollTop = () => {
+        const currentPathKey = path + search;
+        if (isPopState) {
+          const savedPos = sessionStorage.getItem('scroll_pos_' + currentPathKey);
+          if (savedPos !== null) {
+            const targetY = parseInt(savedPos, 10);
+            window.scrollTo({ top: targetY, behavior: 'instant' });
+            setTimeout(() => window.scrollTo({ top: targetY, behavior: 'instant' }), 50);
+            setTimeout(() => window.scrollTo({ top: targetY, behavior: 'instant' }), 150);
+            return;
+          }
+        }
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      };
 
       // Reset active selections
       setSelectedProductId(null);
@@ -625,88 +640,88 @@ function AppContent() {
           setSelectedProductId(slug);
         }
         setCurrentView('product');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/trending-now' || path === '/trending') {
         setSelectedCategoryName('Trending Now');
         setCurrentView('rings');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/collections' || path === '/all-collections') {
         setCurrentView('all-collections');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/wishlist') {
         setCurrentView('wishlist');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/cart') {
         setCurrentView('cart');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/profile') {
         setCurrentView('profile');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/checkout') {
         setCurrentView('checkout');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/contact') {
         setCurrentView('contact');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/blog' || path === '/blogs') {
         setCurrentView('blog');
         setSelectedBlogSlug(null);
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path.startsWith('/blog/')) {
         const slug = path.replace('/blog/', '');
         setSelectedBlogSlug(slug);
         setCurrentView('blog');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/about') {
         setCurrentView('about');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/zoniraz-alwar' || path === '/zoniraz-alwar/' || path.includes('zoniraz-alwar') || path.includes('alwar')) {
         setCurrentView('zoniraz-alwar');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/franchise') {
         setCurrentView('franchise');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/sell-gold' || path === '/exchange') {
         setCurrentView('sell-gold');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/buy-gold') {
         setCurrentView('buy-gold');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/gold-mine' || path === '/plans/gold-mine') {
         setCurrentView('gold-mine');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/loose-stones' || path === '/buy-loose-stones' || path === '/loose-diamonds') {
         setCurrentView('loose-stones');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/delivery') {
         setHelpCategory('delivery');
         setCurrentView('delivery');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/shipping' || path === '/international-shipping') {
         setHelpCategory('international');
         setCurrentView('delivery');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/payment') {
         setHelpCategory('payment');
         setCurrentView('delivery');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/returns') {
         setHelpCategory('returns');
         setCurrentView('delivery');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/giftcards') {
         setHelpCategory('giftcards');
         setCurrentView('delivery');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/terms') {
         setCurrentView('terms');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/privacy') {
         setCurrentView('privacy');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path === '/admin-call') {
         setCurrentView('admin-call');
-        window.scrollTo({ top: 0, behavior: 'instant' });
+        restoreOrScrollTop();
       } else if (path !== '/' && path !== '/index.html') {
         // Match product categories
         const routeOnly = path.substring(1);
@@ -729,7 +744,7 @@ function AppContent() {
         if (matchedCategory) {
           setSelectedCategoryName(matchedCategory);
           setCurrentView('rings');
-          window.scrollTo({ top: 0, behavior: 'instant' });
+          restoreOrScrollTop();
         } else {
           setCurrentView('home');
         }
@@ -746,6 +761,7 @@ function AppContent() {
           if (matched) {
             setSelectedCategoryName(matched);
             setCurrentView('rings');
+            restoreOrScrollTop();
             return;
           }
         }
@@ -753,9 +769,22 @@ function AppContent() {
       }
     };
 
-    handleNavigation();
-    window.addEventListener('popstate', handleNavigation);
-    window.addEventListener('hashchange', handleNavigation);
+    handleNavigation(false);
+
+    const onPopState = () => handleNavigation(true);
+    const onAppNavigate = (e) => handleNavigation(e.detail && e.detail.isPopState);
+    
+    const onScroll = () => {
+      const currentPathKey = (window.location.pathname + window.location.search).toLowerCase();
+      if (!currentPathKey.startsWith('/product/') && !currentPathKey.startsWith('/product-') && window.scrollY > 0) {
+        sessionStorage.setItem('scroll_pos_' + currentPathKey, String(window.scrollY));
+      }
+    };
+
+    window.addEventListener('popstate', onPopState);
+    window.addEventListener('app-navigate', onAppNavigate);
+    window.addEventListener('hashchange', () => handleNavigation(false));
+    window.addEventListener('scroll', onScroll, { passive: true });
 
     // Global click interceptor for local SPA link transitions
     const handleLinkClick = (e) => {
@@ -776,8 +805,12 @@ function AppContent() {
               return; // let native hash scrolls happen normally
             }
             e.preventDefault();
+            // Save scroll position for current route before pushState
+            const currentPathKey = window.location.pathname.toLowerCase() + window.location.search;
+            sessionStorage.setItem('scroll_pos_' + currentPathKey, String(window.scrollY));
+
             window.history.pushState(null, '', path);
-            handleNavigation();
+            handleNavigation(false);
           }
         }
       }
@@ -786,8 +819,10 @@ function AppContent() {
     document.addEventListener('click', handleLinkClick);
 
     return () => {
-      window.removeEventListener('popstate', handleNavigation);
-      window.removeEventListener('hashchange', handleNavigation);
+      window.removeEventListener('popstate', onPopState);
+      window.removeEventListener('app-navigate', onAppNavigate);
+      window.removeEventListener('hashchange', () => handleNavigation(false));
+      window.removeEventListener('scroll', onScroll);
       document.removeEventListener('click', handleLinkClick);
     };
   }, []);
@@ -1078,7 +1113,7 @@ function AppContent() {
           onBack={() => { window.history.back(); }}
         />
       ) : currentView === 'rings' ? (
-        <CategoryPage category={selectedCategoryName} wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} />
+        <CategoryPage category={selectedCategoryName} wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} allProducts={allProducts} />
       ) : currentView === 'contact' ? (
         <ContactPage />
       ) : currentView === 'blog' ? (

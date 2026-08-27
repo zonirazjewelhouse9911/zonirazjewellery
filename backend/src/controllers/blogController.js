@@ -172,7 +172,6 @@ seedInitialBlogs();
 // GET /api/blogs - Fetch published blogs for frontend, sorted latest first
 exports.getAllBlogs = async (req, res) => {
   try {
-    await seedInitialBlogs();
     const { category, tag, search } = req.query;
 
     let query = { isPublished: true, slug: { $ne: "diamond-engagement-ring-complete-guide-2026" } };
@@ -243,7 +242,6 @@ exports.getBlogBySlug = async (req, res) => {
 // GET /api/admin/blogs - Fetch all blogs for admin portal
 exports.getAdminBlogs = async (req, res) => {
   try {
-    await seedInitialBlogs();
     const blogs = await Blog.find().sort({ createdAt: -1 });
 
     return res.status(200).json({

@@ -6,7 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 import { useVideoCall } from '../context/VideoCallContext';
 import { useCurrency } from '../context/CurrencyContext';
 
-export default function CategoryPage({ category, wishlist = {}, setWishlist, cart = {}, setCart }) {
+export default function CategoryPage({ category, wishlist = {}, setWishlist, cart = {}, setCart, allProducts = [] }) {
   const { addToCart } = useContext(CartContext);
   const { requireAuth } = useContext(AuthContext);
   const { startCall, adminOnline } = useVideoCall();
@@ -47,12 +47,21 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   };
 
   // Dynamic products from backend database
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(() => (allProducts && allProducts.length > 0 ? allProducts : []));
+  const [loading, setLoading] = useState(() => !(allProducts && allProducts.length > 0));
   const [queryParams, setQueryParams] = useState(parseQueryParams);
 
   useEffect(() => {
-    setLoading(true);
+    if (allProducts && allProducts.length > 0) {
+      setProducts(allProducts);
+      setLoading(false);
+    }
+  }, [allProducts]);
+
+  useEffect(() => {
+    if (!products || products.length === 0) {
+      setLoading(true);
+    }
     const isTrendingPage = category === 'Trending Now' || category === 'Trending' || category === 'trending-now';
     const productsEndpoint = isTrendingPage
       ? `${API_BASE_URL}/api/userSide/trending-products`
@@ -267,14 +276,22 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   }, []);
 
   useEffect(() => {
-    const handleURLChange = () => {
+    const handleURLChange = (e) => {
       const params = parseQueryParams();
       console.log('CategoryPage URLChange Params:', params);
       setQueryParams(params);
+      if (e && e.type === 'popstate') {
+        const currentKey = (window.location.pathname + window.location.search).toLowerCase();
+        const savedPos = sessionStorage.getItem('scroll_pos_' + currentKey);
+        if (savedPos !== null) {
+          const targetY = parseInt(savedPos, 10);
+          window.scrollTo({ top: targetY, behavior: 'instant' });
+          return;
+        }
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
-    handleURLChange();
     window.addEventListener('hashchange', handleURLChange);
     window.addEventListener('popstate', handleURLChange);
     return () => {
@@ -282,6 +299,20 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
       window.removeEventListener('popstate', handleURLChange);
     };
   }, [category]);
+
+  // Restore scroll position after async products render
+  useEffect(() => {
+    if (!loading && products.length > 0) {
+      const currentKey = (window.location.pathname + window.location.search).toLowerCase();
+      const savedPos = sessionStorage.getItem('scroll_pos_' + currentKey);
+      if (savedPos !== null) {
+        const targetY = parseInt(savedPos, 10);
+        window.scrollTo({ top: targetY, behavior: 'instant' });
+        setTimeout(() => window.scrollTo({ top: targetY, behavior: 'instant' }), 50);
+        setTimeout(() => window.scrollTo({ top: targetY, behavior: 'instant' }), 200);
+      }
+    }
+  }, [loading, products.length]);
 
   // Filters State
   const [selectedSizes, setSelectedSizes] = useState([]);
@@ -1625,9 +1656,12 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                       className="product-card" 
                       key={product.id}
                       onMouseEnter={() => setHoveredCard(product.id)}
-                      onMouseLeave={() => setHoveredCard(null)}
-                      onClick={() => { window.history.pushState(null, '', `/product/${product.product_slug || product.slug || product.id}`); window.dispatchEvent(new Event('popstate')); }}
-                      style={{ cursor: 'pointer' }}
+                      onClick={() => {
+                        const currentKey = (window.location.pathname + window.location.search).toLowerCase();
+                        sessionStorage.setItem('scroll_pos_' + currentKey, String(window.scrollY));
+                        window.history.pushState(null, '', `/product/${product.product_slug || product.slug || product.id}`);
+                        window.dispatchEvent(new CustomEvent('app-navigate', { detail: { isPopState: false } }));
+                      }}
                     >
                       {/* Wishlist Icon */}
                       <button 
