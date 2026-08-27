@@ -137,6 +137,37 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const [customSizeInput, setCustomSizeInput] = useState('');
   const getAvailableColors = () => {
     if (!product) return [];
+
+    // 1. Check if Admin explicitly configured metal_type for this product
+    // (1 = White Gold, 2 = Yellow Gold, 3 = Rose Gold)
+    const rawMetal = product.metal_type;
+    let configuredMetals = [];
+
+    if (rawMetal !== undefined && rawMetal !== null && rawMetal !== '' && rawMetal !== '0') {
+      if (Array.isArray(rawMetal)) {
+        configuredMetals = rawMetal.map(m => String(m).trim().toLowerCase());
+      } else {
+        configuredMetals = String(rawMetal).split(',').map(m => m.trim().toLowerCase());
+      }
+    }
+
+    if (configuredMetals.length > 0) {
+      const allowed = colorOptions.filter(c => {
+        const colorId = c.id.toLowerCase();
+        return configuredMetals.some(m => {
+          if (colorId === 'white') return m === '1' || m === 'white' || m.includes('white');
+          if (colorId === 'yellow') return m === '2' || m === 'yellow' || m.includes('yellow');
+          if (colorId === 'rose') return m === '3' || m === 'rose' || m.includes('rose');
+          return false;
+        });
+      });
+
+      if (allowed.length > 0) {
+        return allowed;
+      }
+    }
+
+    // 2. Fallback to gallery object keys or image filename analysis if metal_type is not configured
     let parsedGallery = {};
     if (product.gallery) {
       if (typeof product.gallery === 'string') {
@@ -157,7 +188,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
         if (colorId === 'white') list = parsedGallery['1'] || parsedGallery['white'] || [];
         else if (colorId === 'yellow') list = parsedGallery['2'] || parsedGallery['yellow'] || [];
         else if (colorId === 'rose') list = parsedGallery['3'] || parsedGallery['rose'] || [];
-        return Array.isArray(list) && list.length > 0;
+        if (Array.isArray(list) && list.length > 0) return true;
       }
 
       if (product.images && product.images.length > 0) {
@@ -169,12 +200,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
           return false;
         });
         if (match) return true;
-
-        if (colorId === 'yellow' && product.images[0]) return true;
-        if (colorId === 'rose' && product.images[1]) return true;
-        if (colorId === 'white' && product.images[2]) return true;
-
-        return false;
       }
       return colorId === 'yellow';
     });
