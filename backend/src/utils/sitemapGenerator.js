@@ -75,40 +75,72 @@ const fallbackBlogSlugs = [
 
 async function generateSitemap() {
   try {
+    const baseDomain = "https://zoniraz.com";
+    const today = new Date().toISOString().split('T')[0];
+
     // Get live product IDs and slugs
-    const products = await Product.find({ status: "1" }).select("_id product_id product_slug slug").lean();
+    const products = await Product.find({ status: "1" }).select("_id product_id product_slug slug modify_date updatedAt create_date createdAt").lean();
     
     // Get database categories
     const dbCategories = await Category.find().lean();
 
     // Get database blogs (published or active)
-    let activeBlogSlugs = [];
+    let activeBlogs = [];
     try {
-      const dbBlogs = await Blog.find({ isPublished: { $ne: false } }).select("slug").lean();
-      const dbSlugs = (dbBlogs || []).map(b => b.slug).filter(Boolean);
-      activeBlogSlugs = Array.from(new Set([...dbSlugs, ...fallbackBlogSlugs]));
+      const dbBlogs = await Blog.find({ isPublished: { $ne: false } }).select("slug updatedAt createdAt").lean();
+      if (dbBlogs && dbBlogs.length > 0) {
+        activeBlogs = dbBlogs.filter(b => b.slug && b.slug.trim());
+      } else {
+        activeBlogs = fallbackBlogSlugs.map(slug => ({ slug }));
+      }
     } catch (blogErr) {
       console.error("[Sitemap] Could not fetch blogs from DB, using fallback:", blogErr.message);
-      activeBlogSlugs = [...fallbackBlogSlugs];
+      activeBlogs = fallbackBlogSlugs.map(slug => ({ slug }));
     }
 
-    
     const activeCategorySlugs = [...categorySlugs];
     // Format db categories
     dbCategories.forEach(cat => {
       const slug = cat.name.toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/[^\w\s-]/g, '')
         .trim()
-        .replace(/\s+/g, '-');
-      if (!activeCategorySlugs.includes(slug)) {
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+      if (slug && !activeCategorySlugs.includes(slug)) {
         activeCategorySlugs.push(slug);
       }
     });
 
-    const sitemapUrls = [];
-    const baseDomain = "https://zoniraz.com";
+    // 1. Build sitemap-blogs.xml content
+    let blogXml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
+    blogXml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
+    blogXml += `  <url>\n`;
+    blogXml += `    <loc>${baseDomain}/blog</loc>\n`;
+    blogXml += `    <lastmod>${today}</lastmod>\n`;
+    blogXml += `    <changefreq>daily</changefreq>\n`;
+    blogXml += `    <priority>0.8</priority>\n`;
+    blogXml += `  </url>\n`;
 
-    // 1. Static Pages
+    const uniqueBlogSlugs = new Set();
+    activeBlogs.forEach(b => {
+      const cleanSlug = b.slug.toLowerCase().trim().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+      if (cleanSlug && !uniqueBlogSlugs.has(cleanSlug)) {
+        uniqueBlogSlugs.add(cleanSlug);
+        const lastmod = b.updatedAt ? new Date(b.updatedAt).toISOString().split('T')[0] : today;
+        blogXml += `  <url>\n`;
+        blogXml += `    <loc>${baseDomain}/blog/${cleanSlug}</loc>\n`;
+        blogXml += `    <lastmod>${lastmod}</lastmod>\n`;
+        blogXml += `    <changefreq>monthly</changefreq>\n`;
+        blogXml += `    <priority>0.7</priority>\n`;
+        blogXml += `  </url>\n`;
+      }
+    });
+    blogXml += `</urlset>\n`;
+
+    // 2. Build full combined sitemap.xml URLs
+    const sitemapUrls = [];
+
+    // Static Pages
     staticPages.forEach(p => {
       sitemapUrls.push({
         loc: `${baseDomain}/${p}`,
@@ -117,7 +149,7 @@ async function generateSitemap() {
       });
     });
 
-    // 2. Categories Pages
+    // Categories Pages
     activeCategorySlugs.forEach(c => {
       sitemapUrls.push({
         loc: `${baseDomain}/${c}`,
@@ -126,8 +158,8 @@ async function generateSitemap() {
       });
     });
 
-    // 3. Blogs Pages
-    activeBlogSlugs.forEach(b => {
+    // Blogs Pages
+    uniqueBlogSlugs.forEach(b => {
       sitemapUrls.push({
         loc: `${baseDomain}/blog/${b}`,
         changefreq: "weekly",
@@ -135,18 +167,20 @@ async function generateSitemap() {
       });
     });
 
-
-    // 4. Product Pages
+    // Product Pages
     products.forEach(p => {
-      const slug = p.product_slug || p.slug || p._id || p.product_id;
-      sitemapUrls.push({
-        loc: `${baseDomain}/product/${slug}`,
-        changefreq: "daily",
-        priority: "0.9"
-      });
+      const rawSlug = p.product_slug || p.slug || p._id || p.product_id;
+      if (rawSlug) {
+        const slug = String(rawSlug).trim();
+        sitemapUrls.push({
+          loc: `${baseDomain}/product/${slug}`,
+          changefreq: "daily",
+          priority: "0.9"
+        });
+      }
     });
 
-    // Generate XML content
+    // Generate XML content for combined sitemap
     let xml = `<?xml version="1.0" encoding="UTF-8"?>\n`;
     xml += `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n`;
     sitemapUrls.forEach(url => {
@@ -158,23 +192,30 @@ async function generateSitemap() {
     });
     xml += `</urlset>\n`;
 
-    // Write to frontend/public for local build
-    const frontendSitemapPath = path.join(__dirname, "../../../frontend/public/sitemap.xml");
-    try {
-      fs.writeFileSync(frontendSitemapPath, xml);
-      console.log(`[Sitemap] Auto-generated sitemap.xml at frontend: ${frontendSitemapPath}`);
-    } catch (e) {
-      console.error("[Sitemap] Failed to write to frontend path:", e.message);
+    // Write sitemap-blogs.xml and sitemap.xml to frontend/public
+    const frontendDir = path.join(__dirname, "../../../frontend/public");
+    if (fs.existsSync(frontendDir)) {
+      try {
+        fs.writeFileSync(path.join(frontendDir, "sitemap-blogs.xml"), blogXml, "utf-8");
+        fs.writeFileSync(path.join(frontendDir, "sitemap.xml"), xml, "utf-8");
+        console.log(`[Sitemap] Auto-updated sitemap-blogs.xml and sitemap.xml at frontend: ${frontendDir}`);
+      } catch (e) {
+        console.error("[Sitemap] Failed to write to frontend path:", e.message);
+      }
     }
 
-    // Write to backend/public to serve dynamically
+    // Write sitemap-blogs.xml and sitemap.xml to backend/public
     const backendPublicDir = path.join(__dirname, "../../public");
     if (!fs.existsSync(backendPublicDir)) {
       fs.mkdirSync(backendPublicDir, { recursive: true });
     }
-    const backendSitemapPath = path.join(backendPublicDir, "sitemap.xml");
-    fs.writeFileSync(backendSitemapPath, xml);
-    console.log(`[Sitemap] Auto-generated sitemap.xml at backend: ${backendSitemapPath} (${sitemapUrls.length} links)`);
+    try {
+      fs.writeFileSync(path.join(backendPublicDir, "sitemap-blogs.xml"), blogXml, "utf-8");
+      fs.writeFileSync(path.join(backendPublicDir, "sitemap.xml"), xml, "utf-8");
+      console.log(`[Sitemap] Auto-updated sitemap-blogs.xml and sitemap.xml at backend: ${backendPublicDir} (${uniqueBlogSlugs.size} blogs, ${sitemapUrls.length} total links)`);
+    } catch (e) {
+      console.error("[Sitemap] Failed to write to backend path:", e.message);
+    }
     
     return xml;
   } catch (err) {

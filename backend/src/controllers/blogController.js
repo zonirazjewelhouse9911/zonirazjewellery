@@ -9,11 +9,14 @@ const SECRET_KEY = process.env.SECRET_KEY || "zoniraz_admin_secret_key_9911";
 
 // Helper function to create URL slug from string
 const slugify = (text) => {
+  if (!text) return "";
   return text
     .toString()
     .toLowerCase()
     .trim()
-    .replace(/[\s\W-]+/g, '-');
+    .replace(/[^\w\s-]/g, '')  // Remove all non-word chars except space and dash
+    .replace(/[\s_-]+/g, '-')   // Replace spaces, underscores & multiple dashes with single dash
+    .replace(/^-+|-+$/g, '');   // Remove leading & trailing dashes
 };
 
 // Initial static blogs to seed into database if collection is empty

@@ -52,22 +52,55 @@ const categories = [
   changefreq: 'daily'
 }));
 
-// 3. Blogs Definition
-const blogs = [
-  { url: '/blog', priority: '0.8', changefreq: 'daily' },
-  ...[
-    'timeless-gold-earring-styles-2026',
-    'ultimate-bridal-jewellery-guide',
-    'gold-saving-scheme-smartest-investment',
-    'old-gold-exchange-best-value',
-    'gold-pendant-necklace-layering-guide',
-    'top-jewellers-in-alwar'
-  ].map(slug => ({
-    url: `/blog/${slug}`,
-    priority: '0.7',
-    changefreq: 'monthly'
-  }))
+// 3. Blogs Definition Fallback
+const fallbackBlogSlugs = [
+  'timeless-gold-earring-styles-2026',
+  'ultimate-bridal-jewellery-guide',
+  'gold-saving-scheme-smartest-investment',
+  'old-gold-exchange-best-value',
+  'gold-pendant-necklace-layering-guide',
+  'top-jewellers-in-alwar'
 ];
+
+const BLOG_API_ENDPOINTS = [
+  'https://zonirazjewellery.onrender.com/api/blogs',
+  'http://localhost:55000/api/blogs',
+  'http://localhost:5000/api/blogs'
+];
+
+async function fetchAllBlogs() {
+  for (const endpoint of BLOG_API_ENDPOINTS) {
+    try {
+      console.log(`[Sitemap Generator] Fetching blog articles from API: ${endpoint}`);
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      const response = await fetch(endpoint, { signal: controller.signal });
+      clearTimeout(timeoutId);
+
+      if (!response.ok) continue;
+
+      const json = await response.json();
+      let rawData = [];
+
+      if (json && json.success && Array.isArray(json.data)) {
+        rawData = json.data;
+      } else if (Array.isArray(json)) {
+        rawData = json;
+      }
+
+      if (rawData.length > 0) {
+        console.log(`[Sitemap Generator] Successfully fetched ${rawData.length} blogs from ${endpoint}`);
+        return rawData;
+      }
+    } catch (err) {
+      console.warn(`[Sitemap Generator] Warning fetching blogs from ${endpoint}: ${err.message}`);
+    }
+  }
+
+  console.warn(`[Sitemap Generator] Warning: Blog catalog could not be retrieved from API. Using fallback blog slugs.`);
+  return fallbackBlogSlugs.map(slug => ({ slug }));
+}
 
 async function fetchAllProducts() {
   let products = [];
@@ -182,13 +215,36 @@ async function main() {
   writeUrlsetXml(categoryPath, categoryItems);
   console.log(`[Sitemap Generator] Created sitemap-categories.xml with ${categoryItems.length} URLs`);
 
-  // C. Process Blogs
-  const blogItems = blogs.map(p => ({
-    fullUrl: `${DOMAIN}${p.url}`,
+  // C. Process Blogs dynamically
+  const rawBlogs = await fetchAllBlogs();
+  const blogItemsMap = new Map();
+  
+  // Always include main blog index
+  blogItemsMap.set(`${DOMAIN}/blog`, {
+    fullUrl: `${DOMAIN}/blog`,
     lastmod: today,
-    priority: p.priority,
-    changefreq: p.changefreq
-  }));
+    priority: '0.8',
+    changefreq: 'daily'
+  });
+
+  rawBlogs.forEach(b => {
+    const rawSlug = b.slug || b.url;
+    if (!rawSlug) return;
+    const cleanSlug = String(rawSlug).replace(/^\/blog\//, '').trim().toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-').replace(/^-+|-+$/g, '');
+    if (!cleanSlug) return;
+    const fullUrl = `${DOMAIN}/blog/${cleanSlug}`;
+    if (!blogItemsMap.has(fullUrl)) {
+      const lastmodDate = formatDate(b.updatedAt || b.createdAt || b.date) || today;
+      blogItemsMap.set(fullUrl, {
+        fullUrl,
+        lastmod: lastmodDate,
+        priority: '0.7',
+        changefreq: 'monthly'
+      });
+    }
+  });
+
+  const blogItems = Array.from(blogItemsMap.values());
   const blogPath = path.join(publicDir, 'sitemap-blogs.xml');
   writeUrlsetXml(blogPath, blogItems);
   console.log(`[Sitemap Generator] Created sitemap-blogs.xml with ${blogItems.length} URLs`);

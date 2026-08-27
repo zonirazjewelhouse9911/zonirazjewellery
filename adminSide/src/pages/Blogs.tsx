@@ -228,7 +228,12 @@ export default function Blogs({ userRole }: BlogsProps) {
   const handleTitleChange = (val: string) => {
     setFormTitle(val);
     if (!editingBlog) {
-      const generatedSlug = val.toLowerCase().trim().replace(/[\s\W-]+/g, '-');
+      const generatedSlug = val
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
       setFormSlug(generatedSlug);
     }
   };
@@ -312,9 +317,16 @@ export default function Blogs({ userRole }: BlogsProps) {
     const isPub = formStatus === 'Published (Public)';
     const parsedTags = formTags.split(',').map(t => t.trim()).filter(Boolean);
 
+    const cleanSlug = (formSlug || formTitle)
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/[\s_-]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
     const payload = {
       title: formTitle,
-      slug: formSlug || formTitle.toLowerCase().trim().replace(/[\s\W-]+/g, '-'),
+      slug: cleanSlug,
       category: formCategory,
       tags: parsedTags,
       excerpt: formExcerpt,
@@ -753,6 +765,20 @@ export default function Blogs({ userRole }: BlogsProps) {
                     <span className="text-[11px] uppercase tracking-[0.2em] font-black text-[#5d463c]">
                       Publishing Settings
                     </span>
+                  </div>
+
+                  {/* URL Slug */}
+                  <div>
+                    <label className="block text-[10px] uppercase tracking-widest font-black text-slate-400 mb-2">URL Slug (Customizable)</label>
+                    <div className="relative">
+                      <input 
+                        type="text" 
+                        value={formSlug}
+                        onChange={(e) => setFormSlug(e.target.value.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-'))}
+                        placeholder="e.g. my-blog-post-slug"
+                        className="w-full bg-[#f8fafc] border border-slate-200 rounded-2xl px-4 py-3 text-xs font-mono font-bold text-[#5d463c] placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#5d463c]/40"
+                      />
+                    </div>
                   </div>
 
                   {/* Category Dropdown */}

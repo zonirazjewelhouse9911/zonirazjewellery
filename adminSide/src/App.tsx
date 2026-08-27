@@ -341,7 +341,7 @@ function App() {
       </aside>
 
       {/* Desktop Static Sidebar (Only on desktop >= lg) */}
-      <aside className="hidden lg:flex w-72 shrink-0 bg-[#5d463c] text-[#efe7e5] flex-col justify-between border-r border-black/10 select-none h-screen sticky top-0">
+      <aside className="hidden lg:flex w-72 shrink-0 bg-[#5d463c] text-[#efe7e5] flex-col justify-between border-r border-black/10 select-none h-screen fixed top-0 left-0 z-30">
         {/* Brand Header */}
         <div className="p-8 flex items-center justify-between">
           <div className="flex items-center space-x-3.5">
@@ -403,7 +403,7 @@ function App() {
       </aside>
 
       {/* Main Content Area */}
-      <div className="lg:flex-1 flex flex-col min-w-0 w-full max-w-full min-h-screen relative overflow-x-hidden">
+      <div className="lg:flex-1 lg:ml-72 flex flex-col min-w-0 w-full max-w-full min-h-screen relative overflow-x-hidden">
         
         {/* Mobile Header Bar */}
         <header className="lg:hidden bg-[#5d463c] text-[#efe7e5] px-4 py-3 flex items-center justify-between border-b border-black/10 shrink-0 sticky top-0 z-30 shadow-md w-full max-w-full overflow-hidden">
