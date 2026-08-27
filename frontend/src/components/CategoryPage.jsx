@@ -1510,30 +1510,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
               ))}
             </div>
             
-            {/* Size Accordion */}
-            <div className="filter-section">
-              <div className="filter-section-header" onClick={() => toggleAccordion('size')}>
-                <h4>Size</h4>
-                <span className={`filter-arrow ${openAccordions.size ? '' : 'collapsed'}`}>▼</span>
-              </div>
-              {openAccordions.size && (
-                <div className="filter-options-content">
-                  {[5, 11, 12, 13].map(size => (
-                    <label key={size} className="checkbox-label">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedSizes.includes(size)}
-                        onChange={() => handleSizeChange(size)}
-                      />
-                      <span>Size {size}</span>
-                      <span className="checkbox-count">
-                        ({products.filter(p => String(p.category).toLowerCase().replace(/[^a-z0-9]/g, '') === String(category).toLowerCase().replace(/[^a-z0-9]/g, '') && Number(p.size) === Number(size)).length})
-                      </span>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
 
             {/* Price Accordion */}
             <div className="filter-section">
@@ -1589,27 +1565,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
               )}
             </div>
 
-            {/* Material Accordion */}
-            <div className="filter-section">
-              <div className="filter-section-header" onClick={() => toggleAccordion('material')}>
-                <h4>Material</h4>
-                <span className={`filter-arrow ${openAccordions.material ? '' : 'collapsed'}`}>▼</span>
-              </div>
-              {openAccordions.material && (
-                <div className="filter-options-content">
-                  {['Platinum', 'Gold', 'Diamond', 'Gemstone'].map(mat => (
-                    <label key={mat} className="checkbox-label">
-                      <input 
-                        type="checkbox" 
-                        checked={selectedMaterials.includes(mat)}
-                        onChange={() => handleMaterialChange(mat)}
-                      />
-                      <span>{mat}</span>
-                    </label>
-                  ))}
-                </div>
-              )}
-            </div>
 
           </aside>
 

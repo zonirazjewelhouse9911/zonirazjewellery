@@ -811,6 +811,7 @@ function AppContent() {
 
             window.history.pushState(null, '', path);
             handleNavigation(false);
+            window.dispatchEvent(new PopStateEvent('popstate'));
           }
         }
       }

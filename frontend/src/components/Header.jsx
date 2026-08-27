@@ -830,10 +830,17 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                   .trim()
                   .replace(/\s+/g, '-');
 
-                // Extract unique subcategories
-                const subcategories = [...new Set((cat.products || [])
-                  .map(p => p.productSubCategory)
-                  .filter(Boolean))];
+                // Extract unique subcategories (case-insensitive deduplication)
+                const subcategoriesMap = new Map();
+                (cat.products || []).forEach(p => {
+                  if (p.productSubCategory) {
+                    const key = p.productSubCategory.trim().toLowerCase();
+                    if (!subcategoriesMap.has(key)) {
+                      subcategoriesMap.set(key, p.productSubCategory.trim());
+                    }
+                  }
+                });
+                const subcategories = Array.from(subcategoriesMap.values());
 
                 // Extract unique genders
                 const genders = [...new Set((cat.products || [])
@@ -851,7 +858,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                     <a href={`/${categorySlug}`} className="nav-item-trigger" onClick={(e) => { e.preventDefault(); window.history.pushState(null, '', `/${categorySlug}`); window.dispatchEvent(new PopStateEvent('popstate')); }}>
                       {displayName}
                     </a>
-                    <div className={`mega-dropdown ${disabledDropdown === categorySlug ? 'force-hide' : ''}`} style={{ top: `${headerHeight + 10}px` }}>
+                    <div className={`mega-dropdown ${disabledDropdown === categorySlug ? 'force-hide' : ''}`} style={{ top: `${headerHeight - 2}px` }}>
                       <div className="mega-dropdown-inner">
                         {/* Column 1: Subcategories */}
                         <div className="mega-column">
@@ -881,66 +888,6 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                           </ul>
                         </div>
 
-                        {/* Column 2: Metal & Stone */}
-                        <div className="mega-column">
-                          <h4>By Metal & Stone</h4>
-                          <ul className="metal-stone-list">
-                            <li>
-                              <span className="dot dot-diamond"></span>
-                              <a
-                                href={`/${categorySlug}?stone=diamond`}
-                                onClick={() => handleDropdownLinkClick(categorySlug)}
-                              >
-                                Diamond
-                              </a>
-                            </li>
-                            <li>
-                              <span className="dot dot-gold"></span>
-                              <a
-                                href={`/${categorySlug}?metal=gold`}
-                                onClick={() => handleDropdownLinkClick(categorySlug)}
-                              >
-                                Gold
-                              </a>
-                            </li>
-                            <li>
-                              <span className="dot dot-rose-gold"></span>
-                              <a
-                                href={`/${categorySlug}?metal=rose-gold`}
-                                onClick={() => handleDropdownLinkClick(categorySlug)}
-                              >
-                                Rose Gold
-                              </a>
-                            </li>
-                            <li>
-                              <span className="dot dot-yellow-gold"></span>
-                              <a
-                                href={`/${categorySlug}?metal=yellow-gold`}
-                                onClick={() => handleDropdownLinkClick(categorySlug)}
-                              >
-                                Yellow Gold
-                              </a>
-                            </li>
-                            <li>
-                              <span className="dot dot-white-gold"></span>
-                              <a
-                                href={`/${categorySlug}?metal=white-gold`}
-                                onClick={() => handleDropdownLinkClick(categorySlug)}
-                              >
-                                White Gold
-                              </a>
-                            </li>
-                            <li>
-                              <span className="dot dot-platinum"></span>
-                              <a
-                                href={`/${categorySlug}?metal=platinum`}
-                                onClick={() => handleDropdownLinkClick(categorySlug)}
-                              >
-                                Platinum
-                              </a>
-                            </li>
-                          </ul>
-                        </div>
 
                         {/* Column 3: By Price */}
                         <div className="mega-column mega-column-price">
@@ -1002,7 +949,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                         </div>
 
                         {/* Bottom Full-width Row: Demographic filters */}
-                        <div className="mega-dropdown-footer" style={{ gridColumn: 'span 5', marginTop: '15px' }}>
+                        <div className="mega-dropdown-footer" style={{ gridColumn: 'span 3', marginTop: '8px' }}>
                           <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                             <a
                               href={`/${categorySlug}?gender=women`}
