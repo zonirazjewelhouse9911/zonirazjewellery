@@ -744,7 +744,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       )}
 
       {/* Editor Tabs */}
-      <div className="flex items-center space-x-2 p-2 bg-white/60 rounded-3xl border border-slate-200/80 max-w-fit overflow-x-auto shadow-sm backdrop-blur-sm">
+      <div className="flex items-center space-x-2 p-2 bg-white/60 rounded-2xl sm:rounded-3xl border border-slate-200/80 max-w-full overflow-x-auto no-scrollbar shadow-sm backdrop-blur-sm whitespace-nowrap shrink-0">
         {[
           { id: 'basic', label: 'Identity', icon: Settings },
           { id: 'pricing', label: 'Value & Inventory', icon: Coins },

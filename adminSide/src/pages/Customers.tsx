@@ -372,17 +372,17 @@ export default function Customers() {
     <div className="space-y-8 animate-in fade-in duration-500 font-sans text-left text-[#12100e]">
       
       {/* Title Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.45em] font-black text-[#a88265] block">Patron Ledger</span>
-          <h1 className="text-4.5xl font-serif font-bold text-[#12100e] mt-2">
-            Customers <span className="text-slate-350 font-normal italic not-serif text-3xl ml-1">({customers.length})</span>
+          <h1 className="text-3xl sm:text-4.5xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2">
+            Customers <span className="text-slate-350 font-normal italic not-serif text-2xl sm:text-3xl ml-1">({customers.length})</span>
           </h1>
         </div>
       </div>
 
       {/* Search Bar + Filters */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input 
@@ -390,15 +390,15 @@ export default function Customers() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by Name, Email, or Phone..."
-            className="w-full bg-[#f0f3f6] border-none rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
+            className="w-full bg-[#f0f3f6] border-none rounded-xl sm:rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
           />
         </div>
-        <div className="flex items-center gap-3 w-full md:w-auto shrink-0">
-          <button className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-5 py-3 bg-[#f5ebe2] hover:bg-[#ebdccf] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 cursor-pointer">
+        <div className="flex items-center gap-3 w-full sm:w-auto shrink-0">
+          <button className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-[#f5ebe2] hover:bg-[#ebdccf] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 cursor-pointer">
             <SlidersHorizontal size={14} className="text-slate-500" />
             <span>Filters</span>
           </button>
-          <button className="flex-1 md:flex-initial flex items-center justify-center gap-2 px-5 py-3 bg-[#f5ebe2] hover:bg-[#ebdccf] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 cursor-pointer">
+          <button className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-[#f5ebe2] hover:bg-[#ebdccf] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 cursor-pointer">
             <span>Sort</span>
             <ChevronDown size={14} className="text-slate-500" />
           </button>
@@ -406,17 +406,18 @@ export default function Customers() {
       </div>
 
       {/* Customers Table Container */}
-      <div className="bg-white border border-slate-200/80 rounded-[32px] overflow-hidden shadow-sm">
-        
-        {/* Table Headers */}
-        <div className="p-6 border-b border-slate-100 grid grid-cols-12 gap-4 text-[10px] tracking-[0.2em] font-black text-slate-400 bg-slate-50/50">
-          <div className="col-span-3">Patron Info</div>
-          <div className="col-span-3">Contact</div>
-          <div className="col-span-2">Activity</div>
-          <div className="col-span-2">Value</div>
-          <div className="col-span-1">Joined</div>
-          <div className="col-span-1 text-center">Action</div>
-        </div>
+      <div className="bg-white border border-slate-200/80 rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-sm">
+        <div className="overflow-x-auto w-full">
+          <div className="min-w-[800px]">
+            {/* Table Headers */}
+            <div className="p-6 border-b border-slate-100 grid grid-cols-12 gap-4 text-[10px] tracking-[0.2em] font-black text-slate-400 bg-slate-50/50">
+              <div className="col-span-3">Patron Info</div>
+              <div className="col-span-3">Contact</div>
+              <div className="col-span-2">Activity</div>
+              <div className="col-span-2">Value</div>
+              <div className="col-span-1">Joined</div>
+              <div className="col-span-1 text-center">Action</div>
+            </div>
 
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center space-y-4">
@@ -501,14 +502,14 @@ export default function Customers() {
                       <Eye size={14} />
                     </button>
                   </div>
-
                 </div>
               );
             })}
           </div>
         )}
+          </div>
+        </div>
       </div>
-
     </div>
   );
 }

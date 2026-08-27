@@ -241,17 +241,17 @@ export default function Categories() {
     <div className="space-y-8 animate-in fade-in duration-500 font-sans text-left text-[#12100e]">
       
       {/* Title Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.45em] font-black text-[#a88265] block">Classification Hub</span>
-          <h1 className="text-4.5xl font-serif font-bold text-[#12100e] mt-2">
-            Categories <span className="text-slate-350 font-normal italic not-serif text-3xl ml-1">({categories.length})</span>
+          <h1 className="text-3xl sm:text-4.5xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2">
+            Categories <span className="text-slate-350 font-normal italic not-serif text-2xl sm:text-3xl ml-1">({categories.length})</span>
           </h1>
         </div>
         <button
           type="button"
           onClick={handleOpenCreateModal}
-          className="px-8 py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-2xl transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer"
+          className="px-6 sm:px-8 py-3.5 sm:py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-xl sm:rounded-2xl transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
         >
           <Plus size={16} />
           <span>New Category</span>
@@ -259,7 +259,7 @@ export default function Categories() {
       </div>
 
       {/* Search Input */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input 
@@ -267,7 +267,7 @@ export default function Categories() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by category name, slug, or description..."
-            className="w-full bg-[#f0f3f6] border-none rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
+            className="w-full bg-[#f0f3f6] border-none rounded-xl sm:rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
           />
         </div>
       </div>
@@ -283,7 +283,7 @@ export default function Categories() {
           No categories found. Click new category to start.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredCategories.map((cat) => {
             const pCount = productCounts[cat._id || ''] || productCounts[cat.slug] || 0;
             return (

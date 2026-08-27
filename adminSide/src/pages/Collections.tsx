@@ -182,17 +182,17 @@ export default function Collections() {
     <div className="space-y-8 animate-in fade-in duration-500 font-sans text-left text-[#12100e]">
       
       {/* Title Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.45em] font-black text-[#a88265] block">Editorial Vault</span>
-          <h1 className="text-4.5xl font-serif font-bold text-[#12100e] mt-2">
-            Collections <span className="text-slate-350 font-normal italic not-serif text-3xl ml-1">({collections.length})</span>
+          <h1 className="text-3xl sm:text-4.5xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2">
+            Collections <span className="text-slate-350 font-normal italic not-serif text-2xl sm:text-3xl ml-1">({collections.length})</span>
           </h1>
         </div>
         <button
           type="button"
           onClick={handleOpenCreateModal}
-          className="px-8 py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-2xl transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer animate-in fade-in"
+          className="px-6 sm:px-8 py-3.5 sm:py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-xl sm:rounded-2xl transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto animate-in fade-in"
         >
           <Plus size={16} />
           <span>New Collection</span>
@@ -200,7 +200,7 @@ export default function Collections() {
       </div>
 
       {/* Search Input */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input 
@@ -208,7 +208,7 @@ export default function Collections() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by collection name or slug..."
-            className="w-full bg-[#f0f3f6] border-none rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
+            className="w-full bg-[#f0f3f6] border-none rounded-xl sm:rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
           />
         </div>
       </div>
@@ -224,7 +224,7 @@ export default function Collections() {
           No collections found in editorial vault. Click new to add.
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8">
           {filteredCollections.map((col) => (
             <div key={col._id} className="bg-white border border-slate-100 rounded-[32px] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.06)] flex flex-col sm:flex-row transition-all duration-500 group">
               

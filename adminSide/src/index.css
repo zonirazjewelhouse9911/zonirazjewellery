@@ -1,11 +1,8 @@
 @import "tailwindcss";
 
-@theme {
+:root {
   --color-brand-gold: #C5A880;
   --color-brand-text: #12100e;
-}
-
-:root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -19,10 +16,27 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+html, body {
   margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
   min-width: 320px;
   min-height: 100vh;
   background-color: #efe7e5;
   color: #12100e;
+  overflow-x: hidden !important;
+  box-sizing: border-box;
+  touch-action: pan-y;
+  overscroll-behavior-x: none;
+}
+
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+}
+
+*, ::before, ::after {
+  box-sizing: border-box;
 }

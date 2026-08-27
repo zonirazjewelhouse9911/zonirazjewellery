@@ -295,12 +295,12 @@ const LooseStones: React.FC = () => {
   return (
     <div className="space-y-8 animate-in fade-in duration-500 max-w-7xl">
       {/* Title Header Row */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.4em] font-black text-slate-500">Standalone Vault</span>
-          <h1 className="text-4.5xl font-serif font-bold text-[#12100e] mt-2 flex items-center gap-3">
+          <h1 className="text-3xl sm:text-4.5xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2 flex items-center gap-3">
             <span>Loose Stones</span>
-            <span className="text-slate-400 font-normal italic not-serif text-2xl">({stones.length})</span>
+            <span className="text-slate-400 font-normal italic not-serif text-xl sm:text-2xl">({stones.length})</span>
           </h1>
           <p className="text-xs text-slate-500 mt-2 max-w-xl">
             List and manage standalone diamonds, solitaires, gemstones, and color stones for direct sales.
@@ -308,7 +308,7 @@ const LooseStones: React.FC = () => {
         </div>
         <button
           onClick={handleOpenCreateModal}
-          className="px-8 py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-xl transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer"
+          className="px-6 sm:px-8 py-3.5 sm:py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-xl transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
         >
           <Plus size={16} />
           <span>+ Add Loose Stone</span>

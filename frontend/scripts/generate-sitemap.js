@@ -78,7 +78,7 @@ async function fetchAllProducts() {
     try {
       console.log(`[Sitemap Generator] Fetching product catalog from API: ${endpoint}`);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
+      const timeoutId = setTimeout(() => controller.abort(), 45000);
 
       const response = await fetch(endpoint, { signal: controller.signal });
       clearTimeout(timeoutId);
@@ -112,8 +112,22 @@ async function fetchAllProducts() {
   }
 
   if (!apiSuccess || products.length === 0) {
-    console.error(`\n❌ ERROR: Product catalog could not be retrieved. Aborting sitemap generation.`);
-    process.exit(1);
+    const fallbackPath = path.join(__dirname, '../../tbl_products1.json');
+    if (fs.existsSync(fallbackPath)) {
+      try {
+        const raw = fs.readFileSync(fallbackPath, 'utf-8');
+        const json = JSON.parse(raw);
+        products = Array.isArray(json) ? json : (json.data || []);
+        if (products.length > 0) {
+          console.log(`[Sitemap Generator] Loaded ${products.length} products from local fallback: ${fallbackPath}`);
+          return products;
+        }
+      } catch (e) {
+        console.warn(`[Sitemap Generator] Local fallback read failed: ${e.message}`);
+      }
+    }
+    console.warn(`[Sitemap Generator] Warning: Product catalog could not be retrieved. Proceeding with static sitemaps.`);
+    return [];
   }
 
   return products;

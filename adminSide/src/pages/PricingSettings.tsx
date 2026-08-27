@@ -132,21 +132,21 @@ const PricingSettings: React.FC = () => {
       {/* Title Header */}
       <div>
         <span className="text-[10px] uppercase tracking-[0.4em] font-black text-slate-500">Pricing Settings</span>
-        <h1 className="text-4.5xl font-serif font-bold text-[#12100e] mt-2">Daily Jewellery Pricing</h1>
+        <h1 className="text-3xl sm:text-4.5xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2">Daily Jewellery Pricing</h1>
         <p className="text-sm text-slate-500 mt-2 max-w-xl">
           Configure daily metal and diamond pricing benchmarks. Setting rates here triggers an automatic background recalculation of all catalog items.
         </p>
       </div>
 
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center space-y-4 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
+        <div className="py-20 flex flex-col items-center justify-center space-y-4 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm">
           <Loader2 className="animate-spin text-[#5d463c]" size={32} />
           <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Fetching rates ledger...</span>
         </div>
       ) : (
         <form onSubmit={handleUpdateRates} className="space-y-6">
           {/* Rates Cards Grid */}
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm space-y-8">
+          <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm space-y-8">
             <div className="flex items-center justify-between border-b border-slate-100 pb-5">
               <h2 className="font-serif text-lg font-bold text-[#12100e] flex items-center gap-2">
                 <TrendingUp className="text-[#C5A880]" size={20} />

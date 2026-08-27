@@ -163,17 +163,17 @@ export default function SellGoldInquiries() {
     <div className="space-y-8 animate-in fade-in duration-500 font-sans text-left text-[#12100e]">
       
       {/* Title Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.45em] font-black text-[#a88265] block">Sell Old Gold Program</span>
-          <h1 className="text-4.5xl font-serif font-bold text-[#12100e] mt-2">
+          <h1 className="text-3xl sm:text-4.5xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2">
             Sell Gold Leads
           </h1>
         </div>
       </div>
 
       {/* Search Input and status select */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input 
@@ -181,14 +181,14 @@ export default function SellGoldInquiries() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search customers..."
-            className="w-full bg-[#f0f3f6] border-none rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
+            className="w-full bg-[#f0f3f6] border-none rounded-xl sm:rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
           />
         </div>
         
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-[#f5ebe2] hover:bg-[#ebdccf] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 py-3 px-5 cursor-pointer outline-none w-full md:w-auto"
+          className="bg-[#f5ebe2] hover:bg-[#ebdccf] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 py-3 px-5 cursor-pointer outline-none w-full sm:w-auto"
         >
           <option value="all">All Status</option>
           <option value="new">New</option>
@@ -199,17 +199,18 @@ export default function SellGoldInquiries() {
       </div>
 
       {/* Inquiries Ledger Table */}
-      <div className="bg-white border border-slate-200/80 rounded-[32px] overflow-hidden shadow-sm">
-        
-        {/* Table Headers */}
-        <div className="p-6 border-b border-slate-100 grid grid-cols-12 gap-4 text-[10px] tracking-[0.2em] font-black text-slate-400 bg-slate-50/50 uppercase">
-          <div className="col-span-3">Customer</div>
-          <div className="col-span-3">Location</div>
-          <div className="col-span-3">Details</div>
-          <div className="col-span-2">Status</div>
-          <div className="col-span-1">Date</div>
-          <div className="col-span-1 text-center">Action</div>
-        </div>
+      <div className="bg-white border border-slate-200/80 rounded-[24px] sm:rounded-[32px] overflow-hidden shadow-sm">
+        <div className="overflow-x-auto w-full">
+          <div className="min-w-[800px]">
+            {/* Table Headers */}
+            <div className="p-6 border-b border-slate-100 grid grid-cols-12 gap-4 text-[10px] tracking-[0.2em] font-black text-slate-400 bg-slate-50/50 uppercase">
+              <div className="col-span-3">Customer</div>
+              <div className="col-span-3">Location</div>
+              <div className="col-span-3">Details</div>
+              <div className="col-span-2">Status</div>
+              <div className="col-span-1">Date</div>
+              <div className="col-span-1 text-center">Action</div>
+            </div>
 
         {loading ? (
           <div className="py-20 flex flex-col items-center justify-center space-y-4">
@@ -284,12 +285,14 @@ export default function SellGoldInquiries() {
             ))}
           </div>
         )}
+          </div>
+        </div>
       </div>
 
       {/* Inquiry Detail View Modal */}
       {modalOpen && selectedInquiry && (
-        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-6 backdrop-blur-xs animate-in fade-in duration-300">
-          <div className="bg-[#efe7e5] text-[#12100e] w-full max-w-xl rounded-4xl shadow-premium border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-3 sm:p-6 backdrop-blur-xs animate-in fade-in duration-300">
+          <div className="bg-[#efe7e5] text-[#12100e] w-full max-w-xl mx-3 sm:mx-auto rounded-3xl sm:rounded-4xl shadow-premium border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
             
             {/* Modal Header */}
             <div className="p-6 bg-white border-b border-slate-200/60 flex items-center justify-between shrink-0">

@@ -253,17 +253,17 @@ export default function Coupons() {
     <div className="space-y-8 animate-in fade-in duration-500 font-sans text-left text-[#12100e]">
       
       {/* Title Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.45em] font-black text-[#a88265] block">Campaign Command</span>
-          <h1 className="text-4.5xl font-serif font-bold text-[#12100e] mt-2">
+          <h1 className="text-3xl sm:text-4.5xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2">
             Strategic Coupons
           </h1>
         </div>
 
-        <div className="flex items-center gap-6 self-start md:self-auto">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6 w-full sm:w-auto">
           {/* Stats indicator box */}
-          <div className="bg-white border border-slate-200/60 rounded-2xl py-3 px-6 flex items-center divide-x divide-slate-100 shadow-sm text-xs font-bold text-slate-800">
+          <div className="bg-white border border-slate-200/60 rounded-2xl py-3 px-6 flex items-center divide-x divide-slate-100 shadow-sm text-xs font-bold text-slate-800 flex-1 sm:flex-initial justify-around sm:justify-start">
             <div className="flex items-center gap-2.5 pr-5">
               <Activity size={14} className="text-[#a88265] animate-pulse" />
               <div>
@@ -283,7 +283,7 @@ export default function Coupons() {
           <button
             type="button"
             onClick={handleOpenCreateModal}
-            className="px-8 py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-2xl transition-all duration-300 shadow-md flex items-center gap-2 cursor-pointer"
+            className="px-6 sm:px-8 py-3.5 sm:py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-xl sm:rounded-2xl transition-all duration-300 shadow-md flex items-center justify-center gap-2 cursor-pointer w-full sm:w-auto"
           >
             <Plus size={16} />
             <span>New Code</span>
@@ -292,7 +292,7 @@ export default function Coupons() {
       </div>
 
       {/* Search Input Bar */}
-      <div className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
+      <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
           <input 
@@ -300,10 +300,10 @@ export default function Coupons() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by Coupon Code..."
-            className="w-full bg-[#f0f3f6] border-none rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
+            className="w-full bg-[#f0f3f6] border-none rounded-xl sm:rounded-2xl py-3 pl-12 pr-6 text-sm text-slate-800 placeholder-slate-450 focus:ring-1 focus:ring-brand-gold/50"
           />
         </div>
-        <button className="px-6 py-3 bg-[#f5ebe2] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 cursor-pointer">
+        <button className="px-6 py-3 bg-[#f5ebe2] text-slate-700 font-bold text-[11px] uppercase tracking-widest rounded-xl transition-all border border-slate-200/50 cursor-pointer w-full sm:w-auto">
           All Campaigns
         </button>
       </div>
@@ -319,7 +319,7 @@ export default function Coupons() {
           No coupons found in campaigns ledger. Click new to add.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {filteredCoupons.map((coupon) => {
             const isPercentage = coupon.discountType === 'percentage';
             const displayOff = isPercentage ? `${coupon.discountValue}% Off` : `₹${coupon.discountValue} Off`;

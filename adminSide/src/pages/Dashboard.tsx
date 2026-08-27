@@ -126,24 +126,24 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
     <div className="space-y-10 animate-in fade-in duration-500 pb-16">
       
       {/* Header Banner */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-white p-8 rounded-3xl border border-slate-200/80 shadow-sm relative overflow-hidden">
-        <div className="relative z-10">
-          <div className="flex items-center space-x-2 text-[10px] uppercase tracking-[0.3em] font-black text-[#a88265]">
-            <Sparkles size={14} className="text-[#c8a359]" />
-            <span>Executive Command Overview</span>
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 bg-white p-4 sm:p-8 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-sm relative overflow-hidden w-full max-w-full">
+        <div className="relative z-10 min-w-0">
+          <div className="flex items-center space-x-2 text-[9.5px] sm:text-[10px] uppercase tracking-wider sm:tracking-[0.3em] font-black text-[#a88265]">
+            <Sparkles size={14} className="text-[#c8a359] shrink-0" />
+            <span className="truncate">Executive Command Overview</span>
           </div>
-          <h1 className="text-3.5xl font-serif font-bold text-[#12100e] mt-2">
+          <h1 className="text-2xl sm:text-3.5xl font-serif font-bold text-[#12100e] mt-1.5 sm:mt-2 break-words">
             Zoniraz Jewels Dashboard
           </h1>
-          <p className="text-xs text-slate-500 mt-1 max-w-xl">
+          <p className="text-xs text-slate-500 mt-1 max-w-xl break-words">
             Real-time commercial performance analytics, revenue tracking, customer growth metrics, and 10+1 Gold Mine wallet insights.
           </p>
         </div>
 
-        <div className="flex items-center space-x-3 relative z-10">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 relative z-10 w-full sm:w-auto shrink-0">
           <button 
             onClick={fetchDashboardData}
-            className="px-5 py-3 bg-[#efe7e5] hover:bg-[#e4d7d3] text-slate-700 font-bold text-xs uppercase tracking-widest rounded-xl transition-all border border-slate-200/60 flex items-center space-x-2 cursor-pointer"
+            className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-[#efe7e5] hover:bg-[#e4d7d3] text-slate-700 font-bold text-xs uppercase tracking-wider sm:tracking-widest rounded-xl transition-all border border-slate-200/60 flex items-center justify-center space-x-2 cursor-pointer"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
             <span>Refresh Data</span>
@@ -151,7 +151,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
 
           <button 
             onClick={() => onNavigate('coupons')}
-            className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs uppercase tracking-widest rounded-xl transition-all shadow-sm flex items-center space-x-2 cursor-pointer"
+            className="w-full sm:w-auto px-4 sm:px-6 py-2.5 sm:py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs uppercase tracking-wider sm:tracking-widest rounded-xl transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer"
           >
             <Ticket size={14} />
             <span>Broadcast Offer 📱</span>
@@ -159,65 +159,65 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
         </div>
 
         {/* Decorative background ambient badge */}
-        <div className="absolute right-[-20px] bottom-[-20px] opacity-[0.03] font-serif text-[180px] font-black text-slate-900 pointer-events-none select-none">
+        <div className="absolute right-0 bottom-0 opacity-[0.03] font-serif text-[180px] font-black text-slate-900 pointer-events-none select-none hidden sm:block">
           Z
         </div>
       </div>
 
       {/* KPI Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6 w-full max-w-full">
         
         {/* KPI 1: Total Revenue */}
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">Total Revenue</span>
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-              <DollarSign size={20} />
+        <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[9.5px] sm:text-[10px] uppercase tracking-wider sm:tracking-[0.2em] font-black text-slate-400 truncate">Total Revenue</span>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold shrink-0">
+              <DollarSign size={18} className="sm:w-5 sm:h-5" />
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2.5xl font-serif font-bold text-[#12100e]">
+          <div className="mt-3 sm:mt-4">
+            <h3 className="text-xl sm:text-2.5xl font-serif font-bold text-[#12100e] break-words">
               {formatCurrency(stats.totalRevenue)}
             </h3>
-            <div className="flex items-center space-x-1.5 mt-2 text-[11px] font-bold text-emerald-600">
-              <TrendingUp size={14} />
+            <div className="flex flex-wrap items-center gap-1 mt-2 text-[10.5px] sm:text-[11px] font-bold text-emerald-600">
+              <TrendingUp size={13} className="shrink-0" />
               <span>+18.4% growth vs last period</span>
             </div>
           </div>
         </div>
 
         {/* KPI 2: Total & New Customers */}
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">Patron Customers</span>
-            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
-              <Users size={20} />
+        <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[9.5px] sm:text-[10px] uppercase tracking-wider sm:tracking-[0.2em] font-black text-slate-400 truncate">Patron Customers</span>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold shrink-0">
+              <Users size={18} className="sm:w-5 sm:h-5" />
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2.5xl font-serif font-bold text-[#12100e]">
-              {stats.totalCustomers} <span className="text-sm font-sans font-medium text-slate-400">Patrons</span>
+          <div className="mt-3 sm:mt-4">
+            <h3 className="text-xl sm:text-2.5xl font-serif font-bold text-[#12100e] break-words">
+              {stats.totalCustomers} <span className="text-xs sm:text-sm font-sans font-medium text-slate-400">Patrons</span>
             </h3>
-            <div className="flex items-center space-x-1.5 mt-2 text-[11px] font-bold text-blue-600">
-              <UserPlus size={14} />
+            <div className="flex flex-wrap items-center gap-1 mt-2 text-[10.5px] sm:text-[11px] font-bold text-blue-600">
+              <UserPlus size={13} className="shrink-0" />
               <span>+{stats.newCustomersThisMonth} new signups this month</span>
             </div>
           </div>
         </div>
 
         {/* KPI 3: Orders Breakdown */}
-        <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-slate-400">Orders Fulfilled</span>
-            <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
-              <ShoppingBag size={20} />
+        <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-sm hover:shadow-md transition-all relative overflow-hidden group min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[9.5px] sm:text-[10px] uppercase tracking-wider sm:tracking-[0.2em] font-black text-slate-400 truncate">Orders Fulfilled</span>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold shrink-0">
+              <ShoppingBag size={18} className="sm:w-5 sm:h-5" />
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2.5xl font-serif font-bold text-[#12100e]">
-              {stats.totalOrders} <span className="text-sm font-sans font-medium text-slate-400">Orders</span>
+          <div className="mt-3 sm:mt-4">
+            <h3 className="text-xl sm:text-2.5xl font-serif font-bold text-[#12100e] break-words">
+              {stats.totalOrders} <span className="text-xs sm:text-sm font-sans font-medium text-slate-400">Orders</span>
             </h3>
-            <div className="flex items-center space-x-2 mt-2 text-[11px] font-bold text-slate-600">
+            <div className="flex flex-wrap items-center gap-1.5 mt-2 text-[10.5px] sm:text-[11px] font-bold text-slate-600">
               <span className="text-amber-600 font-bold">{stats.pendingOrdersCount} Pending</span>
               <span>•</span>
               <span className="text-emerald-600 font-bold">{stats.deliveredOrdersCount} Delivered</span>
@@ -226,20 +226,20 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
         </div>
 
         {/* KPI 4: 10+1 Gold Mine Schemes */}
-        <div className="bg-[#5d463c] text-[#efe7e5] border border-black/10 rounded-3xl p-6 shadow-md relative overflow-hidden group">
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase tracking-[0.2em] font-black text-[#efe7e5]/70">10+1 Gold Scheme</span>
-            <div className="w-10 h-10 rounded-2xl bg-white/10 text-amber-300 flex items-center justify-center font-bold">
-              <Coins size={20} />
+        <div className="bg-[#5d463c] text-[#efe7e5] border border-black/10 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-md relative overflow-hidden group min-w-0">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[9.5px] sm:text-[10px] uppercase tracking-wider sm:tracking-[0.2em] font-black text-[#efe7e5]/70 truncate">10+1 Gold Scheme</span>
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-white/10 text-amber-300 flex items-center justify-center font-bold shrink-0">
+              <Coins size={18} className="sm:w-5 sm:h-5" />
             </div>
           </div>
-          <div className="mt-4">
-            <h3 className="text-2.5xl font-serif font-bold text-white">
+          <div className="mt-3 sm:mt-4">
+            <h3 className="text-xl sm:text-2.5xl font-serif font-bold text-white break-words">
               {(Number(stats.totalGoldGrams) || 0).toFixed(3)}g <span className="text-xs font-sans font-normal text-amber-200/90">24K Gold</span>
             </h3>
-            <div className="flex items-center space-x-1.5 mt-2 text-[11px] font-bold text-amber-300">
-              <Sparkles size={14} />
-              <span>{stats.activeGoldPlans} Active 10+1 Gold Mine Plans</span>
+            <div className="flex flex-wrap items-center gap-1 mt-2 text-[10.5px] sm:text-[11px] font-bold text-amber-300">
+              <Sparkles size={13} className="shrink-0" />
+              <span>{stats.activeGoldPlans} Active 10+1 Plans</span>
             </div>
           </div>
         </div>
@@ -247,14 +247,14 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
       </div>
 
       {/* Analytics & Recent Activity Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         
         {/* Recent Orders Ledger (2 Columns) */}
-        <div className="lg:col-span-2 bg-white border border-slate-200/80 rounded-3xl overflow-hidden shadow-sm flex flex-col">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+        <div className="lg:col-span-2 bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl overflow-hidden shadow-sm flex flex-col">
+          <div className="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
             <div>
               <span className="text-[10px] uppercase tracking-widest font-black text-slate-400">Order Stream</span>
-              <h3 className="text-lg font-serif font-bold text-[#12100e]">Recent Purchases</h3>
+              <h3 className="text-base sm:text-lg font-serif font-bold text-[#12100e]">Recent Purchases</h3>
             </div>
             <button 
               onClick={() => onNavigate('orders')}
@@ -276,9 +276,9 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
                 const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Recently';
 
                 return (
-                  <div key={order._id || Math.random()} className="p-5 flex items-center justify-between hover:bg-slate-50/40 transition-colors">
+                  <div key={order._id || Math.random()} className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0 hover:bg-slate-50/40 transition-colors">
                     <div className="flex items-center space-x-4">
-                      <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-[#5d463c] flex items-center justify-center font-mono font-bold text-xs shrink-0">
+                      <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-[#5d463c] flex items-center justify-center font-mono font-bold text-xs shrink-0">
                         📦
                       </div>
                       <div>
@@ -294,7 +294,7 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-6 text-right">
+                    <div className="flex items-center justify-between sm:justify-end space-x-4 sm:space-x-6 text-left sm:text-right w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                       <div>
                         <div className="font-bold text-slate-900 text-sm">{formatCurrency(order.totalAmount)}</div>
                         <span className={`text-[9px] font-black uppercase tracking-wider ${
@@ -368,12 +368,12 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
       </div>
 
       {/* Quick Action Operations Panel */}
-      <div className="bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm">
-        <h3 className="text-lg font-serif font-bold text-[#12100e] mb-6">
+      <div className="bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm">
+        <h3 className="text-base sm:text-lg font-serif font-bold text-[#12100e] mb-6">
           Quick Action Shortcuts
         </h3>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           
           <button 
             onClick={() => onNavigate('coupons')}

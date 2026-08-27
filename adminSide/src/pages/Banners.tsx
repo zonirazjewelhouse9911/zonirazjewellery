@@ -161,19 +161,19 @@ export default function Banners() {
     <div className="space-y-8 animate-in fade-in duration-500">
       
       {/* Header Title Row */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.4em] font-black text-slate-500">Website Interface Settings</span>
-          <h1 className="text-4.5xl font-serif font-bold text-[#12100e] mt-2">
-            Hero Section Banners <span className="text-slate-400 font-normal italic not-serif text-2xl ml-1">({banners.length})</span>
+          <h1 className="text-3xl sm:text-4.5xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2">
+            Hero Section Banners <span className="text-slate-400 font-normal italic not-serif text-xl sm:text-2xl ml-1">({banners.length})</span>
           </h1>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8">
         
         {/* Banner Upload Form */}
-        <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-3xl p-8 shadow-sm h-fit space-y-6">
+        <div className="lg:col-span-4 bg-white border border-slate-200/80 rounded-2xl sm:rounded-3xl p-5 sm:p-8 shadow-sm h-fit space-y-6">
           <h2 className="text-lg font-serif font-bold text-[#12100e]">Add Banner</h2>
           
           <form onSubmit={handleSave} className="space-y-5">

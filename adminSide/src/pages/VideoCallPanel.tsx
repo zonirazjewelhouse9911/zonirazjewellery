@@ -205,12 +205,12 @@ export default function VideoCallPanel() {
     <div className="space-y-8 animate-in fade-in duration-500">
 
       {/* ── Page Header ── */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <span className="text-[10px] uppercase tracking-[0.4em] font-black text-slate-500">
             Live Consultation
           </span>
-          <h1 className="text-4xl font-serif font-bold text-[#12100e] mt-2">
+          <h1 className="text-3xl sm:text-4xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2">
             Video Call Panel
           </h1>
           <p className="text-sm text-slate-500 mt-1">
@@ -219,7 +219,7 @@ export default function VideoCallPanel() {
         </div>
 
         {/* Socket connection indicator */}
-        <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest border ${
+        <div className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest border self-start sm:self-auto ${
           connected
             ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
             : 'bg-slate-100 border-slate-200 text-slate-400'
@@ -231,8 +231,8 @@ export default function VideoCallPanel() {
 
       {/* ── Go Online Card ── */}
       {callStatus === 'idle' && (
-        <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
-          <div className="p-8 border-b border-slate-100 bg-slate-50/50">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-sm overflow-hidden">
+          <div className="p-5 sm:p-8 border-b border-slate-100 bg-slate-50/50">
             <span className="text-[10px] uppercase tracking-widest font-black text-slate-400">
               Availability
             </span>
@@ -241,7 +241,7 @@ export default function VideoCallPanel() {
             </h2>
           </div>
 
-          <div className="p-8 space-y-6">
+          <div className="p-5 sm:p-8 space-y-6">
             {/* Name input */}
             <div>
               <label className="block text-[10px] uppercase tracking-widest font-black text-slate-500 mb-2">

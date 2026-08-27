@@ -831,32 +831,31 @@ export default function Blogs({ userRole }: BlogsProps) {
         <div className="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-300">
           
           {/* Dashboard Title & Actions */}
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
               <span className="text-[10px] uppercase tracking-[0.4em] font-black text-[#5d463c]">
                 Journal & Content Studio
               </span>
-              <h1 className="text-4xl md:text-5xl font-serif font-bold text-[#12100e] mt-2">
-                Blog Articles <span className="text-slate-400 font-normal italic not-serif text-2xl ml-2">({blogs.length})</span>
+              <h1 className="text-3xl sm:text-5xl font-serif font-bold text-[#12100e] mt-1 sm:mt-2">
+                Blog Articles <span className="text-slate-400 font-normal italic not-serif text-xl sm:text-2xl ml-2">({blogs.length})</span>
               </h1>
             </div>
             
-            <div className="flex items-center space-x-3">
+            <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
               {!isWriter && (
                 <button 
                   onClick={() => setShowAccessModal(true)}
-                  className="px-5 py-4 bg-[#efe7e5] hover:bg-[#e2d8d5] text-[#5d463c] border border-[#5d463c]/30 font-bold text-xs uppercase tracking-[0.15em] rounded-2xl transition-all shadow-sm flex items-center space-x-2 cursor-pointer"
+                  className="flex-1 sm:flex-initial px-4 sm:px-5 py-3 sm:py-4 bg-[#efe7e5] hover:bg-[#e2d8d5] text-[#5d463c] border border-[#5d463c]/30 font-bold text-xs uppercase tracking-[0.15em] rounded-xl sm:rounded-2xl transition-all shadow-sm flex items-center justify-center space-x-2 cursor-pointer"
                   title="Configure Username & Password for Blog Writer Access"
                 >
                   <Key size={16} />
-                  <span>Writer Access Credentials</span>
+                  <span>Writer Credentials</span>
                 </button>
               )}
 
               <button 
                 onClick={handleOpenCreate}
-
-                className="px-8 py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-2xl transition-all shadow-md flex items-center space-x-2 cursor-pointer"
+                className="flex-1 sm:flex-initial px-6 sm:px-8 py-3.5 sm:py-4 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] font-bold text-xs uppercase tracking-[0.2em] rounded-xl sm:rounded-2xl transition-all shadow-md flex items-center justify-center space-x-2 cursor-pointer"
               >
                 <Plus size={16} /> <span>Write New Story</span>
               </button>
@@ -864,7 +863,7 @@ export default function Blogs({ userRole }: BlogsProps) {
           </div>
 
           {/* Search Bar & Category Filters */}
-          <div className="flex flex-col md:flex-row gap-4 items-center justify-between p-4 bg-white rounded-3xl border border-slate-200/60 shadow-sm">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 bg-white rounded-2xl sm:rounded-3xl border border-slate-200/60 shadow-sm">
             <div className="relative flex-1 w-full">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
               <input 

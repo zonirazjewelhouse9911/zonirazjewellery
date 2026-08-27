@@ -35,7 +35,9 @@ import {
   Video,
   Gem,
   Trash2,
-  FileText
+  FileText,
+  Menu,
+  X
 } from 'lucide-react';
 import './App.css';
 
@@ -85,6 +87,9 @@ function App() {
   // Selection state for Bulk Actions
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  // Mobile sidebar state
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -254,13 +259,91 @@ function App() {
   };
 
   return (
-    <div className="flex min-h-screen bg-[#efe7e5] text-[#12100e] font-sans antialiased overflow-hidden">
+    <div className="lg:flex min-h-screen bg-[#efe7e5] text-[#12100e] font-sans antialiased overflow-x-hidden relative w-full max-w-full">
       
-      {/* Premium Sidebar */}
-      <aside className="w-72 bg-[#5d463c] text-[#efe7e5] flex flex-col justify-between shrink-0 border-r border-black/10 select-none">
-        
+      {/* Mobile Backdrop Overlay */}
+      {isMobileSidebarOpen && (
+        <div 
+          onClick={() => setIsMobileSidebarOpen(false)}
+          className="fixed inset-0 bg-black/60 z-40 backdrop-blur-xs lg:hidden transition-opacity"
+        />
+      )}
+
+      {/* Mobile Drawer Sidebar (Only on mobile < lg) */}
+      <aside className={`fixed inset-y-0 left-0 z-50 w-72 bg-[#5d463c] text-[#efe7e5] flex flex-col justify-between border-r border-black/10 select-none transition-transform duration-300 ease-in-out lg:hidden ${
+        isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}>
         {/* Brand Header */}
-        <div className="p-8">
+        <div className="p-6 flex items-center justify-between">
+          <div className="flex items-center space-x-3.5">
+            <div className="w-10 h-10 rounded-xl bg-[#efe7e5] flex items-center justify-center shadow-sm">
+              <span className="font-serif italic text-[#5d463c] font-black text-xl">Z</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-serif font-bold text-lg tracking-widest text-[#efe7e5]">ZONIRAZ</span>
+              <span className="text-[9px] uppercase tracking-[0.25em] text-[#efe7e5]/60 font-black">Admin Portal</span>
+            </div>
+          </div>
+          <button 
+            onClick={() => setIsMobileSidebarOpen(false)}
+            className="p-2 rounded-lg text-[#efe7e5]/70 hover:text-white hover:bg-white/10 cursor-pointer"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Sidebar Menu Items */}
+        <nav className="flex-1 px-4 space-y-1.5 overflow-y-auto">
+          {navMenuItems.map((item) => {
+            const isActive = activeMenu === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveMenu(item.id);
+                  if (item.id !== 'products') {
+                    setIsEditing(false);
+                  }
+                  setIsMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center space-x-4 px-5 py-3.5 rounded-xl text-left text-xs uppercase tracking-widest font-black transition-all relative group cursor-pointer ${
+                  isActive 
+                    ? 'bg-black/20 text-[#efe7e5]' 
+                    : 'text-[#efe7e5]/60 hover:text-[#efe7e5] hover:bg-white/5'
+                }`}
+              >
+                <item.icon size={16} className={`shrink-0 ${isActive ? 'text-[#efe7e5]' : 'text-[#efe7e5]/50 group-hover:text-[#efe7e5]'}`} />
+                <span>{item.label}</span>
+                {isActive && (
+                  <span className="w-1 h-5 bg-[#C5A880] rounded-full absolute right-5"></span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        {/* Sidebar Sign Out */}
+        <div className="p-6 border-t border-white/5">
+          <button 
+            onClick={() => {
+              localStorage.removeItem('adminToken');
+              localStorage.removeItem('adminUser');
+              localStorage.removeItem('userRole');
+              setAdminToken(null);
+              setUserRole('admin');
+            }}
+            className="w-full flex items-center space-x-4 px-5 py-3.5 rounded-xl text-left text-xs uppercase tracking-widest font-black text-[#efe7e5]/60 hover:text-red-300 hover:bg-red-500/10 transition-all cursor-pointer"
+          >
+            <LogOut size={16} className="shrink-0" />
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Desktop Static Sidebar (Only on desktop >= lg) */}
+      <aside className="hidden lg:flex w-72 shrink-0 bg-[#5d463c] text-[#efe7e5] flex-col justify-between border-r border-black/10 select-none h-screen sticky top-0">
+        {/* Brand Header */}
+        <div className="p-8 flex items-center justify-between">
           <div className="flex items-center space-x-3.5">
             <div className="w-10 h-10 rounded-xl bg-[#efe7e5] flex items-center justify-center shadow-sm">
               <span className="font-serif italic text-[#5d463c] font-black text-xl">Z</span>
@@ -312,7 +395,6 @@ function App() {
               setUserRole('admin');
             }}
             className="w-full flex items-center space-x-4 px-5 py-3.5 rounded-xl text-left text-xs uppercase tracking-widest font-black text-[#efe7e5]/60 hover:text-red-300 hover:bg-red-500/10 transition-all cursor-pointer"
-
           >
             <LogOut size={16} className="shrink-0" />
             <span>Sign Out</span>
@@ -321,10 +403,32 @@ function App() {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-y-auto">
+      <div className="lg:flex-1 flex flex-col min-w-0 w-full max-w-full min-h-screen relative overflow-x-hidden">
         
+        {/* Mobile Header Bar */}
+        <header className="lg:hidden bg-[#5d463c] text-[#efe7e5] px-4 py-3 flex items-center justify-between border-b border-black/10 shrink-0 sticky top-0 z-30 shadow-md w-full max-w-full overflow-hidden">
+          <div className="flex items-center space-x-2.5 min-w-0">
+            <button 
+              onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
+              className="p-1.5 sm:p-2 rounded-xl bg-white/10 hover:bg-white/20 text-[#efe7e5] cursor-pointer focus:outline-none transition-colors shrink-0"
+              aria-label="Toggle navigation menu"
+            >
+              {isMobileSidebarOpen ? <X size={18} /> : <Menu size={18} />}
+            </button>
+            <div className="flex items-center space-x-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-[#efe7e5] flex items-center justify-center shadow-xs shrink-0">
+                <span className="font-serif italic text-[#5d463c] font-black text-sm">Z</span>
+              </div>
+              <span className="font-serif font-bold text-xs sm:text-sm tracking-widest text-[#efe7e5] truncate">ZONIRAZ</span>
+            </div>
+          </div>
+          <span className="text-[8.5px] sm:text-[9px] uppercase tracking-wider sm:tracking-widest bg-white/10 px-2 sm:px-2.5 py-1 rounded-full font-bold text-[#efe7e5]/90 shrink-0 ml-2 truncate max-w-[110px] sm:max-w-none text-center">
+            {navMenuItems.find(i => i.id === activeMenu)?.label || 'Admin'}
+          </span>
+        </header>
+
         {/* Main Content Wrapper */}
-        <main className="flex-1 px-10 py-12 max-w-7xl w-full mx-auto">
+        <main className="flex-1 px-4 sm:px-8 py-4 sm:py-10 max-w-7xl w-full max-w-full mx-auto overflow-x-hidden">
           {isEditing && activeMenu === 'products' ? (
             <ProductEditor 
               productId={selectedProductId} 
