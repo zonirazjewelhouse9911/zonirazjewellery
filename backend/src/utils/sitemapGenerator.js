@@ -198,9 +198,21 @@ async function generateSitemap() {
       try {
         fs.writeFileSync(path.join(frontendDir, "sitemap-blogs.xml"), blogXml, "utf-8");
         fs.writeFileSync(path.join(frontendDir, "sitemap.xml"), xml, "utf-8");
-        console.log(`[Sitemap] Auto-updated sitemap-blogs.xml and sitemap.xml at frontend: ${frontendDir}`);
+        console.log(`[Sitemap] Auto-updated sitemap-blogs.xml and sitemap.xml at frontend/public: ${frontendDir}`);
       } catch (e) {
-        console.error("[Sitemap] Failed to write to frontend path:", e.message);
+        console.error("[Sitemap] Failed to write to frontend/public path:", e.message);
+      }
+    }
+
+    // Write sitemap-blogs.xml and sitemap.xml to frontend/dist (production build)
+    const frontendDistDir = path.join(__dirname, "../../../frontend/dist");
+    if (fs.existsSync(frontendDistDir)) {
+      try {
+        fs.writeFileSync(path.join(frontendDistDir, "sitemap-blogs.xml"), blogXml, "utf-8");
+        fs.writeFileSync(path.join(frontendDistDir, "sitemap.xml"), xml, "utf-8");
+        console.log(`[Sitemap] Auto-updated sitemap-blogs.xml and sitemap.xml at frontend/dist: ${frontendDistDir}`);
+      } catch (e) {
+        console.error("[Sitemap] Failed to write to frontend/dist path:", e.message);
       }
     }
 
@@ -212,7 +224,7 @@ async function generateSitemap() {
     try {
       fs.writeFileSync(path.join(backendPublicDir, "sitemap-blogs.xml"), blogXml, "utf-8");
       fs.writeFileSync(path.join(backendPublicDir, "sitemap.xml"), xml, "utf-8");
-      console.log(`[Sitemap] Auto-updated sitemap-blogs.xml and sitemap.xml at backend: ${backendPublicDir} (${uniqueBlogSlugs.size} blogs, ${sitemapUrls.length} total links)`);
+      console.log(`[Sitemap] Auto-updated sitemap-blogs.xml and sitemap.xml at backend/public: ${backendPublicDir} (${uniqueBlogSlugs.size} blogs, ${sitemapUrls.length} total links)`);
     } catch (e) {
       console.error("[Sitemap] Failed to write to backend path:", e.message);
     }

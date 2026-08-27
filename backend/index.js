@@ -78,9 +78,16 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 const { generateSitemap } = require('./src/utils/sitemapGenerator');
 
-// Dynamic sitemap generation route
-app.get('/sitemap.xml', async (req, res) => {
+// Dynamic sitemap generation routes
+app.get(['/sitemap.xml', '/sitemap-blogs.xml', '/sitemap-products.xml', '/sitemap-categories.xml', '/sitemap-static.xml'], async (req, res) => {
   try {
+    await generateSitemap();
+    const reqFile = req.path.substring(1);
+    const backendFilePath = path.join(__dirname, 'public', reqFile);
+    if (fs.existsSync(backendFilePath)) {
+      res.header('Content-Type', 'application/xml');
+      return res.status(200).sendFile(backendFilePath);
+    }
     const xml = await generateSitemap();
     res.header('Content-Type', 'application/xml');
     return res.status(200).send(xml);
