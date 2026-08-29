@@ -653,7 +653,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
 
             <div className="icon-actions">
 
-              {/* Profile Icon (Opens Login/Register Popup directly on click) */}
+              {/* Profile Icon */}
               <div className="nav-item-container nav-profile-wrapper">
                 <a
                   href="#profile"
@@ -662,7 +662,13 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                   title="My Profile"
                   onClick={(e) => {
                     e.preventDefault();
-                    setShowAuthModal(true);
+                    if (!user) {
+                      setShowAuthModal(true);
+                    } else {
+                      window.history.pushState(null, '', '/profile');
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                      window.dispatchEvent(new HashChangeEvent('hashchange'));
+                    }
                   }}
                   style={{ cursor: 'pointer' }}
                 >
@@ -685,7 +691,9 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                     if (!user) {
                       setShowAuthModal(true);
                     } else {
-                      window.location.hash = 'profile';
+                      window.history.pushState(null, '', '/profile#wallet');
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                      window.dispatchEvent(new HashChangeEvent('hashchange'));
                     }
                   }}
                   style={{ cursor: 'pointer', color: '#c8a359' }}
@@ -790,8 +798,9 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                   if (!user) {
                     setShowAuthModal(true);
                   } else {
-                    window.history.pushState(null, '', '/profile');
+                    window.history.pushState(null, '', '/profile#wallet');
                     window.dispatchEvent(new PopStateEvent('popstate'));
+                    window.dispatchEvent(new HashChangeEvent('hashchange'));
                   }
                 }}
               >
@@ -1118,7 +1127,17 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
               </button>
 
               <div className="drawer-quick-actions">
-                <a href="#profile" className="drawer-action-box" onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); if (!user) { setShowAuthModal(true); } else { window.location.hash = 'profile'; } }}>
+                <a href="#profile" className="drawer-action-box" onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  if (!user) {
+                    setShowAuthModal(true);
+                  } else {
+                    window.history.pushState(null, '', '/profile#wallet');
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                    window.dispatchEvent(new HashChangeEvent('hashchange'));
+                  }
+                }}>
                   <span className="box-icon">💰</span>
                   <span className="box-label">Wallet</span>
                 </a>
@@ -1143,7 +1162,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
             {/* Middle: Category list with arrows */}
             <div className="drawer-categories-list">
               {[
-                { name: "Gold Wallet (10+1 Scheme)", desc: "View accumulated 24K gold balance & passbook", hash: "/profile", img: null },
+                { name: "Gold Wallet (10+1 Scheme)", desc: "View accumulated 24K gold balance & passbook", hash: "/profile#wallet", img: null },
                 { name: "Rings", desc: "Browse by Style, Metals & Stones", hash: "/rings", img: silverRingsImg },
                 { name: "Earrings", desc: "Browse by Style, Price & More..", hash: "/earrings", img: dancingHoopsImg },
                 { name: "Bracelets & Bangles", desc: "Browse by Style, Metal & Kids", hash: "/bracelets", img: stretchableBanglesImg },
@@ -1158,7 +1177,21 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                   key={idx}
                   href={category.hash}
                   className="drawer-category-item"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    if (category.name.includes("Gold Wallet")) {
+                      e.preventDefault();
+                      setMobileMenuOpen(false);
+                      if (!user) {
+                        setShowAuthModal(true);
+                      } else {
+                        window.history.pushState(null, '', '/profile#wallet');
+                        window.dispatchEvent(new PopStateEvent('popstate'));
+                        window.dispatchEvent(new HashChangeEvent('hashchange'));
+                      }
+                    } else {
+                      setMobileMenuOpen(false);
+                    }
+                  }}
                 >
                   <div className="drawer-item-left-content">
                     {category.img && <img src={category.img} alt={category.name} className="drawer-category-icon-img" loading="lazy" decoding="async" width="24" height="24" />}

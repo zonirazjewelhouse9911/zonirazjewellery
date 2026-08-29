@@ -594,7 +594,8 @@ function AppContent() {
         const legacyHash = qIndex !== -1 ? fullHash.substring(0, qIndex) : fullHash;
         const hashSearch = qIndex !== -1 ? fullHash.substring(qIndex) : '';
 
-        if (legacyHash && !legacyHash.startsWith('my-') && !legacyHash.includes('=')) {
+        const subTabHashes = ['wallet', 'orders', 'addresses', 'profile', 'wallet-passbook'];
+        if (legacyHash && !legacyHash.startsWith('my-') && !legacyHash.includes('=') && !subTabHashes.includes(legacyHash.toLowerCase())) {
           const cleanPath = (legacyHash.startsWith('/') ? legacyHash : '/' + legacyHash) + hashSearch;
           window.history.replaceState(null, '', cleanPath);
         }
@@ -654,7 +655,7 @@ function AppContent() {
       } else if (path === '/cart') {
         setCurrentView('cart');
         restoreOrScrollTop();
-      } else if (path === '/profile') {
+      } else if (path === '/profile' || path === '/wallet' || path === '/profile/wallet') {
         setCurrentView('profile');
         restoreOrScrollTop();
       } else if (path === '/checkout') {

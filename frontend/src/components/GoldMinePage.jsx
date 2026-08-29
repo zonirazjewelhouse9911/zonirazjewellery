@@ -791,7 +791,11 @@ export default function GoldMinePage() {
                 </div>
                 <div>
                   <button
-                    onClick={() => window.location.hash = 'profile#wallet'}
+                    onClick={() => {
+                      window.history.pushState(null, '', '/profile#wallet');
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                      window.dispatchEvent(new HashChangeEvent('hashchange'));
+                    }}
                     style={{
                       background: '#c8a359',
                       color: '#1e2d42',

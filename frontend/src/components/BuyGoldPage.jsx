@@ -268,7 +268,12 @@ export default function BuyGoldPage({ onBack }) {
 
         {/* Quick Links */}
         <div className="buygold-quick-links">
-          <a href="#profile" className="quick-lnk">Check Purchase History →</a>
+          <a href="/profile#wallet" className="quick-lnk" onClick={(e) => {
+            e.preventDefault();
+            window.history.pushState(null, '', '/profile#wallet');
+            window.dispatchEvent(new PopStateEvent('popstate'));
+            window.dispatchEvent(new HashChangeEvent('hashchange'));
+          }}>Check Purchase History →</a>
           <a href="#sell-gold" className="quick-lnk">Sell Old Gold →</a>
         </div>
 

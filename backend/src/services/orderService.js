@@ -32,7 +32,7 @@ class OrderService {
       throw new Error('Order not found in database.');
     }
 
-    order.orderStatus = status;
+    order.orderStatus = String(status).toLowerCase();
     return await order.save();
   }
 
@@ -50,7 +50,7 @@ class OrderService {
       throw new Error('Order not found in database.');
     }
 
-    order.paymentStatus = status;
+    order.paymentStatus = String(status).toLowerCase();
     return await order.save();
   }
 }

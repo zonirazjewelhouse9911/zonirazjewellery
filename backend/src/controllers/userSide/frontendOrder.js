@@ -8,6 +8,8 @@ const mapToClientOrder = (mongoOrder) => ({
     grandTotal: mongoOrder.totalAmount,
     deliveryMethod: 'delivery',
     digiGoldRedeemedAmount: mongoOrder.digiGoldRedeemedAmount || 0,
+    orderStatus: mongoOrder.orderStatus || 'placed',
+    paymentStatus: mongoOrder.paymentStatus || 'pending',
     OrderItems: (mongoOrder.items || []).map((item, idx) => ({
         id: item._id || idx,
         productId: item.productId,

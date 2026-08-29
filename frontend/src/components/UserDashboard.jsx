@@ -3,12 +3,12 @@ import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 
 export default function UserDashboard() {
-  const { user, token, logout, updateProfile, deleteAccount } = useContext(AuthContext);
+  const { user, token, logout, updateProfile, deleteAccount, setIsAuthModalOpen } = useContext(AuthContext);
   const [activeTab, setActiveTab] = useState(() => {
-    const hash = window.location.hash.toLowerCase();
-    if (hash.includes('wallet')) return 'wallet';
-    if (hash.includes('order')) return 'orders';
-    if (hash.includes('address')) return 'addresses';
+    const target = (window.location.hash + window.location.pathname).toLowerCase();
+    if (target.includes('wallet')) return 'wallet';
+    if (target.includes('order')) return 'orders';
+    if (target.includes('address')) return 'addresses';
     return 'profile';
   }); // 'profile' | 'wallet' | 'addresses' | 'orders'
   const [profileForm, setProfileForm] = useState({ firstName: '', lastName: '', email: '', mobile: '' });
@@ -42,8 +42,8 @@ export default function UserDashboard() {
   }, [user]);
 
   // Fetch Addresses
-  const fetchAddresses = async () => {
-    setLoadingAddresses(true);
+  const fetchAddresses = async (silent = false) => {
+    if (!silent && addresses.length === 0) setLoadingAddresses(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/userSide/user_address_manager`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -73,8 +73,8 @@ export default function UserDashboard() {
   };
 
   // Fetch Orders
-  const fetchOrders = async () => {
-    setLoadingOrders(true);
+  const fetchOrders = async (silent = false) => {
+    if (!silent && orders.length === 0) setLoadingOrders(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/orders`, {
         headers: { 'Authorization': `Bearer ${token}` }
@@ -89,10 +89,10 @@ export default function UserDashboard() {
   };
 
   // Fetch Wallet
-  const fetchWallet = async () => {
+  const fetchWallet = async (silent = false) => {
     const userEmail = user?.email;
     if (!userEmail) return;
-    setLoadingWallet(true);
+    if (!silent && !walletData) setLoadingWallet(true);
     try {
       const res = await fetch(`${API_BASE_URL}/api/goldmine/wallet?email=${encodeURIComponent(userEmail)}`);
       const data = await res.json();
@@ -107,10 +107,29 @@ export default function UserDashboard() {
   };
 
   useEffect(() => {
+    const syncTabFromHash = () => {
+      const target = (window.location.hash + window.location.pathname).toLowerCase();
+      if (target.includes('wallet')) setActiveTab('wallet');
+      else if (target.includes('order')) setActiveTab('orders');
+      else if (target.includes('address')) setActiveTab('addresses');
+      else if (target.includes('profile')) setActiveTab('profile');
+    };
+
+    syncTabFromHash();
+
+    window.addEventListener('hashchange', syncTabFromHash);
+    window.addEventListener('popstate', syncTabFromHash);
+    return () => {
+      window.removeEventListener('hashchange', syncTabFromHash);
+      window.removeEventListener('popstate', syncTabFromHash);
+    };
+  }, []);
+
+  useEffect(() => {
     if (user) {
-      if (activeTab === 'addresses') fetchAddresses();
-      if (activeTab === 'orders') fetchOrders();
-      if (activeTab === 'wallet') fetchWallet();
+      if (activeTab === 'addresses') fetchAddresses(false);
+      if (activeTab === 'orders') fetchOrders(false);
+      if (activeTab === 'wallet') fetchWallet(false);
     }
   }, [activeTab, user]);
 
@@ -200,14 +219,26 @@ export default function UserDashboard() {
     return (
       <div style={{ textAlign: 'center', padding: '80px 24px', backgroundColor: '#efe7e5', minHeight: '60vh' }}>
         <h2 style={{ fontFamily: "'Playfair Display', serif", color: '#2b221d' }}>Please Login to view Dashboard</h2>
-        <button 
-          onClick={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new Event('popstate')); }} 
-          style={{
-            backgroundColor: '#2b221d', color: '#fff', padding: '12px 30px', borderRadius: '30px', border: 'none', cursor: 'pointer', marginTop: '20px', fontFamily: "'Montserrat', sans-serif"
-          }}
-        >
-          Go To Home
-        </button>
+        <div style={{ display: 'flex', gap: '15px', justifyContent: 'center', marginTop: '20px' }}>
+          <button 
+            onClick={() => {
+              if (setIsAuthModalOpen) setIsAuthModalOpen(true);
+            }} 
+            style={{
+              backgroundColor: '#c5a880', color: '#fff', padding: '12px 30px', borderRadius: '30px', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif", fontWeight: '600'
+            }}
+          >
+            Log In / Sign Up
+          </button>
+          <button 
+            onClick={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new Event('popstate')); }} 
+            style={{
+              backgroundColor: '#2b221d', color: '#fff', padding: '12px 30px', borderRadius: '30px', border: 'none', cursor: 'pointer', fontFamily: "'Montserrat', sans-serif"
+            }}
+          >
+            Go To Home
+          </button>
+        </div>
       </div>
     );
   }
@@ -228,10 +259,10 @@ export default function UserDashboard() {
         <div className="dashboard-main-grid" style={{ gap: '30px', alignItems: 'start', gridTemplateColumns: undefined }}>
           {/* SIDEBAR TABS */}
           <div style={{ backgroundColor: '#fff', borderRadius: '20px', border: '1px solid #dbcfcb', overflow: 'hidden', boxShadow: '0 4px 20px rgba(0,0,0,0.02)' }}>
-            <button onClick={() => setActiveTab('profile')} style={{ ...tabBtnStyle, ...(activeTab === 'profile' ? activeTabStyle : {}) }}>👤 My Profile</button>
-            <button onClick={() => setActiveTab('wallet')} style={{ ...tabBtnStyle, ...(activeTab === 'wallet' ? activeTabStyle : {}), backgroundColor: activeTab === 'wallet' ? '#2b221d' : '#fffdf7', color: activeTab === 'wallet' ? '#ffffff' : '#a37b34', fontWeight: '600' }}>✨ Gold Wallet</button>
-            <button onClick={() => setActiveTab('addresses')} style={{ ...tabBtnStyle, ...(activeTab === 'addresses' ? activeTabStyle : {}) }}>📍 Saved Addresses</button>
-            <button onClick={() => setActiveTab('orders')} style={{ ...tabBtnStyle, ...(activeTab === 'orders' ? activeTabStyle : {}) }}>📦 Order History</button>
+            <button onClick={() => { setActiveTab('profile'); window.location.hash = 'profile'; }} style={{ ...tabBtnStyle, ...(activeTab === 'profile' ? activeTabStyle : {}) }}>👤 My Profile</button>
+            <button onClick={() => { setActiveTab('wallet'); window.location.hash = 'wallet'; }} style={{ ...tabBtnStyle, ...(activeTab === 'wallet' ? activeTabStyle : {}), backgroundColor: activeTab === 'wallet' ? '#2b221d' : '#fffdf7', color: activeTab === 'wallet' ? '#ffffff' : '#a37b34', fontWeight: '600' }}>✨ Gold Wallet</button>
+            <button onClick={() => { setActiveTab('addresses'); window.location.hash = 'addresses'; }} style={{ ...tabBtnStyle, ...(activeTab === 'addresses' ? activeTabStyle : {}) }}>📍 Saved Addresses</button>
+            <button onClick={() => { setActiveTab('orders'); window.location.hash = 'orders'; }} style={{ ...tabBtnStyle, ...(activeTab === 'orders' ? activeTabStyle : {}) }}>📦 Order History</button>
             <button onClick={logout} style={{ ...tabBtnStyle, color: '#ff4d4f' }}>🚪 Secure Logout</button>
             <button onClick={handleDeleteAccount} style={{ ...tabBtnStyle, color: '#8c7365', fontSize: '11px', borderTop: '1px solid #f2ebe8' }}>Delete Account</button>
           </div>
@@ -572,7 +603,28 @@ export default function UserDashboard() {
             {/* ORDER HISTORY TAB */}
             {activeTab === 'orders' && (
               <div>
-                <h2 style={panelTitleStyle}>Your Order History</h2>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '10px' }}>
+                  <h2 style={{ ...panelTitleStyle, marginBottom: 0 }}>Your Order History</h2>
+                  <button
+                    onClick={() => fetchOrders(true)}
+                    disabled={loadingOrders}
+                    style={{
+                      backgroundColor: '#faf7f5',
+                      border: '1px solid #d4c5bd',
+                      color: '#2b221d',
+                      padding: '6px 16px',
+                      borderRadius: '20px',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px'
+                    }}
+                  >
+                    🔄 {loadingOrders ? 'Refreshing...' : 'Refresh Status'}
+                  </button>
+                </div>
 
                 {loadingOrders ? (
                   <p>Loading your orders...</p>
@@ -583,14 +635,42 @@ export default function UserDashboard() {
                     {orders.map(order => (
                       <div key={order.id} style={{ border: '1px solid #dbcfcb', borderRadius: '16px', overflow: 'hidden' }}>
                         {/* Order Header Summary */}
-                        <div style={{ backgroundColor: '#faf7f5', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #dbcfcb', fontSize: '13px', color: '#746380' }}>
+                        <div style={{ backgroundColor: '#faf7f5', padding: '16px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #dbcfcb', fontSize: '13px', color: '#746380', flexWrap: 'wrap', gap: '10px' }}>
                           <div>
                             <span>ORDER ID: <strong>{order.orderId}</strong></span>
-                            <span style={{ margin: '0 15px', color: '#d4c5bd' }}>|</span>
-                            <span>DATE: <strong>{new Date(order.createdAt).toLocaleDateString()}</strong></span>
+                            <span style={{ margin: '0 12px', color: '#d4c5bd' }}>|</span>
+                            <span>DATE: <strong>{new Date(order.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' })}</strong></span>
                           </div>
-                          <div>
-                            <span>TOTAL AMOUNT: <strong style={{ color: '#2b221d' }}>₹{parseFloat(order.grandTotal).toLocaleString('en-IN')}</strong></span>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+                            {/* Payment Status Badge */}
+                            <span style={{
+                              fontSize: '11px',
+                              fontWeight: '600',
+                              padding: '4px 10px',
+                              borderRadius: '12px',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                              backgroundColor: (order.paymentStatus || '').toLowerCase() === 'paid' ? '#e6f4ea' : (order.paymentStatus || '').toLowerCase() === 'failed' ? '#fce8e6' : '#fef7e0',
+                              color: (order.paymentStatus || '').toLowerCase() === 'paid' ? '#137333' : (order.paymentStatus || '').toLowerCase() === 'failed' ? '#c5221f' : '#b06000'
+                            }}>
+                              Payment: {order.paymentStatus || 'pending'}
+                            </span>
+
+                            {/* Order Delivery Status Badge */}
+                            <span style={{
+                              fontSize: '11px',
+                              fontWeight: '600',
+                              padding: '4px 10px',
+                              borderRadius: '12px',
+                              textTransform: 'uppercase',
+                              letterSpacing: '0.5px',
+                              backgroundColor: (order.orderStatus || '').toLowerCase() === 'delivered' ? '#e6f4ea' : (order.orderStatus || '').toLowerCase() === 'cancelled' ? '#fce8e6' : (order.orderStatus || '').toLowerCase() === 'shipped' ? '#e8f0fe' : '#fff4e5',
+                              color: (order.orderStatus || '').toLowerCase() === 'delivered' ? '#137333' : (order.orderStatus || '').toLowerCase() === 'cancelled' ? '#c5221f' : (order.orderStatus || '').toLowerCase() === 'shipped' ? '#1a73e8' : '#b06000'
+                            }}>
+                              Status: {order.orderStatus || 'placed'}
+                            </span>
+
+                            <span>TOTAL: <strong style={{ color: '#2b221d' }}>₹{parseFloat(order.grandTotal).toLocaleString('en-IN')}</strong></span>
                           </div>
                         </div>
 
@@ -634,25 +714,36 @@ export default function UserDashboard() {
                           {trackingOrderId === order.id && (
                             <div style={{ marginTop: '24px', borderTop: '1px dashed #d4c5bd', paddingTop: '20px' }}>
                               <h4 style={{ fontFamily: "'Playfair Display', serif", fontSize: '15px', color: '#2b221d', marginBottom: '15px' }}>Delivery Status Tracker</h4>
-                              <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', padding: '0 10px' }}>
-                                {/* Track Steps */}
-                                <div style={trackStepStyle(true)}>
-                                  <div style={trackDotStyle(true)}>✓</div>
-                                  <div style={trackLabelStyle}>Confirmed</div>
+                              {(order.orderStatus || '').toLowerCase() === 'cancelled' ? (
+                                <div style={{ padding: '12px 16px', backgroundColor: '#fce8e6', color: '#c5221f', borderRadius: '8px', fontSize: '13px', fontWeight: '600' }}>
+                                  🚫 This order has been cancelled by Zoniraz Support.
                                 </div>
-                                <div style={trackStepStyle(true)}>
-                                  <div style={trackDotStyle(true)}>✓</div>
-                                  <div style={trackLabelStyle}>Packed</div>
+                              ) : (
+                                <div style={{ display: 'flex', justifyContent: 'space-between', position: 'relative', padding: '0 10px' }}>
+                                  <div style={trackStepStyle(true)}>
+                                    <div style={trackDotStyle(true)}>✓</div>
+                                    <div style={trackLabelStyle}>Placed</div>
+                                  </div>
+                                  <div style={trackStepStyle(['processing', 'shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()))}>
+                                    <div style={trackDotStyle(['processing', 'shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()))}>
+                                      {['processing', 'shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()) ? '✓' : '2'}
+                                    </div>
+                                    <div style={trackLabelStyle}>Processing</div>
+                                  </div>
+                                  <div style={trackStepStyle(['shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()))}>
+                                    <div style={trackDotStyle(['shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()))}>
+                                      {['shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()) ? '✓' : '3'}
+                                    </div>
+                                    <div style={trackLabelStyle}>Shipped</div>
+                                  </div>
+                                  <div style={trackStepStyle((order.orderStatus || '').toLowerCase() === 'delivered')}>
+                                    <div style={trackDotStyle((order.orderStatus || '').toLowerCase() === 'delivered')}>
+                                      {(order.orderStatus || '').toLowerCase() === 'delivered' ? '✓' : '4'}
+                                    </div>
+                                    <div style={trackLabelStyle}>Delivered</div>
+                                  </div>
                                 </div>
-                                <div style={trackStepStyle(false)}>
-                                  <div style={trackDotStyle(false)}>3</div>
-                                  <div style={trackLabelStyle}>Shipped</div>
-                                </div>
-                                <div style={trackStepStyle(false)}>
-                                  <div style={trackDotStyle(false)}>4</div>
-                                  <div style={trackLabelStyle}>Delivered</div>
-                                </div>
-                              </div>
+                              )}
                             </div>
                           )}
                         </div>
