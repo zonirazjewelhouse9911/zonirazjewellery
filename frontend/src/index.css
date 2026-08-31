@@ -4953,22 +4953,22 @@ button {
 /* Floating Contact Widgets */
 .floating-contact-widgets {
   position: fixed;
-  bottom: 30px;
-  right: 30px;
+  bottom: 20px;
+  right: 20px;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 10px;
   z-index: 9999;
 }
 
 .floating-widget {
-  width: 55px;
-  height: 55px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   color: #ffffff;
   text-decoration: none;
@@ -4977,8 +4977,8 @@ button {
 }
 
 .floating-widget svg {
-  width: 26px;
-  height: 26px;
+  width: 20px;
+  height: 20px;
   fill: currentColor;
 }
 
@@ -4988,8 +4988,8 @@ button {
 
 .whatsapp-widget:hover {
   background-color: #20ba5a;
-  transform: translateY(-5px) scale(1.08);
-  box-shadow: 0 8px 25px rgba(37, 211, 102, 0.35);
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.35);
 }
 
 .call-widget {
@@ -4998,19 +4998,19 @@ button {
 
 .call-widget:hover {
   background-color: #b59870;
-  transform: translateY(-5px) scale(1.08);
-  box-shadow: 0 8px 25px rgba(197, 168, 128, 0.35);
+  transform: translateY(-3px) scale(1.06);
+  box-shadow: 0 6px 20px rgba(197, 168, 128, 0.35);
 }
 
 /* Tooltip on hover */
 .floating-widget::before {
   content: attr(data-tooltip);
   position: absolute;
-  right: 70px;
+  right: 54px;
   background-color: #2b221d;
   color: #efe7e5;
-  padding: 6px 12px;
-  font-size: 12px;
+  padding: 5px 10px;
+  font-size: 11px;
   font-weight: 500;
   border-radius: 6px;
   white-space: nowrap;
@@ -5028,19 +5028,19 @@ button {
 
 @media (max-width: 768px) {
   .floating-contact-widgets {
-    bottom: 20px;
-    right: 20px;
-    gap: 12px;
+    bottom: 15px;
+    right: 15px;
+    gap: 8px;
   }
 
   .floating-widget {
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
   }
 
   .floating-widget svg {
-    width: 22px;
-    height: 22px;
+    width: 17px;
+    height: 17px;
   }
 
   .floating-widget::before {

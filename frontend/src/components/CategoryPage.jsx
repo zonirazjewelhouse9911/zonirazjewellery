@@ -1220,29 +1220,39 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
 
         .floating-scroll-top {
           position: fixed;
-          bottom: 95px;
-          right: 30px;
-          width: 44px;
-          height: 44px;
+          bottom: 130px;
+          right: 22px;
+          width: 38px;
+          height: 38px;
           border-radius: 50%;
-          background-color: #fff;
+          background-color: #ffffff;
           border: 1px solid #d4c5bd;
           color: #634d40;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
           cursor: pointer;
-          z-index: 999;
+          z-index: 9999;
           transition: all 0.3s;
           opacity: 0;
           transform: translateY(20px);
           pointer-events: none;
+          font-size: 13px;
         }
         .floating-scroll-top.show {
           opacity: 1;
           transform: translateY(0);
           pointer-events: auto;
+        }
+        @media (max-width: 768px) {
+          .floating-scroll-top {
+            bottom: 105px;
+            right: 16px;
+            width: 34px;
+            height: 34px;
+            font-size: 11px;
+          }
         }
 
         .modal-overlay {
