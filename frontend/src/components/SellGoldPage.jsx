@@ -57,14 +57,25 @@ export default function SellGoldPage({ onBack }) {
     }
   ];
 
+  const handleBackToHome = () => {
+    if (typeof onBack === 'function') {
+      onBack();
+    } else {
+      window.history.pushState(null, '', '/');
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+  };
+
   return (
     <div className="sellgold-page-container">
       {/* Back button & Breadcrumb */}
       <div className="sellgold-header-nav">
-        <button className="sellgold-back-btn" onClick={onBack || (() => window.location.hash = '')}>
+        <button className="sellgold-back-btn" onClick={handleBackToHome}>
           <ArrowLeft size={16} /> Back to Home
         </button>
-        <span className="sellgold-breadcrumb">Home / Physical Gold / Old Gold Exchange</span>
+        <span className="sellgold-breadcrumb">
+          <span style={{ cursor: 'pointer' }} onClick={handleBackToHome}>Home</span> / Physical Gold / Old Gold Exchange
+        </span>
       </div>
 
       {/* Gold Sub Header Nav Bar */}

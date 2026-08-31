@@ -1151,9 +1151,9 @@ function AppContent() {
       ) : currentView === 'checkout' ? (
         <CheckoutPage />
       ) : currentView === 'sell-gold' ? (
-        <SellGoldPage onBack={() => { window.location.hash = ''; }} />
+        <SellGoldPage onBack={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }} />
       ) : currentView === 'buy-gold' ? (
-        <BuyGoldPage onBack={() => { window.location.hash = ''; }} />
+        <BuyGoldPage onBack={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }} />
       ) : currentView === 'gold-mine' ? (
         <GoldMinePage />
       ) : currentView === 'loose-stones' ? (

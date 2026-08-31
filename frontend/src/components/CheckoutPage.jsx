@@ -388,7 +388,7 @@ export default function CheckoutPage() {
       <div style={{ textAlign: 'center', padding: '80px 24px', backgroundColor: '#efe7e5', minHeight: '60vh' }}>
         <h2 style={{ fontFamily: "'Playfair Display', serif", color: '#2b221d' }}>Your Shopping Cart is Empty</h2>
         <p style={{ color: '#746380', fontSize: '14px', marginTop: '10px' }}>Add beautiful items to checkout.</p>
-        <button onClick={() => window.location.hash = ''} style={btnStyle}>Go Shopping</button>
+        <button onClick={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }} style={btnStyle}>Go Shopping</button>
       </div>
     );
   }
@@ -937,8 +937,8 @@ export default function CheckoutPage() {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
-                  <button onClick={() => window.location.hash = ''} style={btnStyle}>CONTINUE SHOPPING</button>
-                  <button onClick={() => window.location.hash = 'profile'} style={{ ...btnStyle, backgroundColor: '#c5a880' }}>VIEW ORDER HISTORY</button>
+                  <button onClick={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }} style={btnStyle}>CONTINUE SHOPPING</button>
+                  <button onClick={() => { window.history.pushState(null, '', '/profile'); window.dispatchEvent(new PopStateEvent('popstate')); }} style={{ ...btnStyle, backgroundColor: '#c5a880' }}>VIEW ORDER HISTORY</button>
                 </div>
               </div>
             )}

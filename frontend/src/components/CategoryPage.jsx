@@ -278,7 +278,6 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   useEffect(() => {
     const handleURLChange = (e) => {
       const params = parseQueryParams();
-      console.log('CategoryPage URLChange Params:', params);
       setQueryParams(params);
       if (e && e.type === 'popstate') {
         const currentKey = (window.location.pathname + window.location.search).toLowerCase();

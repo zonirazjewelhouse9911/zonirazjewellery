@@ -580,7 +580,7 @@ export default function DeliveryPage({ initialCategory = 'delivery' }) {
               <h4>Need more help?</h4>
               <div className="need-help-phone">97848 36080</div>
               <div className="need-help-hours">10 AM – 8 PM (Mon–Sat)</div>
-              <button className="contact-support-btn" onClick={() => { window.location.hash = 'contact'; }}>
+              <button className="contact-support-btn" onClick={() => { window.history.pushState(null, '', '/contact'); window.dispatchEvent(new PopStateEvent('popstate')); }}>
                 Contact Us
               </button>
             </div>
@@ -618,7 +618,7 @@ export default function DeliveryPage({ initialCategory = 'delivery' }) {
             <div className="still-questions-block">
               <h4>Still have questions?</h4>
               <p>Our support team is available to help you with your queries about our collections and services.</p>
-              <button className="contact-support-btn" onClick={() => { window.location.hash = 'contact'; }}>
+              <button className="contact-support-btn" onClick={() => { window.history.pushState(null, '', '/contact'); window.dispatchEvent(new PopStateEvent('popstate')); }}>
                 Contact Support
               </button>
             </div>

@@ -26,8 +26,8 @@ import {
   PhoneOff,
   ChevronRight
 } from 'lucide-react';
-const ringVideo = '';
-const banglesVideo = '';
+import ringVideo from '../assets/videos/WhatsApp Video 2026-08-31 at 4.41.25 PM.mp4';
+const banglesVideo = ringVideo;
 
 // Lifestyle / model images from Unsplash (free to use)
 const lifestyleImages = [
@@ -2884,6 +2884,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 src={isRing ? ringVideo : banglesVideo}
                 autoPlay
                 loop
+                controls
                 playsInline
                 style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
               >
