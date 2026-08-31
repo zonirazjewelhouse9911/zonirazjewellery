@@ -33,6 +33,9 @@ import { products } from '../data/products';
 
 import goldNecklaceSilkImg from '../assets/gold-necklace-silk.png';
 import heartFusionRingImg from '../assets/heart_fusion_ring.png';
+import infinityDiamondRingImg from '../assets/infinity_diamond_ring.png';
+import goldEarringsBannerImg from '../assets/gold-earrings-banner.jpg';
+import goldZodiacBannerImg from '../assets/gold-zodiac-banner.jpg';
 
 const fallbackCategories = [
   { categoryName: 'Rings', products: [] },
@@ -54,14 +57,14 @@ function getCategoryBanners(categoryName) {
   if (cat.includes('pendant') || cat.includes('necklace')) {
     return [goldNecklaceSilkImg, infinityNecklacesImg];
   }
-  if (cat.includes('ring')) {
-    return [anekaImg, heartFusionRingImg];
-  }
   if (cat.includes('earring')) {
-    return [dancingHoopsImg, switchEarringsImg];
+    return [goldEarringsBannerImg, dancingHoopsImg];
+  }
+  if (cat.includes('ring')) {
+    return [heartFusionRingImg, infinityDiamondRingImg];
   }
   if (cat.includes('solitaire')) {
-    return [solitaireSetsImg, anekaImg];
+    return [solitaireSetsImg, heartFusionRingImg];
   }
   if (cat.includes('chain')) {
     return [goldNecklaceSilkImg, layeredNecklacesImg];
@@ -76,7 +79,7 @@ function getCategoryBanners(categoryName) {
     return [stretchableBanglesImg, watchCharmsImg];
   }
   if (cat.includes('zodic') || cat.includes('zodiac')) {
-    return [postcardsBannerImg, wearYourWinsImg];
+    return [goldZodiacBannerImg, wearYourWinsImg];
   }
 
   // Fallbacks
@@ -1179,8 +1182,8 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
             <div className="drawer-categories-list">
               {[
                 { name: "Gold Wallet (10+1 Scheme)", desc: "View accumulated 24K gold balance & passbook", hash: "/profile#wallet", img: null },
-                { name: "Rings", desc: "Browse by Style, Metals & Stones", hash: "/rings", img: anekaImg },
-                { name: "Earrings", desc: "Browse by Style, Price & More..", hash: "/earrings", img: dancingHoopsImg },
+                { name: "Rings", desc: "Browse by Style, Metals & Stones", hash: "/rings", img: heartFusionRingImg },
+                { name: "Earrings", desc: "Browse by Style, Price & More..", hash: "/earrings", img: goldEarringsBannerImg },
                 { name: "Bracelets & Bangles", desc: "Browse by Style, Metal & Kids", hash: "/bracelets", img: stretchableBanglesImg },
                 { name: "Solitaires", desc: "For Engagement, Anniversaries & Milestones", hash: "/solitaires", img: solitaireSetsImg },
                 { name: "Mangalsutras", desc: "Browse by neckwear, bracelets & more", hash: "/mangalsutras", img: trendyMangalsutrasImg },

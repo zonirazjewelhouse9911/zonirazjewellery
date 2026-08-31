@@ -4,6 +4,7 @@ import heartFusionRingImg from '../assets/heart_fusion_ring.png';
 import lotusBypassRingImg from '../assets/lotus_bypass_ring.png';
 
 // Import assets for new categories
+import goldEarringsBannerImg from '../assets/gold-earrings-banner.jpg';
 import switchEarringsImg from '../assets/switch-earrings.png';
 import dancingHoopsImg from '../assets/dancing-hoops.png';
 import silverEarringsImg from '../assets/silver-earrings.png';
@@ -198,8 +199,8 @@ export const products = [
     name: "Dancing Hoops Gold Earrings",
     price: 28900,
     originalPrice: 35000,
-    image: dancingHoopsImg,
-    images: [dancingHoopsImg, silverEarringsImg, switchEarringsImg],
+    image: goldEarringsBannerImg,
+    images: [goldEarringsBannerImg, dancingHoopsImg, switchEarringsImg],
     video: "https://player.vimeo.com/external/435674703.sd.mp4?s=7f32e36780c85c27bf49b015112e4f014ec471bc&profile_id=139&oauth2_token_id=57447761",
     size: 12,
     material: "Gold",
