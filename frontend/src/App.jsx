@@ -975,7 +975,7 @@ function AppContent() {
           "name": "Zoniraz Jewel House",
           "image": "https://zoniraz.com/zoni1.png",
           "telephone": "+91 97848 36060",
-          "email": "info@zoniraz.com",
+          "email": "zonirazjewelhouse@gmail.com",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "Tilak Market, 7, Hanuman Burj, Kabir Colony",

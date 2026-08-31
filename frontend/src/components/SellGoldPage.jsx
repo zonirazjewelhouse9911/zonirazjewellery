@@ -142,7 +142,7 @@ export default function SellGoldPage({ onBack }) {
                 <Mail className="detail-icon" size={20} />
                 <div>
                   <strong>Jewellery Sales Enquiry</strong>
-                  <p><a href="mailto:info@zoniraz.com">info@zoniraz.com</a></p>
+                  <p><a href="mailto:zonirazjewelhouse@gmail.com">zonirazjewelhouse@gmail.com</a></p>
                 </div>
               </div>
 

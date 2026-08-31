@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import banner1 from '../assets/poster for zoniraz.jpg.jpeg';
 import banner2 from '../assets/zZONIRAZ 1.png';
 
 const slides = [
   { id: 1, type: 'image', src: banner2 },
-  { id: 3, type: 'image', src: banner1 },
   { id: 4, type: 'custom' },
 ];
 

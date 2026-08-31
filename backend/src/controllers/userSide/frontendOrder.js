@@ -55,19 +55,46 @@ exports.createOrder = async (req, res) => {
             }
         }));
 
+        let finalShippingAddress = {};
+
+        if (shippingAddress && shippingAddress.addressLine) {
+            finalShippingAddress = {
+                fullName: shippingAddress.fullName || req.user.user_name || req.user.name || 'Customer',
+                phone: shippingAddress.phone || req.user.phone_number || req.user.phone || '0000000000',
+                addressLine: shippingAddress.addressLine,
+                city: shippingAddress.city || 'City',
+                state: shippingAddress.state || 'State',
+                pincode: shippingAddress.pincode || '000000',
+                country: shippingAddress.country || 'India'
+            };
+        } else if (storeDetails) {
+            finalShippingAddress = {
+                fullName: req.user.user_name || req.user.name || 'Store Pickup Customer',
+                phone: req.user.phone_number || req.user.phone || '0000000000',
+                addressLine: storeDetails.address ? `Store Pickup: ${storeDetails.name} (${storeDetails.address})` : 'Pickup from Store',
+                city: storeDetails.name || 'Store Pickup',
+                state: storeDetails.pickupDate ? `Date: ${storeDetails.pickupDate}` : 'Pickup',
+                pincode: storeDetails.pickupTime ? `Time: ${storeDetails.pickupTime}` : '000000',
+                country: 'India'
+            };
+        } else {
+            finalShippingAddress = {
+                fullName: req.user.user_name || req.user.name || 'Customer',
+                phone: req.user.phone_number || req.user.phone || '0000000000',
+                addressLine: 'Address Not Provided',
+                city: 'N/A',
+                state: 'N/A',
+                pincode: '000000',
+                country: 'India'
+            };
+        }
+
         const newOrder = new Order({
             userId: user_id,
             items: orderItems,
             totalAmount: grandTotal,
             digiGoldRedeemedAmount: Number(walletAmountUsed) || 0,
-            shippingAddress: {
-                fullName: req.user.user_name || req.user.name || 'User',
-                phone: req.user.phone_number || req.user.phone || '0000000000',
-                addressLine: storeDetails?.address || 'Pickup from Store',
-                city: storeDetails?.name || 'Pickup',
-                state: 'State',
-                pincode: '000000'
-            },
+            shippingAddress: finalShippingAddress,
             paymentStatus: 'paid', // Simulate success checkout
             orderStatus: 'placed'
         });

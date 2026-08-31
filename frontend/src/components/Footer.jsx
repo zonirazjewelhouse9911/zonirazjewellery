@@ -52,9 +52,9 @@ export default function Footer() {
             <li style={{ display: 'flex', gap: '10px', alignItems: 'center', listStyle: 'none' }}>
               {/* Mail Button */}
               <a
-                href="mailto:zonirazjewelhose@gmail.com"
-                onClick={(e) => { e.stopPropagation(); window.location.href = 'mailto:zonirazjewelhose@gmail.com'; }}
-                title="zonirazjewelhose@gmail.com"
+                href="mailto:zonirazjewelhouse@gmail.com"
+                onClick={(e) => { e.stopPropagation(); window.location.href = 'mailto:zonirazjewelhouse@gmail.com'; }}
+                title="zonirazjewelhouse@gmail.com"
                 aria-label="Send email to Zoniraz Jewel House"
                 style={{
                   display: 'inline-flex',

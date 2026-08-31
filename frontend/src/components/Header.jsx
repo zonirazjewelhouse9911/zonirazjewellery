@@ -31,6 +31,9 @@ import anekaImg from '../assets/aneka.png';
 import giftsForMomImg from '../assets/gifts-for-mom.png';
 import { products } from '../data/products';
 
+import goldNecklaceSilkImg from '../assets/gold-necklace-silk.png';
+import heartFusionRingImg from '../assets/heart_fusion_ring.png';
+
 const fallbackCategories = [
   { categoryName: 'Rings', products: [] },
   { categoryName: 'Earrings', products: [] },
@@ -45,20 +48,23 @@ const fallbackCategories = [
 function getCategoryBanners(categoryName) {
   const cat = String(categoryName || '').toLowerCase();
 
+  if (cat.includes('silver')) {
+    return [silverEarringsImg, silverNecklacesImg];
+  }
   if (cat.includes('pendant') || cat.includes('necklace')) {
-    return [layeredNecklacesImg, infinityNecklacesImg];
+    return [goldNecklaceSilkImg, infinityNecklacesImg];
   }
   if (cat.includes('ring')) {
-    return [silverRingsImg, messageBandsImg];
+    return [anekaImg, heartFusionRingImg];
   }
   if (cat.includes('earring')) {
-    return [silverEarringsImg, switchEarringsImg];
+    return [dancingHoopsImg, switchEarringsImg];
   }
   if (cat.includes('solitaire')) {
-    return [solitaireSetsImg, silverRingsImg];
+    return [solitaireSetsImg, anekaImg];
   }
   if (cat.includes('chain')) {
-    return [silverNecklacesImg, layeredNecklacesImg];
+    return [goldNecklaceSilkImg, layeredNecklacesImg];
   }
   if (cat.includes('mangalsutra')) {
     return [trendyMangalsutrasImg, mangalsutraEarringsImg];
@@ -67,7 +73,7 @@ function getCategoryBanners(categoryName) {
     return [solitaireSetsImg, switchEarringsImg];
   }
   if (cat.includes('bangle') || cat.includes('bracelet') || cat.includes('bangles')) {
-    return [stretchableBanglesImg, silverBraceletsImg];
+    return [stretchableBanglesImg, watchCharmsImg];
   }
   if (cat.includes('zodic') || cat.includes('zodiac')) {
     return [postcardsBannerImg, wearYourWinsImg];
@@ -965,10 +971,6 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                             <img src={banner1} alt="Featured Collection" loading="lazy" decoding="async" width="300" height="150" />
                             <div className="banner-label">New Arrivals</div>
                           </div>
-                          <div className="mega-banner-card">
-                            <img src={banner2} alt="Special Edition" loading="lazy" decoding="async" width="300" height="150" />
-                            <div className="banner-label">Shop Bestsellers</div>
-                          </div>
                         </div>
 
                         {/* Bottom Full-width Row: Demographic filters */}
@@ -1177,7 +1179,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
             <div className="drawer-categories-list">
               {[
                 { name: "Gold Wallet (10+1 Scheme)", desc: "View accumulated 24K gold balance & passbook", hash: "/profile#wallet", img: null },
-                { name: "Rings", desc: "Browse by Style, Metals & Stones", hash: "/rings", img: silverRingsImg },
+                { name: "Rings", desc: "Browse by Style, Metals & Stones", hash: "/rings", img: anekaImg },
                 { name: "Earrings", desc: "Browse by Style, Price & More..", hash: "/earrings", img: dancingHoopsImg },
                 { name: "Bracelets & Bangles", desc: "Browse by Style, Metal & Kids", hash: "/bracelets", img: stretchableBanglesImg },
                 { name: "Solitaires", desc: "For Engagement, Anniversaries & Milestones", hash: "/solitaires", img: solitaireSetsImg },

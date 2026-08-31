@@ -211,7 +211,21 @@ export default function CheckoutPage() {
     setIsProcessingPayment(true);
     setError('');
 
-    const store = stores.find(s => s.id === selectedStoreId);
+    const selectedAddr = selectedAddressId 
+      ? addresses.find(a => a.id === selectedAddressId)
+      : newAddressForm;
+
+    const formattedShippingAddress = deliveryMethod === 'delivery' && selectedAddr ? {
+      fullName: selectedAddr.fullName || user?.user_name || user?.name || 'Customer',
+      phone: selectedAddr.mobile || selectedAddr.phone || user?.phone_number || user?.phone || '',
+      addressLine: [selectedAddr.flatNumber, selectedAddr.streetAddress, selectedAddr.area, selectedAddr.landmark]
+        .filter(Boolean)
+        .join(', '),
+      city: selectedAddr.city || '',
+      state: selectedAddr.state || '',
+      pincode: String(selectedAddr.pincode || ''),
+      country: 'India'
+    } : null;
 
     const payload = {
       items: cartList,
@@ -224,9 +238,10 @@ export default function CheckoutPage() {
       razorpayOrderId: razorpayParams.razorpayOrderId || null,
       razorpayPaymentId: razorpayParams.razorpayPaymentId || null,
       deliveryEstimate: deliveryMethod === 'delivery' ? '5-7 Business Days' : null,
+      shippingAddress: formattedShippingAddress,
       storeDetails: deliveryMethod === 'pickup' ? {
-        name: store.name,
-        address: store.address,
+        name: store?.name || 'Alwar Store',
+        address: store?.address || '',
         pickupDate,
         pickupTime
       } : null
@@ -257,7 +272,7 @@ export default function CheckoutPage() {
   };
 
   const handleRazorpayPayment = async () => {
-    if (paymentMethod === 'cod' || finalPayableTotal <= 0) {
+    if (finalPayableTotal <= 0) {
       handleOrderSubmission();
       return;
     }
@@ -851,13 +866,6 @@ export default function CheckoutPage() {
                           <div style={{ fontSize: '11.5px', color: '#746380', marginTop: '2px' }}>Direct bank account transfer through secure Razorpay portal</div>
                         </div>
                       </label>
-                      <label style={paymentLabelStyle(paymentMethod === 'cod')}>
-                        <input type="radio" name="payment" checked={paymentMethod === 'cod'} onChange={() => setPaymentMethod('cod')} style={{ accentColor: '#c5a880' }} />
-                        <div style={{ flex: 1 }}>
-                          <div style={{ fontSize: '14px', fontWeight: '700', color: '#2b221d' }}>💵 Cash on Delivery (COD)</div>
-                          <div style={{ fontSize: '11.5px', color: '#746380', marginTop: '2px' }}>Pay cash at doorstep upon delivery</div>
-                        </div>
-                      </label>
                     </div>
                   </div>
                 )}
@@ -866,7 +874,7 @@ export default function CheckoutPage() {
 
                 <div className="flex-wrap-row" style={{ display: 'flex', gap: '15px' }}>
                   <button
-                    onClick={isFullyCoveredByWallet || paymentMethod === 'cod' ? handleOrderSubmission : handleRazorpayPayment}
+                    onClick={isFullyCoveredByWallet ? handleOrderSubmission : handleRazorpayPayment}
                     disabled={isProcessingPayment}
                     style={{
                       ...btnStyle,
@@ -881,8 +889,6 @@ export default function CheckoutPage() {
                       ? 'PROCESSING PAYMENT...'
                       : isFullyCoveredByWallet
                       ? 'PAY VIA GOLD WALLET & PLACE ORDER'
-                      : paymentMethod === 'cod'
-                      ? 'PLACE COD ORDER'
                       : `PAY ₹${finalPayableTotal.toLocaleString('en-IN')} VIA RAZORPAY`}
                   </button>
                   <button onClick={() => setStep(4)} style={{ ...btnStyle, backgroundColor: '#a39084' }}>BACK</button>

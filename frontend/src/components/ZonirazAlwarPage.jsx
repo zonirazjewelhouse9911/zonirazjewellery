@@ -4,7 +4,7 @@ export default function ZonirazAlwarPage() {
   const storeAddress = "Tilak Market, 7, Hanuman Burj, Kabir Colony, Alwar, Rajasthan 301001";
   const storePhone = "+919784836060";
   const displayPhone = "+91 97848 36060";
-  const storeEmail = "zonirazjewelhose@gmail.com";
+  const storeEmail = "zonirazjewelhouse@gmail.com";
   const googleMapsUrl = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent("Zoniraz Jewel House Tilak Market Alwar Rajasthan");
   const whatsappUrl = "https://wa.me/919784836060?text=" + encodeURIComponent("Hello Zoniraz Alwar Store, I would like to make an enquiry.");
 

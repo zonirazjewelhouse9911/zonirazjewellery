@@ -389,14 +389,14 @@ export default function ContactPage() {
 
           {/* Write to Us */}
           <div className="split-half center-email">
-            <a href="mailto:info@zoniraz.com" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <a href="mailto:zonirazjewelhouse@gmail.com" style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
               <div className="icon-circle" style={{ cursor: 'pointer' }}>
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
               <h4>Jewellery Customer Service</h4>
-              <div className="contact-value" style={{ fontSize: '15px', color: '#c5a880', textDecoration: 'underline', cursor: 'pointer' }}>info@zoniraz.com</div>
+              <div className="contact-value" style={{ fontSize: '15px', color: '#c5a880', textDecoration: 'underline', cursor: 'pointer' }}>zonirazjewelhouse@gmail.com</div>
             </a>
           </div>
 

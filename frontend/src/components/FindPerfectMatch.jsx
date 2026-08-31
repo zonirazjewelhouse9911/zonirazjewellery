@@ -1,8 +1,7 @@
 import React, { useRef } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
-import earringsImg from '../assets/silver-earrings.png';
-import necklacesImg from '../assets/silver-necklaces.png';
-import braceletsImg from '../assets/silver-bracelets.png';
+import goldRingImg from '../assets/aneka.png';
+import goldNecklaceImg from '../assets/gold-necklace-silk.png';
 import hoopsImg from '../assets/dancing-hoops.png';
 import mangalsutraImg from '../assets/mangalsutra-earrings.png';
 import charmsImg from '../assets/watch-charms.png';
@@ -10,11 +9,11 @@ import layeredImg from '../assets/layered-necklaces.png';
 import banglesImg from '../assets/stretchable-bangles.png';
 
 const defaultImages = {
-  'rings': earringsImg,
+  'rings': goldRingImg,
   'earrings': hoopsImg,
-  'pendants': necklacesImg,
+  'pendants': goldNecklaceImg,
   'nose-pins': charmsImg,
-  'bracelets': braceletsImg,
+  'bracelets': banglesImg,
   'mangalsutra': mangalsutraImg,
   'mangalsutras': mangalsutraImg,
   'necklaces': layeredImg,
@@ -22,11 +21,11 @@ const defaultImages = {
 };
 
 const staticCategories = [
-  { id: 'rings',        label: 'RINGS',           image: earringsImg },
+  { id: 'rings',        label: 'RINGS',           image: goldRingImg },
   { id: 'earrings',     label: 'EARRINGS',         image: hoopsImg },
-  { id: 'pendants',     label: 'PENDANTS',         image: necklacesImg },
+  { id: 'pendants',     label: 'PENDANTS',         image: goldNecklaceImg },
   { id: 'nose-pins',    label: 'NOSE PINS',        image: charmsImg },
-  { id: 'bracelets',    label: 'BRACELETS',        image: braceletsImg },
+  { id: 'bracelets',    label: 'BRACELETS',        image: banglesImg },
   { id: 'mangalsutra',  label: 'MANGALSUTRA',      image: mangalsutraImg },
   { id: 'necklaces',    label: 'NECKLACES',        image: layeredImg },
   { id: 'bangles',      label: 'BANGLES',          image: banglesImg },

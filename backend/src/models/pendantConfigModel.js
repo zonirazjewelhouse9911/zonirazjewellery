@@ -24,9 +24,21 @@ const pendantConfigSchema = new mongoose.Schema({
   makingCharge: { type: Number, default: 500 },
   chainPrice: { type: Number, default: 1000 },
   materials: {
-    gold_14k: { name: 'Yellow Gold 14KT', multiplier: 1.0, basePrice: 3000 },
-    gold_18k: { name: 'Yellow Gold 18KT', multiplier: 1.25, basePrice: 4000 },
-    diamond: { name: 'Diamond SI-IJ Real Gold', multiplier: 1.8, basePrice: 7500 }
+    gold_14k: {
+      name: { type: String, default: 'Yellow Gold 14KT' },
+      multiplier: { type: Number, default: 1.0 },
+      basePrice: { type: Number, default: 3000 }
+    },
+    gold_18k: {
+      name: { type: String, default: 'Yellow Gold 18KT' },
+      multiplier: { type: Number, default: 1.25 },
+      basePrice: { type: Number, default: 4000 }
+    },
+    diamond: {
+      name: { type: String, default: 'Diamond SI-IJ Real Gold' },
+      multiplier: { type: Number, default: 1.8 },
+      basePrice: { type: Number, default: 7500 }
+    }
   },
   letterCalibrations: [letterCalibrationSchema]
 }, { timestamps: true });
