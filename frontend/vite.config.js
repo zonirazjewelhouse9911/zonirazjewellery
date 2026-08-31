@@ -7,6 +7,10 @@ export default defineConfig({
   define: {
     global: 'window',
   },
+  server: {
+    port: 5175,
+    host: true
+  },
   build: {
     target: 'esnext',
     cssCodeSplit: true,

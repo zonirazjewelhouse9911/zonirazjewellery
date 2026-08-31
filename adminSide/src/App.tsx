@@ -15,6 +15,7 @@ import VideoCallPanel from './pages/VideoCallPanel';
 import GoldMineWallets from './pages/GoldMineWallets';
 import LooseStones from './pages/LooseStones';
 import Blogs from './pages/Blogs';
+import CustomPendants from './pages/CustomPendants';
 import { resolveProductImage } from './lib/imageResolver';
 import { 
   Grid, 
@@ -27,6 +28,7 @@ import {
   Building2, 
   LogOut,
   SlidersHorizontal,
+  Sparkles,
   Search,
   Loader2,
   RefreshCw,
@@ -58,6 +60,7 @@ const MENU_ITEMS = [
   { id: 'exchange', label: 'Exchange Leads', icon: RefreshCw },
   { id: 'sellgold', label: 'Sell Gold Leads', icon: Coins },
   { id: 'pricing', label: 'Daily Pricing', icon: SlidersHorizontal },
+  { id: 'custompendants', label: 'Custom Pendants', icon: Sparkles },
   { id: 'videocall', label: 'Video Calls', icon: Video },
 ];
 
@@ -644,6 +647,8 @@ function App() {
             <Banners />
           ) : activeMenu === 'pricing' ? (
             <PricingSettings />
+          ) : activeMenu === 'custompendants' ? (
+            <CustomPendants />
           ) : activeMenu === 'videocall' ? (
             <VideoCallPanel />
           ) : (

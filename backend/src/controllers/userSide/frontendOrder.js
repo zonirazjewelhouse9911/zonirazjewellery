@@ -18,7 +18,8 @@ const mapToClientOrder = (mongoOrder) => ({
         quantity: item.quantity,
         price: item.price,
         goldPurity: item.configuration?.purity || '',
-        diamondDetails: item.configuration?.stone || ''
+        diamondDetails: item.configuration?.stone || '',
+        customization: item.customization || null
     }))
 });
 

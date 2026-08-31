@@ -35,6 +35,8 @@ import BuyGoldPage from './components/BuyGoldPage';
 import GoldMinePage from './components/GoldMinePage';
 import LooseStonesPage from './components/LooseStonesPage';
 import ZonirazAlwarPage from './components/ZonirazAlwarPage';
+import PendantPrototype from './components/PendantGenerator/PendantPrototype';
+import PendantGenerator from './components/PendantGenerator/PendantGenerator';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -694,6 +696,12 @@ function AppContent() {
       } else if (path === '/loose-stones' || path === '/buy-loose-stones' || path === '/loose-diamonds') {
         setCurrentView('loose-stones');
         restoreOrScrollTop();
+      } else if (path === '/custom-name-pendant' || path === '/custom-pendant') {
+        setCurrentView('custom-name-pendant');
+        restoreOrScrollTop();
+      } else if (path === '/custom-pendant-prototype') {
+        setCurrentView('custom-pendant-prototype');
+        restoreOrScrollTop();
       } else if (path === '/delivery') {
         setHelpCategory('delivery');
         setCurrentView('delivery');
@@ -1152,6 +1160,10 @@ function AppContent() {
         <LooseStonesPage />
       ) : currentView === 'zoniraz-alwar' ? (
         <ZonirazAlwarPage />
+      ) : currentView === 'custom-name-pendant' ? (
+        <PendantGenerator />
+      ) : currentView === 'custom-pendant-prototype' ? (
+        <PendantPrototype />
       ) : currentView === 'admin-call' ? (
         <AdminVideoPanel />
       ) : (

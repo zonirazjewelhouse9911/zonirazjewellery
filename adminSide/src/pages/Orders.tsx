@@ -10,11 +10,20 @@ interface OrderItem {
   price: number;
   quantity: number;
   image: string;
-  configuration: {
-    metal: string;
-    purity: string;
-    size: string;
-    stone: string;
+  configuration?: {
+    metal?: string;
+    purity?: string;
+    size?: string;
+    stone?: string;
+  };
+  customization?: {
+    type?: string;
+    name?: string;
+    material?: string;
+    style?: string;
+    previewImage?: string;
+    letters?: Array<{ letter: string; positionRole: string; publicId: string; url: string }>;
+    priceBreakdown?: any;
   };
 }
 
@@ -392,6 +401,24 @@ export default function Orders() {
                               <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
                                 Stone: {item.configuration.stone}
                               </span>
+                            )}
+                          </div>
+                        )}
+
+                        {/* Customization Details */}
+                        {item.customization && (
+                          <div className="mt-3 p-3 bg-amber-50/60 border border-amber-200/60 rounded-xl space-y-1 text-left">
+                            <span className="text-[9px] uppercase font-black tracking-wider text-amber-900 block">✨ Custom Pendant Details</span>
+                            <div className="text-xs font-bold text-slate-800">
+                              Custom Name: <span className="text-brand-gold font-black">{item.customization.name}</span>
+                            </div>
+                            <div className="text-[10px] text-slate-600">
+                              Material: {item.customization.material} | Style: {item.customization.style}
+                            </div>
+                            {item.customization.letters && (
+                              <div className="text-[9px] text-slate-500 font-mono mt-1">
+                                Letters: {item.customization.letters.map((l: any) => l.letter).join(' - ')}
+                              </div>
                             )}
                           </div>
                         )}

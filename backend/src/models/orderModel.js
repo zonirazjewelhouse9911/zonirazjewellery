@@ -44,6 +44,10 @@ const orderItemSchema = new mongoose.Schema({
       type: String,
       default: ''
     }
+  },
+  customization: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
   }
 });
 

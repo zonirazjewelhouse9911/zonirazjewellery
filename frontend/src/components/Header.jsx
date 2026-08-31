@@ -821,6 +821,20 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                 BUY STONES
               </a>
             </div>
+            <div className="nav-item-container nav-gold-mine-link">
+              <a
+                href="/custom-name-pendant"
+                className="nav-item-trigger gold-mine-nav-badge"
+                style={{ color: '#b06000', fontWeight: '800' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.history.pushState(null, '', '/custom-name-pendant');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+              >
+                ✨ CUSTOM PENDANT
+              </a>
+            </div>
             {categories
               .filter(cat => {
                 const name = (cat.categoryName || '').toLowerCase().trim();

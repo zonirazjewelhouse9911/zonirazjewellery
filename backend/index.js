@@ -112,6 +112,9 @@ app.use('/api', productRoutes);
 const orderRoutes = require('./src/routes/orderRoutes');
 app.use('/api', orderRoutes);
 
+const pendantRoutes = require('./src/routes/pendantRoutes');
+app.use('/api/pendant', pendantRoutes);
+
 const categoryRoutes = require('./src/routes/categoryRoutes');
 app.use('/api', categoryRoutes);
 

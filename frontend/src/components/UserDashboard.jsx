@@ -687,6 +687,11 @@ export default function UserDashboard() {
                                 <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#2b221d' }}>
                                   Qty: {item.quantity} x ₹{parseFloat(item.price).toLocaleString('en-IN')}
                                 </p>
+                                {item.customization && (
+                                  <div style={{ marginTop: '6px', padding: '8px 12px', backgroundColor: '#faf7f5', borderRadius: '8px', border: '1px solid #dbcfcb', fontSize: '11px', color: '#2b221d' }}>
+                                    <strong>Custom Pendant:</strong> {item.customization.name} ({item.customization.material} | {item.customization.style})
+                                  </div>
+                                )}
                               </div>
                             </div>
                           ))}
