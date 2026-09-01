@@ -10,7 +10,7 @@ const mapToClientOrder = (mongoOrder) => ({
     storeDetails: mongoOrder.storeDetails || null,
     shippingAddress: mongoOrder.shippingAddress || null,
     digiGoldRedeemedAmount: mongoOrder.digiGoldRedeemedAmount || 0,
-    orderStatus: mongoOrder.orderStatus || 'placed',
+    orderStatus: mongoOrder.orderStatus || 'processing',
     paymentStatus: mongoOrder.paymentStatus || 'pending',
     OrderItems: (mongoOrder.items || []).map((item, idx) => ({
         id: item._id || idx,
@@ -120,7 +120,7 @@ exports.createOrder = async (req, res) => {
             shippingAddress: finalShippingAddress,
             razorpayOrderId: razorpayOrderId || req.body.razorpay_order_id || null,
             paymentStatus: 'paid', // Simulate success checkout
-            orderStatus: 'placed'
+            orderStatus: 'processing'
         });
 
         await newOrder.save();

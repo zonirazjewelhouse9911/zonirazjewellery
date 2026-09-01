@@ -279,9 +279,11 @@ export default function Orders() {
                         'inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider mt-1 border',
                         order.orderStatus === 'delivered' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' :
                         order.orderStatus === 'cancelled' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
+                        (order.orderStatus === 'confirmed' || order.orderStatus === 'accepted') ? 'bg-purple-500/10 border-purple-500/20 text-purple-600' :
+                        order.orderStatus === 'shipped' ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-600' :
                         'bg-blue-500/10 border-blue-500/20 text-blue-600'
                       )}>
-                        {order.orderStatus}
+                        {order.orderStatus === 'confirmed' ? 'Confirmed' : order.orderStatus}
                       </span>
                     </div>
 
@@ -353,11 +355,12 @@ export default function Orders() {
                     onChange={(e) => handleUpdateOrderStatus(selectedOrder._id, e.target.value)}
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl py-3 px-4 text-xs text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 cursor-pointer disabled:opacity-50"
                   >
-                    <option value="placed">Placed (New)</option>
-                    <option value="processing">Processing</option>
+                    <option value="processing">Processing (Default)</option>
+                    <option value="confirmed">Confirmed / Accepted</option>
                     <option value="shipped">Shipped</option>
                     <option value="delivered">Delivered</option>
                     <option value="cancelled">Cancelled</option>
+                    <option value="placed">Placed</option>
                   </select>
                 </div>
 

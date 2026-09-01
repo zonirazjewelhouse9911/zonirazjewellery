@@ -667,7 +667,7 @@ export default function UserDashboard() {
                               backgroundColor: (order.orderStatus || '').toLowerCase() === 'delivered' ? '#e6f4ea' : (order.orderStatus || '').toLowerCase() === 'cancelled' ? '#fce8e6' : (order.orderStatus || '').toLowerCase() === 'shipped' ? '#e8f0fe' : '#fff4e5',
                               color: (order.orderStatus || '').toLowerCase() === 'delivered' ? '#137333' : (order.orderStatus || '').toLowerCase() === 'cancelled' ? '#c5221f' : (order.orderStatus || '').toLowerCase() === 'shipped' ? '#1a73e8' : '#b06000'
                             }}>
-                              Status: {order.orderStatus || 'placed'}
+                              Status: {order.orderStatus || 'processing'}
                             </span>
 
                             <span>TOTAL: <strong style={{ color: '#2b221d' }}>₹{parseFloat(order.grandTotal).toLocaleString('en-IN')}</strong></span>
@@ -729,9 +729,9 @@ export default function UserDashboard() {
                                     <div style={trackDotStyle(true)}>✓</div>
                                     <div style={trackLabelStyle}>Placed</div>
                                   </div>
-                                  <div style={trackStepStyle(['processing', 'shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()))}>
-                                    <div style={trackDotStyle(['processing', 'shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()))}>
-                                      {['processing', 'shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()) ? '✓' : '2'}
+                                  <div style={trackStepStyle(['processing', 'confirmed', 'accepted', 'shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()))}>
+                                    <div style={trackDotStyle(['processing', 'confirmed', 'accepted', 'shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()))}>
+                                      {['processing', 'confirmed', 'accepted', 'shipped', 'delivered'].includes((order.orderStatus || '').toLowerCase()) ? '✓' : '2'}
                                     </div>
                                     <div style={trackLabelStyle}>Processing</div>
                                   </div>
