@@ -136,6 +136,15 @@ const orderSchema = new mongoose.Schema({
     type: Array,
     default: []
   },
+  deliveryMethod: {
+    type: String,
+    enum: ['delivery', 'pickup'],
+    default: 'delivery'
+  },
+  storeDetails: {
+    type: mongoose.Schema.Types.Mixed,
+    default: null
+  },
   razorpayOrderId: {
     type: String,
     default: null

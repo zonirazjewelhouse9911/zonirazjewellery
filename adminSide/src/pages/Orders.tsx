@@ -10,6 +10,8 @@ interface OrderItem {
   price: number;
   quantity: number;
   image: string;
+  size?: string;
+  selectedSize?: string;
   configuration?: {
     metal?: string;
     purity?: string;
@@ -32,6 +34,13 @@ interface Order {
   userId: string;
   items: OrderItem[];
   totalAmount: number;
+  deliveryMethod?: string;
+  storeDetails?: {
+    name?: string;
+    address?: string;
+    pickupDate?: string;
+    pickupTime?: string;
+  };
   shippingAddress: {
     fullName: string;
     phone: string;
@@ -223,9 +232,19 @@ export default function Orders() {
                       <span className="text-xl font-serif italic text-brand-gold font-bold">{order.shippingAddress?.fullName ? order.shippingAddress.fullName[0].toUpperCase() : 'O'}</span>
                     </div>
                     <div className="min-w-0">
-                      <h3 className="font-serif text-md font-bold text-[#12100e] truncate">{order.shippingAddress?.fullName || 'Guest Customer'}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-serif text-md font-bold text-[#12100e] truncate">{order.shippingAddress?.fullName || 'Guest Customer'}</h3>
+                        <span className={cn(
+                          "px-2 py-0.5 text-[8px] font-bold rounded-full uppercase border shrink-0",
+                          (order.deliveryMethod === 'pickup' || order.shippingAddress?.addressLine?.toLowerCase().includes('pickup'))
+                            ? "bg-amber-500/10 border-amber-500/20 text-amber-700"
+                            : "bg-emerald-500/10 border-emerald-500/20 text-emerald-700"
+                        )}>
+                          {(order.deliveryMethod === 'pickup' || order.shippingAddress?.addressLine?.toLowerCase().includes('pickup')) ? '🏪 Pickup' : '🚚 Delivery'}
+                        </span>
+                      </div>
                       <p className="text-[9px] text-slate-450 uppercase tracking-widest mt-1 truncate">
-                        ID: {order._id} {order.razorpayOrderId ? `| RpID: ${order.razorpayOrderId}` : ''}
+                        {order.razorpayOrderId ? `Razorpay ID: ${order.razorpayOrderId}` : `Order Ref: #${order._id.substring(0, 8).toUpperCase()}`}
                       </p>
                       <p className="text-[8px] text-slate-400 font-mono mt-0.5">{dateStr}</p>
                     </div>
@@ -286,7 +305,7 @@ export default function Orders() {
       {/* Order Detail Modal */}
       {selectedOrder && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-6 backdrop-blur-xs animate-in fade-in duration-300">
-          <div className="bg-[#efe7e5] text-[#12100e] w-full max-w-4xl rounded-4xl shadow- premium border border-slate-200 overflow-hidden max-h-[85vh] flex flex-col">
+          <div className="bg-[#efe7e5] text-[#12100e] w-full max-w-4xl rounded-4xl shadow-premium border border-slate-200 overflow-hidden max-h-[85vh] flex flex-col">
             
             {/* Modal Header */}
             <div className="p-6 bg-white border-b border-slate-200/60 flex items-center justify-between shrink-0">
@@ -309,17 +328,13 @@ export default function Orders() {
             <div className="flex-1 overflow-y-auto p-8 space-y-8 text-left">
               
               {/* Order Metadata Row */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-white rounded-3xl p-6 border border-slate-200/60">
-                <div className="space-y-1">
-                  <span className="text-[9px] uppercase tracking-widest font-black text-slate-400 block">Mongoose ID</span>
-                  <span className="text-xs font-mono text-slate-700 block select-all">{selectedOrder._id}</span>
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-white rounded-3xl p-6 border border-slate-200/60">
                 <div className="space-y-1">
                   <span className="text-[9px] uppercase tracking-widest font-black text-slate-400 block">Razorpay Order ID</span>
-                  <span className="text-xs font-mono text-slate-700 block select-all">{selectedOrder.razorpayOrderId || 'N/A'}</span>
+                  <span className="text-xs font-mono text-slate-800 block font-bold select-all">{selectedOrder.razorpayOrderId || 'N/A'}</span>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[9px] uppercase tracking-widest font-black text-slate-400 block">Order Date</span>
+                  <span className="text-[9px] uppercase tracking-widest font-black text-slate-400 block">Order Date & Time</span>
                   <span className="text-xs text-slate-700 block font-bold">
                     {new Date(selectedOrder.createdAt).toLocaleString('en-IN', {
                       day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -366,70 +381,74 @@ export default function Orders() {
               <div className="space-y-4">
                 <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-slate-500">Ordered Items</h4>
                 <div className="bg-white border border-slate-200/60 rounded-3xl overflow-hidden divide-y divide-slate-100">
-                  {selectedOrder.items && selectedOrder.items.map((item, idx) => (
-                    <div key={idx} className="p-5 flex flex-col sm:flex-row items-center gap-4 hover:bg-slate-50/20 transition-colors group/ordrow">
-                      <div className="w-20 h-20 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden flex items-center justify-center shrink-0 relative shadow-inner">
-                        <img 
-                          src={resolveProductImage(item.image)} 
-                          className="w-full h-full object-contain p-1 transition-transform duration-500 group-hover/ordrow:scale-125" 
-                          alt={item.name} 
-                        />
-                      </div>
-                      <div className="flex-1 text-center sm:text-left">
-                        <h5 className="font-serif text-sm font-bold text-slate-800">{item.name}</h5>
-                        <p className="text-[8px] text-slate-450 uppercase tracking-widest mt-1">Slug: {item.slug}</p>
-                        
-                        {/* Configuration tags */}
-                        {item.configuration && (
-                          <div className="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start">
-                            {item.configuration.metal && (
-                              <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
-                                Metal: {item.configuration.metal}
-                              </span>
-                            )}
-                            {item.configuration.purity && (
-                              <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
-                                Purity: {item.configuration.purity}
-                              </span>
-                            )}
-                            {item.configuration.size && (
-                              <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
-                                Size: {item.configuration.size}
-                              </span>
-                            )}
-                            {item.configuration.stone && (
-                              <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
-                                Stone: {item.configuration.stone}
-                              </span>
-                            )}
-                          </div>
-                        )}
+                  {selectedOrder.items && selectedOrder.items.map((item, idx) => {
+                    const rawSize = item.configuration?.size || item.selectedSize || item.size;
+                    const itemSize = (rawSize && !String(rawSize).includes(',')) ? rawSize : null;
+                    return (
+                      <div key={idx} className="p-5 flex flex-col sm:flex-row items-center gap-4 hover:bg-slate-50/20 transition-colors group/ordrow">
+                        <div className="w-20 h-20 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden flex items-center justify-center shrink-0 relative shadow-inner">
+                          <img 
+                            src={resolveProductImage(item.image)} 
+                            className="w-full h-full object-contain p-1 transition-transform duration-500 group-hover/ordrow:scale-125" 
+                            alt={item.name} 
+                          />
+                        </div>
+                        <div className="flex-1 text-center sm:text-left">
+                          <h5 className="font-serif text-sm font-bold text-slate-800">{item.name}</h5>
+                          <p className="text-[8px] text-slate-450 uppercase tracking-widest mt-1">Slug: {item.slug}</p>
+                          
+                          {/* Configuration tags */}
+                          {(item.configuration || itemSize) && (
+                            <div className="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start">
+                              {item.configuration?.metal && (
+                                <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
+                                  Metal: {item.configuration.metal}
+                                </span>
+                              )}
+                              {item.configuration?.purity && (
+                                <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
+                                  Purity: {item.configuration.purity}
+                                </span>
+                              )}
+                              {itemSize && (
+                                <span className="text-[7px] uppercase font-bold bg-amber-500/15 text-amber-900 px-2 py-0.5 rounded-md border border-amber-500/30 font-black">
+                                  Size: {itemSize}
+                                </span>
+                              )}
+                              {item.configuration?.stone && (
+                                <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
+                                  Stone: {item.configuration.stone}
+                                </span>
+                              )}
+                            </div>
+                          )}
 
-                        {/* Customization Details */}
-                        {item.customization && (
-                          <div className="mt-3 p-3 bg-amber-50/60 border border-amber-200/60 rounded-xl space-y-1 text-left">
-                            <span className="text-[9px] uppercase font-black tracking-wider text-amber-900 block">✨ Custom Pendant Details</span>
-                            <div className="text-xs font-bold text-slate-800">
-                              Custom Name: <span className="text-brand-gold font-black">{item.customization.name}</span>
-                            </div>
-                            <div className="text-[10px] text-slate-600">
-                              Material: {item.customization.material} | Style: {item.customization.style}
-                            </div>
-                            {item.customization.letters && (
-                              <div className="text-[9px] text-slate-500 font-mono mt-1">
-                                Letters: {item.customization.letters.map((l: any) => l.letter).join(' - ')}
+                          {/* Customization Details */}
+                          {item.customization && (
+                            <div className="mt-3 p-3 bg-amber-50/60 border border-amber-200/60 rounded-xl space-y-1 text-left">
+                              <span className="text-[9px] uppercase font-black tracking-wider text-amber-900 block">✨ Custom Pendant Details</span>
+                              <div className="text-xs font-bold text-slate-800">
+                                Custom Name: <span className="text-brand-gold font-black">{item.customization.name}</span>
                               </div>
-                            )}
-                          </div>
-                        )}
+                              <div className="text-[10px] text-slate-600">
+                                Material: {item.customization.material} | Style: {item.customization.style}
+                              </div>
+                              {item.customization.letters && (
+                                <div className="text-[9px] text-slate-500 font-mono mt-1">
+                                  Letters: {item.customization.letters.map((l: any) => l.letter).join(' - ')}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <div className="text-center sm:text-right shrink-0">
+                          <p className="text-xs text-slate-700 font-bold">{formatPrice(item.price)}</p>
+                          <p className="text-[10px] text-slate-450 uppercase tracking-widest mt-0.5">Quantity: {item.quantity}</p>
+                          <p className="text-xs font-bold text-brand-gold mt-1">Subtotal: {formatPrice(item.price * item.quantity)}</p>
+                        </div>
                       </div>
-                      <div className="text-center sm:text-right shrink-0">
-                        <p className="text-xs text-slate-700 font-bold">{formatPrice(item.price)}</p>
-                        <p className="text-[10px] text-slate-450 uppercase tracking-widest mt-0.5">Quantity: {item.quantity}</p>
-                        <p className="text-xs font-bold text-brand-gold mt-1">Subtotal: {formatPrice(item.price * item.quantity)}</p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
@@ -437,17 +456,64 @@ export default function Orders() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4 border-t border-slate-200/60">
                 
                 {/* Shipping Details */}
-                <div className="space-y-4">
-                  <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-slate-500">Shipping Address</h4>
-                  <div className="bg-white border border-slate-200/60 rounded-3xl p-6 space-y-3.5 text-xs text-slate-700">
-                    <p><strong className="text-slate-500">Name:</strong> {selectedOrder.shippingAddress?.fullName}</p>
-                    <p><strong className="text-slate-500">Phone:</strong> {selectedOrder.shippingAddress?.phone}</p>
-                    <p>
-                      <strong className="text-slate-500">Address:</strong> {selectedOrder.shippingAddress?.addressLine}, {selectedOrder.shippingAddress?.city}, {selectedOrder.shippingAddress?.state} - {selectedOrder.shippingAddress?.pincode}
-                    </p>
-                    <p><strong className="text-slate-500">Country:</strong> {selectedOrder.shippingAddress?.country || 'India'}</p>
-                  </div>
-                </div>
+                {(() => {
+                  const isStorePickup = selectedOrder.deliveryMethod === 'pickup' ||
+                    (selectedOrder.shippingAddress?.addressLine && (
+                      selectedOrder.shippingAddress.addressLine.toLowerCase().includes('pickup') ||
+                      selectedOrder.shippingAddress.addressLine.toLowerCase().includes('store pickup')
+                    ));
+
+                  return (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-[10px] uppercase tracking-[0.3em] font-black text-slate-500">
+                          {isStorePickup ? 'Store Pickup Details' : 'Shipping Address'}
+                        </h4>
+                        <span className={cn(
+                          'text-[9px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border',
+                          isStorePickup 
+                            ? 'bg-amber-500/10 border-amber-500/20 text-amber-600' 
+                            : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600'
+                        )}>
+                          {isStorePickup ? '🏪 Store Pickup' : '🚚 Home Delivery'}
+                        </span>
+                      </div>
+                      
+                      <div className="bg-white border border-slate-200/60 rounded-3xl p-6 space-y-3.5 text-xs text-slate-700">
+                        <p><strong className="text-slate-500">Name:</strong> {selectedOrder.shippingAddress?.fullName || 'N/A'}</p>
+                        <p><strong className="text-slate-500">Phone:</strong> {selectedOrder.shippingAddress?.phone || 'N/A'}</p>
+                        {isStorePickup ? (
+                          <>
+                            <p>
+                              <strong className="text-slate-500">Pickup Location:</strong> {selectedOrder.storeDetails?.address || selectedOrder.shippingAddress?.addressLine}
+                            </p>
+                            {(selectedOrder.storeDetails?.pickupDate || (selectedOrder.shippingAddress?.state && selectedOrder.shippingAddress.state !== 'State' && !selectedOrder.shippingAddress.state.startsWith('Date:'))) && (
+                              <p>
+                                <strong className="text-slate-500">Pickup Date / Slot:</strong> {selectedOrder.storeDetails?.pickupDate || selectedOrder.shippingAddress?.state}
+                              </p>
+                            )}
+                            {(selectedOrder.storeDetails?.pickupTime || (selectedOrder.shippingAddress?.pincode && selectedOrder.shippingAddress.pincode !== '000000' && !selectedOrder.shippingAddress.pincode.startsWith('Time:'))) && (
+                              <p>
+                                <strong className="text-slate-500">Pickup Time:</strong> {selectedOrder.storeDetails?.pickupTime || selectedOrder.shippingAddress?.pincode}
+                              </p>
+                            )}
+                          </>
+                        ) : (
+                          <>
+                            <p>
+                              <strong className="text-slate-500">Address:</strong> {[
+                                selectedOrder.shippingAddress?.addressLine,
+                                selectedOrder.shippingAddress?.city !== 'N/A' && selectedOrder.shippingAddress?.city !== 'City' ? selectedOrder.shippingAddress?.city : null,
+                                selectedOrder.shippingAddress?.state !== 'N/A' && selectedOrder.shippingAddress?.state !== 'State' ? selectedOrder.shippingAddress?.state : null
+                              ].filter(Boolean).join(', ')} {selectedOrder.shippingAddress?.pincode && selectedOrder.shippingAddress?.pincode !== '000000' ? `- ${selectedOrder.shippingAddress.pincode}` : ''}
+                            </p>
+                            <p><strong className="text-slate-500">Country:</strong> {selectedOrder.shippingAddress?.country || 'India'}</p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 {/* Amount breakdown */}
                 <div className="space-y-4">

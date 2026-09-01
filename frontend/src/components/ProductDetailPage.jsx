@@ -26,7 +26,7 @@ import {
   PhoneOff,
   ChevronRight
 } from 'lucide-react';
-import ringVideo from '../assets/videos/WhatsApp Video 2026-08-31 at 4.41.25 PM.mp4';
+import ringVideo from '../assets/videos/gold.mp4';
 const banglesVideo = ringVideo;
 
 // Lifestyle / model images from Unsplash (free to use)
@@ -746,7 +746,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
 
   const handleAddToCart = () => {
-    addToCart(product, 1, selectedMetal);
+    addToCart(product, 1, selectedMetal, selectedSize, selectedDiamond);
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2500);
   };

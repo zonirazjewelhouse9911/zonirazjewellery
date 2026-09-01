@@ -17,7 +17,7 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('zoniraz_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product, quantity = 1, selectedPurity = '18KT') => {
+  const addToCart = (product, quantity = 1, selectedPurity = '18KT', selectedSize = null, selectedStone = null) => {
     requireAuth(() => {
       setCart(prev => {
         const existing = prev[product.id];
@@ -26,7 +26,10 @@ export const CartProvider = ({ children }) => {
             ...prev,
             [product.id]: {
               ...existing,
-              quantity: existing.quantity + quantity
+              quantity: existing.quantity + quantity,
+              selectedPurity: selectedPurity || existing.selectedPurity || '18KT',
+              selectedSize: selectedSize || existing.selectedSize || null,
+              selectedStone: selectedStone || existing.selectedStone || null
             }
           };
         }
@@ -35,7 +38,9 @@ export const CartProvider = ({ children }) => {
           [product.id]: {
             ...product,
             quantity,
-            selectedPurity
+            selectedPurity,
+            selectedSize: selectedSize || null,
+            selectedStone: selectedStone || null
           }
         };
       });

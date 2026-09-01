@@ -6,7 +6,9 @@ const mapToClientOrder = (mongoOrder) => ({
     orderId: mongoOrder._id.toString().substring(0, 8).toUpperCase(), // friendly Order ID
     createdAt: mongoOrder.createdAt,
     grandTotal: mongoOrder.totalAmount,
-    deliveryMethod: 'delivery',
+    deliveryMethod: mongoOrder.deliveryMethod || (mongoOrder.shippingAddress?.addressLine?.toLowerCase().includes('pickup') ? 'pickup' : 'delivery'),
+    storeDetails: mongoOrder.storeDetails || null,
+    shippingAddress: mongoOrder.shippingAddress || null,
     digiGoldRedeemedAmount: mongoOrder.digiGoldRedeemedAmount || 0,
     orderStatus: mongoOrder.orderStatus || 'placed',
     paymentStatus: mongoOrder.paymentStatus || 'pending',
@@ -37,31 +39,50 @@ exports.getOrders = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
     try {
-        const { items, deliveryMethod, shippingFee, gstAmount, couponDiscount, grandTotal, deliveryEstimate, storeDetails, walletAmountUsed } = req.body;
+        const { items, deliveryMethod, shippingFee, gstAmount, couponDiscount, grandTotal, deliveryEstimate, storeDetails, walletAmountUsed, shippingAddress, razorpayOrderId } = req.body;
         const user_id = req.user._id;
 
-        const orderItems = (items || []).map(item => ({
-            productId: item.productId || item.id,
-            name: item.name,
-            slug: item.slug || item.name.toLowerCase().replace(/ /g, '-'),
-            price: Number(item.price) || 0,
-            quantity: Number(item.quantity) || 1,
-            image: item.image || null,
-            configuration: {
-                metal: item.selectedMetal || '',
-                purity: item.selectedPurity || '18KT',
-                size: item.selectedSize || '',
-                stone: item.selectedStone || item.diamondDetails || 'SI IJ'
+        const orderItems = (items || []).map(item => {
+            let chosenSize = item.selectedSize || item.configuration?.size || '';
+            if (!chosenSize && item.size && !String(item.size).includes(',')) {
+                chosenSize = String(item.size);
             }
-        }));
+
+            return {
+                productId: item.productId || item.id,
+                name: item.name,
+                slug: item.slug || item.name.toLowerCase().replace(/ /g, '-'),
+                price: Number(item.price) || 0,
+                quantity: Number(item.quantity) || 1,
+                image: item.image || null,
+                configuration: {
+                    metal: item.selectedMetal || item.metal || item.configuration?.metal || '',
+                    purity: item.selectedPurity || item.purity || item.configuration?.purity || '18KT',
+                    size: chosenSize,
+                    stone: item.selectedStone || item.diamondDetails || item.stone || item.configuration?.stone || 'SI IJ'
+                },
+                customization: item.customization || null
+            };
+        });
 
         let finalShippingAddress = {};
 
-        if (shippingAddress && shippingAddress.addressLine) {
+        if (deliveryMethod === 'pickup') {
+            finalShippingAddress = {
+                fullName: (shippingAddress && shippingAddress.fullName) || req.user.user_name || req.user.name || 'Store Pickup Customer',
+                phone: (shippingAddress && shippingAddress.phone) || req.user.phone_number || req.user.phone || '0000000000',
+                addressLine: (storeDetails && storeDetails.address) ? `Store Pickup: ${storeDetails.name} (${storeDetails.address})` : 'Pickup from Store',
+                city: (storeDetails && storeDetails.name) || 'Store Pickup',
+                state: (storeDetails && storeDetails.pickupDate) ? `Date: ${storeDetails.pickupDate}` : 'Pickup',
+                pincode: (storeDetails && storeDetails.pickupTime) ? `Time: ${storeDetails.pickupTime}` : '000000',
+                country: 'India'
+            };
+        } else if (shippingAddress && (shippingAddress.addressLine || shippingAddress.streetAddress || shippingAddress.fullName)) {
+            const addrLine = shippingAddress.addressLine || [shippingAddress.flatNumber, shippingAddress.streetAddress, shippingAddress.area, shippingAddress.landmark].filter(Boolean).join(', ') || 'Delivery Address';
             finalShippingAddress = {
                 fullName: shippingAddress.fullName || req.user.user_name || req.user.name || 'Customer',
                 phone: shippingAddress.phone || req.user.phone_number || req.user.phone || '0000000000',
-                addressLine: shippingAddress.addressLine,
+                addressLine: addrLine,
                 city: shippingAddress.city || 'City',
                 state: shippingAddress.state || 'State',
                 pincode: shippingAddress.pincode || '000000',
@@ -94,7 +115,10 @@ exports.createOrder = async (req, res) => {
             items: orderItems,
             totalAmount: grandTotal,
             digiGoldRedeemedAmount: Number(walletAmountUsed) || 0,
+            deliveryMethod: deliveryMethod || (storeDetails ? 'pickup' : 'delivery'),
+            storeDetails: storeDetails || null,
             shippingAddress: finalShippingAddress,
+            razorpayOrderId: razorpayOrderId || req.body.razorpay_order_id || null,
             paymentStatus: 'paid', // Simulate success checkout
             orderStatus: 'placed'
         });
