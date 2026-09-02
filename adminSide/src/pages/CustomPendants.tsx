@@ -240,8 +240,8 @@ export default function CustomPendants() {
                   key={letter}
                   onClick={() => setSelectedLetter(letter)}
                   className={`w-9 h-9 text-xs font-bold rounded-xl transition-all ${selectedLetter === letter
-                      ? 'bg-[#5d463c] text-white shadow-md'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                    ? 'bg-[#5d463c] text-white shadow-md'
+                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                     }`}
                 >
                   {letter}
