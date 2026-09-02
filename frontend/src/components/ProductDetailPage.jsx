@@ -26,8 +26,8 @@ import {
   PhoneOff,
   ChevronRight
 } from 'lucide-react';
-import ringVideo from '../assets/videos/gold.mp4';
-const banglesVideo = ringVideo;
+import ringVideo from '../assets/videos/zoniraz ring .mp4';
+import banglesVideo from '../assets/videos/Bangles.mp4';
 
 // Lifestyle / model images from Unsplash (free to use)
 const lifestyleImages = [
@@ -46,12 +46,13 @@ const colorOptions = [
 
 export default function ProductDetailPage({ product, products: propProducts = [], wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
   const { formatPrice } = useCurrency();
-  const categoryName = (product?.product_category || product?.category || product?.category_id || '').toLowerCase();
-  const isRing = categoryName === 'rings' || categoryName === 'ring';
-  const isBangleOrBracelet = categoryName === 'bangles' || categoryName === 'bangle';
-  const isTennisBracelet = categoryName === 'tennis bracelets' || categoryName === 'tennis bracelet' || categoryName === 'bracelets' || categoryName === 'bracelet';
-  const isChain = categoryName === 'chains' || categoryName === 'chain';
-  const isMangalsutra = categoryName === 'mangalsutra' || categoryName === 'mangalsutras';
+  const catStr = (product?.product_category || product?.category || product?.category_id || '').toLowerCase();
+  const nameStr = (product?.product_name || product?.name || '').toLowerCase();
+  const isRing = catStr.includes('ring') || nameStr.includes('ring');
+  const isBangleOrBracelet = !isRing && (catStr.includes('bangle') || catStr.includes('bracelet') || nameStr.includes('bangle') || nameStr.includes('bracelet'));
+  const isTennisBracelet = catStr === 'tennis bracelets' || catStr === 'tennis bracelet';
+  const isChain = catStr === 'chains' || catStr === 'chain';
+  const isMangalsutra = catStr === 'mangalsutra' || catStr === 'mangalsutras';
 
   const isAanaSizeProduct = isChain || isMangalsutra || isTennisBracelet;
   const showSizing = isRing || isBangleOrBracelet || isAanaSizeProduct;
@@ -2881,9 +2882,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
             onClick={e => e.stopPropagation()}
           >
             <button className="pdp-modal-close" onClick={() => setSizingVideoOpen(false)} aria-label="Close modal">✕</button>
-            <h3 className="pdp-modal-title" style={{ marginBottom: 12 }}>How to Measure Your Size</h3>
+            <h3 className="pdp-modal-title" style={{ marginBottom: 12 }}>
+              {isRing ? 'How to Measure Your Ring Size' : 'How to Measure Your Bangle Size'}
+            </h3>
             <div style={{ flex: 1, position: 'relative', width: '100%', borderRadius: 8, overflow: 'hidden', backgroundColor: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <video
+                key={isRing ? 'ring-video' : 'bangle-video'}
                 src={isRing ? ringVideo : banglesVideo}
                 autoPlay
                 loop

@@ -7,12 +7,13 @@ import mangalsutraImg from '../assets/mangalsutra-earrings.png';
 import charmsImg from '../assets/watch-charms.png';
 import layeredImg from '../assets/layered-necklaces.png';
 import banglesImg from '../assets/stretchable-bangles.png';
+import yellowGoldNosePinBannerImg from '../assets/yellow-gold-nose-pin-banner.png';
 
 const defaultImages = {
   'rings': goldRingImg,
   'earrings': hoopsImg,
   'pendants': goldNecklaceImg,
-  'nose-pins': charmsImg,
+  'nose-pins': yellowGoldNosePinBannerImg,
   'bracelets': banglesImg,
   'mangalsutra': mangalsutraImg,
   'mangalsutras': mangalsutraImg,
@@ -24,7 +25,7 @@ const staticCategories = [
   { id: 'rings',        label: 'RINGS',           image: goldRingImg },
   { id: 'earrings',     label: 'EARRINGS',         image: hoopsImg },
   { id: 'pendants',     label: 'PENDANTS',         image: goldNecklaceImg },
-  { id: 'nose-pins',    label: 'NOSE PINS',        image: charmsImg },
+  { id: 'nose-pins',    label: 'NOSE PINS',        image: yellowGoldNosePinBannerImg },
   { id: 'bracelets',    label: 'BRACELETS',        image: banglesImg },
   { id: 'mangalsutra',  label: 'MANGALSUTRA',      image: mangalsutraImg },
   { id: 'necklaces',    label: 'NECKLACES',        image: layeredImg },

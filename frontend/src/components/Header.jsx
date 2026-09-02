@@ -36,6 +36,8 @@ import heartFusionRingImg from '../assets/heart_fusion_ring.png';
 import infinityDiamondRingImg from '../assets/infinity_diamond_ring.png';
 import goldEarringsBannerImg from '../assets/gold-earrings-banner.jpg';
 import goldZodiacBannerImg from '../assets/gold-zodiac-banner.jpg';
+import yellowGoldNosePinBannerImg from '../assets/yellow-gold-nose-pin-banner.png';
+import yellowGoldSolitaireBannerImg from '../assets/yellow-gold-solitaire-banner.png';
 
 const fallbackCategories = [
   { categoryName: 'Rings', products: [] },
@@ -64,7 +66,7 @@ function getCategoryBanners(categoryName) {
     return [heartFusionRingImg, infinityDiamondRingImg];
   }
   if (cat.includes('solitaire')) {
-    return [solitaireSetsImg, heartFusionRingImg];
+    return [yellowGoldSolitaireBannerImg, yellowGoldSolitaireBannerImg];
   }
   if (cat.includes('chain')) {
     return [goldNecklaceSilkImg, layeredNecklacesImg];
@@ -73,7 +75,7 @@ function getCategoryBanners(categoryName) {
     return [trendyMangalsutrasImg, mangalsutraEarringsImg];
   }
   if (cat.includes('nose')) {
-    return [solitaireSetsImg, switchEarringsImg];
+    return [yellowGoldNosePinBannerImg, yellowGoldNosePinBannerImg];
   }
   if (cat.includes('bangle') || cat.includes('bracelet') || cat.includes('bangles')) {
     return [stretchableBanglesImg, watchCharmsImg];
