@@ -12,11 +12,22 @@ interface OrderItem {
   image: string;
   size?: string;
   selectedSize?: string;
+  grossWeight?: number;
+  netWeight?: number;
+  gold_weight?: number;
+  gross_weight?: number;
+  net_weight?: number;
   configuration?: {
     metal?: string;
     purity?: string;
     size?: string;
     stone?: string;
+    grossWeight?: number;
+    netWeight?: number;
+    gross_weight?: number;
+    net_weight?: number;
+    goldWeight?: number;
+    gold_weight?: number;
   };
   customization?: {
     type?: string;
@@ -387,6 +398,17 @@ export default function Orders() {
                   {selectedOrder.items && selectedOrder.items.map((item, idx) => {
                     const rawSize = item.configuration?.size || item.selectedSize || item.size;
                     const itemSize = (rawSize && !String(rawSize).includes(',')) ? rawSize : null;
+
+                    const rawGross = item.configuration?.grossWeight ?? item.configuration?.gross_weight ?? item.grossWeight ?? item.gross_weight ?? (item as any).product_weight ?? (item as any).weight;
+                    const rawNet = item.configuration?.netWeight ?? item.configuration?.net_weight ?? item.configuration?.goldWeight ?? item.configuration?.gold_weight ?? item.netWeight ?? item.net_weight ?? (item as any).gold_weight ?? (item as any).goldWeight;
+
+                    const grossWeightVal = (rawGross !== undefined && rawGross !== null && !isNaN(Number(rawGross)) && Number(rawGross) > 0)
+                      ? Number(Number(rawGross).toFixed(3))
+                      : null;
+                    const netWeightVal = (rawNet !== undefined && rawNet !== null && !isNaN(Number(rawNet)) && Number(rawNet) > 0)
+                      ? Number(Number(rawNet).toFixed(3))
+                      : null;
+
                     return (
                       <div key={idx} className="p-5 flex flex-col sm:flex-row items-center gap-4 hover:bg-slate-50/20 transition-colors group/ordrow">
                         <div className="w-20 h-20 bg-slate-50 border border-slate-200 rounded-xl overflow-hidden flex items-center justify-center shrink-0 relative shadow-inner">
@@ -401,7 +423,7 @@ export default function Orders() {
                           <p className="text-[8px] text-slate-450 uppercase tracking-widest mt-1">Slug: {item.slug}</p>
                           
                           {/* Configuration tags */}
-                          {(item.configuration || itemSize) && (
+                          {(item.configuration || itemSize || grossWeightVal !== null || netWeightVal !== null) && (
                             <div className="flex flex-wrap gap-2 mt-2 justify-center sm:justify-start">
                               {item.configuration?.metal && (
                                 <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
@@ -421,6 +443,16 @@ export default function Orders() {
                               {item.configuration?.stone && (
                                 <span className="text-[7px] uppercase font-bold bg-[#efe7e5]/80 text-[#5d463c] px-2 py-0.5 rounded-md border border-[#5d463c]/20">
                                   Stone: {item.configuration.stone}
+                                </span>
+                              )}
+                              {grossWeightVal !== null && (
+                                <span className="text-[7px] uppercase font-bold bg-amber-500/15 text-amber-900 px-2 py-0.5 rounded-md border border-amber-500/30 font-black">
+                                  Gross Wt: {grossWeightVal} g
+                                </span>
+                              )}
+                              {netWeightVal !== null && (
+                                <span className="text-[7px] uppercase font-bold bg-emerald-500/15 text-emerald-900 px-2 py-0.5 rounded-md border border-emerald-500/30 font-black">
+                                  Net Wt: {netWeightVal} g
                                 </span>
                               )}
                             </div>

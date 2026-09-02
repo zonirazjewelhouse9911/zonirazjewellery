@@ -17,10 +17,13 @@ export const CartProvider = ({ children }) => {
     localStorage.setItem('zoniraz_cart', JSON.stringify(cart));
   }, [cart]);
 
-  const addToCart = (product, quantity = 1, selectedPurity = '18KT', selectedSize = null, selectedStone = null) => {
+  const addToCart = (product, quantity = 1, selectedPurity = '18KT', selectedSize = null, selectedStone = null, weightDetails = null) => {
     requireAuth(() => {
       setCart(prev => {
         const existing = prev[product.id];
+        const grossW = weightDetails?.grossWeight || product.grossWeight || product.gross_weight || product.product_weight || product.weight || (existing?.grossWeight) || 0;
+        const netW = weightDetails?.goldWeight || weightDetails?.netWeight || product.netWeight || product.goldWeight || product.gold_weight || (existing?.netWeight) || 0;
+
         if (existing) {
           return {
             ...prev,
@@ -29,7 +32,19 @@ export const CartProvider = ({ children }) => {
               quantity: existing.quantity + quantity,
               selectedPurity: selectedPurity || existing.selectedPurity || '18KT',
               selectedSize: selectedSize || existing.selectedSize || null,
-              selectedStone: selectedStone || existing.selectedStone || null
+              selectedStone: selectedStone || existing.selectedStone || null,
+              grossWeight: grossW,
+              netWeight: netW,
+              goldWeight: netW,
+              configuration: {
+                ...(existing.configuration || {}),
+                metal: existing.selectedMetal || existing.configuration?.metal || 'YELLOW GOLD',
+                purity: selectedPurity || existing.selectedPurity || '18KT',
+                size: selectedSize || existing.selectedSize || null,
+                stone: selectedStone || existing.selectedStone || null,
+                grossWeight: grossW,
+                netWeight: netW
+              }
             }
           };
         }
@@ -40,7 +55,18 @@ export const CartProvider = ({ children }) => {
             quantity,
             selectedPurity,
             selectedSize: selectedSize || null,
-            selectedStone: selectedStone || null
+            selectedStone: selectedStone || null,
+            grossWeight: grossW,
+            netWeight: netW,
+            goldWeight: netW,
+            configuration: {
+              metal: product.selectedMetal || 'YELLOW GOLD',
+              purity: selectedPurity,
+              size: selectedSize || null,
+              stone: selectedStone || null,
+              grossWeight: grossW,
+              netWeight: netW
+            }
           }
         };
       });

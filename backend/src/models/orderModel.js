@@ -43,6 +43,14 @@ const orderItemSchema = new mongoose.Schema({
     stone: {
       type: String,
       default: ''
+    },
+    grossWeight: {
+      type: Number,
+      default: 0
+    },
+    netWeight: {
+      type: Number,
+      default: 0
     }
   },
   customization: {

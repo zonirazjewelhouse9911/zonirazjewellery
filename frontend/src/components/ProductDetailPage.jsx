@@ -746,7 +746,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
 
   const handleAddToCart = () => {
-    addToCart(product, 1, selectedMetal, selectedSize, selectedDiamond);
+    addToCart(product, 1, selectedMetal, selectedSize, selectedDiamond, {
+      grossWeight: pricingDetails?.grossWeight || product?.gross_weight || product?.gold_weight || 0,
+      goldWeight: pricingDetails?.goldWeight || product?.gold_weight || 0
+    });
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2500);
   };

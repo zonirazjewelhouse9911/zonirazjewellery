@@ -682,7 +682,10 @@ export default function UserDashboard() {
                               <div style={{ flex: 1 }}>
                                 <h4 style={{ margin: '0 0 4px 0', fontSize: '14px', fontWeight: '600', color: '#2b221d' }}>{item.name}</h4>
                                 <p style={{ margin: '0', fontSize: '12px', color: '#8c7365' }}>
-                                  Purity: {item.goldPurity} | Diamonds: {item.diamondDetails}
+                                  Purity: {item.goldPurity || item.configuration?.purity || 'N/A'}
+                                  {item.diamondDetails ? ` | Diamonds: ${item.diamondDetails}` : ''}
+                                  {(item.grossWeight || item.configuration?.grossWeight) ? ` | Gross Wt: ${item.grossWeight || item.configuration?.grossWeight} g` : ''}
+                                  {(item.netWeight || item.configuration?.netWeight) ? ` | Net Wt: ${item.netWeight || item.configuration?.netWeight} g` : ''}
                                 </p>
                                 <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#2b221d' }}>
                                   Qty: {item.quantity} x ₹{parseFloat(item.price).toLocaleString('en-IN')}

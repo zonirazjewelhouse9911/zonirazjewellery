@@ -21,6 +21,9 @@ const mapToClientOrder = (mongoOrder) => ({
         price: item.price,
         goldPurity: item.configuration?.purity || '',
         diamondDetails: item.configuration?.stone || '',
+        grossWeight: item.configuration?.grossWeight || item.grossWeight || item.gross_weight || 0,
+        netWeight: item.configuration?.netWeight || item.netWeight || item.goldWeight || item.gold_weight || 0,
+        configuration: item.configuration || null,
         customization: item.customization || null
     }))
 });
@@ -48,6 +51,9 @@ exports.createOrder = async (req, res) => {
                 chosenSize = String(item.size);
             }
 
+            const rawGross = item.grossWeight || item.gross_weight || item.configuration?.grossWeight || item.configuration?.gross_weight || item.product_weight || item.weight || 0;
+            const rawNet = item.netWeight || item.net_weight || item.goldWeight || item.gold_weight || item.configuration?.netWeight || item.configuration?.goldWeight || item.gold_weight || 0;
+
             return {
                 productId: item.productId || item.id,
                 name: item.name,
@@ -59,7 +65,9 @@ exports.createOrder = async (req, res) => {
                     metal: item.selectedMetal || item.metal || item.configuration?.metal || '',
                     purity: item.selectedPurity || item.purity || item.configuration?.purity || '18KT',
                     size: chosenSize,
-                    stone: item.selectedStone || item.diamondDetails || item.stone || item.configuration?.stone || 'SI IJ'
+                    stone: item.selectedStone || item.diamondDetails || item.stone || item.configuration?.stone || 'SI IJ',
+                    grossWeight: Number(rawGross) || 0,
+                    netWeight: Number(rawNet) || 0
                 },
                 customization: item.customization || null
             };
