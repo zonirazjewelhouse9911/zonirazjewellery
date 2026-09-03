@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import banner2 from '../assets/zZONIRAZ 1.png';
+import banner2_800 from '../assets/zZONIRAZ-800.webp';
+import banner2_1400 from '../assets/zZONIRAZ-1400.webp';
 
 const slides = [
-  { id: 1, type: 'image', src: banner2 },
+  { id: 1, type: 'image', src800: banner2_800, src1400: banner2_1400 },
   { id: 4, type: 'custom' },
 ];
 
@@ -93,21 +94,25 @@ export default function Hero() {
             <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
           </video>
         ) : slides[current].type === 'image' ? (
-          <img
-            src={slides[current].src}
-            alt="Zoniraz Jewellery Banner"
-            className="hero-slide-media"
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            width="1920"
-            height="1080"
-            style={{
-              width: '100%',
-              height: '100%',
-              pointerEvents: 'none'
-            }}
-          />
+          <picture style={{ width: '100%', height: '100%', display: 'block' }}>
+            <source srcSet={slides[current].src800} media="(max-width: 768px)" type="image/webp" />
+            <source srcSet={slides[current].src1400} type="image/webp" />
+            <img
+              src={slides[current].src1400}
+              alt="Zoniraz Jewellery Banner"
+              className="hero-slide-media"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              width="1310"
+              height="485"
+              style={{
+                width: '100%',
+                height: '100%',
+                pointerEvents: 'none'
+              }}
+            />
+          </picture>
         ) : (
           <div className="hero-custom-slide">
             <div className="hero-wave-bg-1" />

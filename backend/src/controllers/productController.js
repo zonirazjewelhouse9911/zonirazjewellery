@@ -3,11 +3,19 @@ const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
 const { generateSitemap } = require('../utils/sitemapGenerator');
 
+const productCache = new Map();
+
 class ProductController {
   getProducts = async (req, res) => {
     try {
+      if (productCache.has('products')) {
+        return res.status(200).json(productCache.get('products'));
+      }
       const products = await productService.getAllProducts();
-      return res.status(200).json({ success: true, data: products });
+      const payload = { success: true, data: products };
+      productCache.set('products', payload);
+      setTimeout(() => productCache.delete('products'), 5 * 60 * 1000);
+      return res.status(200).json(payload);
     } catch (error) {
       console.error('Get Products Controller Error:', error);
       return res.status(500).json({ success: false, message: 'Failed to fetch products' });

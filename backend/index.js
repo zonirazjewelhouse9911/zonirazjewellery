@@ -102,8 +102,27 @@ app.get(['/sitemap.xml', '/sitemap-blogs.xml', '/sitemap-products.xml', '/sitema
   }
 });
 
-app.use(express.static(path.join(__dirname, '/public')));
-app.use('/uploads', express.static(path.join(__dirname, '/uploads')));
+// ISSUE B — Static Asset & Video Cache Control Headers
+app.use(express.static(path.join(__dirname, '/public'), {
+  maxAge: '1y',
+  setHeaders: (res, filepath) => {
+    if (filepath.match(/\.(mp4|webm)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=2592000');
+    } else if (filepath.match(/\.(js|css|png|jpg|jpeg|webp|avif|svg|woff2)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }
+}));
+app.use('/uploads', express.static(path.join(__dirname, '/uploads'), {
+  maxAge: '30d',
+  setHeaders: (res, filepath) => {
+    if (filepath.match(/\.(mp4|webm)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=2592000');
+    } else if (filepath.match(/\.(js|css|png|jpg|jpeg|webp|avif|svg|woff2)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+    }
+  }
+}));
 
 // API Routes
 const productRoutes = require('./src/routes/productRoutes');

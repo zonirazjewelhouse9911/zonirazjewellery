@@ -6,7 +6,9 @@ import warrantyImg from '../assets/dancing-hoops.png';
 import buybackImg from '../assets/gulnaara.png';
 import craftsmanshipVideo from '../assets/videos/1.mp4';
 import ethicallyVideo from '../assets/videos/3.mp4';
-import transparencyVideo from '../assets/videos/5.mp4';
+import transparencyVideoMp4 from '../assets/videos/5-optimized.mp4';
+import transparencyVideoWebm from '../assets/videos/5-optimized.webm';
+import transparencyPoster from '../assets/videos/5-poster.webp';
 import warrantyVideo from '../assets/videos/6.mp4';
 import buybackVideo from '../assets/videos/4.mp4';
 
@@ -34,7 +36,9 @@ const stories = [
     title: '100% Transparency',
     subtitle: 'No hidden costs. Full breakdown of gold weights and stone values.',
     image: transparencyImg,
-    video: transparencyVideo,
+    video: transparencyVideoMp4,
+    webm: transparencyVideoWebm,
+    poster: transparencyPoster,
     tag: 'Certified Purity',
     tagSub: 'SGL & IGI Hallmarked'
   },
@@ -58,7 +62,7 @@ const stories = [
   }
 ];
 
-export default function ZonirazAssurance() {
+export default React.memo(function ZonirazAssurance() {
   const [activeIndex, setActiveIndex] = useState(2); // Start with the middle (3rd) card active
   const [isMuted, setIsMuted] = useState(true);
   const [isPaused, setIsPaused] = useState(false); // Start playing by default
@@ -144,15 +148,17 @@ export default function ZonirazAssurance() {
                 {story.video ? (
                   <video
                     ref={el => videoRefs.current[index] = el}
-                    src={story.video}
                     className="za-card-bg-img"
                     loop
                     muted={index !== activeIndex || isMuted}
                     playsInline
                     preload="metadata"
+                    poster={story.poster}
                     style={{ objectFit: 'cover' }}
                     autoPlay
                   >
+                    {story.webm && <source src={story.webm} type="video/webm" />}
+                    <source src={story.video} type="video/mp4" />
                     <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
                   </video>
                 ) : (
@@ -243,4 +249,4 @@ export default function ZonirazAssurance() {
       </div>
     </section>
   );
-}
+});

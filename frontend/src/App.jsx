@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, lazy, Suspense } from 'react';
 import { API_BASE_URL, getUploadsUrl } from './config';
 import Header from './components/Header';
 import Hero from './components/Hero';
@@ -16,27 +16,29 @@ import TestimonialSection from './components/TestimonialSection';
 import BottomRibbon from './components/BottomRibbon';
 import Footer from './components/Footer';
 import CategoryPage from './components/CategoryPage';
-import WishlistPage from './components/WishlistPage';
-import CartPage from './components/CartPage';
-import ProductDetailPage from './components/ProductDetailPage';
-import ContactPage from './components/ContactPage';
-import BlogPage from './components/BlogPage';
-import BlogDetailPage from './components/BlogDetailPage';
-import AboutPage from './components/AboutPage';
-import DeliveryPage from './components/DeliveryPage';
-import UserDashboard from './components/UserDashboard';
-import CheckoutPage from './components/CheckoutPage';
-import AllCollectionsPage from './components/AllCollectionsPage';
-import FranchisePage from './components/FranchisePage';
-import TermsPage from './components/TermsPage';
-import PrivacyPage from './components/PrivacyPage';
-import SellGoldPage from './components/SellGoldPage';
-import BuyGoldPage from './components/BuyGoldPage';
-import GoldMinePage from './components/GoldMinePage';
-import LooseStonesPage from './components/LooseStonesPage';
-import ZonirazAlwarPage from './components/ZonirazAlwarPage';
-import PendantPrototype from './components/PendantGenerator/PendantPrototype';
-import PendantGenerator from './components/PendantGenerator/PendantGenerator';
+
+// Step 7 — Code-splitting heavy page sections
+const WishlistPage = lazy(() => import('./components/WishlistPage'));
+const CartPage = lazy(() => import('./components/CartPage'));
+const ProductDetailPage = lazy(() => import('./components/ProductDetailPage'));
+const ContactPage = lazy(() => import('./components/ContactPage'));
+const BlogPage = lazy(() => import('./components/BlogPage'));
+const BlogDetailPage = lazy(() => import('./components/BlogDetailPage'));
+const AboutPage = lazy(() => import('./components/AboutPage'));
+const DeliveryPage = lazy(() => import('./components/DeliveryPage'));
+const UserDashboard = lazy(() => import('./components/UserDashboard'));
+const CheckoutPage = lazy(() => import('./components/CheckoutPage'));
+const AllCollectionsPage = lazy(() => import('./components/AllCollectionsPage'));
+const FranchisePage = lazy(() => import('./components/FranchisePage'));
+const TermsPage = lazy(() => import('./components/TermsPage'));
+const PrivacyPage = lazy(() => import('./components/PrivacyPage'));
+const SellGoldPage = lazy(() => import('./components/SellGoldPage'));
+const BuyGoldPage = lazy(() => import('./components/BuyGoldPage'));
+const GoldMinePage = lazy(() => import('./components/GoldMinePage'));
+const LooseStonesPage = lazy(() => import('./components/LooseStonesPage'));
+const ZonirazAlwarPage = lazy(() => import('./components/ZonirazAlwarPage'));
+const PendantPrototype = lazy(() => import('./components/PendantGenerator/PendantPrototype'));
+const PendantGenerator = lazy(() => import('./components/PendantGenerator/PendantGenerator'));
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -1112,77 +1114,79 @@ function AppContent() {
   return (
     <>
       <Header wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} allProducts={allProducts} />
-      {currentView === 'product' ? (
-        <ProductDetailPage
-          product={selectedProduct}
-          products={allProducts}
-          wishlist={wishlist}
-          setWishlist={setWishlist}
-          cart={cart}
-          setCart={setCart}
-          onBack={() => { window.history.back(); }}
-        />
-      ) : currentView === 'rings' ? (
-        <CategoryPage category={selectedCategoryName} wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} allProducts={allProducts} />
-      ) : currentView === 'contact' ? (
-        <ContactPage />
-      ) : currentView === 'blog' ? (
-        selectedBlogSlug 
-          ? <BlogDetailPage slug={selectedBlogSlug} onBack={() => { setSelectedBlogSlug(null); window.history.pushState(null, '', '/blog'); }} />
-          : <BlogPage />
-      ) : currentView === 'about' ? (
-        <AboutPage />
-      ) : currentView === 'franchise' ? (
-        <FranchisePage />
-      ) : currentView === 'delivery' ? (
-        <DeliveryPage initialCategory={helpCategory} />
-      ) : currentView === 'terms' ? (
-        <TermsPage />
-      ) : currentView === 'privacy' ? (
-        <PrivacyPage />
-      ) : currentView === 'wishlist' ? (
-        <WishlistPage products={allProducts} wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} />
-      ) : currentView === 'cart' ? (
-        <CartPage products={allProducts} cart={cart} setCart={setCart} />
-      ) : currentView === 'profile' ? (
-        <UserDashboard />
-      ) : currentView === 'all-collections' ? (
-        <AllCollectionsPage products={allProducts} />
-      ) : currentView === 'checkout' ? (
-        <CheckoutPage />
-      ) : currentView === 'sell-gold' ? (
-        <SellGoldPage onBack={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }} />
-      ) : currentView === 'buy-gold' ? (
-        <BuyGoldPage onBack={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }} />
-      ) : currentView === 'gold-mine' ? (
-        <GoldMinePage />
-      ) : currentView === 'loose-stones' ? (
-        <LooseStonesPage />
-      ) : currentView === 'zoniraz-alwar' ? (
-        <ZonirazAlwarPage />
-      ) : currentView === 'custom-name-pendant' ? (
-        <PendantGenerator />
-      ) : currentView === 'custom-pendant-prototype' ? (
-        <PendantPrototype />
-      ) : currentView === 'admin-call' ? (
-        <AdminVideoPanel />
-      ) : (
-        <>
-          <Hero />
-          <ShopByCollection products={allProducts} />
-          <FindPerfectMatch products={allProducts} />
-          <TrendingNow />
-          <ZonirazWorld />
-          <NewArrivals />
-          <CuratedForYou />
-          <ZonirazAssurance />
-          <GoldExchange />
-          <ExchangeProgram />
-          <ZonirazExperience />
-          <TestimonialSection />
-          <BottomRibbon />
-        </>
-      )}
+      <Suspense fallback={<div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#634d40', fontFamily: 'Inter, sans-serif' }}>Loading...</div>}>
+        {currentView === 'product' ? (
+          <ProductDetailPage
+            product={selectedProduct}
+            products={allProducts}
+            wishlist={wishlist}
+            setWishlist={setWishlist}
+            cart={cart}
+            setCart={setCart}
+            onBack={() => { window.history.back(); }}
+          />
+        ) : currentView === 'rings' ? (
+          <CategoryPage category={selectedCategoryName} wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} allProducts={allProducts} />
+        ) : currentView === 'contact' ? (
+          <ContactPage />
+        ) : currentView === 'blog' ? (
+          selectedBlogSlug 
+            ? <BlogDetailPage slug={selectedBlogSlug} onBack={() => { setSelectedBlogSlug(null); window.history.pushState(null, '', '/blog'); }} />
+            : <BlogPage />
+        ) : currentView === 'about' ? (
+          <AboutPage />
+        ) : currentView === 'franchise' ? (
+          <FranchisePage />
+        ) : currentView === 'delivery' ? (
+          <DeliveryPage initialCategory={helpCategory} />
+        ) : currentView === 'terms' ? (
+          <TermsPage />
+        ) : currentView === 'privacy' ? (
+          <PrivacyPage />
+        ) : currentView === 'wishlist' ? (
+          <WishlistPage products={allProducts} wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} />
+        ) : currentView === 'cart' ? (
+          <CartPage products={allProducts} cart={cart} setCart={setCart} />
+        ) : currentView === 'profile' ? (
+          <UserDashboard />
+        ) : currentView === 'all-collections' ? (
+          <AllCollectionsPage products={allProducts} />
+        ) : currentView === 'checkout' ? (
+          <CheckoutPage />
+        ) : currentView === 'sell-gold' ? (
+          <SellGoldPage onBack={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }} />
+        ) : currentView === 'buy-gold' ? (
+          <BuyGoldPage onBack={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }} />
+        ) : currentView === 'gold-mine' ? (
+          <GoldMinePage />
+        ) : currentView === 'loose-stones' ? (
+          <LooseStonesPage />
+        ) : currentView === 'zoniraz-alwar' ? (
+          <ZonirazAlwarPage />
+        ) : currentView === 'custom-name-pendant' ? (
+          <PendantGenerator />
+        ) : currentView === 'custom-pendant-prototype' ? (
+          <PendantPrototype />
+        ) : currentView === 'admin-call' ? (
+          <AdminVideoPanel />
+        ) : (
+          <>
+            <Hero />
+            <ShopByCollection products={allProducts} />
+            <FindPerfectMatch products={allProducts} />
+            <TrendingNow />
+            <ZonirazWorld />
+            <NewArrivals />
+            <CuratedForYou />
+            <ZonirazAssurance />
+            <GoldExchange />
+            <ExchangeProgram />
+            <ZonirazExperience />
+            <TestimonialSection />
+            <BottomRibbon />
+          </>
+        )}
+      </Suspense>
       <Footer />
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       {/* Global Video Call Modal — renders on top of everything */}

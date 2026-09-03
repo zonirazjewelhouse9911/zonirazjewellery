@@ -5308,3 +5308,15 @@ button {
 .pdp-modal-container {
   z-index: 1000000 !important;
 }
+
+/* STEP 3 - CLS Fix: Explicit aspect ratio reservation for product and card images */
+.product-image,
+.product-img,
+.cfy-card-img,
+.collection-card-img,
+.trending-card-img {
+  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: auto;
+  display: block;
+}

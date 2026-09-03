@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { memo } from 'react';
+import LazyVideo from './LazyVideo';
 import giftingVideo from '../assets/videos/9.mp4';
 import origamiVideo from '../assets/videos/4.mp4';
 import AuspiciousOccasion from '../assets/videos/neck.mp4';
@@ -21,7 +22,7 @@ const trendingItems = [
   },
 ];
 
-export default function TrendingNow() {
+const TrendingNow = memo(function TrendingNow() {
   return (
     <section className="trending-section">
       <div 
@@ -40,18 +41,11 @@ export default function TrendingNow() {
           <div key={item.id} className="trending-card" style={{ cursor: 'default' }}>
             <div className="trending-card-img-wrap">
               {item.video ? (
-                <video
+                <LazyVideo
                   src={item.video}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
                   className="trending-card-img"
                   style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
-                >
-                  <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
-                </video>
+                />
               ) : (
                 <img src={item.image} alt={item.title} className="trending-card-img" loading="lazy" decoding="async" width="400" height="400" />
               )}
@@ -62,4 +56,6 @@ export default function TrendingNow() {
       </div>
     </section>
   );
-}
+});
+
+export default TrendingNow;

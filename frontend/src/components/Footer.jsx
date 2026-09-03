@@ -28,7 +28,7 @@ export default function Footer() {
         <div className="footer-col">
           <h4 className="footer-col-title">Information</h4>
           <ul className="footer-links-list">
-            <li><a href="/gold-mine" style={{ color: '#c5a880', fontWeight: 'bold' }}>✨ Gold Saving Scheme Online</a></li>
+            <li><a href="/gold-mine" style={{ color: '#F5C451', fontWeight: 'bold' }}>Gold Saving Scheme Online</a></li>
             <li><a href="/blog">Blog</a></li>
             <li><a href="/contact">Contact Us</a></li>
             <li><a href="/about">About Zoniraz</a></li>

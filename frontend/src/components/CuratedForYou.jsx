@@ -1,12 +1,15 @@
 import React from 'react';
-import womenImg from '../assets/women.png';
-import menImg from '../assets/mens.png';
-import kidsImg from '../assets/kids.png';
+import women800 from '../assets/women-800.webp';
+import women1400 from '../assets/women-1400.webp';
+import men800 from '../assets/mens-800.webp';
+import men1400 from '../assets/mens-1400.webp';
+import kids800 from '../assets/kids-800.webp';
+import kids1400 from '../assets/kids-1400.webp';
 
 const genderCards = [
-  { id: 'women', label: 'Women Jewellery', image: womenImg, href: '#women' },
-  { id: 'men',   label: 'Men Jewellery',   image: menImg,   href: '#men'   },
-  { id: 'kids',  label: 'Kids Jewellery',  image: kidsImg,  href: '#kids'  },
+  { id: 'women', label: 'Women Jewellery', image800: women800, image1400: women1400, href: '#women' },
+  { id: 'men',   label: 'Men Jewellery',   image800: men800,   image1400: men1400,   href: '#men'   },
+  { id: 'kids',  label: 'Kids Jewellery',  image800: kids800,  image1400: kids1400,  href: '#kids'  },
 ];
 
 export default function CuratedForYou() {
@@ -23,7 +26,11 @@ export default function CuratedForYou() {
         {genderCards.map((card) => (
           <a key={card.id} href={card.href} className="cfy-card">
             <div className="cfy-card-img-wrap">
-              <img src={card.image} alt="" aria-hidden="true" className="cfy-card-img" loading="lazy" decoding="async" width="400" height="500" />
+              <picture>
+                <source srcSet={card.image800} media="(max-width: 768px)" type="image/webp" />
+                <source srcSet={card.image1400} type="image/webp" />
+                <img src={card.image1400} alt={card.label} className="cfy-card-img" loading="lazy" decoding="async" width="400" height="500" />
+              </picture>
             </div>
             <p className="cfy-card-label">{card.label}</p>
           </a>

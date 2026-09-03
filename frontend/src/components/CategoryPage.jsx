@@ -1660,6 +1660,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                             loop 
                             muted 
                             playsInline
+                            preload="metadata"
                           >
                             <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
                           </video>

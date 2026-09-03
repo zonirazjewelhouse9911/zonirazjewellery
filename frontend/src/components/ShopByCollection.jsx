@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
+import LazyVideo from './LazyVideo';
 import bridalVideo from '../assets/videos/1.mp4';
 import everydayVideo from '../assets/videos/daleywear.mp4';
 import officeVideo from '../assets/videos/officewear.mp4';
@@ -60,7 +61,7 @@ const defaultImages = {
   'heritage': null
 };
 
-export default function ShopByCollection({ products = [] }) {
+const ShopByCollection = memo(function ShopByCollection({ products = [] }) {
   const [collections, setCollections] = useState(staticCollections);
 
   useEffect(() => {
@@ -72,7 +73,6 @@ export default function ShopByCollection({ products = [] }) {
             const id = col.slug || col._id;
             const label = col.tags?.[0]?.toUpperCase() || labelMap[col.slug] || 'COLLECTION';
 
-            // Search products to find real product image as fallback
             const cleanSlug = String(col.slug || '').toLowerCase();
             const matchingProducts = products.filter(p => {
               const tagsList = p.tags ? (Array.isArray(p.tags) ? p.tags : [p.tags]) : [];
@@ -81,7 +81,6 @@ export default function ShopByCollection({ products = [] }) {
               return matchesTag || matchesName;
             });
 
-            // Map image path safely
             let image = col.image;
             if (!image || image === '/images/site/default-collection.jpg') {
               if (matchingProducts.length > 0 && matchingProducts[0].image) {
@@ -112,7 +111,6 @@ export default function ShopByCollection({ products = [] }) {
 
   if (collections.length === 0) return null;
 
-  // homepage only shows 5 collections
   const displayed = collections.slice(0, 5);
 
   return (
@@ -126,17 +124,10 @@ export default function ShopByCollection({ products = [] }) {
         {/* Large left card */}
         <a href={displayed[0].href} className="collection-card collection-card-large">
           {displayed[0].video ? (
-            <video
+            <LazyVideo
               src={displayed[0].video}
-              autoPlay
-              loop
-              muted
-              playsInline
-              preload="metadata"
               className="collection-card-img"
-            >
-              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
-            </video>
+            />
           ) : (
             <img src={displayed[0].image} alt={displayed[0].title} className="collection-card-img" loading="lazy" decoding="async" width="600" height="600" />
           )}
@@ -152,18 +143,11 @@ export default function ShopByCollection({ products = [] }) {
           {displayed.slice(1).map((col) => (
             <a key={col.id} href={col.href} className="collection-card collection-card-small">
               {col.video ? (
-                <video
+                <LazyVideo
                   src={col.video}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  preload="metadata"
                   className="collection-card-img"
                   style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
-                >
-                  <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
-                </video>
+                />
               ) : (
                 <img src={col.image} alt={col.title} className="collection-card-img" loading="lazy" decoding="async" width="300" height="300" />
               )}
@@ -178,4 +162,6 @@ export default function ShopByCollection({ products = [] }) {
       </div>
     </section>
   );
-}
+});
+
+export default ShopByCollection;
