@@ -868,9 +868,13 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                 const subcategoriesMap = new Map();
                 (cat.products || []).forEach(p => {
                   if (p.productSubCategory) {
-                    const key = p.productSubCategory.trim().toLowerCase();
-                    if (!subcategoriesMap.has(key)) {
-                      subcategoriesMap.set(key, p.productSubCategory.trim());
+                    const cleanSub = p.productSubCategory.trim();
+                    const cleanSubLower = cleanSub.toLowerCase();
+                    const catLower = displayName.toLowerCase();
+                    if (cleanSub && cleanSubLower !== catLower && cleanSubLower !== `${catLower}s` && cleanSubLower !== `${catLower}es`) {
+                      if (!subcategoriesMap.has(cleanSubLower)) {
+                        subcategoriesMap.set(cleanSubLower, cleanSub);
+                      }
                     }
                   }
                 });

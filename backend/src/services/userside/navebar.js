@@ -14,7 +14,15 @@ exports.navbar = async (req, res) => {
                                 $expr: {
                                     $or: [
                                         { $eq: [ { $toLower: "$product_category" }, { $toLower: "$$catName" } ] },
-                                        { $eq: [ { $toLower: "$category" }, { $toLower: "$$catName" } ] }
+                                        { $eq: [ { $toLower: "$category" }, { $toLower: "$$catName" } ] },
+                                        { $eq: [ 
+                                            { $replaceAll: { input: { $replaceAll: { input: { $toLower: "$product_category" }, find: " ", replacement: "" } }, find: "s", replacement: "" } }, 
+                                            { $replaceAll: { input: { $replaceAll: { input: { $toLower: "$$catName" }, find: " ", replacement: "" } }, find: "s", replacement: "" } } 
+                                        ] },
+                                        { $eq: [ 
+                                            { $replaceAll: { input: { $replaceAll: { input: { $toLower: "$category" }, find: " ", replacement: "" } }, find: "s", replacement: "" } }, 
+                                            { $replaceAll: { input: { $replaceAll: { input: { $toLower: "$$catName" }, find: " ", replacement: "" } }, find: "s", replacement: "" } } 
+                                        ] }
                                     ]
                                 }
                             }
