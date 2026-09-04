@@ -1,5 +1,5 @@
 import React from 'react';
-import rightBgImg from '../assets/nine-kt.png';
+const rightBgImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498469/zoniraz_frontend/nine-kt.jpg";
 
 export default function NewArrivals() {
   return (

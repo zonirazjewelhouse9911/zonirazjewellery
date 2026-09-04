@@ -1,11 +1,11 @@
 import React, { useState, useEffect, memo } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
 import LazyVideo from './LazyVideo';
-import bridalVideo from '../assets/videos/1.mp4';
-import everydayVideo from '../assets/videos/daleywear.mp4';
-import officeVideo from '../assets/videos/officewear.mp4';
-import solitaireVideo from '../assets/videos/d92d747b23c8205d85da43cb7d302733.mp4';
-import heritageVideo from '../assets/videos/heritageGold.mp4';
+const bridalVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498517/zoniraz_frontend/videos/1.mp4";
+const everydayVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498508/zoniraz_frontend/videos/daleywear.mp4";
+const officeVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498631/zoniraz_frontend/videos/officewear.mp4";
+const solitaireVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498655/zoniraz_frontend/videos/d92d747b23c8205d85da43cb7d302733.mp4";
+const heritageVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498688/zoniraz_frontend/videos/heritageGold.mp4";
 
 const staticCollections = [
   {

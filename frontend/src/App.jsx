@@ -869,7 +869,7 @@ function AppContent() {
     let title = '';
     let description = '';
     let canonical = seoData.url || 'https://zoniraz.com/';
-    let ogImage = 'https://zoniraz.com/zoni1.png';
+    let ogImage = 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png';
     let schemas = [];
 
     if (currentView === 'product' && selectedProduct) {
@@ -943,7 +943,7 @@ function AppContent() {
           "@type": "Organization",
           "name": "Zoniraz Jewels",
           "url": "https://zoniraz.com/",
-          "logo": "https://zoniraz.com/zoni1.png",
+          "logo": "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png",
           "description": "Zoniraz Jewels is a premium luxury jewellery brand specializing in fine gold, diamond, and designer jewellery collections.",
           "sameAs": [
             "https://www.facebook.com/zonirazjewel/",
@@ -975,7 +975,7 @@ function AppContent() {
           "@type": "LocalBusiness",
           "@id": "https://zoniraz.com/zoniraz-alwar#localbusiness",
           "name": "Zoniraz Jewel House",
-          "image": "https://zoniraz.com/zoni1.png",
+          "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png",
           "telephone": "+91 97848 36060",
           "email": "zonirazjewelhouse@gmail.com",
           "address": {

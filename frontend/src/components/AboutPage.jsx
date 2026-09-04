@@ -1,9 +1,9 @@
 import React from 'react';
 
 // Import images to make collections look beautiful
-import meshClusterRingImg from '../assets/mesh_cluster_ring.png';
-import dancingHoopsImg from '../assets/dancing-hoops.png';
-import infinityNecklacesImg from '../assets/infinity-necklaces.png';
+const meshClusterRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498420/zoniraz_frontend/mesh_cluster_ring.jpg";
+const dancingHoopsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498439/zoniraz_frontend/dancing-hoops.jpg";
+const infinityNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498427/zoniraz_frontend/infinity-necklaces.jpg";
 
 export default function AboutPage() {
   return (

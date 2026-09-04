@@ -63,7 +63,7 @@ const LazyVideo = memo(function LazyVideo({
         >
           {webm && <source src={webm} type="video/webm" />}
           {src && <source src={src} type="video/mp4" />}
-          <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+          <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
         </video>
       ) : poster ? (
         <img

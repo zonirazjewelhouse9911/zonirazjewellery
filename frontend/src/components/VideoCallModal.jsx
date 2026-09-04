@@ -117,7 +117,7 @@ export default function VideoCallModal() {
               playsInline
               style={styles.remoteVideo}
             >
-              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+              <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
             </video>
             {/* Local (user) PiP */}
             <video
@@ -127,7 +127,7 @@ export default function VideoCallModal() {
               muted
               style={styles.localVideo}
             >
-              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+              <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
             </video>
             {/* Live badge */}
             <div style={styles.liveBadge}>

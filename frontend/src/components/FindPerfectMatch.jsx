@@ -1,13 +1,13 @@
 import React, { useRef } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
-import goldRingImg from '../assets/aneka.png';
-import goldNecklaceImg from '../assets/gold-necklace-silk.png';
-import hoopsImg from '../assets/dancing-hoops.png';
-import mangalsutraImg from '../assets/mangalsutra-earrings.png';
-import charmsImg from '../assets/watch-charms.png';
-import layeredImg from '../assets/layered-necklaces.png';
-import banglesImg from '../assets/stretchable-bangles.png';
-import yellowGoldNosePinBannerImg from '../assets/yellow-gold-nose-pin-banner.png';
+const goldRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498434/zoniraz_frontend/aneka.jpg";
+const goldNecklaceImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498423/zoniraz_frontend/gold-necklace-silk.jpg";
+const hoopsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498439/zoniraz_frontend/dancing-hoops.jpg";
+const mangalsutraImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498451/zoniraz_frontend/mangalsutra-earrings.jpg";
+const charmsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498414/zoniraz_frontend/watch-charms.jpg";
+const layeredImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498446/zoniraz_frontend/layered-necklaces.jpg";
+const banglesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498436/zoniraz_frontend/stretchable-bangles.jpg";
+const yellowGoldNosePinBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498472/zoniraz_frontend/yellow-gold-nose-pin-banner.jpg";
 
 const defaultImages = {
   'rings': goldRingImg,

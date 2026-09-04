@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 import { Sparkles, Gift, CheckCircle, Calculator, Clock, ChevronRight, ShieldCheck, ArrowRight, RefreshCw, AlertCircle, Heart, Calendar, Award } from 'lucide-react';
-import ringImg from '../assets/heart_fusion_ring.png';
+const ringImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498456/zoniraz_frontend/heart_fusion_ring.jpg";
 
 export default function GoldMinePage() {
   const { user, token } = useContext(AuthContext);
@@ -207,7 +207,7 @@ export default function GoldMinePage() {
           currency: orderData.currency,
           name: 'Zoniraz Jewellery House',
           description: `10+1 Gold Mine Plan Registration - 1st Month ₹${monthlyAmount.toLocaleString('en-IN')}`,
-          image: '/zoni.png',
+          image: 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png',
           prefill: {
             name: userName || '',
             email: userEmail,
@@ -310,7 +310,7 @@ export default function GoldMinePage() {
           currency: orderData.currency,
           name: 'Zoniraz Jewellery House',
           description: `Gold Mine Plan ${planId} Installment - ₹${amountToPay.toLocaleString('en-IN')}`,
-          image: '/zoni.png',
+          image: 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png',
           prefill: {
             name: userName || '',
             email: userEmail,

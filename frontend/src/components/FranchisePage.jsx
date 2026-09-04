@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import goldNecklaceSilk from '../assets/gold-necklace-silk.png';
+const goldNecklaceSilk = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498423/zoniraz_frontend/gold-necklace-silk.jpg";
 
 export default function FranchisePage() {
   const [formData, setFormData] = useState({
@@ -85,7 +85,7 @@ export default function FranchisePage() {
 
         .franchise-hero {
           position: relative;
-          background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("/jewelry banner 1.png");
+          background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("https://res.cloudinary.com/fxokwlyu/image/upload/v1788498409/zoniraz_frontend/jewelry_banner_1.png");
           background-size: cover;
           background-position: center;
           border-radius: 20px;

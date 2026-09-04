@@ -1662,7 +1662,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                             playsInline
                             preload="metadata"
                           >
-                            <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+                            <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
                           </video>
                         )}
 

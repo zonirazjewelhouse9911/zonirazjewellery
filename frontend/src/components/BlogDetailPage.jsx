@@ -1,9 +1,9 @@
 import React from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
-import diamondRingImg from '../assets/infinity_diamond_ring.png';
+const diamondRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498424/zoniraz_frontend/infinity_diamond_ring.jpg";
 
-import goldSavingImg from '../assets/solitaire-sets.png';
-import pendantImg from '../assets/layered-necklaces.png';
+const goldSavingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498425/zoniraz_frontend/solitaire-sets.jpg";
+const pendantImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498446/zoniraz_frontend/layered-necklaces.jpg";
 
 const allBlogContent = [
   {

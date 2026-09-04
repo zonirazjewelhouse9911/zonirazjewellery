@@ -63,9 +63,9 @@ export default function Banners() {
       // Clean up memory
       URL.revokeObjectURL(img.src);
 
-      // Validate dimensions: max width 1214.08, max height 450
-      if (img.width > 1214.08 || img.height > 450) {
-        setValidationError(`Image dimensions (${img.width}x${img.height}px) exceed the maximum permitted size of 1214.08 x 450 px.`);
+      // Validate dimensions: max width 1828 (allowing 1830 for pixel rounding), max height 480
+      if (img.width > 1830 || img.height > 480) {
+        setValidationError(`Image dimensions (${img.width}x${img.height}px) exceed the maximum permitted size of 1828 x 480 px.`);
         if (fileInputRef.current) fileInputRef.current.value = '';
         return;
       }
@@ -254,7 +254,7 @@ export default function Banners() {
                 <div>
                   <span className="text-[10px] font-bold text-slate-700 block">Required Dimensions</span>
                   <span className="text-[9px] text-slate-500 block leading-normal mt-0.5">
-                    Images must be at most <strong>1214.08 x 450 px</strong> to maintain premium layout alignment.
+                    Images must be at most <strong>1828 x 480 px</strong> to maintain premium layout alignment.
                   </span>
                 </div>
               </div>

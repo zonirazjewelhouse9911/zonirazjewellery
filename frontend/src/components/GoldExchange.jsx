@@ -1,14 +1,14 @@
 import React from 'react';
 
-import purityBadgeImg from '../assets/WhatsApp Image 2026-07-24 at 12.32.04 PM (1).jpeg';
-import purityMarkImg from '../assets/WhatsApp Image 2026-07-24 at 12.32.04 PM.jpeg';
-import sglImg from '../assets/WhatsApp Image 2026-07-24 at 12.32.05 PM (1).jpeg';
-import igiImg from '../assets/WhatsApp Image 2026-07-24 at 12.32.05 PM.jpeg';
-import trustSafetyImg from '../assets/WhatsApp Image 2026-07-24 at 12.32.06 PM (1).jpeg';
-import certQualityImg from '../assets/WhatsApp Image 2026-07-24 at 12.32.06 PM (2).jpeg';
-import naturalDiamondImg from '../assets/WhatsApp Image 2026-07-24 at 12.32.06 PM.jpeg';
-import bisLogoImg from '../assets/WhatsApp Image 2026-07-24 at 12.32.07 PM (1).jpeg';
-import authenticJewelleryImg from '../assets/WhatsApp Image 2026-07-24 at 12.32.07 PM.jpeg';
+const purityBadgeImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498460/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_04_PM__1_.jpg";
+const purityMarkImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498482/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_04_PM.jpg";
+const sglImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498413/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_05_PM__1_.jpg";
+const igiImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498474/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_05_PM.jpg";
+const trustSafetyImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498434/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_06_PM__1_.jpg";
+const certQualityImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498420/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_06_PM__2_.jpg";
+const naturalDiamondImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498455/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_06_PM.jpg";
+const bisLogoImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498473/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_07_PM__1_.jpg";
+const authenticJewelleryImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498459/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_07_PM.jpg";
 
 const certBadges = [
   { id: 1, img: purityBadgeImg, alt: 'Assured Purity & Trusted Quality', title: 'Assured Purity' },

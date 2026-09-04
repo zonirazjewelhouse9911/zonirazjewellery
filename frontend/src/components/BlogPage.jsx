@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
-import weddingBanner from '../assets/WEDDING BANNER.png';
+const weddingBanner = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498475/zoniraz_frontend/WEDDING_BANNER.png";
 
-import diamondRingImg from '../assets/infinity_diamond_ring.png';
-import goldSavingImg from '../assets/solitaire-sets.png';
-import pendantImg from '../assets/layered-necklaces.png';
+const diamondRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498424/zoniraz_frontend/infinity_diamond_ring.jpg";
+const goldSavingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498425/zoniraz_frontend/solitaire-sets.jpg";
+const pendantImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498446/zoniraz_frontend/layered-necklaces.jpg";
 
 const categories = ["All Blogs", "Gold", "Diamond", "Earrings", "Rings", "Trending", "Bridal", "Daily Wear", "Styling", "Editor's Picks"];
 

@@ -1,10 +1,10 @@
 import React from 'react';
-import women800 from '../assets/women-800.webp';
-import women1400 from '../assets/women-1400.webp';
-import men800 from '../assets/mens-800.webp';
-import men1400 from '../assets/mens-1400.webp';
-import kids800 from '../assets/kids-800.webp';
-import kids1400 from '../assets/kids-1400.webp';
+const women800 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498419/zoniraz_frontend/women-800.webp";
+const women1400 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498418/zoniraz_frontend/women-1400.webp";
+const men800 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498417/zoniraz_frontend/mens-800.webp";
+const men1400 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498415/zoniraz_frontend/mens-1400.webp";
+const kids800 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498458/zoniraz_frontend/kids-800.webp";
+const kids1400 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498440/zoniraz_frontend/kids-1400.webp";
 
 const genderCards = [
   { id: 'women', label: 'Women Jewellery', image800: women800, image1400: women1400, href: '#women' },

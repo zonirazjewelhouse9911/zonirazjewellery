@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
-import craftsmanshipImg from '../assets/nine-kt.png';
-import ethicalImg from '../assets/shaya-diamonds.png';
-import transparencyImg from '../assets/solitaire-sets.png';
-import warrantyImg from '../assets/dancing-hoops.png';
-import buybackImg from '../assets/gulnaara.png';
-import craftsmanshipVideo from '../assets/videos/1.mp4';
-import ethicallyVideo from '../assets/videos/3.mp4';
-import transparencyVideoMp4 from '../assets/videos/5-optimized.mp4';
-import transparencyVideoWebm from '../assets/videos/5-optimized.webm';
-import transparencyPoster from '../assets/videos/5-poster.webp';
-import warrantyVideo from '../assets/videos/6.mp4';
-import buybackVideo from '../assets/videos/4.mp4';
+const craftsmanshipImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498469/zoniraz_frontend/nine-kt.jpg";
+const ethicalImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498480/zoniraz_frontend/shaya-diamonds.jpg";
+const transparencyImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498425/zoniraz_frontend/solitaire-sets.jpg";
+const warrantyImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498439/zoniraz_frontend/dancing-hoops.jpg";
+const buybackImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498457/zoniraz_frontend/gulnaara.jpg";
+const craftsmanshipVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498517/zoniraz_frontend/videos/1.mp4";
+const ethicallyVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498624/zoniraz_frontend/videos/3.mp4";
+const transparencyVideoMp4 = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498667/zoniraz_frontend/videos/5-optimized.mp4";
+const transparencyVideoWebm = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498669/zoniraz_frontend/videos/5-optimized.webm";
+const transparencyPoster = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498668/zoniraz_frontend/videos/5-poster.webp";
+const warrantyVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498499/zoniraz_frontend/videos/6.mp4";
+const buybackVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498506/zoniraz_frontend/videos/4.mp4";
 
 const stories = [
   {
@@ -159,7 +159,7 @@ export default React.memo(function ZonirazAssurance() {
                   >
                     {story.webm && <source src={story.webm} type="video/webm" />}
                     <source src={story.video} type="video/mp4" />
-                    <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+                    <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
                   </video>
                 ) : (
                   <img src={story.image} alt={story.title} className="za-card-bg-img" loading="lazy" decoding="async" width="400" height="500" />

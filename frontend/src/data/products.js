@@ -1,26 +1,26 @@
-import meshClusterRingImg from '../assets/mesh_cluster_ring.png';
-import infinityDiamondRingImg from '../assets/infinity_diamond_ring.png';
-import heartFusionRingImg from '../assets/heart_fusion_ring.png';
-import lotusBypassRingImg from '../assets/lotus_bypass_ring.png';
+const meshClusterRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498420/zoniraz_frontend/mesh_cluster_ring.jpg";
+const infinityDiamondRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498424/zoniraz_frontend/infinity_diamond_ring.jpg";
+const heartFusionRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498456/zoniraz_frontend/heart_fusion_ring.jpg";
+const lotusBypassRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498435/zoniraz_frontend/lotus_bypass_ring.jpg";
 
 // Import assets for new categories
-import goldEarringsBannerImg from '../assets/gold-earrings-banner.jpg';
-import switchEarringsImg from '../assets/switch-earrings.png';
-import dancingHoopsImg from '../assets/dancing-hoops.png';
-import silverEarringsImg from '../assets/silver-earrings.png';
-import stretchableBanglesImg from '../assets/stretchable-bangles.png';
-import silverBraceletsImg from '../assets/silver-bracelets.png';
-import watchCharmsImg from '../assets/watch-charms.png';
-import solitaireSetsImg from '../assets/solitaire-sets.png';
-import gulnaaraImg from '../assets/gulnaara.png';
-import trendyMangalsutrasImg from '../assets/trendy-mangalsutras.webp';
-import mangalsutraEarringsImg from '../assets/mangalsutra-earrings.png';
-import layeredNecklacesImg from '../assets/layered-necklaces.png';
-import infinityNecklacesImg from '../assets/infinity-necklaces.png';
-import silverNecklacesImg from '../assets/silver-necklaces.png';
-import caratlaneIconicsImg from '../assets/caratlane-iconics.png';
-import customerFavouritesImg from '../assets/customer-favourites.png';
-import wearYourWinsImg from '../assets/wear-your-wins.png';
+const goldEarringsBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498412/zoniraz_frontend/gold-earrings-banner.jpg";
+const switchEarringsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498461/zoniraz_frontend/switch-earrings.jpg";
+const dancingHoopsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498439/zoniraz_frontend/dancing-hoops.jpg";
+const silverEarringsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498421/zoniraz_frontend/silver-earrings.jpg";
+const stretchableBanglesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498436/zoniraz_frontend/stretchable-bangles.jpg";
+const silverBraceletsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498426/zoniraz_frontend/silver-bracelets.jpg";
+const watchCharmsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498414/zoniraz_frontend/watch-charms.jpg";
+const solitaireSetsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498425/zoniraz_frontend/solitaire-sets.jpg";
+const gulnaaraImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498457/zoniraz_frontend/gulnaara.jpg";
+const trendyMangalsutrasImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498431/zoniraz_frontend/trendy-mangalsutras.webp";
+const mangalsutraEarringsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498451/zoniraz_frontend/mangalsutra-earrings.jpg";
+const layeredNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498446/zoniraz_frontend/layered-necklaces.jpg";
+const infinityNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498427/zoniraz_frontend/infinity-necklaces.jpg";
+const silverNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498477/zoniraz_frontend/silver-necklaces.jpg";
+const caratlaneIconicsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498443/zoniraz_frontend/caratlane-iconics.jpg";
+const customerFavouritesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498471/zoniraz_frontend/customer-favourites.jpg";
+const wearYourWinsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498479/zoniraz_frontend/wear-your-wins.jpg";
 
 export const products = [
   {

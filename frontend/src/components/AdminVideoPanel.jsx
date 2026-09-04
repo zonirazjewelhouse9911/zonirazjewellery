@@ -162,7 +162,7 @@ export default function AdminVideoPanel() {
               playsInline
               style={s.remoteVideo}
             >
-              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+              <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
             </video>
             {/* Admin self PiP */}
             <video
@@ -172,7 +172,7 @@ export default function AdminVideoPanel() {
               muted
               style={s.localVideo}
             >
-              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+              <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
             </video>
             <div style={s.liveBadge}>
               <span style={s.liveDot}/>

@@ -515,7 +515,7 @@ export default function AuthModal({ isOpen, onClose, onSuccess, initialTab = 'lo
       <div className="auth-modal-card">
         {/* Left Pane: Branding / Custom Illustration */}
         <div className="auth-left-pane">
-          <img src="/zoni.png" className="auth-logo-img" alt="Zoniraz Logo" />
+          <img src="https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png" className="auth-logo-img" alt="Zoniraz Logo" />
           <h3 className="auth-left-brand-first">Personalized</h3>
           <h2 className="auth-left-brand-second">Curations</h2>
           <p className="auth-left-brand-subtitle">

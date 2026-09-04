@@ -1,8 +1,8 @@
 import React, { memo } from 'react';
 import LazyVideo from './LazyVideo';
-import giftingVideo from '../assets/videos/9.mp4';
-import origamiVideo from '../assets/videos/4.mp4';
-import AuspiciousOccasion from '../assets/videos/neck.mp4';
+const giftingVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498726/zoniraz_frontend/videos/9.mp4";
+const origamiVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498506/zoniraz_frontend/videos/4.mp4";
+const AuspiciousOccasion = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498484/zoniraz_frontend/videos/neck.mp4";
 
 const trendingItems = [
   {

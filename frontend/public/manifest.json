@@ -3,12 +3,12 @@
   "name": "Zoniraz Jewels",
   "icons": [
     {
-      "src": "/zoni.png",
+      "src": "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/zoni1.png",
+      "src": "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png",
       "type": "image/png",
       "sizes": "512x512"
     }

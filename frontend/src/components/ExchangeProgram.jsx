@@ -47,10 +47,10 @@ export default function ExchangeProgram() {
         {/* Banner Cards Row */}
         <div className="ep-banner-cards-row">
           <a href="#gold-mine" className="ep-banner-card" style={{ display: 'block', textDecoration: 'none', cursor: 'pointer' }}>
-            <img src="/zoniraz banner 5.jpg.jpeg" alt="Gold Mine 10+1 Monthly Installment Plan" className="ep-banner-img" loading="lazy" decoding="async" width="600" height="300" />
+            <img src="https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoniraz_banner_5_jpg.jpg" alt="Gold Mine 10+1 Monthly Installment Plan" className="ep-banner-img" loading="lazy" decoding="async" width="600" height="300" />
           </a>
           <a href="#sell-gold" className="ep-banner-card" style={{ display: 'block', textDecoration: 'none', cursor: 'pointer' }}>
-            <img src="/gold banner .jpg.jpeg" alt="Sell & Exchange Old Gold" className="ep-banner-img" loading="lazy" decoding="async" width="600" height="300" />
+            <img src="https://res.cloudinary.com/fxokwlyu/image/upload/v1788498407/zoniraz_frontend/gold_banner__jpg.jpg" alt="Sell & Exchange Old Gold" className="ep-banner-img" loading="lazy" decoding="async" width="600" height="300" />
           </a>
         </div>
 

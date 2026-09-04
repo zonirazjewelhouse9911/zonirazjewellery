@@ -7,7 +7,7 @@ export default function Footer() {
         {/* Logo & Tagline */}
         <div className="footer-col brand-col">
           <a href="/" className="footer-brand-logo" style={{ display: 'inline-block', marginBottom: '-50px' }}>
-            <img src="/zoni.png" alt="Zoniraz Logo" loading="lazy" decoding="async" width="150" height="150" style={{ height: '150px', objectFit: 'contain', display: 'block', marginLeft: '-22px' }} />
+            <img src="https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png" alt="Zoniraz Logo" loading="lazy" decoding="async" width="150" height="150" style={{ height: '150px', objectFit: 'contain', display: 'block', marginLeft: '-22px' }} />
           </a>
           <p className="footer-tagline">Crafting brilliance for generations.</p>
         </div>

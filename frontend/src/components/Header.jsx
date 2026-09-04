@@ -5,39 +5,39 @@ import { CartContext } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
 import AuthModal from './AuthModal';
 import { Coins, TrendingDown, RefreshCw, X, ArrowLeft, ChevronDown } from 'lucide-react';
-import messageBandsImg from '../assets/message-bands.png';
-import postcardsBannerImg from '../assets/postcards-banner.png';
-import switchEarringsImg from '../assets/switch-earrings.png';
-import dancingHoopsImg from '../assets/dancing-hoops.png';
-import stretchableBanglesImg from '../assets/stretchable-bangles.png';
-import watchCharmsImg from '../assets/watch-charms.png';
-import solitaireSetsImg from '../assets/solitaire-sets.png';
-import gulnaaraImg from '../assets/gulnaara.png';
-import mangalsutraEarringsImg from '../assets/mangalsutra-earrings.png';
-import trendyMangalsutrasImg from '../assets/trendy-mangalsutras.webp';
-import layeredNecklacesImg from '../assets/layered-necklaces.png';
-import infinityNecklacesImg from '../assets/infinity-necklaces.png';
-import silverEarringsImg from '../assets/silver-earrings.png';
-import silverNecklacesImg from '../assets/silver-necklaces.png';
-import silverBraceletsImg from '../assets/silver-bracelets.png';
-import silverRingsImg from '../assets/silver-rings.png';
-import giftCardsImg from '../assets/gift-cards.png';
-import wearYourWinsImg from '../assets/wear-your-wins.png';
-import caratlaneIconicsImg from '../assets/caratlane-iconics.png';
-import customerFavouritesImg from '../assets/customer-favourites.png';
-import nineKtImg from '../assets/nine-kt.png';
-import mensPlatinumImg from '../assets/mens-platinum.png';
-import anekaImg from '../assets/aneka.png';
-import giftsForMomImg from '../assets/gifts-for-mom.png';
+const messageBandsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498478/zoniraz_frontend/message-bands.jpg";
+const postcardsBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498414/zoniraz_frontend/postcards-banner.jpg";
+const switchEarringsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498461/zoniraz_frontend/switch-earrings.jpg";
+const dancingHoopsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498439/zoniraz_frontend/dancing-hoops.jpg";
+const stretchableBanglesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498436/zoniraz_frontend/stretchable-bangles.jpg";
+const watchCharmsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498414/zoniraz_frontend/watch-charms.jpg";
+const solitaireSetsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498425/zoniraz_frontend/solitaire-sets.jpg";
+const gulnaaraImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498457/zoniraz_frontend/gulnaara.jpg";
+const mangalsutraEarringsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498451/zoniraz_frontend/mangalsutra-earrings.jpg";
+const trendyMangalsutrasImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498431/zoniraz_frontend/trendy-mangalsutras.webp";
+const layeredNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498446/zoniraz_frontend/layered-necklaces.jpg";
+const infinityNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498427/zoniraz_frontend/infinity-necklaces.jpg";
+const silverEarringsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498421/zoniraz_frontend/silver-earrings.jpg";
+const silverNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498477/zoniraz_frontend/silver-necklaces.jpg";
+const silverBraceletsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498426/zoniraz_frontend/silver-bracelets.jpg";
+const silverRingsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498422/zoniraz_frontend/silver-rings.jpg";
+const giftCardsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498452/zoniraz_frontend/gift-cards.jpg";
+const wearYourWinsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498479/zoniraz_frontend/wear-your-wins.jpg";
+const caratlaneIconicsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498443/zoniraz_frontend/caratlane-iconics.jpg";
+const customerFavouritesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498471/zoniraz_frontend/customer-favourites.jpg";
+const nineKtImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498469/zoniraz_frontend/nine-kt.jpg";
+const mensPlatinumImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498449/zoniraz_frontend/mens-platinum.jpg";
+const anekaImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498434/zoniraz_frontend/aneka.jpg";
+const giftsForMomImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498459/zoniraz_frontend/gifts-for-mom.jpg";
 import { products } from '../data/products';
 
-import goldNecklaceSilkImg from '../assets/gold-necklace-silk.png';
-import heartFusionRingImg from '../assets/heart_fusion_ring.png';
-import infinityDiamondRingImg from '../assets/infinity_diamond_ring.png';
-import goldEarringsBannerImg from '../assets/gold-earrings-banner.jpg';
-import goldZodiacBannerImg from '../assets/gold-zodiac-banner.jpg';
-import yellowGoldNosePinBannerImg from '../assets/yellow-gold-nose-pin-banner.png';
-import yellowGoldSolitaireBannerImg from '../assets/yellow-gold-solitaire-banner.png';
+const goldNecklaceSilkImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498423/zoniraz_frontend/gold-necklace-silk.jpg";
+const heartFusionRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498456/zoniraz_frontend/heart_fusion_ring.jpg";
+const infinityDiamondRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498424/zoniraz_frontend/infinity_diamond_ring.jpg";
+const goldEarringsBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498412/zoniraz_frontend/gold-earrings-banner.jpg";
+const goldZodiacBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498454/zoniraz_frontend/gold-zodiac-banner.jpg";
+const yellowGoldNosePinBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498472/zoniraz_frontend/yellow-gold-nose-pin-banner.jpg";
+const yellowGoldSolitaireBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498481/zoniraz_frontend/yellow-gold-solitaire-banner.jpg";
 
 const fallbackCategories = [
   { categoryName: 'Rings', products: [] },
@@ -497,7 +497,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
           {/* Center: Brand Logo */}
           <div className="header-brand">
             <a href="/" className="brand-logo-text">
-              <img src="/zoni.png" alt="Zoniraz Logo" className="header-brand-logo-img" decoding="async" width="180" height="60" />
+              <img src="https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png" alt="Zoniraz Logo" className="header-brand-logo-img" decoding="async" width="180" height="60" />
             </a>
           </div>
 
