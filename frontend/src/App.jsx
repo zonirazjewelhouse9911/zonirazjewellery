@@ -100,225 +100,217 @@ const getKeywordsForView = (currentView, queryParams, categoryName) => {
   if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && metal === 'gold') {
     return {
       url: "https://zoniraz.com/products?category=earrings&metal=gold",
-      primary: "Buy women Earrrings online in india",
-      secondary: ["earrings gold price in india","daily use earrings online","best gold earrings online"],
-      lsi: ["diamond earrings for wife","gold earrings price in saudi arabia","white gold earrings australia","22k gold earrings online india","18k gold earrings dubai","earrings gold price in ksa","modern earrings for girls","trendy earrings for women India","gold earrings for bride price","daily wear earrings gold price","latest new model earrings","tops gold earrings new design","traditional indian earrings designs","women earring design new fashion"]
+      primary: "Buy women Earrings online in Alwar",
+      secondary: ["earrings gold price in alwar","daily use earrings online in alwar","best gold earrings online alwar"],
+      lsi: ["diamond earrings for wife alwar","22k gold earrings online alwar","18k gold earrings alwar","modern earrings for girls alwar","gold earrings for bride price alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && metal === 'gold') {
     return {
       url: "https://zoniraz.com/products?category=rings&metal=gold",
-      primary: "Buy gold rings for women",
-      secondary: ["rose gold engagement rings uk","women's gold fashion rings","gold price ring woman"],
-      lsi: ["ladies gold anguthi","ladies gold ring diamond","ladies gold finger ring with price","white gold engagement rings australia","18k gold ring price in uae","22k gold rings for women","gold wedding rings uk","wedding ring designer online","gold earring price in uae","biggest gold ring dubai","gold ring price in saudi arabia","saudi arabia gold design ring","22k gold toe rings india","women gold rings online India"]
+      primary: "Buy gold rings online in Alwar",
+      secondary: ["rose gold engagement rings alwar","women's gold fashion rings alwar","gold price ring woman alwar"],
+      lsi: ["ladies gold anguthi alwar","ladies gold ring diamond alwar","22k gold rings for women alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && metal === 'gold' && occasion === 'engagement') {
     return {
       url: "https://zoniraz.com/products?category=rings&metal=gold&occasion=engagement",
-      primary: "Buy Gold Engagement Ring for Women",
-      secondary: ["14k gold ring engagement","14kt white gold engagement ring","gold engagement ring uk"],
-      lsi: ["14kt gold engagement ring","expensive women's wedding rings","luxury rose gold necklace","buy gold engagement ring online","luxury diamond engagement rings","gold round diamond engagement ring","rose gold pendants uk","latest indian engagement ring designs","wedding ring uae"]
+      primary: "Buy Gold Engagement Rings Online in Alwar",
+      secondary: ["14k gold ring engagement alwar","14kt white gold engagement ring alwar","gold engagement ring alwar"],
+      lsi: ["buy gold engagement ring online alwar","luxury diamond engagement rings alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('pendant') || queryParams.category === 'pendants') && metal === 'gold') {
     return {
       url: "https://zoniraz.com/products?category=pendants&metal=gold",
-      primary: "Buy gold pendant necklace",
-      secondary: ["18k gold pendant necklace","custom gold necklace pendant","14k gold chain"],
-      lsi: ["14k white gold chain","name necklace for men","rose gold heart necklace uk","diamond pendant necklace australia","gold chain price in ksa","gold pendant online india","10k gold chain mens","14kt white gold chain","engraved gold bar necklace","mens long necklace","personalized jewelry gift","custom letter chain necklace","gold choker necklace australia","gold necklace price in saudi arabia","gold chain price in saudi arabia","men's 10 karat gold chain","chain white gold price in india","customised gold pendant india","gold chain 22k india","gold necklace uk","gold necklace ksa","gold necklace design in saudi arabia","saudi arabia gold necklace design","gold necklace australia"]
+      primary: "Buy gold pendant necklaces in Alwar",
+      secondary: ["18k gold pendant necklace alwar","custom gold necklace pendant alwar"],
+      lsi: ["gold pendant online alwar","customised gold pendant alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('nose-pi') || queryParams.category === 'nose-pin') && metal === 'gold') {
     return {
       url: "https://zoniraz.com/products?category=nose-pin&metal=gold",
-      primary: "Buy gold nose pin for women",
-      secondary: ["small gold nose pin price","gold nose pin without stone","nose pin indian"],
-      lsi: ["real gold nose pin price","solid gold nose pin","ladies nose pin gold","nose piercing in uk","gold latest nose pin","small nose pin gold price","nose pin design gold price","gold nose pin india","large nose studs uk","gold nose pin price in uae","10 – 100/Low","custom diamond name pendant"]
+      primary: "Buy gold nose pins online in Alwar",
+      secondary: ["small gold nose pin price alwar","gold nose pin without stone alwar"],
+      lsi: ["real gold nose pin price alwar","gold nose pin alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && stone === 'diamond') {
     return {
       url: "https://zoniraz.com/products?category=earrings&stone=diamond",
-      primary: "Buy Diamond Earrings",
-      secondary: ["diamond earrings on sale","8 gram gold jhumka designs with price","diamond wedding earrings for bride"],
-      lsi: ["latest diamond earrings designs","diamond stud earrings for women yellow gold","modern diamond earrings designs","drop &amp; linear diamond earrings for women","diamond earrings australia"]
+      primary: "Buy Diamond Earrings online in Alwar",
+      secondary: ["diamond earrings on sale alwar","diamond wedding earrings for bride alwar"],
+      lsi: ["latest diamond earrings designs alwar","modern diamond earrings designs alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('pendant') || queryParams.category === 'pendants') && stone === 'diamond') {
     return {
       url: "https://zoniraz.com/products?category=pendants&stone=diamond",
-      primary: "diamond pendant for women",
-      secondary: ["small diamond initial necklace","10 gram gold jhumka designs with price","gold and diamond necklace women's"],
-      lsi: ["custom diamond name necklace","diamond name plate necklace","diamond pendant earring set indian","indian bridal diamond necklace with price","diamond necklace australia","diamond initial necklace australia"]
+      primary: "Buy diamond pendants online in Alwar",
+      secondary: ["small diamond initial necklace alwar","gold and diamond necklace women's alwar"],
+      lsi: ["custom diamond name necklace alwar","diamond pendant set alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && stone === 'diamond') {
     return {
       url: "https://zoniraz.com/products?category=rings&stone=diamond",
-      primary: "Buy Diamond Rings",
-      secondary: ["3 to 4 grams gold earrings designs","large diamond hoop earrings yellow gold","lab grown diamond engagement rings"],
-      lsi: ["best lab created diamond rings","affordable anniversary rings","diamond ring design for female in gold","diamond engagement rings uk","original diamond ring price in saudi arabia","bridal ring sets australia"]
-    };
-  }
-  if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && stone === 'diamond') {
-    return {
-      url: "https://zoniraz.com/products?category=rings&stone=diamond",
-      primary: "buy diamond nose pin online",
-      secondary: ["diamond nose rings for sale","diamond big nose pin","diamond house nose pin"],
-      lsi: ["best day to wear diamond nose pin","designer diamond nose pin","diamond nose piercing price","14k gold diamond nose ring","indian gold ear studs","small gold stud earrings india","cost of diamond nose ring in india"]
+      primary: "Buy Diamond Rings online in Alwar",
+      secondary: ["lab grown diamond engagement rings alwar","diamond ring design for female alwar"],
+      lsi: ["best lab created diamond rings alwar","diamond engagement rings alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && style === 'drops') {
     return {
       url: "https://zoniraz.com/products?category=earrings&style=drops",
-      primary: "gold dangle earrings for women",
-      secondary: ["gold chains for women","cross necklace for women","thin gold chain"],
-      lsi: ["18k white gold drop earrings","rose gold dangle earrings wedding","large gold dangle earrings","small gold hoop earrings with dangle"]
+      primary: "Buy gold dangle earrings online in Alwar",
+      secondary: ["gold dangle earrings alwar"],
+      lsi: ["18k white gold drop earrings alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && style === 'studs') {
     return {
       url: "https://zoniraz.com/products?category=earrings&style=studs",
-      primary: "gold stud earrings for women",
-      secondary: ["yellow gold engagement rings","best lab created diamond engagement rings","14k white gold stud earrings"],
-      lsi: ["white stone ear studs","ladies gold stud earrings","14 karat white gold stud earrings","18k white gold diamond stud earrings","indian gold earrings studs","gold stud earrings uk"]
+      primary: "Buy gold stud earrings online in Alwar",
+      secondary: ["14k white gold stud earrings alwar"],
+      lsi: ["ladies gold stud earrings alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('earring') || queryParams.category === 'earrings') && style === 'hoops') {
     return {
       url: "https://zoniraz.com/products?category=earrings&style=hoops",
-      primary: "gold hoop earrings for women",
-      secondary: ["gold cartilage hoop","mini huggies","ladies gold hoop earrings"],
-      lsi: ["womens gold hoop earrings small","mall thick gold hoops","small white gold huggie earrings","indian style gold hoop earrings","large gold hoop earrings uk"]
+      primary: "Buy gold hoop earrings online in Alwar",
+      secondary: ["ladies gold hoop earrings alwar"],
+      lsi: ["womens gold hoop earrings small alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && stone === 'diamond' && occasion === 'engagement') {
     return {
       url: "https://zoniraz.com/products?category=rings&stone=diamond&occasion=engagement",
-      primary: "diamond engagement ring",
-      secondary: ["yellow diamond engagement rings","custom diamond engagement rings","yellow diamond wedding ring"],
-      lsi: ["online custom engagement rings","custom unique engagement rings","diamond engagement ring uk","bridal ring sets uk","price of diamond ring in usa","diamond engagement ring uae"]
+      primary: "Buy diamond engagement rings in Alwar",
+      secondary: ["yellow diamond engagement rings alwar"],
+      lsi: ["custom unique engagement rings alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && gender === 'men') {
     return {
       url: "https://zoniraz.com/products?category=rings&gender=men",
-      primary: "mens gold rings",
-      secondary: ["mens 10k gold rings","mens gold rings for sale","18k white gold engagement ring"],
-      lsi: ["ring gold price in india","latest gold ring design for male without stone","18 karat gold mens ring price","gents gold ring designs with price in india","mens gold rings uk","mens wedding rings uk gold"]
+      primary: "Buy mens gold rings online in Alwar",
+      secondary: ["mens 10k gold rings alwar"],
+      lsi: ["gents gold ring designs in alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && occasion === 'engagement') {
     return {
       url: "https://zoniraz.com/products?category=rings&occasion=engagement",
-      primary: "diamond engagement ring",
-      secondary: ["oval cut engagement rings","diamond anniversary","diamond wedding ring uk"],
-      lsi: ["mens diamond wedding rings uk","wedding ring sets australia","diamond stores","engagement ring store","engagement ring shops"]
+      primary: "Buy engagement rings online in Alwar",
+      secondary: ["oval cut engagement rings alwar"],
+      lsi: ["engagement ring store alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && metal === 'gold' && occasion === 'engagement') {
     return {
       url: "https://zoniraz.com/products?category=rings&metal=gold&occasion=engagement",
-      primary: "Buy Gold Engagement Rings Online",
-      secondary: ["14k white gold engagement ring","14k rose gold engagement ring","gold engagement rings with names"],
-      lsi: ["14k gold engagement ring","engagement couple rings gold with letters","engagement gold rings for couples with names","custom rose gold engagement rings","affordable engagement ring sets","engagement name rings gold"]
+      primary: "Buy Gold Engagement Rings Online in Alwar",
+      secondary: ["14k white gold engagement ring alwar"],
+      lsi: ["custom rose gold engagement rings alwar"]
     };
   }
   if (currentView === 'rings' && (cat.includes('ring') || queryParams.category === 'rings') && tag === 'office-wear') {
     return {
       url: "https://zoniraz.com/products?tag=office-wear&category=rings",
-      primary: "Daily wear finger ring design",
-      secondary: ["daily use finger ring design","daily use gold finger ring","daily wear rings artificial"],
-      lsi: ["daily wear unique simple gold ring design","daily wear rings for women","simple gold ring for daily use","lightweight gold finger rings","everyday wear gold ring designs","minimal gold ring designs for women","stylish daily wear rings for girls","affordable daily wear finger rings"]
+      primary: "Buy daily wear finger rings in Alwar",
+      secondary: ["daily use gold finger ring alwar"],
+      lsi: ["simple gold ring for daily use alwar"]
     };
   }
   if (currentView === 'rings' && collection === 'bridal') {
     return {
       url: "https://zoniraz.com/products?collection=bridal",
-      primary: "build engagement ring",
-      secondary: ["engagement ring and wedding band set","custom made engagement rings","diamond bridal"],
-      lsi: ["book jewellery appointment"]
+      primary: "Buy bridal engagement rings online in Alwar",
+      secondary: ["custom made engagement rings alwar"],
+      lsi: ["book jewellery appointment alwar"]
     };
   }
   if (currentView === 'gold-mine') {
     return {
       url: "https://zoniraz.com/plans/gold-mine",
-      primary: "gold saving scheme online",
-      secondary: ["gold installment scheme","gold installment plan","grt flexi gold plan"],
-      lsi: ["gold savings plan India","monthly gold investment scheme","digital gold saving scheme","systematic gold investment plan","flexible gold saving scheme","gold monthly installment scheme","jewelry gold saving plan","gold investment scheme online India","gold SIP plan India","easy gold savings plan"]
+      primary: "Gold savings scheme online in Alwar",
+      secondary: ["gold installment scheme alwar","gold monthly savings plan alwar"],
+      lsi: ["gold savings plan Alwar","systematic gold investment plan alwar"]
     };
   }
   if (currentView === 'sell-gold') {
     return {
       url: "https://zoniraz.com/exchange",
-      primary: "old gold exchange",
-      secondary: ["old gold calculator","old gold price calculator","old gold rate calculator"],
-      lsi: ["old gold value calculator","gold exchange calculator","old gold valuation","gold exchange rate","gold rate today","gold purity calculator","gold price calculator 22k","gold exchange scheme","sell old gold","gold valuation calculator","jewellery buying consultation","jewellery sales enquiry","jewellery store customer care"]
+      primary: "Old gold exchange in Alwar",
+      secondary: ["old gold calculator alwar","gold valuation alwar"],
+      lsi: ["sell old gold in alwar","gold purity testing alwar"]
     };
   }
   if (currentView === 'franchise') {
     return {
       url: "https://zoniraz.com/franchise",
-      primary: "jewellery franchise",
-      secondary: ["jewellery showroom franchise","jewellery brand franchise","gold jewellery franchise"],
-      lsi: ["diamond jewellery franchise","luxury jewellery franchise","jewellery business franchise","jewellery store franchise","jewelry franchise india","jewellery dealership","jewellery retail franchise","jewellery franchise india"]
+      primary: "Jewellery franchise in Alwar",
+      secondary: ["jewellery showroom franchise alwar"],
+      lsi: ["jewellery business franchise alwar"]
     };
   }
   if (currentView === 'contact') {
     return {
       url: "https://zoniraz.com/contact",
-      primary: "contact jewellery store",
-      secondary: ["jewellery enquiry","contact jewellery expert","jewellery contact number"],
-      lsi: ["jewellery showroom near me","jewellery customer service","jewellery support team","jewellery appointment booking","gold jewellery consultation","diamond jewellery consultation","visit jewellery showroom","jewellery store location"]
+      primary: "Contact jewellery store in Alwar",
+      secondary: ["jewellery showroom in alwar"],
+      lsi: ["visit jewellery showroom alwar"]
     };
   }
   if (currentView === 'zoniraz-alwar') {
     return {
       url: "https://zoniraz.com/zoniraz-alwar",
-      primary: "Zoniraz Jewellery Store Alwar",
-      secondary: ["best jewellery shop in alwar", "gold jewellery in alwar", "diamond jewellery in alwar", "gold jewellery shop alwar", "diamond jewellery showroom alwar", "zoniraz alwar store"],
-      lsi: ["top jewellery brands in alwar", "alwar jewellery shop", "jewellery manufacturers in alwar", "gold exchange shop in alwar", "buy wedding jewellery in alwar", "jewellery at best prices in alwar", "jewellery store in alwar", "bis hallmarked gold alwar", "best jewellery shop in alwar rajasthan", "old gold exchange alwar"]
+      primary: "Zoniraz Jewellery Store in Alwar",
+      secondary: ["best jewellery shop in alwar", "gold jewellery in alwar", "diamond jewellery in alwar"],
+      lsi: ["top jewellery brands in alwar", "bis hallmarked gold alwar"]
     };
   }
   if (currentView === 'about') {
     return {
       url: "https://zoniraz.com/about",
-      primary: "luxury jewellery brand",
-      secondary: ["bis hallmarked jewellery","famous jewellery brands","luxury diamond jewelry"],
-      lsi: ["jewellery shipping abroad","buy luxury jewellery online","certified diamond jewellery online","luxury diamond jewellery collection","trusted jewellery showroom","designer diamond jewellery","branded gold jewellery","luxury bridal jewellery","hallmarked jewellery online"]
+      primary: "Luxury jewellery brand in Alwar",
+      secondary: ["bis hallmarked jewellery alwar","certified diamond jewellery alwar"],
+      lsi: ["trusted jewellery showroom alwar"]
     };
   }
   if (currentView === 'delivery' && tab === 'giftcards') {
     return {
       url: "https://zoniraz.com/gift-cards",
-      primary: "jewellery e gift card",
-      secondary: ["digital gift cards","personalized birthday cards","happy birthday wishes for friend"],
-      lsi: ["purchase jewellery gift card"]
+      primary: "Jewellery e gift cards in Alwar",
+      secondary: ["digital jewellery gift cards alwar"],
+      lsi: ["purchase jewellery gift card alwar"]
     };
   }
   if (currentView === 'delivery' && tab === 'international') {
     return {
       url: "https://zoniraz.com/help?tab=international",
-      primary: "international jewellery shipping",
-      secondary: ["International Shipping","worldwide jewellery delivery","international jewellery orders"],
-      lsi: ["international jewellery delivery service","worldwide gold jewellery delivery","worldwide diamond jewellery shipping","jewellery shipping to USA UK UAE","secure overseas jewellery delivery"]
+      primary: "International jewellery shipping in Alwar",
+      secondary: ["worldwide jewellery delivery alwar"],
+      lsi: ["secure overseas jewellery delivery alwar"]
     };
   }
   if (currentView === 'delivery' && tab === 'delivery') {
     return {
       url: "https://zoniraz.com/help?tab=delivery",
-      primary: "track order Delivery and Shopping",
-      secondary: ["order number tracker","tracking"],
+      primary: "Track order delivery and shopping in Alwar",
+      secondary: ["order tracking alwar"],
       lsi: []
     };
   }
 
   return {
     url: 'https://zoniraz.com/',
-    primary: 'luxury jewellery brand',
-    secondary: ['bis hallmarked jewellery', 'certified diamond jewellery online', 'famous jewellery brands'],
-    lsi: ['designer diamond jewellery', 'branded gold jewellery', 'luxury bridal jewellery', 'trusted jewellery showroom']
+    primary: 'Buy fine gold & diamond jewellery online in Alwar',
+    secondary: ['bis hallmarked jewellery alwar', 'certified diamond jewellery online alwar'],
+    lsi: ['designer diamond jewellery alwar', 'luxury bridal jewellery alwar']
   };
 };
 
@@ -862,6 +854,11 @@ function AppContent() {
     return params;
   };
 
+  const selectedProduct = (allProducts.length > 0 ? allProducts : products).find(p => 
+    String(p.id || p._id || p.product_id) === String(selectedProductId) ||
+    String(p.product_slug || p.slug || '').toLowerCase() === String(selectedProductId).toLowerCase()
+  ) || null;
+
   React.useEffect(() => {
     const params = parseHashParams();
     const seoData = getKeywordsForView(currentView, params, selectedCategoryName);
@@ -873,8 +870,8 @@ function AppContent() {
     let schemas = [];
 
     if (currentView === 'product' && selectedProduct) {
-      title = `${selectedProduct.name} | ${selectedProduct.category || 'Jewellery'} | Zoniraz`;
-      description = `Buy ${selectedProduct.name} online at Zoniraz Jewels. Crafted in premium ${selectedProduct.material || 'metal'} with exquisite design. Lifetime maintenance and certificate of authenticity included.`;
+      title = `Buy ${selectedProduct.name} in Alwar | Zoniraz`;
+      description = `Buy ${selectedProduct.name} online in Alwar at Zoniraz Jewels. Crafted in premium ${selectedProduct.material || 'metal'} with exquisite design. Lifetime maintenance and certificate of authenticity included.`;
       canonical = `https://zoniraz.com/product/${selectedProduct.product_slug || selectedProduct.slug || selectedProduct.id}`;
       if (selectedProduct.image) {
         ogImage = selectedProduct.image;
@@ -926,14 +923,52 @@ function AppContent() {
           }
         ]
       });
-    } else {
-      const primary = seoData.primary || 'luxury jewellery brand';
-      const secondary1 = seoData.secondary[0] || 'certified diamond jewellery online';
-      const secondary2 = seoData.secondary[1] || 'famous jewellery brands';
-      const lsi1 = seoData.lsi[0] || 'designer diamond jewellery';
+    } else if (currentView === 'rings') {
+      const activeCat = selectedCategoryName || params.category || 'Jewellery';
+      let catName = activeCat.trim();
+      const lower = catName.toLowerCase();
+      if (lower === 'rings' || lower === 'ring') {
+        catName = 'Rings';
+      } else if (lower.includes('earring')) {
+        catName = 'Earrings';
+      } else if (lower.includes('pendant')) {
+        catName = 'Pendants';
+      } else if (lower.includes('necklace')) {
+        catName = 'Necklaces';
+      } else if (lower.includes('bangle')) {
+        catName = 'Bangles';
+      } else if (lower.includes('bracelet')) {
+        catName = 'Bracelets';
+      } else if (lower.includes('mangalsutra')) {
+        catName = 'Mangalsutras';
+      } else if (lower.includes('solitaire')) {
+        catName = 'Solitaires';
+      } else if (lower.includes('nose')) {
+        catName = 'Nose Pins';
+      } else if (lower.includes('coin')) {
+        catName = 'Gold Coins';
+      } else {
+        catName = catName.charAt(0).toUpperCase() + catName.slice(1);
+      }
 
-      title = `${primary.charAt(0).toUpperCase() + primary.slice(1)} | Zoniraz`;
-      description = `Discover premium collections for ${primary}. We feature high-quality ${secondary1}, elegant ${secondary2}, and beautiful ${lsi1} at best prices. Visit us now!`;
+      title = `Buy ${catName} Online in Alwar | Zoniraz`;
+      description = `Discover premium ${catName.toLowerCase()} online in Alwar at Zoniraz. Explore handcrafted gold, diamond, and luxury jewellery collections at best prices.`;
+      canonical = seoData.url || 'https://zoniraz.com/products';
+    } else {
+      if (currentView === 'home') {
+        title = 'Buy Fine Gold & Diamond Jewellery Online in Alwar | Zoniraz';
+      } else if (currentView === 'zoniraz-alwar') {
+        title = 'Zoniraz Jewellery Store in Alwar | Zoniraz';
+      } else {
+        // Account, Wishlist, Wallet/Delivery, Cart, Checkout, Terms, Privacy, etc.
+        title = 'Luxury Jewellery Brand in Alwar | Zoniraz';
+      }
+
+      const secondary1 = seoData.secondary[0] || 'certified diamond jewellery online in alwar';
+      const secondary2 = seoData.secondary[1] || 'famous jewellery brands in alwar';
+      const lsi1 = seoData.lsi[0] || 'designer diamond jewellery in alwar';
+
+      description = `Discover premium collections in Alwar at Zoniraz. We feature high-quality ${secondary1}, elegant ${secondary2}, and beautiful ${lsi1} at best prices. Visit us now!`;
       canonical = seoData.url || 'https://zoniraz.com/';
       
       // Home page schemas
@@ -944,7 +979,7 @@ function AppContent() {
           "name": "Zoniraz Jewels",
           "url": "https://zoniraz.com/",
           "logo": "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png",
-          "description": "Zoniraz Jewels is a premium luxury jewellery brand specializing in fine gold, diamond, and designer jewellery collections.",
+          "description": "Zoniraz Jewels is a premium luxury jewellery brand in Alwar specializing in fine gold, diamond, and designer jewellery collections.",
           "sameAs": [
             "https://www.facebook.com/zonirazjewel/",
             "https://www.instagram.com/zonirazjewel/",
@@ -1052,6 +1087,17 @@ function AppContent() {
       }
     }
 
+    // Universal safety check to guarantee "in Alwar" is present on every title
+    if (title && !title.toLowerCase().includes('in alwar')) {
+      if (title.includes(' | Zoniraz')) {
+        title = title.replace(' | Zoniraz', ' in Alwar | Zoniraz');
+      } else if (title.includes(' | ')) {
+        title = title.replace(' | ', ' in Alwar | ');
+      } else {
+        title = `${title} in Alwar | Zoniraz`;
+      }
+    }
+
     document.title = title;
     
     const updateMeta = (selector, attribute, value) => {
@@ -1104,12 +1150,7 @@ function AppContent() {
     }
     scriptTag.textContent = JSON.stringify(schemas, null, 2);
 
-  }, [currentView, selectedProductId, selectedCategoryName]);
-
-  const selectedProduct = (allProducts.length > 0 ? allProducts : products).find(p => 
-    String(p.id || p._id || p.product_id) === String(selectedProductId) ||
-    String(p.product_slug || p.slug || '').toLowerCase() === String(selectedProductId).toLowerCase()
-  ) || null;
+  }, [currentView, selectedProductId, selectedCategoryName, selectedProduct, allProducts]);
 
   return (
     <>
