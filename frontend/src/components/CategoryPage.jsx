@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
+import { cachedFetch } from '../utils/apiCache';
 import { products as initialProducts } from '../data/products';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
@@ -59,17 +60,25 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   }, [allProducts]);
 
   useEffect(() => {
+    const isTrendingPage = category === 'Trending Now' || category === 'Trending' || category === 'trending-now';
+
+    // Fast-path: if allProducts is already loaded in memory and we're not on Trending Now page, reuse it directly!
+    if (allProducts && allProducts.length > 0 && !isTrendingPage) {
+      setProducts(allProducts);
+      setLoading(false);
+      return;
+    }
+
     if (!products || products.length === 0) {
       setLoading(true);
     }
-    const isTrendingPage = category === 'Trending Now' || category === 'Trending' || category === 'trending-now';
     const productsEndpoint = isTrendingPage
       ? `${API_BASE_URL}/api/userSide/trending-products`
       : `${API_BASE_URL}/api/admin/products`;
 
     Promise.all([
-      fetch(productsEndpoint).then(res => res.json()),
-      fetch(`${API_BASE_URL}/api/productBasePricing`).then(res => res.json()).catch(() => null)
+      cachedFetch(productsEndpoint),
+      cachedFetch(`${API_BASE_URL}/api/productBasePricing`).catch(() => null)
     ])
       .then(([resData, pricingData]) => {
         if (resData.success) {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
+import { cachedFetch } from '../utils/apiCache';
 
 const banner2_800 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498454/zoniraz_frontend/zZONIRAZ-800.webp";
 const banner2_1400 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498476/zoniraz_frontend/zZONIRAZ-1400.webp";
@@ -18,8 +19,7 @@ export default function Hero() {
     let isMounted = true;
     const fetchBanners = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/admin/banners`);
-        const data = await res.json();
+        const data = await cachedFetch(`${API_BASE_URL}/api/admin/banners`);
         if (data.success && Array.isArray(data.data)) {
           const activeBanners = data.data.filter(b => b.isActive !== false);
           

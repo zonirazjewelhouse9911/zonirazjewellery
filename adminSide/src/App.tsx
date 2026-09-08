@@ -1,22 +1,31 @@
-import { useState, useEffect } from 'react';
-import AdminLogin from './pages/AdminLogin';
-import Dashboard from './pages/Dashboard';
-import ProductEditor from './pages/ProductEditor';
-import Orders from './pages/Orders';
-import Categories from './pages/Categories';
-import Customers from './pages/Customers';
-import Collections from './pages/Collections';
-import Coupons from './pages/Coupons';
-import ExchangeInquiries from './pages/ExchangeInquiries';
-import SellGoldInquiries from './pages/SellGoldInquiries';
-import Banners from './pages/Banners';
-import PricingSettings from './pages/PricingSettings';
-import VideoCallPanel from './pages/VideoCallPanel';
-import GoldMineWallets from './pages/GoldMineWallets';
-import LooseStones from './pages/LooseStones';
-import Blogs from './pages/Blogs';
-import CustomPendants from './pages/CustomPendants';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { resolveProductImage } from './lib/imageResolver';
+
+const AdminLogin = lazy(() => import('./pages/AdminLogin'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const ProductEditor = lazy(() => import('./pages/ProductEditor'));
+const Orders = lazy(() => import('./pages/Orders'));
+const Categories = lazy(() => import('./pages/Categories'));
+const Customers = lazy(() => import('./pages/Customers'));
+const Collections = lazy(() => import('./pages/Collections'));
+const Coupons = lazy(() => import('./pages/Coupons'));
+const ExchangeInquiries = lazy(() => import('./pages/ExchangeInquiries'));
+const SellGoldInquiries = lazy(() => import('./pages/SellGoldInquiries'));
+const Banners = lazy(() => import('./pages/Banners'));
+const PricingSettings = lazy(() => import('./pages/PricingSettings'));
+const VideoCallPanel = lazy(() => import('./pages/VideoCallPanel'));
+const GoldMineWallets = lazy(() => import('./pages/GoldMineWallets'));
+const LooseStones = lazy(() => import('./pages/LooseStones'));
+const Blogs = lazy(() => import('./pages/Blogs'));
+const CustomPendants = lazy(() => import('./pages/CustomPendants'));
+
+const PageLoadingFallback = () => (
+  <div className="py-20 flex flex-col items-center justify-center space-y-4">
+    <div className="w-8 h-8 border-2 border-[#5d463c] border-t-transparent rounded-full animate-spin"></div>
+    <span className="text-[10px] uppercase tracking-[0.2em] text-slate-400 font-bold">Loading Section...</span>
+  </div>
+);
+
 import { 
   Grid, 
   ShoppingBag, 
@@ -120,20 +129,22 @@ function App() {
   // If not authenticated, render Admin Login screen
   if (!adminToken) {
     return (
-      <AdminLogin 
-        onLoginSuccess={(token, adminData) => {
-          localStorage.setItem('adminToken', token);
-          const role = adminData?.role || 'admin';
-          localStorage.setItem('userRole', role);
-          setAdminToken(token);
-          setUserRole(role);
-          if (role === 'blog_writer') {
-            setActiveMenu('blogs');
-          } else {
-            setActiveMenu('overview');
-          }
-        }} 
-      />
+      <Suspense fallback={<PageLoadingFallback />}>
+        <AdminLogin 
+          onLoginSuccess={(token, adminData) => {
+            localStorage.setItem('adminToken', token);
+            const role = adminData?.role || 'admin';
+            localStorage.setItem('userRole', role);
+            setAdminToken(token);
+            setUserRole(role);
+            if (role === 'blog_writer') {
+              setActiveMenu('blogs');
+            } else {
+              setActiveMenu('overview');
+            }
+          }} 
+        />
+      </Suspense>
     );
   }
 
@@ -151,18 +162,25 @@ function App() {
     if (!window.confirm(`Are you sure you want to permanently delete "${title}"?`)) {
       return;
     }
+    const previousProducts = [...products];
+    const previousSelected = [...selectedProductIds];
+    // Optimistic UI removal
+    setProducts(prev => prev.filter(p => p._id !== id));
+    setSelectedProductIds(prev => prev.filter(item => item !== id));
+
     try {
       const res = await fetch(`/api/admin/products/${id}`, {
         method: 'DELETE'
       });
       const data = await res.json();
-      if (data.success) {
-        alert('Product successfully deleted.');
-        fetchProducts();
-      } else {
+      if (!data.success) {
+        setProducts(previousProducts);
+        setSelectedProductIds(previousSelected);
         alert(data.message || 'Failed to delete product.');
       }
     } catch (err) {
+      setProducts(previousProducts);
+      setSelectedProductIds(previousSelected);
       console.error(err);
       alert('An error occurred while deleting the product.');
     }
@@ -236,24 +254,32 @@ function App() {
     const confirmMsg = `Are you sure you want to permanently delete the ${selectedProductIds.length} selected product(s)? This action cannot be undone.`;
     if (!window.confirm(confirmMsg)) return;
 
+    const deletingIds = [...selectedProductIds];
+    const previousProducts = [...products];
+    const previousSelected = [...selectedProductIds];
+
     setIsBulkDeleting(true);
+    // Optimistic UI removal
+    setProducts(prev => prev.filter(p => !deletingIds.includes(p._id)));
+    setSelectedProductIds([]);
+
     try {
       const res = await fetch('/api/admin/products/bulk-delete', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ids: selectedProductIds }),
+        body: JSON.stringify({ ids: deletingIds }),
       });
       const data = await res.json();
-      if (data.success) {
-        alert(data.message || 'Selected products deleted successfully.');
-        setSelectedProductIds([]);
-        fetchProducts();
-      } else {
+      if (!data.success) {
+        setProducts(previousProducts);
+        setSelectedProductIds(previousSelected);
         alert(data.message || 'Failed to delete selected products.');
       }
     } catch (error) {
+      setProducts(previousProducts);
+      setSelectedProductIds(previousSelected);
       console.error(error);
       alert('An error occurred while deleting selected products.');
     } finally {
@@ -432,6 +458,7 @@ function App() {
 
         {/* Main Content Wrapper */}
         <main className="flex-1 px-4 sm:px-8 py-4 sm:py-10 max-w-7xl w-full max-w-full mx-auto overflow-x-hidden">
+          <Suspense fallback={<PageLoadingFallback />}>
           {isEditing && activeMenu === 'products' ? (
             <ProductEditor 
               productId={selectedProductId} 
@@ -658,6 +685,7 @@ function App() {
               <p className="text-xs text-slate-400 mt-2">Please navigate to the &ldquo;Products&rdquo;, &ldquo;Orders&rdquo;, &ldquo;Categories&rdquo;, &ldquo;Customers&rdquo;, &ldquo;Collections&rdquo;, &ldquo;Coupons&rdquo;, &ldquo;Exchange Leads&rdquo;, or &ldquo;Sell Gold Leads&rdquo; sections to manage catalog ledger details.</p>
             </div>
           )}
+          </Suspense>
         </main>
       </div>
     </div>

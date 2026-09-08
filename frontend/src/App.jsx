@@ -1,5 +1,6 @@
 import React, { useContext, lazy, Suspense } from 'react';
 import { API_BASE_URL, getUploadsUrl } from './config';
+import { cachedFetch } from './utils/apiCache';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import ShopByCollection from './components/ShopByCollection';
@@ -352,8 +353,8 @@ function AppContent() {
 
   React.useEffect(() => {
     Promise.all([
-      fetch(`${API_BASE_URL}/api/admin/products`).then(res => res.json()),
-      fetch(`${API_BASE_URL}/api/productBasePricing`).then(res => res.json()).catch(() => null)
+      cachedFetch(`${API_BASE_URL}/api/admin/products`),
+      cachedFetch(`${API_BASE_URL}/api/productBasePricing`).catch(() => null)
     ])
       .then(([resData, pricingData]) => {
         if (resData.success) {

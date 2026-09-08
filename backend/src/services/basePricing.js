@@ -1,25 +1,53 @@
 const product = require('../models/productModel');
 const livePrice = require('../models/jewelleryPricingModel');
+const cacheManager = require('../utils/cacheManager');
 
 exports.productBasePricing = async (req, res) => {
-    // let gold_weight = 0;
-    // let gold_price = 0;
-    // let total_diamond_weight = 0;
-    // let diamond_price = 0;
-    // let base_price = 0;
-    // let base_price_withGST = 0;
-    // let base_price_object = {}
-
     try {
+        const targetProductId = req && req.query && req.query.productId ? String(req.query.productId).trim() : null;
 
-        const current_price = await livePrice.findOne().sort({ createdAt: -1 });
-        const product_data = await product.find();
+        // If requesting all products, check cache
+        if (!targetProductId) {
+            const cached = cacheManager.get('product_base_pricing_all');
+            if (cached) {
+                return {
+                    success: true,
+                    message: "Product base pricing",
+                    data: cached,
+                };
+            }
+        }
+
+        const current_price = await livePrice.findOne().sort({ createdAt: -1 }).lean();
+        if (!current_price) {
+            return {
+                success: false,
+                message: "Daily pricing rates not configured",
+                data: []
+            };
+        }
+
+        let product_data;
+        if (targetProductId) {
+            const query = [
+                { product_id: targetProductId },
+                { product_slug: targetProductId },
+                { slug: targetProductId }
+            ];
+            if (targetProductId.match(/^[0-9a-fA-F]{24}$/)) {
+                query.unshift({ _id: targetProductId });
+            }
+            product_data = await product.find({ $or: query }).lean();
+        } else {
+            product_data = await product.find().lean();
+        }
+
         if (!product_data) {
             return {
                 success: false,
                 message: "Product not found",
                 data: null
-            }
+            };
         }
 
         const calculated_products = product_data.map((item) => {
@@ -116,11 +144,16 @@ exports.productBasePricing = async (req, res) => {
                 };
             }
         });
+
+        if (!targetProductId) {
+            cacheManager.set('product_base_pricing_all', calculated_products, 180000); // 3 min cache
+        }
+
         return {
             success: true,
             message: "Product base pricing",
             data: calculated_products,
-        }
+        };
     } catch (error) {
         console.log(error.message);
         return {

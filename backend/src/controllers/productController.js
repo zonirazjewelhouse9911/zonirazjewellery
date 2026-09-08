@@ -11,6 +11,7 @@ function invalidateProductCaches() {
   cacheManager.del('navbar_data');
   cacheManager.del('all_collections');
   cacheManager.del('trending_products');
+  cacheManager.del('product_base_pricing_all');
 }
 
 class ProductController {

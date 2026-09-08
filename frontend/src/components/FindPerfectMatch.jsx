@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
+import { cachedFetch } from '../utils/apiCache';
 const goldRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498434/zoniraz_frontend/aneka.jpg";
 const goldNecklaceImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498423/zoniraz_frontend/gold-necklace-silk.jpg";
 const hoopsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498439/zoniraz_frontend/dancing-hoops.jpg";
@@ -43,8 +44,7 @@ export default function FindPerfectMatch({ products = [] }) {
   };
 
   React.useEffect(() => {
-    fetch(`${API_BASE_URL}/api/admin/categories`)
-      .then(res => res.json())
+    cachedFetch(`${API_BASE_URL}/api/admin/categories`)
       .then(data => {
         if (data.success && Array.isArray(data.data)) {
           const mapped = data.data.map(cat => {

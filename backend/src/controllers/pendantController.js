@@ -1,13 +1,19 @@
 const PendantConfig = require('../models/pendantConfigModel');
 const assetInventory = require('../config/pendantAssetInventory.json');
 const cloudinary = require('../config/cloudinary');
+const cacheManager = require('../utils/cacheManager');
 
 /**
  * Get global pendant configuration and letter asset inventory.
  */
 exports.getConfig = async (req, res) => {
   try {
-    let dbConfig = await PendantConfig.findOne({ configId: 'global_pendant_config' });
+    const cached = cacheManager.get('pendant_config');
+    if (cached) {
+      return res.status(200).json(cached);
+    }
+
+    let dbConfig = await PendantConfig.findOne({ configId: 'global_pendant_config' }).lean();
     if (!dbConfig) {
       dbConfig = {
         maxNameLength: 10,
@@ -21,11 +27,15 @@ exports.getConfig = async (req, res) => {
         }
       };
     }
-    return res.status(200).json({
+
+    const payload = {
       success: true,
       inventory: assetInventory,
       config: dbConfig
-    });
+    };
+    cacheManager.set('pendant_config', payload, 300000); // 5 min cache
+
+    return res.status(200).json(payload);
   } catch (err) {
     console.error('Error fetching pendant config:', err);
     return res.status(500).json({ success: false, error: err.message });
@@ -124,6 +134,7 @@ exports.updateConfig = async (req, res) => {
     if (letterCalibrations) configDoc.letterCalibrations = letterCalibrations;
 
     await configDoc.save();
+    cacheManager.del('pendant_config');
     return res.status(200).json({ success: true, message: 'Pendant configuration updated successfully', data: configDoc });
   } catch (err) {
     console.error('Error updating pendant config:', err);

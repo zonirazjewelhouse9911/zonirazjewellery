@@ -99,6 +99,7 @@ class JewelleryPricingService {
       await rates.save();
     }
     cacheManager.del("jewellery_rates");
+    cacheManager.del("product_base_pricing_all");
     return rates;
   }
 

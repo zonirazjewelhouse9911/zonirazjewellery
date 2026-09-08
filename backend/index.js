@@ -16,6 +16,18 @@ const app = express();
 // Enable Gzip HTTP Response Compression
 app.use(compression());
 
+// Lightweight API performance timing
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    if (duration > 150 && !req.path.startsWith('/uploads') && !req.path.startsWith('/public')) {
+      console.log(`[API Timing Warning] ${req.method} ${req.originalUrl} - ${duration}ms`);
+    }
+  });
+  next();
+});
+
 // CORS configuration
 const allowedOrigins = [
   'https://admin.zoniraz.com',

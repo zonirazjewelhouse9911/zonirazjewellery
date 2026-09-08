@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect, useRef } from 'react';
 import { API_BASE_URL } from '../config';
+import { cachedFetch } from '../utils/apiCache';
 import { AuthContext } from '../context/AuthContext';
 import { CartContext } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
@@ -391,8 +392,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
 
   useEffect(() => {
     setLoadingCategories(true);
-    fetch(`${API_BASE_URL}/api/userSide/GetNavbar`)
-      .then(res => res.json())
+    cachedFetch(`${API_BASE_URL}/api/userSide/GetNavbar`)
       .then(resData => {
         if (resData.success && Array.isArray(resData.data)) {
           setCategories(resData.data);

@@ -122,7 +122,7 @@ export default function LooseStonesPage() {
   // Immediate Buy Now handler
   const handleBuyNow = (stone, e) => {
     handleAddToCart(stone, e);
-    window.location.href = '/cart';
+    window.location.hash = '#cart';
   };
 
   const showToast = (msg) => {

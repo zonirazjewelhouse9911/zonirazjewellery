@@ -1,5 +1,6 @@
 import React, { useState, useEffect, memo } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
+import { cachedFetch } from '../utils/apiCache';
 import LazyVideo from './LazyVideo';
 const bridalVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498517/zoniraz_frontend/videos/1.mp4";
 const everydayVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498508/zoniraz_frontend/videos/daleywear.mp4";
@@ -65,8 +66,7 @@ const ShopByCollection = memo(function ShopByCollection({ products = [] }) {
   const [collections, setCollections] = useState(staticCollections);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/userSide/getCollection`)
-      .then(res => res.json())
+    cachedFetch(`${API_BASE_URL}/api/userSide/getCollection`)
       .then(resData => {
         if (resData.success && resData.data && resData.data.length > 0) {
           const mapped = resData.data.map(col => {

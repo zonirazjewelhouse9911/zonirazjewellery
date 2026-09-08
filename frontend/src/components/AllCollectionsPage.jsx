@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
+import { cachedFetch } from '../utils/apiCache';
 const collectionBanner = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498430/zoniraz_frontend/collection-banner-1.png";
 
 const labelMap = {
@@ -15,8 +16,7 @@ export default function AllCollectionsPage({ products = [] }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE_URL}/api/userSide/getCollection`)
-      .then(res => res.json())
+    cachedFetch(`${API_BASE_URL}/api/userSide/getCollection`)
       .then(resData => {
         if (resData.success && resData.data) {
           const mapped = resData.data.map(col => {

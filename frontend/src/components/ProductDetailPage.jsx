@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useContext, useMemo } from 'react';
 import { API_BASE_URL } from '../config';
+import { cachedFetch } from '../utils/apiCache';
 import { products } from '../data/products';
 import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
@@ -387,8 +388,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
         const prodId = product?._id || product?.product_id || product?.id;
         if (!prodId) return;
 
-        const response = await fetch(`${API_BASE_URL}/api/productBasePricing`);
-        const data = await response.json();
+        const data = await cachedFetch(`${API_BASE_URL}/api/productBasePricing`);
         if (data.success && active && Array.isArray(data.data)) {
           const matched = data.data.find(item => String(item._id) === String(prodId) || String(item.product_id) === String(prodId));
           if (matched) {
@@ -447,8 +447,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
     if (!isCustomized) {
       if (product?._id || product?.id) {
         const prodId = product?._id || product?.product_id || product?.id;
-        fetch(`${API_BASE_URL}/api/productBasePricing`)
-          .then(res => res.json())
+        cachedFetch(`${API_BASE_URL}/api/productBasePricing`)
           .then(data => {
             if (data.success && active && Array.isArray(data.data)) {
               const matched = data.data.find(item => String(item._id) === String(prodId) || String(item.product_id) === String(prodId));
