@@ -2,8 +2,8 @@ const Order = require('../models/orderModel');
 
 class OrderService {
   async getAllOrders() {
-    // Sort by createdAt: -1 to show latest orders first
-    return await Order.find().sort({ createdAt: -1 });
+    // Sort by createdAt: -1 to show latest orders first using lean
+    return await Order.find().sort({ createdAt: -1 }).lean();
   }
 
   async getOrderById(id) {
@@ -13,7 +13,7 @@ class OrderService {
 
     let order = null;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      order = await Order.findById(id);
+      order = await Order.findById(id).lean();
     }
     return order;
   }

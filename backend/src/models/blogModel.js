@@ -56,5 +56,9 @@ const blogSchema = new mongoose.Schema({
   timestamps: true
 });
 
+blogSchema.index({ isPublished: 1, createdAt: -1 });
+blogSchema.index({ category: 1, isPublished: 1 });
+blogSchema.index({ tags: 1 });
+
 const Blog = mongoose.model("Blog", blogSchema);
 module.exports = Blog;

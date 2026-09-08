@@ -161,5 +161,10 @@ const orderSchema = new mongoose.Schema({
   timestamps: true // This will automatically handle createdAt and updatedAt
 });
 
+orderSchema.index({ userId: 1, createdAt: -1 });
+orderSchema.index({ createdAt: -1 });
+orderSchema.index({ paymentStatus: 1 });
+orderSchema.index({ orderStatus: 1 });
+
 const order = mongoose.model('order', orderSchema);
 module.exports = order;

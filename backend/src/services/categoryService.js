@@ -1,8 +1,14 @@
 const Category = require('../models/categoryModel');
+const cacheManager = require('../utils/cacheManager');
 
 class CategoryService {
   async getAllCategories() {
-    return await Category.find().sort({ name: 1 });
+    const cached = cacheManager.get('all_categories');
+    if (cached) return cached;
+
+    const categories = await Category.find().sort({ name: 1 }).lean();
+    cacheManager.set('all_categories', categories, 180000); // 3 min cache
+    return categories;
   }
 
   async getCategoryById(id) {
@@ -12,10 +18,10 @@ class CategoryService {
 
     let category = null;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      category = await Category.findById(id);
+      category = await Category.findById(id).lean();
     }
     if (!category) {
-      category = await Category.findOne({ slug: id });
+      category = await Category.findOne({ slug: id }).lean();
     }
     return category;
   }
@@ -25,13 +31,16 @@ class CategoryService {
       throw new Error('Category Name and Slug are required.');
     }
 
-    const existing = await Category.findOne({ slug: categoryData.slug });
+    const existing = await Category.findOne({ slug: categoryData.slug }).lean();
     if (existing) {
       throw new Error('Category Slug is already in use.');
     }
 
     const category = new Category(categoryData);
-    return await category.save();
+    const saved = await category.save();
+    cacheManager.del('all_categories');
+    cacheManager.del('navbar_data');
+    return saved;
   }
 
   async updateCategory(id, updateData) {
@@ -52,7 +61,7 @@ class CategoryService {
 
     // Check unique constraints for slug if it's being updated
     if (updateData.slug && updateData.slug !== category.slug) {
-      const existing = await Category.findOne({ slug: updateData.slug });
+      const existing = await Category.findOne({ slug: updateData.slug }).lean();
       if (existing) {
         throw new Error('Target Category Slug is already allocated to another item.');
       }
@@ -65,7 +74,10 @@ class CategoryService {
       }
     });
 
-    return await category.save();
+    const saved = await category.save();
+    cacheManager.del('all_categories');
+    cacheManager.del('navbar_data');
+    return saved;
   }
 }
 

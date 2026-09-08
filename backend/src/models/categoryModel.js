@@ -89,5 +89,7 @@ const categorySchema = new mongoose.Schema({
   timestamps: true // Auto-handles createdAt and updatedAt
 });
 
+categorySchema.index({ name: 1 });
+
 const category = mongoose.model('categorie', categorySchema);
 module.exports = category;

@@ -4,12 +4,39 @@ const Address = require('../models/address');
 
 class UserService {
   async getAllUsers() {
-    // Return all users sorted by name
-    const users = await User.find().sort({ name: 1 });
-    
-    // Supplement each user with calculated lifetime spend, order count, and addresses
-    const usersWithStats = await Promise.all(users.map(async (user) => {
-      const orders = await Order.find({ userId: user._id });
+    // Return all users sorted by name using lean
+    const users = await User.find().sort({ name: 1 }).lean();
+    if (!users || users.length === 0) return [];
+
+    const userIds = users.map(u => u._id);
+
+    // Batch query all orders and addresses in 2 single queries instead of 2*N queries
+    const [allOrders, allAddresses] = await Promise.all([
+      Order.find({ userId: { $in: userIds } }).lean(),
+      Address.find({ user_id: { $in: userIds } }).lean()
+    ]);
+
+    // Group orders by userId
+    const ordersByUserMap = new Map();
+    for (const order of allOrders) {
+      const uIdStr = order.userId ? order.userId.toString() : '';
+      if (!ordersByUserMap.has(uIdStr)) {
+        ordersByUserMap.set(uIdStr, []);
+      }
+      ordersByUserMap.get(uIdStr).push(order);
+    }
+
+    // Group addresses by user_id
+    const addressDocByUserMap = new Map();
+    for (const addr of allAddresses) {
+      const uIdStr = addr.user_id ? addr.user_id.toString() : '';
+      addressDocByUserMap.set(uIdStr, addr);
+    }
+
+    // Combine stats synchronously in memory
+    const usersWithStats = users.map(user => {
+      const uIdStr = user._id.toString();
+      const orders = ordersByUserMap.get(uIdStr) || [];
       const orderCount = orders.length;
       const lifetimeValue = orders.reduce((sum, order) => {
         if (order.paymentStatus === 'paid') {
@@ -19,7 +46,7 @@ class UserService {
       }, 0);
 
       // Fetch saved profile addresses
-      const addressDoc = await Address.findOne({ user_id: user._id });
+      const addressDoc = addressDocByUserMap.get(uIdStr);
       const savedAddresses = (addressDoc?.entries || []).map((e, idx) => ({
         fullName: e.name || user.name || user.userName || 'Customer',
         phone: String(e.mobile || user.phone || user.userPhone || ''),
@@ -54,12 +81,12 @@ class UserService {
       }
 
       return {
-        ...user.toObject(),
+        ...user,
         addresses: combinedAddresses,
         orderCount,
         lifetimeValue
       };
-    }));
+    });
 
     return usersWithStats;
   }
@@ -71,15 +98,15 @@ class UserService {
 
     let user = null;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      user = await User.findById(id);
+      user = await User.findById(id).lean();
     }
 
     if (!user) {
       return null;
     }
 
-    // Get order history and statistics
-    const orders = await Order.find({ userId: user._id }).sort({ createdAt: -1 });
+    // Get order history and statistics using lean
+    const orders = await Order.find({ userId: user._id }).sort({ createdAt: -1 }).lean();
     const orderCount = orders.length;
     const lifetimeValue = orders.reduce((sum, order) => {
       if (order.paymentStatus === 'paid') {
@@ -89,7 +116,7 @@ class UserService {
     }, 0);
 
     // Fetch saved profile addresses
-    const addressDoc = await Address.findOne({ user_id: user._id });
+    const addressDoc = await Address.findOne({ user_id: user._id }).lean();
     const savedAddresses = (addressDoc?.entries || []).map((e, idx) => ({
       fullName: e.name || user.name || user.userName || 'Customer',
       phone: String(e.mobile || user.phone || user.userPhone || ''),
@@ -124,7 +151,7 @@ class UserService {
     }
 
     return {
-      ...user.toObject(),
+      ...user,
       addresses: combinedAddresses,
       orders,
       orderCount,

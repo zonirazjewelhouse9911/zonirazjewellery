@@ -212,5 +212,9 @@ const userSchema = new mongoose.Schema({
   timestamps: true // Auto-handles createdAt and updatedAt
 });
 
+userSchema.index({ auth_key: 1 });
+userSchema.index({ name: 1 });
+userSchema.index({ status: 1 });
+
 const User = mongoose.model('User', userSchema);
 module.exports = User;

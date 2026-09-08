@@ -2,8 +2,16 @@ const productService = require('../services/productService');
 const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
 const { generateSitemap } = require('../utils/sitemapGenerator');
+const cacheManager = require('../utils/cacheManager');
 
 const productCache = new Map();
+
+function invalidateProductCaches() {
+  productCache.delete('products');
+  cacheManager.del('navbar_data');
+  cacheManager.del('all_collections');
+  cacheManager.del('trending_products');
+}
 
 class ProductController {
   getProducts = async (req, res) => {
@@ -38,6 +46,7 @@ class ProductController {
   createProduct = async (req, res) => {
     try {
       const product = await productService.createProduct(req.body);
+      invalidateProductCaches();
       generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(201).json({
         success: true,
@@ -53,6 +62,7 @@ class ProductController {
   updateProduct = async (req, res) => {
     try {
       const product = await productService.updateProduct(req.params.id, req.body);
+      invalidateProductCaches();
       generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(200).json({
         success: true,
@@ -121,6 +131,7 @@ class ProductController {
   deleteProduct = async (req, res) => {
     try {
       const product = await productService.deleteProduct(req.params.id);
+      invalidateProductCaches();
       generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(200).json({
         success: true,
@@ -140,6 +151,7 @@ class ProductController {
         return res.status(400).json({ success: false, message: 'Please provide an array of product IDs to delete' });
       }
       const result = await productService.deleteMultipleProducts(ids);
+      invalidateProductCaches();
       generateSitemap().catch(err => console.error("Sitemap update error:", err));
       return res.status(200).json({
         success: true,

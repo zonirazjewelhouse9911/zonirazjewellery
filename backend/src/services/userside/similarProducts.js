@@ -9,20 +9,17 @@ exports.getSimilarProducts = async (productId, limit = 4) => {
             };
         }
 
-        // Find target product
-        let targetProduct = null;
+        // Find target product in 1 single indexed query
+        const queryOr = [
+            { product_id: productId },
+            { product_slug: productId },
+            { slug: productId }
+        ];
         if (productId.match(/^[0-9a-fA-F]{24}$/)) {
-            targetProduct = await Product.findById(productId);
+            queryOr.unshift({ _id: productId });
         }
-        if (!targetProduct) {
-            targetProduct = await Product.findOne({ product_id: productId });
-        }
-        if (!targetProduct) {
-            targetProduct = await Product.findOne({ product_slug: productId });
-        }
-        if (!targetProduct) {
-            targetProduct = await Product.findOne({ slug: productId });
-        }
+
+        const targetProduct = await Product.findOne({ $or: queryOr }).lean();
 
         if (!targetProduct) {
             return {
@@ -59,7 +56,7 @@ exports.getSimilarProducts = async (productId, limit = 4) => {
             matchQuery.$or.push({ product_type: targetProduct.product_type });
         }
 
-        const data = await Product.find(matchQuery).limit(Number(limit) || 4);
+        const data = await Product.find(matchQuery).limit(Number(limit) || 4).lean();
 
         return {
             success: true,

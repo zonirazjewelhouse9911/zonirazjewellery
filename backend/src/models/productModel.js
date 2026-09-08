@@ -270,9 +270,18 @@ const productSchema = new mongoose.Schema({
 
 // Step 4b — MongoDB Indexes for fast queries
 productSchema.index({ category_id: 1, status: 1 });
+productSchema.index({ subcategory_id: 1, status: 1 });
+productSchema.index({ product_category: 1, status: 1 });
+productSchema.index({ product_subcategory: 1, status: 1 });
 productSchema.index({ product_slug: 1 });
+productSchema.index({ slug: 1 });
+productSchema.index({ product_code: 1 });
 productSchema.index({ feature: 1, status: 1 });
 productSchema.index({ topselling: 1, status: 1 });
+productSchema.index({ is_trending: 1, status: 1 });
+productSchema.index({ is_bestseller: 1, status: 1 });
+productSchema.index({ is_popular: 1, status: 1 });
+productSchema.index({ tags: 1 });
 productSchema.index({ create_date: -1 });
 
 const Product = mongoose.model("Product", productSchema);

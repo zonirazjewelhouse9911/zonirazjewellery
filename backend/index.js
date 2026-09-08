@@ -1,5 +1,6 @@
 const cookieParser = require('cookie-parser');
 const express = require('express');
+const compression = require('compression');
 const dotenv = require('dotenv');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -11,6 +12,9 @@ const { connectDB } = require('./db/dbconnection.js');
 dotenv.config();
 
 const app = express();
+
+// Enable Gzip HTTP Response Compression
+app.use(compression());
 
 // CORS configuration
 const allowedOrigins = [

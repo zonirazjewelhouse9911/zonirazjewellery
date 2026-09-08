@@ -193,7 +193,7 @@ exports.getAllBlogs = async (req, res) => {
     }
 
     // Sort by createdAt descending so LATEST blog is first!
-    const blogs = await Blog.find(query).sort({ createdAt: -1 });
+    const blogs = await Blog.find(query).sort({ createdAt: -1 }).lean();
 
     return res.status(200).json({
       success: true,
@@ -214,7 +214,7 @@ exports.getAllBlogs = async (req, res) => {
 exports.getBlogBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
-    const blog = await Blog.findOne({ slug, isPublished: true });
+    const blog = await Blog.findOne({ slug, isPublished: true }).lean();
 
     if (!blog) {
       return res.status(404).json({
@@ -242,7 +242,7 @@ exports.getBlogBySlug = async (req, res) => {
 // GET /api/admin/blogs - Fetch all blogs for admin portal
 exports.getAdminBlogs = async (req, res) => {
   try {
-    const blogs = await Blog.find().sort({ createdAt: -1 });
+    const blogs = await Blog.find().sort({ createdAt: -1 }).lean();
 
     return res.status(200).json({
       success: true,

@@ -31,7 +31,7 @@ const mapToClientOrder = (mongoOrder) => ({
 exports.getOrders = async (req, res) => {
     try {
         const user_id = req.user._id;
-        const orders = await Order.find({ userId: user_id }).sort({ createdAt: -1 });
+        const orders = await Order.find({ userId: user_id }).sort({ createdAt: -1 }).lean();
         const clientOrders = orders.map(mapToClientOrder);
         return res.status(200).json(clientOrders);
     } catch (error) {

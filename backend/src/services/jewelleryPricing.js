@@ -1,6 +1,7 @@
 const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const JewelleryPricing = require("../models/jewelleryPricingModel");
+const cacheManager = require("../utils/cacheManager");
 
 // Category map to resolve short string IDs to standard category names
 const categoryMap = {
@@ -18,10 +19,12 @@ class JewelleryPricingService {
    * Fetches the latest daily rates from the database.
    */
   async getLatestRates() {
-    let rates = await JewelleryPricing.findOne().sort({ updatedAt: -1 });
+    const cached = cacheManager.get("jewellery_rates");
+    if (cached) return cached;
+
+    let rates = await JewelleryPricing.findOne().sort({ updatedAt: -1 }).lean();
     if (!rates) {
-      // Return default rates if none found
-      return {
+      const defaultRates = {
         gold_rate_24k: 0,
         gold_rate_14k: 0,
         diamond_rate: 0,
@@ -33,13 +36,17 @@ class JewelleryPricingService {
         gemstone_rate: 0,
         gst_percent: 3
       };
+      cacheManager.set("jewellery_rates", defaultRates, 180000);
+      return defaultRates;
     }
-    const ratesObj = rates.toObject ? rates.toObject() : rates;
+    const ratesObj = rates;
     const g24 = ratesObj.gold_rate_24k || 0;
     const g14 = ratesObj.gold_rate_14k || 0;
     ratesObj.gold_rate_24k = g24 > 0 ? g24 : Math.round(g14 * 24 / 14);
     ratesObj.gold_rate_14k = g14 > 0 ? g14 : Math.round(g24 * 14 / 24);
     ratesObj.custom_diamond_rates = ratesObj.custom_diamond_rates || {};
+
+    cacheManager.set("jewellery_rates", ratesObj, 180000);
     return ratesObj;
   }
 
@@ -91,6 +98,7 @@ class JewelleryPricingService {
       });
       await rates.save();
     }
+    cacheManager.del("jewellery_rates");
     return rates;
   }
 

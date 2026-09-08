@@ -32,5 +32,7 @@ const collectionSchema = new mongoose.Schema({
   timestamps: true // Auto-handles createdAt and updatedAt
 });
 
+collectionSchema.index({ priority: 1, name: 1 });
+
 const Collection = mongoose.model('Collection', collectionSchema);
 module.exports = Collection;

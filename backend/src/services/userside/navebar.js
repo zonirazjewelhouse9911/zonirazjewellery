@@ -1,8 +1,18 @@
 const productModel = require("../../models/productModel");
 const categoryModel = require("../../models/categoryModel");
+const cacheManager = require("../../utils/cacheManager");
 
 exports.navbar = async (req, res) => {
     try {
+        const cached = cacheManager.get("navbar_data");
+        if (cached) {
+            return {
+                message: "NAVEBAR",
+                success: true,
+                data: cached
+            };
+        }
+
         const data = await categoryModel.aggregate([
             {
                 $lookup: {
@@ -66,7 +76,7 @@ exports.navbar = async (req, res) => {
             }
         ]);
 
-
+        cacheManager.set("navbar_data", data, 600000); // 10 minutes cache
 
         return {
             message: "NAVEBAR",
@@ -82,5 +92,4 @@ exports.navbar = async (req, res) => {
             error: error.message
         }
     }
-
 }

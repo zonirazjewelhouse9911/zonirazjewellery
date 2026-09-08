@@ -21,5 +21,7 @@ const bannerSchema = new mongoose.Schema({
   timestamps: true
 });
 
+bannerSchema.index({ createdAt: -1 });
+
 const Banner = mongoose.model("Banner", bannerSchema);
 module.exports = Banner;

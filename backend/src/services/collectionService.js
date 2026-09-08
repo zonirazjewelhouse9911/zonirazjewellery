@@ -1,10 +1,15 @@
 const Collection = require('../models/collectionModel');
 const Product = require('../models/productModel');
+const cacheManager = require('../utils/cacheManager');
 
 class CollectionService {
   async getAllCollections() {
-    const collections = await Collection.find().sort({ priority: 1, name: 1 });
-    const products = await Product.find();
+    const cached = cacheManager.get('all_collections');
+    if (cached) return cached;
+
+    const collections = await Collection.find().sort({ priority: 1, name: 1 }).lean();
+    // Only select minimal fields needed for collection tag matching instead of full heavy product docs
+    const products = await Product.find().select('product_title description product_slug tags').lean();
 
     // Map through collections and dynamically calculate matching products based on tags/slug
     const collectionsWithStats = collections.map(col => {
@@ -24,11 +29,12 @@ class CollectionService {
       });
 
       return {
-        ...col.toObject(),
+        ...col,
         productCount: linkedProducts.length
       };
     });
 
+    cacheManager.set('all_collections', collectionsWithStats, 180000); // 3 min cache
     return collectionsWithStats;
   }
 
@@ -39,10 +45,10 @@ class CollectionService {
 
     let collection = null;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      collection = await Collection.findById(id);
+      collection = await Collection.findById(id).lean();
     }
     if (!collection) {
-      collection = await Collection.findOne({ slug: id });
+      collection = await Collection.findOne({ slug: id }).lean();
     }
     return collection;
   }
@@ -52,13 +58,15 @@ class CollectionService {
       throw new Error('Collection Name and Slug are required.');
     }
 
-    const existing = await Collection.findOne({ slug: collectionData.slug });
+    const existing = await Collection.findOne({ slug: collectionData.slug }).lean();
     if (existing) {
       throw new Error('Collection Slug is already in use.');
     }
 
     const collection = new Collection(collectionData);
-    return await collection.save();
+    const saved = await collection.save();
+    cacheManager.del('all_collections');
+    return saved;
   }
 
   async updateCollection(id, updateData) {
@@ -79,7 +87,7 @@ class CollectionService {
 
     // Check unique constraints for slug if it's being updated
     if (updateData.slug && updateData.slug !== collection.slug) {
-      const existing = await Collection.findOne({ slug: updateData.slug });
+      const existing = await Collection.findOne({ slug: updateData.slug }).lean();
       if (existing) {
         throw new Error('Target Collection Slug is already allocated to another item.');
       }
@@ -92,7 +100,9 @@ class CollectionService {
       }
     });
 
-    return await collection.save();
+    const saved = await collection.save();
+    cacheManager.del('all_collections');
+    return saved;
   }
 }
 
