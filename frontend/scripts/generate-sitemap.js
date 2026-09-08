@@ -30,6 +30,7 @@ const staticPages = [
   { url: '/buy-gold', priority: '0.8', changefreq: 'weekly' },
   { url: '/gold-mine', priority: '0.8', changefreq: 'weekly' },
   { url: '/loose-stones', priority: '0.8', changefreq: 'weekly' },
+  { url: '/custom-name-pendant', priority: '0.8', changefreq: 'weekly' },
   { url: '/delivery', priority: '0.7', changefreq: 'weekly' },
   { url: '/all-collections', priority: '0.8', changefreq: 'weekly' }
 ];
@@ -264,6 +265,13 @@ async function main() {
     const rawSlug = p.product_slug || p.slug || p.product_id || p._id;
     if (!rawSlug) return;
     const cleanSlug = String(rawSlug).trim();
+
+    // Exclude anomalous slugs containing unencoded whitespace, pipe, or illegal characters
+    if (/[\s|]/.test(cleanSlug)) {
+      console.log(`[Sitemap Generator] Excluded anomalous product slug: "${cleanSlug}"`);
+      return;
+    }
+
     const fullUrl = `${DOMAIN}/product/${cleanSlug}`;
 
     if (productItemsMap.has(fullUrl)) {
@@ -306,6 +314,11 @@ async function main() {
   fs.writeFileSync(indexPath, indexXml, 'utf-8');
   console.log(`[Sitemap Generator] Created main Sitemap Index sitemap.xml linking ${childSitemaps.length} child sitemaps`);
 
+  // F. Generate Production .htaccess with exact route whitelisting & HTTP 404 enforcement
+  const validProductSlugs = productItems.map(p => p.fullUrl ? p.fullUrl.replace(`${DOMAIN}/product/`, '') : '').filter(Boolean);
+  const validBlogSlugs = blogItems.map(b => b.fullUrl ? b.fullUrl.replace(`${DOMAIN}/blog/`, '') : '').filter(s => s && s !== `${DOMAIN}/blog` && !s.includes('http'));
+  generateHtaccess(publicDir, validProductSlugs, validBlogSlugs);
+
   const totalUrls = staticItems.length + categoryItems.length + blogItems.length + productItems.length;
 
   console.log(`\n=======================================`);
@@ -318,6 +331,88 @@ async function main() {
   console.log(`  3. ${DOMAIN}/sitemap-blogs.xml       (${blogItems.length} URLs)`);
   console.log(`  4. ${DOMAIN}/sitemap-products.xml    (${productItems.length} URLs)`);
   console.log(`Total URLs Indexed Across Child Sitemaps: ${totalUrls}\n`);
+}
+
+function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
+  const staticSlugs = [
+    'about', 'contact', 'zoniraz-alwar', 'franchise', 'sell-gold',
+    'buy-gold', 'gold-mine', 'loose-stones', 'custom-name-pendant',
+    'all-collections', 'delivery', 'privacy', 'terms', 'cart',
+    'checkout', 'wishlist', 'profile', 'admin-call', 'wallet'
+  ];
+
+  const categorySlugs = [
+    'rings', 'earrings', 'pendants', 'necklaces', 'bangles',
+    'bracelets', 'mangalsutras', 'nose-pins', 'solitaires', 'gold-coins'
+  ];
+
+  let ht = `<IfModule mod_rewrite.c>\n`;
+  ht += `  RewriteEngine On\n`;
+  ht += `  RewriteBase /\n\n`;
+  ht += `  # Serve /index.html with HTTP 404 status code when ErrorDocument triggers\n`;
+  ht += `  ErrorDocument 404 /index.html\n\n`;
+  ht += `  # 1. Do NOT rewrite backend API requests\n`;
+  ht += `  RewriteCond %{REQUEST_URI} ^/api [NC]\n`;
+  ht += `  RewriteRule ^ - [L]\n\n`;
+  ht += `  # 2. Serve existing physical files and directories directly\n`;
+  ht += `  RewriteCond %{REQUEST_FILENAME} -f [OR]\n`;
+  ht += `  RewriteCond %{REQUEST_FILENAME} -d\n`;
+  ht += `  RewriteRule ^ - [L]\n\n`;
+  ht += `  # 3. Permanent 301 Redirects for Legacy / Alias Routes\n`;
+  ht += `  RewriteRule ^trending-now/?$ /rings [R=301,L]\n`;
+  ht += `  RewriteRule ^trending/?$ /rings [R=301,L]\n`;
+  ht += `  RewriteRule ^collections/?$ /all-collections [R=301,L]\n`;
+  ht += `  RewriteRule ^exchange/?$ /sell-gold [R=301,L]\n`;
+  ht += `  RewriteRule ^plans/gold-mine/?$ /gold-mine [R=301,L]\n`;
+  ht += `  RewriteRule ^buy-loose-stones/?$ /loose-stones [R=301,L]\n`;
+  ht += `  RewriteRule ^loose-diamonds/?$ /loose-stones [R=301,L]\n`;
+  ht += `  RewriteRule ^custom-pendant/?$ /custom-name-pendant [R=301,L]\n`;
+  ht += `  RewriteRule ^custom-pendant-prototype/?$ /custom-name-pendant [R=301,L]\n`;
+  ht += `  RewriteRule ^(shipping|international-shipping|payment|returns|giftcards)/?$ /delivery [R=301,L]\n`;
+  ht += `  RewriteRule ^blogs/?$ /blog [R=301,L]\n`;
+  ht += `  RewriteRule ^profile/ten-plus-one-product(/.*)?$ /gold-mine [R=301,L]\n\n`;
+
+  ht += `  # 4. Whitelist Homepage\n`;
+  ht += `  RewriteRule ^$ /index.html [L]\n`;
+  ht += `  RewriteRule ^index\\.html$ - [L]\n\n`;
+
+  ht += `  # 5. Whitelist Static & Informational Pages\n`;
+  ht += `  RewriteRule ^(${staticSlugs.join('|')})/?$ /index.html [L]\n\n`;
+
+  ht += `  # 6. Whitelist Canonical Category Pages\n`;
+  ht += `  RewriteRule ^(${categorySlugs.join('|')})/?$ /index.html [L]\n\n`;
+
+  ht += `  # 7. Whitelist Blog Landing & Active Blog Articles\n`;
+  ht += `  RewriteRule ^blog/?$ /index.html [L]\n`;
+  if (validBlogSlugs.length > 0) {
+    const escapedBlogs = validBlogSlugs.map(s => s.replace(/\s+/g, '-').replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')).join('|');
+    ht += `  RewriteRule ^blog/(${escapedBlogs})/?$ /index.html [L]\n\n`;
+  }
+
+  ht += `  # 8. Whitelist Active Product Slugs\n`;
+  const chunkSize = 40;
+  for (let i = 0; i < validProductSlugs.length; i += chunkSize) {
+    const chunk = validProductSlugs.slice(i, i + chunkSize);
+    const escaped = chunk.map(s => s.replace(/\s+/g, '(?:%20|[\\s-])').replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')).join('|');
+    ht += `  RewriteRule ^product/(${escaped})/?$ /index.html [L]\n`;
+  }
+
+  ht += `\n  # 9. Strict Nonexistent Route Fallback: HTTP 404\n`;
+  ht += `  # Nonexistent URLs will NOT rewrite to /index.html with 200\n`;
+  ht += `  # They trigger ErrorDocument 404 (/index.html with HTTP 404 status)\n`;
+  ht += `  RewriteCond %{REQUEST_FILENAME} !-f\n`;
+  ht += `  RewriteCond %{REQUEST_FILENAME} !-d\n`;
+  ht += `  RewriteRule ^ - [R=404,L]\n`;
+  ht += `</IfModule>\n`;
+
+  const htaccessPath = path.join(publicDir, '.htaccess');
+  fs.writeFileSync(htaccessPath, ht, 'utf-8');
+  console.log(`[Sitemap & Routing Generator] Generated .htaccess with ${validProductSlugs.length} valid product rules & strict 404 fallback`);
+
+  const distDir = path.join(publicDir, '..', 'dist');
+  if (fs.existsSync(distDir)) {
+    fs.writeFileSync(path.join(distDir, '.htaccess'), ht, 'utf-8');
+  }
 }
 
 main().catch(err => {

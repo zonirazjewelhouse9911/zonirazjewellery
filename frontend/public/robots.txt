@@ -1,9 +1,7 @@
 User-agent: *
 Allow: /
-Disallow: /checkout
-Disallow: /cart
-Disallow: /wishlist
-Disallow: /profile
+Disallow: /api/
+Disallow: /admin/
 Disallow: /admin-call
 
 Sitemap: https://zoniraz.com/sitemap.xml

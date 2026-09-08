@@ -315,6 +315,170 @@ const getKeywordsForView = (currentView, queryParams, categoryName) => {
   };
 };
 
+const CATEGORY_SEO_METADATA = {
+  rings: {
+    canonicalSlug: 'rings',
+    title: 'Luxury Rings | Gold & Diamond Rings Online in Alwar | Zoniraz',
+    description: 'Shop handcrafted gold and diamond rings in Alwar at Zoniraz. Explore engagement rings, wedding bands, solitaire rings, and daily wear designs.'
+  },
+  earrings: {
+    canonicalSlug: 'earrings',
+    title: 'Diamond & Gold Earrings Online in Alwar | Zoniraz',
+    description: 'Discover stunning gold and diamond earrings in Alwar at Zoniraz. Browse studs, hoops, jhumkis, and drops crafted for every occasion.'
+  },
+  pendants: {
+    canonicalSlug: 'pendants',
+    title: 'Gold & Diamond Pendants Online in Alwar | Zoniraz',
+    description: 'Explore designer gold and diamond pendants in Alwar at Zoniraz. From classic solitaires to custom name pendants, find your perfect piece.'
+  },
+  necklaces: {
+    canonicalSlug: 'necklaces',
+    title: 'Gold & Diamond Necklaces Online in Alwar | Zoniraz',
+    description: 'Shop timeless gold, diamond, and bridal necklaces in Alwar at Zoniraz. Handcrafted luxury designs with certified gemstones and BIS hallmark.'
+  },
+  bangles: {
+    canonicalSlug: 'bangles',
+    title: 'Gold & Diamond Bangles Online in Alwar | Zoniraz',
+    description: 'Buy elegant gold and diamond bangles in Alwar at Zoniraz. Browse traditional bridal kadas, lightweight daily wear bangles, and luxury cuffs.'
+  },
+  bracelets: {
+    canonicalSlug: 'bracelets',
+    title: 'Designer Gold & Diamond Bracelets Online in Alwar | Zoniraz',
+    description: 'Discover fine diamond tennis bracelets, charm bracelets, and gold chain bracelets in Alwar at Zoniraz. Modern designs at transparent prices.'
+  },
+  mangalsutras: {
+    canonicalSlug: 'mangalsutras',
+    title: 'Modern Diamond & Gold Mangalsutras in Alwar | Zoniraz',
+    description: 'Explore contemporary and traditional diamond mangalsutras in Alwar at Zoniraz. Authentic black bead sacred designs crafted in 14K & 18K gold.'
+  },
+  'nose-pins': {
+    canonicalSlug: 'nose-pins',
+    title: 'Gold & Diamond Nose Pins Online in Alwar | Zoniraz',
+    description: 'Shop sparkling diamond nose pins and gold nose rings in Alwar at Zoniraz. Lightweight, comfortable, and certified fine jewellery designs.'
+  },
+  solitaires: {
+    canonicalSlug: 'solitaires',
+    title: 'Certified Solitaire Diamond Jewellery in Alwar | Zoniraz',
+    description: 'Experience radiant certified solitaire diamonds in Alwar at Zoniraz. Handcrafted solitaire engagement rings, pendants, and stud earrings.'
+  },
+  'gold-coins': {
+    canonicalSlug: 'gold-coins',
+    title: '24K 999 Purity Gold Coins in Alwar | Zoniraz',
+    description: 'Buy 24K pure gold coins with tamper-proof certicard packaging in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, and gold investment.'
+  }
+};
+
+const STATIC_PAGE_SEO = {
+  about: {
+    url: 'https://zoniraz.com/about',
+    title: 'About Zoniraz | Luxury Diamond & Gold Jewellery Heritage in Alwar',
+    description: 'Learn about Zoniraz Jewels, Alwar premier luxury jewellery destination. Discover our heritage of craftsmanship, certified diamonds, and hallmarked gold.',
+    robots: 'index, follow'
+  },
+  contact: {
+    url: 'https://zoniraz.com/contact',
+    title: 'Contact Zoniraz | Fine Jewellery Showroom in Alwar',
+    description: 'Get in touch with Zoniraz Jewel House in Alwar. Visit our showroom at Tilak Market or contact our jewellery experts for custom consultations.',
+    robots: 'index, follow'
+  },
+  'zoniraz-alwar': {
+    url: 'https://zoniraz.com/zoniraz-alwar',
+    title: 'Zoniraz Jewellery Store in Alwar | Best Gold & Diamond Shop',
+    description: 'Visit the official Zoniraz Jewel House showroom in Alwar, Rajasthan. 100% BIS hallmarked gold, certified natural diamonds, and transparent old gold exchange.',
+    robots: 'index, follow'
+  },
+  franchise: {
+    url: 'https://zoniraz.com/franchise',
+    title: 'Jewellery Franchise Opportunity | Partner with Zoniraz in Alwar',
+    description: 'Join Zoniraz as a retail jewellery franchise partner. Explore high-growth business opportunities in fine gold, diamond, and lifestyle jewellery.',
+    robots: 'index, follow'
+  },
+  'sell-gold': {
+    url: 'https://zoniraz.com/sell-gold',
+    title: 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
+    description: 'Exchange your old gold jewellery with 100% computerized karatmeter purity testing in Alwar at Zoniraz. Get instant fair market valuation.',
+    robots: 'index, follow'
+  },
+  'buy-gold': {
+    url: 'https://zoniraz.com/buy-gold',
+    title: 'Buy 24K Digital & Physical Gold Online in Alwar | Zoniraz',
+    description: 'Invest in 24K pure gold with Zoniraz. Start with digital gold savings or purchase hallmarked gold coins with secure insured delivery.',
+    robots: 'index, follow'
+  },
+  'gold-mine': {
+    url: 'https://zoniraz.com/gold-mine',
+    title: '10+1 Monthly Gold Savings Scheme in Alwar | Zoniraz Gold Mine',
+    description: 'Enroll in the Zoniraz 10+1 Gold Mine savings plan. Pay for 10 months and get a bonus contribution on the 11th month towards your jewellery purchase.',
+    robots: 'index, follow'
+  },
+  'loose-stones': {
+    url: 'https://zoniraz.com/loose-stones',
+    title: 'Certified Loose Diamonds & Solitaires in Alwar | Zoniraz',
+    description: 'Buy GIA and IGI certified natural loose diamonds and precious gemstones in Alwar. Custom design your dream ring or pendant with Zoniraz.',
+    robots: 'index, follow'
+  },
+  'custom-name-pendant': {
+    url: 'https://zoniraz.com/custom-name-pendant',
+    title: 'Custom Name Pendant Maker in Gold & Diamond | Zoniraz',
+    description: 'Design personalized custom name pendants in real gold and diamonds at Zoniraz. Choose your font, metal color, and preview live before crafting.',
+    robots: 'index, follow'
+  },
+  'all-collections': {
+    url: 'https://zoniraz.com/all-collections',
+    title: 'Explore Designer Jewellery Collections in Alwar | Zoniraz',
+    description: 'Browse curated fine jewellery collections by Zoniraz. Discover bridal masterpieces, everyday minimalist styles, and heritage gold creations.',
+    robots: 'index, follow'
+  },
+  delivery: {
+    url: 'https://zoniraz.com/delivery',
+    title: 'Delivery, Shipping & Return Information | Zoniraz',
+    description: 'Learn about our 100% insured delivery, secure shipping options, 15-day return policy, and payment methods at Zoniraz.',
+    robots: 'index, follow'
+  },
+  blog: {
+    url: 'https://zoniraz.com/blog',
+    title: 'Jewellery Guides, Trends & Buying Advice Blog | Zoniraz',
+    description: 'Stay inspired with the latest jewellery trends, diamond buying guides, gold investment tips, and bridal fashion advice from Zoniraz.',
+    robots: 'index, follow'
+  },
+  privacy: {
+    url: 'https://zoniraz.com/privacy',
+    title: 'Privacy Policy | Zoniraz Jewels',
+    description: 'Read the privacy policy of Zoniraz Jewels. Learn how we safeguard your personal data, transactions, and browsing information.',
+    robots: 'noindex, follow'
+  },
+  terms: {
+    url: 'https://zoniraz.com/terms',
+    title: 'Terms & Conditions | Zoniraz Jewels',
+    description: 'Terms of service, purchasing policies, warranties, and conditions for shopping at Zoniraz Jewels.',
+    robots: 'noindex, follow'
+  },
+  cart: {
+    url: 'https://zoniraz.com/cart',
+    title: 'Shopping Bag | Zoniraz',
+    description: 'Review your selected luxury jewellery pieces in your Zoniraz shopping bag.',
+    robots: 'noindex, nofollow'
+  },
+  checkout: {
+    url: 'https://zoniraz.com/checkout',
+    title: 'Secure Checkout | Zoniraz',
+    description: 'Complete your luxury jewellery order securely with Zoniraz.',
+    robots: 'noindex, nofollow'
+  },
+  wishlist: {
+    url: 'https://zoniraz.com/wishlist',
+    title: 'My Wishlist | Zoniraz',
+    description: 'View and manage your saved jewellery pieces at Zoniraz.',
+    robots: 'noindex, nofollow'
+  },
+  profile: {
+    url: 'https://zoniraz.com/profile',
+    title: 'My Account & Ledger | Zoniraz',
+    description: 'Manage your Zoniraz profile, orders, addresses, and 10+1 Gold Mine wallet.',
+    robots: 'noindex, nofollow'
+  }
+};
+
 function AppContent() {
   const { isAuthModalOpen, setIsAuthModalOpen } = useContext(AuthContext);
   const [currentView, setCurrentView] = React.useState('home');
@@ -621,7 +785,15 @@ function AppContent() {
       setSelectedProductId(null);
 
       if (path.startsWith('/product-') || path.startsWith('/product/')) {
-        const slug = path.startsWith('/product-') ? path.replace('/product-', '') : path.replace('/product/', '');
+        const rawSlug = path.startsWith('/product-') ? path.replace('/product-', '') : path.replace('/product/', '');
+        const slug = rawSlug.split('?')[0].trim();
+        // Prevent internal/legacy API endpoints from generating soft-404 product pages
+        if (!slug || slug.toLowerCase().startsWith('getproduct')) {
+          setSelectedProductId(null);
+          setCurrentView('not-found');
+          restoreOrScrollTop();
+          return;
+        }
         const catalog = allProducts.length > 0 ? allProducts : products;
         const found = catalog.find(p => 
           String(p.product_slug || p.slug || '').toLowerCase() === decodeURIComponent(slug).toLowerCase() || 
@@ -639,11 +811,80 @@ function AppContent() {
         }
         setCurrentView('product');
         restoreOrScrollTop();
+      } else if (path.startsWith('/profile/ten-plus-one-product')) {
+        // Obsolete legacy 10+1 product scheme link: permanent SPA normalization to active /gold-mine
+        window.history.replaceState(null, '', '/gold-mine');
+        setCurrentView('gold-mine');
+        restoreOrScrollTop();
+      } else if (path.startsWith('/jewellery/')) {
+        // Legacy URL pattern from previous store platform
+        // E.g. /jewellery/nose-pins-all-jewellery/cecilia-nose-pin, /jewellery/gemstone-rings.html
+        const rawSegments = path.replace('/jewellery/', '').split('/').filter(Boolean);
+        const lastSegment = (rawSegments[rawSegments.length - 1] || '').replace(/\.html$/i, '').trim();
+        const catalog = allProducts.length > 0 ? allProducts : products;
+        const matchedProduct = catalog.find(p => 
+          String(p.product_slug || p.slug || '').toLowerCase() === lastSegment.toLowerCase() ||
+          String(p.name || p.product_title || '').toLowerCase().replace(/[^a-z0-9]/g, '-').includes(lastSegment.toLowerCase())
+        );
+        if (matchedProduct) {
+          const cleanSlug = matchedProduct.product_slug || matchedProduct.slug || matchedProduct.id;
+          window.history.replaceState(null, '', `/product/${cleanSlug}`);
+          setSelectedProductId(matchedProduct.id || cleanSlug);
+          setCurrentView('product');
+          restoreOrScrollTop();
+          return;
+        }
+        const knownCategories = [
+          "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
+          "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
+          "Gold Coins", "Solitaires"
+        ];
+        const catMatch = knownCategories.find(c => 
+          lastSegment.includes(c.toLowerCase().replace(/[^a-z0-9]/g, '')) ||
+          rawSegments.some(seg => seg.includes(c.toLowerCase().replace(/[^a-z0-9]/g, '')))
+        );
+        if (catMatch) {
+          const cleanCatSlug = catMatch.toLowerCase().replace(/[^a-z0-9]/g, '-');
+          window.history.replaceState(null, '', `/${cleanCatSlug}`);
+          setSelectedCategoryName(catMatch);
+          setCurrentView('rings');
+          restoreOrScrollTop();
+          return;
+        }
+        setCurrentView('not-found');
+        restoreOrScrollTop();
+      } else if (path.startsWith('/product-list/')) {
+        // Legacy category URL pattern: /product-list/rings/plain-gold -> /rings
+        const rawSegments = path.replace('/product-list/', '').split('/').filter(Boolean);
+        const firstSegment = rawSegments[0] || '';
+        const knownCategories = [
+          "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
+          "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
+          "Gold Coins", "Solitaires"
+        ];
+        const catMatch = knownCategories.find(c => 
+          c.toLowerCase().replace(/[^a-z0-9]/g, '') === firstSegment.replace(/[^a-z0-9]/g, '')
+        );
+        if (catMatch) {
+          const cleanCatSlug = catMatch.toLowerCase().replace(/[^a-z0-9]/g, '-');
+          window.history.replaceState(null, '', `/${cleanCatSlug}`);
+          setSelectedCategoryName(catMatch);
+          setCurrentView('rings');
+          restoreOrScrollTop();
+          return;
+        }
+        setCurrentView('not-found');
+        restoreOrScrollTop();
       } else if (path === '/trending-now' || path === '/trending') {
-        setSelectedCategoryName('Trending Now');
+        window.history.replaceState(null, '', '/rings');
+        setSelectedCategoryName('Rings');
         setCurrentView('rings');
         restoreOrScrollTop();
-      } else if (path === '/collections' || path === '/all-collections') {
+      } else if (path === '/collections') {
+        window.history.replaceState(null, '', '/all-collections');
+        setCurrentView('all-collections');
+        restoreOrScrollTop();
+      } else if (path === '/all-collections') {
         setCurrentView('all-collections');
         restoreOrScrollTop();
       } else if (path === '/wishlist') {
@@ -652,7 +893,7 @@ function AppContent() {
       } else if (path === '/cart') {
         setCurrentView('cart');
         restoreOrScrollTop();
-      } else if (path === '/profile' || path === '/wallet' || path === '/profile/wallet') {
+      } else if (path === '/profile' || path === '/wallet' || path === '/profile/wallet' || path.startsWith('/profile/')) {
         setCurrentView('profile');
         restoreOrScrollTop();
       } else if (path === '/checkout') {
@@ -661,60 +902,82 @@ function AppContent() {
       } else if (path === '/contact') {
         setCurrentView('contact');
         restoreOrScrollTop();
-      } else if (path === '/blog' || path === '/blogs') {
+      } else if (path === '/blogs') {
+        window.history.replaceState(null, '', '/blog');
+        setSelectedBlogSlug(null);
+        setCurrentView('blog');
+        restoreOrScrollTop();
+      } else if (path === '/blog') {
         setCurrentView('blog');
         setSelectedBlogSlug(null);
         restoreOrScrollTop();
       } else if (path.startsWith('/blog/')) {
-        const slug = path.replace('/blog/', '');
+        const slug = path.replace('/blog/', '').split('?')[0].trim();
+        const knownBlogSlugs = [
+          'best-jewellery-trends-for-brides-in-2026',
+          'top-5-jewellers-in-alwar',
+          'gold-saving-scheme-smartest-investment',
+          'old-gold-exchange-best-value',
+          'gold-pendant-necklace-layering-guide',
+          'ultimate-bridal-jewellery-guide',
+          'timeless-gold-earring-styles-2026'
+        ];
+        if (!slug || !knownBlogSlugs.includes(slug.toLowerCase())) {
+          setSelectedBlogSlug(null);
+          setCurrentView('not-found');
+          restoreOrScrollTop();
+          return;
+        }
         setSelectedBlogSlug(slug);
         setCurrentView('blog');
         restoreOrScrollTop();
       } else if (path === '/about') {
         setCurrentView('about');
         restoreOrScrollTop();
-      } else if (path === '/zoniraz-alwar' || path === '/zoniraz-alwar/' || path.includes('zoniraz-alwar') || path.includes('alwar')) {
+      } else if (path === '/zoniraz-alwar' || path === '/zoniraz-alwar/') {
         setCurrentView('zoniraz-alwar');
         restoreOrScrollTop();
       } else if (path === '/franchise') {
         setCurrentView('franchise');
         restoreOrScrollTop();
-      } else if (path === '/sell-gold' || path === '/exchange') {
+      } else if (path === '/exchange') {
+        window.history.replaceState(null, '', '/sell-gold');
+        setCurrentView('sell-gold');
+        restoreOrScrollTop();
+      } else if (path === '/sell-gold') {
         setCurrentView('sell-gold');
         restoreOrScrollTop();
       } else if (path === '/buy-gold') {
         setCurrentView('buy-gold');
         restoreOrScrollTop();
-      } else if (path === '/gold-mine' || path === '/plans/gold-mine') {
+      } else if (path === '/plans/gold-mine') {
+        window.history.replaceState(null, '', '/gold-mine');
         setCurrentView('gold-mine');
         restoreOrScrollTop();
-      } else if (path === '/loose-stones' || path === '/buy-loose-stones' || path === '/loose-diamonds') {
+      } else if (path === '/gold-mine') {
+        setCurrentView('gold-mine');
+        restoreOrScrollTop();
+      } else if (path === '/buy-loose-stones' || path === '/loose-diamonds') {
+        window.history.replaceState(null, '', '/loose-stones');
         setCurrentView('loose-stones');
         restoreOrScrollTop();
-      } else if (path === '/custom-name-pendant' || path === '/custom-pendant') {
+      } else if (path === '/loose-stones') {
+        setCurrentView('loose-stones');
+        restoreOrScrollTop();
+      } else if (path === '/custom-pendant' || path === '/custom-pendant-prototype') {
+        window.history.replaceState(null, '', '/custom-name-pendant');
         setCurrentView('custom-name-pendant');
         restoreOrScrollTop();
-      } else if (path === '/custom-pendant-prototype') {
-        setCurrentView('custom-pendant-prototype');
+      } else if (path === '/custom-name-pendant') {
+        setCurrentView('custom-name-pendant');
         restoreOrScrollTop();
-      } else if (path === '/delivery') {
+      } else if (path === '/shipping' || path === '/international-shipping' || path === '/payment' || path === '/returns' || path === '/giftcards') {
+        window.history.replaceState(null, '', '/delivery');
         setHelpCategory('delivery');
         setCurrentView('delivery');
         restoreOrScrollTop();
-      } else if (path === '/shipping' || path === '/international-shipping') {
-        setHelpCategory('international');
-        setCurrentView('delivery');
-        restoreOrScrollTop();
-      } else if (path === '/payment') {
-        setHelpCategory('payment');
-        setCurrentView('delivery');
-        restoreOrScrollTop();
-      } else if (path === '/returns') {
-        setHelpCategory('returns');
-        setCurrentView('delivery');
-        restoreOrScrollTop();
-      } else if (path === '/giftcards') {
-        setHelpCategory('giftcards');
+      } else if (path === '/delivery') {
+        setHelpCategory('delivery');
         setCurrentView('delivery');
         restoreOrScrollTop();
       } else if (path === '/terms') {
@@ -727,7 +990,7 @@ function AppContent() {
         setCurrentView('admin-call');
         restoreOrScrollTop();
       } else if (path !== '/' && path !== '/index.html') {
-        // Match product categories
+        // Match canonical and recognized categories
         const routeOnly = path.substring(1);
         const cleanPathSegment = routeOnly.replace(/[^a-z0-9]/g, '');
         const knownCategories = [
@@ -739,10 +1002,10 @@ function AppContent() {
           cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanPathSegment
         );
         if (!matchedCategory) {
-          // Check if clean segment (e.g. 'chain') is a singular version of category (e.g. 'chains')
+          // Check singular / plural match (e.g. 'ring' -> 'rings')
           matchedCategory = knownCategories.find(cat => {
             const cleanCat = cat.toLowerCase().replace(/[^a-z0-9]/g, '');
-            return cleanCat.startsWith(cleanPathSegment) || cleanPathSegment.startsWith(cleanCat);
+            return cleanCat === cleanPathSegment + 's' || cleanCat === cleanPathSegment + 'es';
           });
         }
         if (matchedCategory) {
@@ -750,7 +1013,9 @@ function AppContent() {
           setCurrentView('rings');
           restoreOrScrollTop();
         } else {
-          setCurrentView('home');
+          // Explicit Not-Found state for invalid or misspelled routes
+          setCurrentView('not-found');
+          restoreOrScrollTop();
         }
       } else {
         // Home view, handle query parameters (e.g. ?category=rings)
@@ -861,150 +1126,168 @@ function AppContent() {
   ) || null;
 
   React.useEffect(() => {
-    const params = parseHashParams();
-    const seoData = getKeywordsForView(currentView, params, selectedCategoryName);
-    
+    const searchParams = new URLSearchParams(window.location.search || '');
+    const hasFilterParams = searchParams.has('minPrice') || 
+                            searchParams.has('maxPrice') || 
+                            searchParams.has('gender') || 
+                            searchParams.has('metal') || 
+                            searchParams.has('subcategory') || 
+                            searchParams.has('stone') || 
+                            searchParams.has('style') || 
+                            searchParams.has('occasion') || 
+                            searchParams.has('tag') || 
+                            searchParams.has('tab') ||
+                            searchParams.has('collection');
+
     let title = '';
     let description = '';
-    let canonical = seoData.url || 'https://zoniraz.com/';
+    let canonical = 'https://zoniraz.com/';
+    let robotsValue = 'index, follow';
     let ogImage = 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png';
     let schemas = [];
 
-    if (currentView === 'product' && selectedProduct) {
-      title = `Buy ${selectedProduct.name} in Alwar | Zoniraz`;
-      description = `Buy ${selectedProduct.name} online in Alwar at Zoniraz Jewels. Crafted in premium ${selectedProduct.material || 'metal'} with exquisite design. Lifetime maintenance and certificate of authenticity included.`;
-      canonical = `https://zoniraz.com/product/${selectedProduct.product_slug || selectedProduct.slug || selectedProduct.id}`;
-      if (selectedProduct.image) {
-        ogImage = selectedProduct.image;
-      }
-      
-      schemas.push({
-        "@context": "https://schema.org",
-        "@type": "Product",
-        "name": selectedProduct.name,
-        "image": selectedProduct.images || [selectedProduct.image],
-        "description": selectedProduct.description || description,
-        "sku": String(selectedProduct.product_code || selectedProduct.id || selectedProduct.productId),
-        "brand": {
-          "@type": "Brand",
-          "name": "Zoniraz"
-        },
-        "offers": {
-          "@type": "Offer",
-          "url": canonical,
-          "priceCurrency": "INR",
-          "price": selectedProduct.price,
-          "priceValidUntil": "2027-12-31",
-          "itemCondition": "https://schema.org/NewCondition",
-          "availability": "https://schema.org/InStock"
+    if (currentView === 'product') {
+      if (selectedProduct) {
+        title = `${selectedProduct.name} | ${selectedProduct.category || 'Fine Jewellery'} in Alwar | Zoniraz`;
+        description = selectedProduct.description 
+          ? selectedProduct.description.slice(0, 155) 
+          : `Buy ${selectedProduct.name} online in Alwar at Zoniraz Jewels. Crafted in premium ${selectedProduct.material || 'metal'} with exquisite design. Lifetime maintenance and certificate of authenticity included.`;
+        canonical = `https://zoniraz.com/product/${selectedProduct.product_slug || selectedProduct.slug || selectedProduct.id}`;
+        robotsValue = 'index, follow';
+        if (selectedProduct.image) {
+          ogImage = selectedProduct.image;
         }
-      });
-      
+
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "Product",
+          "name": selectedProduct.name,
+          "image": selectedProduct.images || [selectedProduct.image],
+          "description": selectedProduct.description || description,
+          "sku": String(selectedProduct.product_code || selectedProduct.id || selectedProduct.productId),
+          "brand": {
+            "@type": "Brand",
+            "name": "Zoniraz"
+          },
+          "offers": {
+            "@type": "Offer",
+            "url": canonical,
+            "priceCurrency": "INR",
+            "price": selectedProduct.price,
+            "priceValidUntil": "2027-12-31",
+            "itemCondition": "https://schema.org/NewCondition",
+            "availability": "https://schema.org/InStock"
+          }
+        });
+
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://zoniraz.com/" },
+            { "@type": "ListItem", "position": 2, "name": selectedProduct.category || "Jewellery", "item": `https://zoniraz.com/${(selectedProduct.category || "jewellery").toLowerCase().replace(/[^a-z0-9]/g, '-')}` },
+            { "@type": "ListItem", "position": 3, "name": selectedProduct.name, "item": canonical }
+          ]
+        });
+      } else {
+        // Invalid or deleted product
+        title = 'Product Not Found | Zoniraz';
+        description = 'The requested jewellery piece is not available or has been discontinued. Explore our handcrafted gold and diamond collections at Zoniraz.';
+        canonical = `https://zoniraz.com${window.location.pathname || '/product'}`;
+        robotsValue = 'noindex, nofollow';
+      }
+    } else if (currentView === 'rings') {
+      const catKey = (selectedCategoryName || 'rings').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
+      let canonSlug = 'rings';
+      if (catKey.includes('earring')) canonSlug = 'earrings';
+      else if (catKey.includes('pendant')) canonSlug = 'pendants';
+      else if (catKey.includes('necklace')) canonSlug = 'necklaces';
+      else if (catKey.includes('bangle')) canonSlug = 'bangles';
+      else if (catKey.includes('bracelet')) canonSlug = 'bracelets';
+      else if (catKey.includes('mangalsutra')) canonSlug = 'mangalsutras';
+      else if (catKey.includes('nose')) canonSlug = 'nose-pins';
+      else if (catKey.includes('solitaire')) canonSlug = 'solitaires';
+      else if (catKey.includes('coin')) canonSlug = 'gold-coins';
+      else if (catKey.includes('ring')) canonSlug = 'rings';
+      else canonSlug = catKey;
+
+      const catMeta = CATEGORY_SEO_METADATA[canonSlug] || {
+        canonicalSlug: canonSlug,
+        title: `Buy ${selectedCategoryName || 'Fine Jewellery'} Online in Alwar | Zoniraz`,
+        description: `Discover handcrafted ${selectedCategoryName || 'jewellery'} in Alwar at Zoniraz. Explore premium gold, diamond, and luxury jewellery designs.`
+      };
+
+      canonical = `https://zoniraz.com/${catMeta.canonicalSlug}`;
+
+      if (hasFilterParams) {
+        robotsValue = 'noindex, follow';
+        title = `${selectedCategoryName || 'Jewellery'} Collection | Zoniraz`;
+        description = `Browse filtered selection of ${selectedCategoryName || 'jewellery'} at Zoniraz Jewels in Alwar.`;
+      } else {
+        robotsValue = 'index, follow';
+        title = catMeta.title;
+        description = catMeta.description;
+      }
+
       schemas.push({
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
         "itemListElement": [
-          {
-            "@type": "ListItem",
-            "position": 1,
-            "name": "Home",
-            "item": "https://zoniraz.com/"
-          },
-          {
-            "@type": "ListItem",
-            "position": 2,
-            "name": selectedProduct.category || "Jewellery",
-            "item": `https://zoniraz.com/${(selectedProduct.category || "Jewellery").toLowerCase().replace(/ /g, '-')}`
-          },
-          {
-            "@type": "ListItem",
-            "position": 3,
-            "name": selectedProduct.name,
-            "item": canonical
-          }
+          { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://zoniraz.com/" },
+          { "@type": "ListItem", "position": 2, "name": selectedCategoryName || "Jewellery", "item": canonical }
         ]
       });
-    } else if (currentView === 'rings') {
-      const activeCat = selectedCategoryName || params.category || 'Jewellery';
-      let catName = activeCat.trim();
-      const lower = catName.toLowerCase();
-      if (lower === 'rings' || lower === 'ring') {
-        catName = 'Rings';
-      } else if (lower.includes('earring')) {
-        catName = 'Earrings';
-      } else if (lower.includes('pendant')) {
-        catName = 'Pendants';
-      } else if (lower.includes('necklace')) {
-        catName = 'Necklaces';
-      } else if (lower.includes('bangle')) {
-        catName = 'Bangles';
-      } else if (lower.includes('bracelet')) {
-        catName = 'Bracelets';
-      } else if (lower.includes('mangalsutra')) {
-        catName = 'Mangalsutras';
-      } else if (lower.includes('solitaire')) {
-        catName = 'Solitaires';
-      } else if (lower.includes('nose')) {
-        catName = 'Nose Pins';
-      } else if (lower.includes('coin')) {
-        catName = 'Gold Coins';
-      } else {
-        catName = catName.charAt(0).toUpperCase() + catName.slice(1);
-      }
+    } else if (currentView === 'home') {
+      title = 'Buy Fine Gold & Diamond Jewellery Online in Alwar | Zoniraz';
+      description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery online in Alwar. Browse handcrafted rings, necklaces, bangles, and bridal collections.';
+      canonical = 'https://zoniraz.com/';
+      robotsValue = 'index, follow';
 
-      title = `Buy ${catName} Online in Alwar | Zoniraz`;
-      description = `Discover premium ${catName.toLowerCase()} online in Alwar at Zoniraz. Explore handcrafted gold, diamond, and luxury jewellery collections at best prices.`;
-      canonical = seoData.url || 'https://zoniraz.com/products';
-    } else {
-      if (currentView === 'home') {
-        title = 'Buy Fine Gold & Diamond Jewellery Online in Alwar | Zoniraz';
-      } else if (currentView === 'zoniraz-alwar') {
-        title = 'Zoniraz Jewellery Store in Alwar | Zoniraz';
-      } else {
-        // Account, Wishlist, Wallet/Delivery, Cart, Checkout, Terms, Privacy, etc.
-        title = 'Luxury Jewellery Brand in Alwar | Zoniraz';
-      }
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Zoniraz Jewels",
+        "url": "https://zoniraz.com/",
+        "logo": "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png",
+        "description": "Zoniraz Jewels is a premium luxury jewellery brand in Alwar specializing in fine gold, diamond, and designer jewellery collections.",
+        "sameAs": [
+          "https://www.facebook.com/zonirazjewel/",
+          "https://www.instagram.com/zonirazjewel/",
+          "https://www.youtube.com/@zonirazjewel",
+          "https://x.com/zonirazjewel",
+          "https://www.linkedin.com/company/zonirazjewel/",
+          "https://pin.it/4wDWdW6Nr",
+          "https://www.threads.com/@zonirazjewel/"
+        ]
+      });
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Zoniraz Jewels",
+        "url": "https://zoniraz.com/",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://zoniraz.com/products?search={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      });
+    } else if (currentView === 'not-found') {
+      title = 'Page Not Found (404) | Zoniraz';
+      description = 'The page you are looking for does not exist or has been moved. Explore our fine jewellery collections at Zoniraz.';
+      canonical = `https://zoniraz.com${window.location.pathname || ''}`;
+      robotsValue = 'noindex, nofollow';
+    } else if (currentView === 'blog' && selectedBlogSlug) {
+      title = `${selectedBlogSlug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} | Zoniraz Blog`;
+      description = 'Read our latest fine jewellery insights, diamond buying guides, and styling tips on the Zoniraz blog.';
+      canonical = `https://zoniraz.com/blog/${selectedBlogSlug}`;
+      robotsValue = 'index, follow';
+    } else if (STATIC_PAGE_SEO[currentView]) {
+      const pageMeta = STATIC_PAGE_SEO[currentView];
+      title = pageMeta.title;
+      description = pageMeta.description;
+      canonical = pageMeta.url;
+      robotsValue = pageMeta.robots || 'index, follow';
 
-      const secondary1 = seoData.secondary[0] || 'certified diamond jewellery online in alwar';
-      const secondary2 = seoData.secondary[1] || 'famous jewellery brands in alwar';
-      const lsi1 = seoData.lsi[0] || 'designer diamond jewellery in alwar';
-
-      description = `Discover premium collections in Alwar at Zoniraz. We feature high-quality ${secondary1}, elegant ${secondary2}, and beautiful ${lsi1} at best prices. Visit us now!`;
-      canonical = seoData.url || 'https://zoniraz.com/';
-      
-      // Home page schemas
-      if (currentView === 'home') {
-        schemas.push({
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          "name": "Zoniraz Jewels",
-          "url": "https://zoniraz.com/",
-          "logo": "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png",
-          "description": "Zoniraz Jewels is a premium luxury jewellery brand in Alwar specializing in fine gold, diamond, and designer jewellery collections.",
-          "sameAs": [
-            "https://www.facebook.com/zonirazjewel/",
-            "https://www.instagram.com/zonirazjewel/",
-            "https://www.youtube.com/@zonirazjewel",
-            "https://x.com/zonirazjewel",
-            "https://www.linkedin.com/company/zonirazjewel/",
-            "https://pin.it/4wDWdW6Nr",
-            "https://www.threads.com/@zonirazjewel/"
-          ]
-        });
-        schemas.push({
-          "@context": "https://schema.org",
-          "@type": "WebSite",
-          "name": "Zoniraz Jewels",
-          "url": "https://zoniraz.com/",
-          "potentialAction": {
-            "@type": "SearchAction",
-            "target": "https://zoniraz.com/products?search={search_term_string}",
-            "query-input": "required name=search_term_string"
-          }
-        });
-      }
-
-      // Contact & Alwar Page schemas
       if (currentView === 'contact' || currentView === 'zoniraz-alwar') {
         schemas.push({
           "@context": "https://schema.org",
@@ -1068,35 +1351,11 @@ function AppContent() {
           ]
         });
       }
-      
-      const pathSegments = [];
-      pathSegments.push({ name: "Home", item: "https://zoniraz.com/" });
-      if (currentView !== 'home') {
-        const pageName = currentView.charAt(0).toUpperCase() + currentView.slice(1);
-        pathSegments.push({ name: pageName, item: canonical });
-        
-        schemas.push({
-          "@context": "https://schema.org",
-          "@type": "BreadcrumbList",
-          "itemListElement": pathSegments.map((seg, idx) => ({
-            "@type": "ListItem",
-            "position": idx + 1,
-            "name": seg.name,
-            "item": seg.item
-          }))
-        });
-      }
-    }
-
-    // Universal safety check to guarantee "in Alwar" is present on every title
-    if (title && !title.toLowerCase().includes('in alwar')) {
-      if (title.includes(' | Zoniraz')) {
-        title = title.replace(' | Zoniraz', ' in Alwar | Zoniraz');
-      } else if (title.includes(' | ')) {
-        title = title.replace(' | ', ' in Alwar | ');
-      } else {
-        title = `${title} in Alwar | Zoniraz`;
-      }
+    } else {
+      title = 'Buy Fine Gold & Diamond Jewellery Online in Alwar | Zoniraz';
+      description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery online in Alwar.';
+      canonical = `https://zoniraz.com${window.location.pathname || ''}`;
+      robotsValue = 'noindex, follow';
     }
 
     document.title = title;
@@ -1125,11 +1384,6 @@ function AppContent() {
 
     updateMeta('meta[name="description"]', 'content', description);
     updateMeta('link[rel="canonical"]', 'href', canonical);
-    
-    let robotsValue = 'index, follow';
-    if (['cart', 'checkout', 'wishlist', 'profile', 'admin-call'].includes(currentView)) {
-      robotsValue = 'noindex, follow';
-    }
     updateMeta('meta[name="robots"]', 'content', robotsValue);
     
     updateMeta('meta[property="og:title"]', 'content', title);
@@ -1211,6 +1465,20 @@ function AppContent() {
           <PendantPrototype />
         ) : currentView === 'admin-call' ? (
           <AdminVideoPanel />
+        ) : currentView === 'not-found' ? (
+          <div style={{ minHeight: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '80px 24px' }}>
+            <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2.5rem', color: '#634d40', marginBottom: '16px' }}>Page Not Found (404)</h1>
+            <p style={{ fontFamily: 'Inter, sans-serif', color: '#666', maxWidth: '500px', marginBottom: '28px', lineHeight: '1.6' }}>
+              The jewellery page or piece you are looking for is unavailable, has been renamed, or does not exist.
+            </p>
+            <a
+              href="/"
+              onClick={(e) => { e.preventDefault(); window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }}
+              style={{ padding: '12px 32px', background: '#634d40', color: '#ffffff', borderRadius: '8px', textDecoration: 'none', fontWeight: '600', fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase' }}
+            >
+              Return to Showcase
+            </a>
+          </div>
         ) : (
           <>
             <Hero />

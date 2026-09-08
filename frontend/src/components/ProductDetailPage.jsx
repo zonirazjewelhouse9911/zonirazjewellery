@@ -641,10 +641,16 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
   if (!product) {
     return (
-      <div style={{ padding: '80px 24px', textAlign: 'center' }}>
-        <h2>Product not found</h2>
-        <button onClick={onBack} style={{ marginTop: 16, padding: '10px 20px', background: '#634d40', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}>
-          Go Back
+      <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '80px 24px' }}>
+        <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2.2rem', color: '#634d40', marginBottom: '12px' }}>Product Not Found (404)</h1>
+        <p style={{ fontFamily: 'Inter, sans-serif', color: '#666', maxWidth: '480px', margin: '0 auto 24px', lineHeight: '1.6' }}>
+          The requested jewellery piece is unavailable, discontinued, or may have been renamed.
+        </p>
+        <button 
+          onClick={onBack || (() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); })} 
+          style={{ padding: '12px 32px', background: '#634d40', color: '#fff', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: '600', fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase' }}
+        >
+          Return to Showcase
         </button>
       </div>
     );

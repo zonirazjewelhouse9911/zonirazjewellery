@@ -916,6 +916,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                                 <li key={sIdx}>
                                   <a
                                     href={`/${categorySlug}?subcategory=${subSlug}`}
+                                    rel="nofollow"
                                     onClick={() => handleDropdownLinkClick(categorySlug)}
                                   >
                                     {sub}
@@ -934,6 +935,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                             <li>
                               <a
                                 href={`/${categorySlug}?maxPrice=10000`}
+                                rel="nofollow"
                                 onClick={() => handleDropdownLinkClick(categorySlug)}
                               >
                                 Under ₹ 10k
@@ -942,6 +944,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                             <li>
                               <a
                                 href={`/${categorySlug}?minPrice=10000&maxPrice=20000`}
+                                rel="nofollow"
                                 onClick={() => handleDropdownLinkClick(categorySlug)}
                               >
                                 ₹ 10k - ₹ 20k
@@ -950,6 +953,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                             <li>
                               <a
                                 href={`/${categorySlug}?minPrice=20000&maxPrice=30000`}
+                                rel="nofollow"
                                 onClick={() => handleDropdownLinkClick(categorySlug)}
                               >
                                 ₹ 20k - ₹ 30k
@@ -958,6 +962,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                             <li>
                               <a
                                 href={`/${categorySlug}?minPrice=30000&maxPrice=50000`}
+                                rel="nofollow"
                                 onClick={() => handleDropdownLinkClick(categorySlug)}
                               >
                                 ₹ 30k - ₹ 50k
@@ -966,6 +971,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                             <li>
                               <a
                                 href={`/${categorySlug}?minPrice=50000`}
+                                rel="nofollow"
                                 onClick={() => handleDropdownLinkClick(categorySlug)}
                               >
                                 ₹ 50k & Above
@@ -987,6 +993,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                           <div className="footer-links" style={{ display: 'flex', alignItems: 'center', gap: 0 }}>
                             <a
                               href={`/${categorySlug}?gender=women`}
+                              rel="nofollow"
                               className="footer-pill-btn"
                               style={{ paddingRight: '20px', borderRight: '1.5px solid #d4c5bd', textDecoration: 'none', color: '#8c7365' }}
                               onClick={() => handleDropdownLinkClick(categorySlug)}
@@ -995,6 +1002,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                             </a>
                             <a
                               href={`/${categorySlug}?gender=men`}
+                              rel="nofollow"
                               className="footer-pill-btn"
                               style={{ paddingLeft: '20px', paddingRight: '20px', borderRight: '1.5px solid #d4c5bd', textDecoration: 'none', color: '#8c7365' }}
                               onClick={() => handleDropdownLinkClick(categorySlug)}
@@ -1003,6 +1011,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                             </a>
                             <a
                               href={`/${categorySlug}?gender=kids`}
+                              rel="nofollow"
                               className="footer-pill-btn"
                               style={{ paddingLeft: '20px', textDecoration: 'none', color: '#8c7365' }}
                               onClick={() => handleDropdownLinkClick(categorySlug)}
