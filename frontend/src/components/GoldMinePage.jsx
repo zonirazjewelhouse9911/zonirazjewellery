@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 import { Sparkles, Gift, CheckCircle, Calculator, Clock, ChevronRight, ShieldCheck, ArrowRight, RefreshCw, AlertCircle, Heart, Calendar, Award } from 'lucide-react';
-const ringImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498456/zoniraz_frontend/heart_fusion_ring.jpg";
+const ringImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788843502/zoniraz_frontend/WhatsApp_Image_2026-09-08_at_10.22.34_AM.jpg";
 
 export default function GoldMinePage() {
   const { user, token } = useContext(AuthContext);
@@ -370,8 +370,8 @@ export default function GoldMinePage() {
           <div style={{ textAlign: 'center', position: 'relative' }}>
             <div style={{
               position: 'absolute',
-              width: '240px',
-              height: '240px',
+              width: '350px',
+              height: '350px',
               background: 'radial-gradient(circle, rgba(200, 163, 89, 0.2) 0%, transparent 70%)',
               top: '50%',
               left: '50%',
@@ -384,16 +384,18 @@ export default function GoldMinePage() {
               alt="Zoniraz Gold Mine Jewellery"
               loading="lazy"
               decoding="async"
-              width="220"
-              height="220"
+              width="360"
+              height="360"
               style={{
-                maxWidth: '70%',
-                maxHeight: '220px',
+                width: '100%',
+                maxWidth: '360px',
                 height: 'auto',
+                maxHeight: '360px',
+                borderRadius: '16px',
+                objectFit: 'contain',
                 position: 'relative',
                 zIndex: 2,
-                filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.12))',
-                animation: 'float 4s ease-in-out infinite'
+                filter: 'drop-shadow(0 15px 25px rgba(0,0,0,0.12))'
               }}
             />
           </div>
