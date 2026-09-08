@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Search, X, Edit2, Plus, Upload } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
 
 interface VariantVisibility {
   size: boolean;
@@ -79,28 +80,19 @@ export default function Categories() {
 
   const fetchProductCounts = async () => {
     try {
-      const res = await fetch('/api/admin/products');
-      const data = await res.json();
-      if (data.success && Array.isArray(data.data)) {
-        const counts: Record<string, number> = {};
-        data.data.forEach((p: any) => {
-          const catId = p.category_id;
-          if (catId) {
-            counts[catId] = (counts[catId] || 0) + 1;
-          }
-        });
-        setProductCounts(counts);
+      const data = await cachedFetch('/api/admin/categories/product-counts');
+      if (data.success && data.data) {
+        setProductCounts(data.data);
       }
     } catch (e) {
       console.error(e);
     }
   };
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (forceRefresh = false) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/categories');
-      const data = await res.json();
+      const data = await cachedFetch('/api/admin/categories', { forceRefresh });
       if (data.success) {
         setCategories(data.data || []);
       } else {
@@ -114,8 +106,7 @@ export default function Categories() {
   };
 
   useEffect(() => {
-    fetchCategories();
-    fetchProductCounts();
+    Promise.all([fetchCategories(), fetchProductCounts()]);
   }, []);
 
   const handleOpenCreateModal = () => {
@@ -218,7 +209,8 @@ export default function Categories() {
       const data = await res.json();
       if (data.success) {
         setModalOpen(false);
-        fetchCategories();
+        invalidateCache('/api/admin/categories');
+        fetchCategories(true);
       } else {
         setError(data.message || 'Failed to preserve category rules.');
       }

@@ -1,6 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Loader2, Search, X, Plus, Ticket, CheckCircle2, AlertCircle, Edit2, TrendingUp, Activity, MessageSquare, Send, Users, CheckSquare, Square, ExternalLink } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
+
+const currencyFormatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0
+});
+const formatPrice = (price: number) => currencyFormatter.format(price || 0);
 
 interface Restrictions {
   categories: string[];
@@ -64,9 +72,8 @@ export default function Coupons() {
     setWaCustomMessage(`✨ *Exclusive Offer from Zoniraz Jewels!* 💎\n\nHello {userName},\nUse promo code *${coupon.code}* on your next order to get *${coupon.discountValue}${coupon.discountType === 'percentage' ? '%' : ' ₹'} OFF*!\n\nRedeem now: http://localhost:5173/#checkout`);
     
     try {
-      const res = await fetch('/api/admin/users');
-      const data = await res.json();
-      if (data.success && Array.isArray(data.data)) {
+      const data = await cachedFetch('/api/admin/users', { ttlMs: 60000 });
+      if (data && data.success && Array.isArray(data.data)) {
         setUserList(data.data);
         setSelectedUserIds(data.data.map((u: any) => u._id));
       }
@@ -124,15 +131,14 @@ export default function Coupons() {
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const fetchCoupons = async () => {
-    setLoading(true);
+  const fetchCoupons = async (forceRefresh = false) => {
+    if (coupons.length === 0) setLoading(true);
     try {
-      const res = await fetch('/api/admin/coupons');
-      const data = await res.json();
-      if (data.success) {
+      const data = await cachedFetch('/api/admin/coupons', { forceRefresh, ttlMs: 60000 });
+      if (data && data.success) {
         setCoupons(data.data || []);
       } else {
-        console.error('Failed to fetch coupons:', data.message);
+        console.error('Failed to fetch coupons:', data?.message);
       }
     } catch (err) {
       console.error('Error fetching coupons:', err);
@@ -214,7 +220,8 @@ export default function Coupons() {
       const data = await res.json();
       if (data.success) {
         setModalOpen(false);
-        fetchCoupons();
+        invalidateCache('/api/admin/coupons');
+        fetchCoupons(true);
       } else {
         setError(data.message || 'Failed to preserve promo records.');
       }
@@ -223,14 +230,6 @@ export default function Coupons() {
     } finally {
       setSaving(false);
     }
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(price);
   };
 
   const formatDate = (dateStr: string) => {

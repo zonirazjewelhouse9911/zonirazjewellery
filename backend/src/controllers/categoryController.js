@@ -54,6 +54,17 @@ class CategoryController {
       return res.status(500).json({ success: false, message: error.message || 'Failed to update category' });
     }
   }
+
+  getCategoryProductCounts = async (req, res) => {
+    try {
+      const counts = await categoryService.getCategoryProductCounts();
+      return res.status(200).json({ success: true, data: counts });
+    } catch (error) {
+      console.error('Get Category Product Counts Error:', error);
+      return res.status(500).json({ success: false, message: 'Failed to aggregate category product counts' });
+    }
+  }
 }
 
 module.exports = new CategoryController();
+

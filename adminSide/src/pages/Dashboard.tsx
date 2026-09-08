@@ -11,6 +11,15 @@ import {
   UserPlus,
   DollarSign
 } from 'lucide-react';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
+
+const currencyFormatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0
+});
+
+const formatCurrency = (num: number) => currencyFormatter.format(num || 0);
 
 interface DashboardStats {
   totalRevenue: number;
@@ -41,35 +50,20 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
   const [recentCustomers, setRecentCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const safeFetchJson = async (url: string) => {
-    try {
-      const res = await fetch(url);
-      if (!res.ok) return { success: false };
-      const contentType = res.headers.get('content-type');
-      if (contentType && contentType.includes('application/json')) {
-        return await res.json();
-      }
-      return { success: false };
-    } catch (e) {
-      return { success: false };
-    }
-  };
-
-  const fetchDashboardData = async () => {
+  const fetchDashboardData = async (forceRefresh = false) => {
     setLoading(true);
     try {
-      // 1. Fetch Orders
-      const ordersData = await safeFetchJson('/api/admin/orders');
-      const ordersList = ordersData.success && Array.isArray(ordersData.data) ? ordersData.data : [];
+      // Fetch independent dashboard metrics concurrently
+      const [ordersData, usersData, walletData] = await Promise.all([
+        cachedFetch('/api/admin/orders', { forceRefresh, ttlMs: 45000 }),
+        cachedFetch('/api/admin/users', { forceRefresh, ttlMs: 45000 }),
+        cachedFetch('/api/admin/wallets', { forceRefresh, ttlMs: 45000 })
+      ]);
 
-      // 2. Fetch Users / Customers
-      const usersData = await safeFetchJson('/api/admin/users');
-      const usersList = usersData.success && Array.isArray(usersData.data) ? usersData.data : [];
+      const ordersList = ordersData?.success && Array.isArray(ordersData.data) ? ordersData.data : [];
+      const usersList = usersData?.success && Array.isArray(usersData.data) ? usersData.data : [];
 
-      // 3. Fetch Gold Mine Wallets
-      const walletData = await safeFetchJson('/api/admin/wallets');
-
-      // Compute statistics
+      // Compute statistics with 100% exact business logic formulas
       const totalRev = ordersList.reduce((sum: number, o: any) => {
         if (o.paymentStatus === 'paid' || o.orderStatus === 'delivered' || o.orderStatus === 'placed') {
           return sum + Number(o.totalAmount || 0);
@@ -114,14 +108,6 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
     fetchDashboardData();
   }, []);
 
-  const formatCurrency = (num: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(num || 0);
-  };
-
   return (
     <div className="space-y-10 animate-in fade-in duration-500 pb-16">
       
@@ -142,7 +128,12 @@ export default function Dashboard({ onNavigate }: { onNavigate: (page: string) =
 
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3 relative z-10 w-full sm:w-auto shrink-0">
           <button 
-            onClick={fetchDashboardData}
+            onClick={() => {
+              invalidateCache('/api/admin/orders');
+              invalidateCache('/api/admin/users');
+              invalidateCache('/api/admin/wallets');
+              fetchDashboardData(true);
+            }}
             className="w-full sm:w-auto px-4 sm:px-5 py-2.5 sm:py-3 bg-[#efe7e5] hover:bg-[#e4d7d3] text-slate-700 font-bold text-xs uppercase tracking-wider sm:tracking-widest rounded-xl transition-all border border-slate-200/60 flex items-center justify-center space-x-2 cursor-pointer"
           >
             <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />

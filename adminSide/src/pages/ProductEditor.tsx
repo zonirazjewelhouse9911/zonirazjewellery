@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import AdminImageUploader from '../components/admin/AdminImageUploader';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
 import {
   Save,
   ArrowLeft,
@@ -366,9 +367,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
   useEffect(() => {
     const fetchDailyRates = async () => {
       try {
-        const res = await fetch('/api/jewellery-pricing');
-        const data = await res.json();
-        if (data.success && data.data) {
+        const data = await cachedFetch('/api/jewellery-pricing', { ttlMs: 120000 });
+        if (data && data.success && data.data) {
           setDailyRates(data.data);
         }
       } catch (e) {
@@ -548,10 +548,18 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       const data = await res.json();
       if (data.success) {
         setSuccess('Masterpiece preserved in the vault.');
+        invalidateCache('/api/admin/products');
+        invalidateCache('/api/admin/categories/product-counts');
         if (onSaveSuccess) {
           onSaveSuccess(data.data);
         } else if (isNew) {
-          window.location.search = `?id=${data.data._id}`;
+          window.history.replaceState(null, '', `?id=${data.data._id}`);
+          const sanitized = sanitizeIncomingProduct(data.data);
+          setFormData(sanitized);
+          setIncludeSolitaire(Number(data.data.solitaires_price || 0) > 0);
+          setIncludeDiamond(Number(data.data.diamond_weight || 0) > 0 || Number(data.data.diamond_count || 0) > 0);
+          setIncludeGemstone(Number(data.data.gemstone_weight || 0) > 0 || Number(data.data.noof_gem || 0) > 0 || Number(data.data.gemstone_price || 0) > 0 || !!data.data.gemstone_info);
+          setIncludeColorStone(Number(data.data.color_stone_weight || 0) > 0 || Number(data.data.color_stone_count || 0) > 0 || Number(data.data.color_stone_price || 0) > 0 || !!data.data.color_stone);
         } else {
           const sanitized = sanitizeIncomingProduct(data.data);
           setFormData(sanitized);

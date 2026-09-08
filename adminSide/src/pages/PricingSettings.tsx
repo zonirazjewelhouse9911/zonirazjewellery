@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Loader2, TrendingUp, Sparkles, Receipt, RefreshCw, Plus, Trash2 } from 'lucide-react';
+import { Loader2, RefreshCw, Plus, Trash2, TrendingUp, Sparkles, Receipt } from 'lucide-react';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
 
 interface RatesData {
   gold_rate_24k: number;
@@ -34,12 +35,11 @@ const PricingSettings: React.FC = () => {
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Fetch active daily rates
-  const fetchRates = async () => {
+  const fetchRates = async (forceRefresh = false) => {
     setLoading(true);
     try {
-      const res = await fetch('/api/jewellery-pricing');
-      const data = await res.json();
-      if (data.success && data.data) {
+      const data = await cachedFetch('/api/jewellery-pricing', { forceRefresh, ttlMs: 120000 });
+      if (data && data.success && data.data) {
         setRates({
           gold_rate_24k: data.data.gold_rate_24k || 0,
           diamond_rate: data.data.diamond_rate || 0,
@@ -109,6 +109,8 @@ const PricingSettings: React.FC = () => {
       });
       const data = await res.json();
       if (data.success) {
+        invalidateCache('/api/jewellery-pricing');
+        invalidateCache('/api/admin/products');
         setMessage({
           type: 'success',
           text: `Rates successfully updated! Recalculated ${data.data.recalculatedCount} products in the database.`
@@ -154,7 +156,7 @@ const PricingSettings: React.FC = () => {
               </h2>
               <button 
                 type="button"
-                onClick={fetchRates}
+                onClick={() => fetchRates(true)}
                 className="p-2 hover:bg-slate-100 rounded-full text-slate-500 transition-colors"
                 title="Refresh rates"
               >

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Coins, Search, RefreshCw, Layers } from 'lucide-react';
+import { cachedFetch } from '../lib/apiCache';
 
 export default function GoldMineWallets() {
   const [activeTab, setActiveTab] = useState<'wallets' | 'plans'>('wallets');
@@ -9,21 +10,18 @@ export default function GoldMineWallets() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedWalletEmail, setExpandedWalletEmail] = useState<string | null>(null);
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (forceRefresh = false) => {
+    if (!walletStats) setLoading(true);
     try {
-      const [walletRes, plansRes] = await Promise.all([
-        fetch('/api/admin/wallets'),
-        fetch('/api/admin/goldmine/all-plans')
+      const [walletData, plansData] = await Promise.all([
+        cachedFetch('/api/admin/wallets', { forceRefresh, ttlMs: 60000 }),
+        cachedFetch('/api/admin/goldmine/all-plans', { forceRefresh, ttlMs: 60000 })
       ]);
 
-      const walletData = await walletRes.json();
-      const plansData = await plansRes.json();
-
-      if (walletData.success) {
+      if (walletData && walletData.success) {
         setWalletStats(walletData.data);
       }
-      if (plansData.success) {
+      if (plansData && plansData.success) {
         setPlans(plansData.data || []);
       }
     } catch (err) {
@@ -64,7 +62,7 @@ export default function GoldMineWallets() {
         </div>
 
         <button
-          onClick={fetchData}
+          onClick={() => fetchData(true)}
           disabled={loading}
           className="flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl text-sm transition-all shadow-xs"
         >

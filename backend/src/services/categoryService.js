@@ -79,6 +79,19 @@ class CategoryService {
     cacheManager.del('navbar_data');
     return saved;
   }
+
+  async getCategoryProductCounts() {
+    const Product = require('../models/productModel');
+    const agg = await Product.aggregate([
+      { $match: { category_id: { $exists: true, $ne: null } } },
+      { $group: { _id: '$category_id', count: { $sum: 1 } } }
+    ]);
+    const counts = {};
+    for (const item of agg) {
+      if (item._id) counts[item._id] = item.count;
+    }
+    return counts;
+  }
 }
 
 module.exports = new CategoryService();

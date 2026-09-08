@@ -1,6 +1,31 @@
 import { useState, useEffect } from 'react';
 import { Loader2, Search, SlidersHorizontal, ChevronDown, Eye, Mail, Phone, Calendar, Clock, ShoppingBag, CreditCard, Box, MapPin } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
+
+const currencyFormatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0
+});
+const formatPrice = (price: number) => currencyFormatter.format(price || 0);
+const ITEMS_PER_PAGE = 20;
+
+const getJoinedMonthYear = (dateStr?: string) => {
+  if (!dateStr) return 'N/A';
+  return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+};
+
+const formatDate = (dateStr?: string, includeTime: boolean = false) => {
+  if (!dateStr) return 'N/A';
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-IN', {
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+    ...(includeTime ? { hour: '2-digit', minute: '2-digit' } : {})
+  });
+};
 
 interface Address {
   fullName: string;
@@ -53,6 +78,7 @@ export default function Customers() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   
   // Navigation / Detail State
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
@@ -60,15 +86,14 @@ export default function Customers() {
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
-  const fetchCustomers = async () => {
-    setLoading(true);
+  const fetchCustomers = async (forceRefresh = false) => {
+    if (customers.length === 0) setLoading(true);
     try {
-      const res = await fetch('/api/admin/users');
-      const data = await res.json();
-      if (data.success) {
+      const data = await cachedFetch('/api/admin/users', { forceRefresh, ttlMs: 60000 });
+      if (data && data.success) {
         setCustomers(data.data || []);
       } else {
-        console.error('Failed to retrieve patrons:', data.message);
+        console.error('Failed to retrieve patrons:', data?.message);
       }
     } catch (error) {
       console.error('Failed to establish API connection:', error);
@@ -80,12 +105,11 @@ export default function Customers() {
   const fetchCustomerDetail = async (id: string) => {
     setLoadingDetail(true);
     try {
-      const res = await fetch(`/api/admin/users/${id}`);
-      const data = await res.json();
-      if (data.success) {
+      const data = await cachedFetch(`/api/admin/users/${id}`, { ttlMs: 60000 });
+      if (data && data.success) {
         setCustomerDetail(data.data);
       } else {
-        console.error('Failed to retrieve patron detail:', data.message);
+        console.error('Failed to retrieve patron detail:', data?.message);
       }
     } catch (e) {
       console.error(e);
@@ -122,6 +146,8 @@ export default function Customers() {
       const data = await res.json();
       if (data.success) {
         alert(data.message);
+        invalidateCache('/api/admin/users');
+        invalidateCache(`/api/admin/users/${customer._id}`);
         // Refresh local details
         if (customerDetail && customerDetail._id === customer._id) {
           setCustomerDetail({ ...customerDetail, status: nextStatus, isActive: nextStatus === 'active' });
@@ -137,34 +163,6 @@ export default function Customers() {
     }
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(price);
-  };
-
-  const formatDate = (dateStr: string, includeTime = false) => {
-    if (!dateStr) return 'N/A';
-    const date = new Date(dateStr);
-    if (includeTime) {
-      return date.toLocaleDateString('en-IN', {
-        day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit', hour12: true
-      });
-    }
-    return date.toLocaleDateString('en-IN', {
-      day: '2-digit', month: 'short', year: 'numeric'
-    });
-  };
-
-  const getJoinedMonthYear = (dateStr: string) => {
-    if (!dateStr) return 'N/A';
-    return new Date(dateStr).toLocaleDateString('en-IN', {
-      month: 'short', year: 'numeric'
-    }).toUpperCase();
-  };
-
   const filteredCustomers = customers.filter(c => {
     if (!c) return false;
     const name = (c.name || c.userName || '').toLowerCase();
@@ -173,6 +171,10 @@ export default function Customers() {
     const query = (searchQuery || '').toLowerCase();
     return name.includes(query) || email.includes(query) || phone.includes(query);
   });
+
+  const totalPages = Math.ceil(filteredCustomers.length / ITEMS_PER_PAGE) || 1;
+  const validPage = Math.min(Math.max(currentPage, 1), totalPages);
+  const paginatedCustomers = filteredCustomers.slice((validPage - 1) * ITEMS_PER_PAGE, validPage * ITEMS_PER_PAGE);
 
   // Render detailed profile page
   if (selectedCustomerId && (loadingDetail || !customerDetail)) {
@@ -429,82 +431,111 @@ export default function Customers() {
             No customer accounts found in ledger
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
-            {filteredCustomers.map((customer) => {
-              const joinedMonth = getJoinedMonthYear(customer.createdAt);
-              const lastSeenDate = customer.lastLogin ? new Date(customer.lastLogin).toLocaleDateString('en-US', {
-                month: 'numeric', day: 'numeric', year: 'numeric'
-              }) : 'N/A';
-              const cName = customer.name || customer.userName || customer.email || 'Valued Customer';
-              const initialLetter = (cName[0] || 'C').toUpperCase();
+          <div>
+            <div className="divide-y divide-slate-100">
+              {paginatedCustomers.map((customer) => {
+                const joinedMonth = getJoinedMonthYear(customer.createdAt);
+                const lastSeenDate = customer.lastLogin ? new Date(customer.lastLogin).toLocaleDateString('en-US', {
+                  month: 'numeric', day: 'numeric', year: 'numeric'
+                }) : 'N/A';
+                const cName = customer.name || customer.userName || customer.email || 'Valued Customer';
+                const initialLetter = (cName[0] || 'C').toUpperCase();
 
-              return (
-                <div key={customer._id} className="p-6 grid grid-cols-12 gap-4 items-center hover:bg-slate-50/30 transition-colors">
-                  
-                  {/* Patron Info */}
-                  <div className="col-span-3 flex items-center space-x-4 min-w-0">
-                    <div className="w-12 h-12 rounded-full bg-[#efe7e5]/40 border border-slate-200/60 flex items-center justify-center shrink-0 shadow-sm">
-                      <span className="text-lg font-serif italic text-[#5d463c] font-black">{initialLetter}</span>
-                    </div>
-                    <div className="min-w-0 text-left">
-                      <h4 className="font-serif text-md font-bold text-slate-800 truncate">{cName}</h4>
-                      <span className={cn(
-                        'inline-block px-2.5 py-0.5 rounded-md text-[8px] font-black tracking-widest uppercase mt-1 border',
-                        customer.status === 'active' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' : 'bg-red-500/10 border-red-500/20 text-red-500'
-                      )}>
-                        {customer.status || 'active'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Contact */}
-                  <div className="col-span-3 text-left space-y-1.5 min-w-0 text-xs text-slate-650">
-                    <div className="flex items-center space-x-2 truncate">
-                      <Mail size={12} className="text-slate-400 shrink-0" />
-                      <span className="truncate select-all">{customer.email}</span>
-                    </div>
-                    {customer.phone && (
-                      <div className="flex items-center space-x-2">
-                        <Phone size={12} className="text-slate-400 shrink-0" />
-                        <span className="select-all">{customer.phone}</span>
+                return (
+                  <div key={customer._id} className="p-6 grid grid-cols-12 gap-4 items-center hover:bg-slate-50/30 transition-colors">
+                    
+                    {/* Patron Info */}
+                    <div className="col-span-3 flex items-center space-x-4 min-w-0">
+                      <div className="w-12 h-12 rounded-full bg-[#efe7e5]/40 border border-slate-200/60 flex items-center justify-center shrink-0 shadow-sm">
+                        <span className="text-lg font-serif italic text-[#5d463c] font-black">{initialLetter}</span>
                       </div>
-                    )}
-                  </div>
+                      <div className="min-w-0 text-left">
+                        <h4 className="font-serif text-md font-bold text-slate-800 truncate">{cName}</h4>
+                        <span className={cn(
+                          'inline-block px-2.5 py-0.5 rounded-md text-[8px] font-black tracking-widest uppercase mt-1 border',
+                          customer.status === 'active' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' : 'bg-red-500/10 border-red-500/20 text-red-500'
+                        )}>
+                          {customer.status || 'active'}
+                        </span>
+                      </div>
+                    </div>
 
-                  {/* Activity */}
-                  <div className="col-span-2 text-left">
-                    <p className="text-xs font-bold text-slate-800">{customer.orderCount || 0} Orders</p>
-                    <div className="flex items-center space-x-1 mt-1 text-[9px] uppercase tracking-wider text-slate-400 font-bold">
-                      <Clock size={10} className="shrink-0" />
-                      <span>Last seen {lastSeenDate}</span>
+                    {/* Contact */}
+                    <div className="col-span-3 text-left space-y-1.5 min-w-0 text-xs text-slate-650">
+                      <div className="flex items-center space-x-2 truncate">
+                        <Mail size={12} className="text-slate-400 shrink-0" />
+                        <span className="truncate select-all">{customer.email}</span>
+                      </div>
+                      {customer.phone && (
+                        <div className="flex items-center space-x-2">
+                          <Phone size={12} className="text-slate-400 shrink-0" />
+                          <span className="select-all">{customer.phone}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Activity */}
+                    <div className="col-span-2 text-left">
+                      <p className="text-xs font-bold text-slate-800">{customer.orderCount || 0} Orders</p>
+                      <div className="flex items-center space-x-1 mt-1 text-[9px] uppercase tracking-wider text-slate-400 font-bold">
+                        <Clock size={10} className="shrink-0" />
+                        <span>Last seen {lastSeenDate}</span>
+                      </div>
+                    </div>
+
+                    {/* Value */}
+                    <div className="col-span-2 text-left">
+                      <p className="text-xs font-bold text-slate-800">{formatPrice(customer.lifetimeValue || 0)}</p>
+                      <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold">Lifetime Value</span>
+                    </div>
+
+                    {/* Joined Date */}
+                    <div className="col-span-1 text-left">
+                      <span className="text-xs font-bold text-slate-700">{joinedMonth}</span>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="col-span-1 flex items-center justify-center space-x-2">
+                      <button
+                        onClick={() => setSelectedCustomerId(customer._id)}
+                        className="p-2 hover:bg-[#efe7e5]/50 text-slate-600 hover:text-[#5d463c] rounded-xl transition-all cursor-pointer"
+                        title="View Details"
+                      >
+                        <Eye size={14} />
+                      </button>
                     </div>
                   </div>
+                );
+              })}
+            </div>
 
-                  {/* Value */}
-                  <div className="col-span-2 text-left">
-                    <p className="text-xs font-bold text-slate-800">{formatPrice(customer.lifetimeValue || 0)}</p>
-                    <p className="text-[8px] uppercase tracking-wider text-slate-400 mt-0.5 font-bold">Lifetime Value</p>
-                  </div>
-
-                  {/* Joined */}
-                  <div className="col-span-1 text-left text-[11px] text-slate-400 uppercase font-black tracking-wider">
-                    {joinedMonth}
-                  </div>
-
-                  {/* Action */}
-                  <div className="col-span-1 flex justify-center">
-                    <button 
-                      type="button"
-                      onClick={() => setSelectedCustomerId(customer._id)}
-                      className="w-10 h-10 rounded-full bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] flex items-center justify-center transition-all cursor-pointer shadow-sm border border-slate-200/50"
-                      title="View Details"
-                    >
-                      <Eye size={14} />
-                    </button>
-                  </div>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="p-4 sm:p-6 bg-slate-50/70 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <span className="text-[10px] uppercase tracking-widest font-black text-slate-500">
+                  Page {validPage} of {totalPages} (Showing {(validPage - 1) * ITEMS_PER_PAGE + 1} - {Math.min(validPage * ITEMS_PER_PAGE, filteredCustomers.length)} of {filteredCustomers.length})
+                </span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={validPage <= 1}
+                    className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs font-bold text-slate-700 px-2">
+                    {validPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={validPage >= totalPages}
+                    className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  >
+                    Next
+                  </button>
                 </div>
-              );
-            })}
+              </div>
+            )}
           </div>
         )}
           </div>

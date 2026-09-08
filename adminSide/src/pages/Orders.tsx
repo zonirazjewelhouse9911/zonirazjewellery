@@ -2,6 +2,15 @@ import { useState, useEffect } from 'react';
 import { Loader2, Search, SlidersHorizontal, ChevronDown, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { resolveProductImage } from '../lib/imageResolver';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
+
+const currencyFormatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0
+});
+const formatPrice = (price: number) => currencyFormatter.format(price || 0);
+const ITEMS_PER_PAGE = 20;
 
 interface OrderItem {
   productId: string;
@@ -79,18 +88,18 @@ export default function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState(false);
 
-  const fetchOrders = async () => {
-    setLoading(true);
+  const fetchOrders = async (forceRefresh = false) => {
+    if (orders.length === 0) setLoading(true);
     try {
-      const res = await fetch('/api/admin/orders');
-      const data = await res.json();
-      if (data.success) {
+      const data = await cachedFetch('/api/admin/orders', { forceRefresh, ttlMs: 60000 });
+      if (data && data.success) {
         setOrders(data.data || []);
       } else {
-        console.error('Failed to retrieve orders:', data.message);
+        console.error('Failed to retrieve orders:', data?.message);
       }
     } catch (error) {
       console.error('Failed to connect to API:', error);
@@ -114,6 +123,7 @@ export default function Orders() {
       const data = await res.json();
       if (data.success) {
         alert('Order status updated successfully');
+        invalidateCache('/api/admin/orders');
         // Refresh local states
         setOrders(orders.map(o => o._id === orderId ? { ...o, orderStatus: status } : o));
         if (selectedOrder && selectedOrder._id === orderId) {
@@ -140,6 +150,7 @@ export default function Orders() {
       const data = await res.json();
       if (data.success) {
         alert('Payment status updated successfully');
+        invalidateCache('/api/admin/orders');
         setOrders(orders.map(o => o._id === orderId ? { ...o, paymentStatus: status } : o));
         if (selectedOrder && selectedOrder._id === orderId) {
           setSelectedOrder({ ...selectedOrder, paymentStatus: status });
@@ -154,14 +165,6 @@ export default function Orders() {
     }
   };
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      maximumFractionDigits: 0
-    }).format(price);
-  };
-
   const filteredOrders = orders.filter(o => {
     const name = (o.shippingAddress?.fullName || '').toLowerCase();
     const city = (o.shippingAddress?.city || '').toLowerCase();
@@ -172,6 +175,10 @@ export default function Orders() {
 
     return name.includes(query) || city.includes(query) || phone.includes(query) || razorpayId.includes(query) || orderId.includes(query);
   });
+
+  const totalPages = Math.ceil(filteredOrders.length / ITEMS_PER_PAGE) || 1;
+  const validPage = Math.min(Math.max(currentPage, 1), totalPages);
+  const paginatedOrders = filteredOrders.slice((validPage - 1) * ITEMS_PER_PAGE, validPage * ITEMS_PER_PAGE);
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 font-sans text-left text-[#12100e]">
@@ -229,89 +236,119 @@ export default function Orders() {
             No order transactions found in ledger
           </div>
         ) : (
-          <div className="divide-y divide-slate-100">
-            {filteredOrders.map((order) => {
-              const itemsCount = order.items ? order.items.reduce((acc, curr) => acc + curr.quantity, 0) : 0;
-              const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', {
-                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-              }) : 'N/A';
+          <>
+            <div className="divide-y divide-slate-100">
+              {paginatedOrders.map((order) => {
+                const itemsCount = order.items ? order.items.reduce((acc, curr) => acc + curr.quantity, 0) : 0;
+                const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', {
+                  day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+                }) : 'N/A';
 
-              return (
-                <div key={order._id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-slate-50/30 transition-colors">
-                  <div className="flex items-center space-x-5 flex-1 min-w-0">
-                    <div className="w-14 h-14 bg-[#efe7e5]/40 rounded-2xl flex items-center justify-center border border-slate-200/60 shadow-sm shrink-0">
-                      <span className="text-xl font-serif italic text-brand-gold font-bold">{order.shippingAddress?.fullName ? order.shippingAddress.fullName[0].toUpperCase() : 'O'}</span>
+                return (
+                  <div key={order._id} className="p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:bg-slate-50/30 transition-colors">
+                    <div className="flex items-center space-x-5 flex-1 min-w-0">
+                      <div className="w-14 h-14 bg-[#efe7e5]/40 rounded-2xl flex items-center justify-center border border-slate-200/60 shadow-sm shrink-0">
+                        <span className="text-xl font-serif italic text-brand-gold font-bold">{order.shippingAddress?.fullName ? order.shippingAddress.fullName[0].toUpperCase() : 'O'}</span>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2">
+                          <h3 className="font-serif text-md font-bold text-[#12100e] truncate">{order.shippingAddress?.fullName || 'Guest Customer'}</h3>
+                          <span className={cn(
+                            "px-2 py-0.5 text-[8px] font-bold rounded-full uppercase border shrink-0",
+                            (order.deliveryMethod === 'pickup' || order.shippingAddress?.addressLine?.toLowerCase().includes('pickup'))
+                              ? "bg-amber-500/10 border-amber-500/20 text-amber-700"
+                              : "bg-emerald-500/10 border-emerald-500/20 text-emerald-700"
+                          )}>
+                            {(order.deliveryMethod === 'pickup' || order.shippingAddress?.addressLine?.toLowerCase().includes('pickup')) ? '🏪 Pickup' : '🚚 Delivery'}
+                          </span>
+                        </div>
+                        <p className="text-[9px] text-slate-450 uppercase tracking-widest mt-1 truncate">
+                          {order.razorpayOrderId ? `Razorpay ID: ${order.razorpayOrderId}` : `Order Ref: #${order._id.substring(0, 8).toUpperCase()}`}
+                        </p>
+                        <p className="text-[8px] text-slate-400 font-mono mt-0.5">{dateStr}</p>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-serif text-md font-bold text-[#12100e] truncate">{order.shippingAddress?.fullName || 'Guest Customer'}</h3>
+
+                    <div className="flex flex-wrap items-center gap-6 md:gap-14 shrink-0 text-left md:text-right">
+                      <div>
+                        <p className="text-[9px] text-slate-400 uppercase tracking-widest">Items count</p>
+                        <p className="text-xs font-bold text-slate-800 mt-0.5">{itemsCount} piece{itemsCount !== 1 ? 's' : ''}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-[9px] text-slate-400 uppercase tracking-widest">Total Amount</p>
+                        <p className="text-xs font-bold text-slate-800 mt-0.5">{formatPrice(order.totalAmount)}</p>
+                      </div>
+
+                      <div>
+                        <p className="text-[9px] text-slate-400 uppercase tracking-widest">Payment</p>
                         <span className={cn(
-                          "px-2 py-0.5 text-[8px] font-bold rounded-full uppercase border shrink-0",
-                          (order.deliveryMethod === 'pickup' || order.shippingAddress?.addressLine?.toLowerCase().includes('pickup'))
-                            ? "bg-amber-500/10 border-amber-500/20 text-amber-700"
-                            : "bg-emerald-500/10 border-emerald-500/20 text-emerald-700"
+                          'inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider mt-1 border',
+                          order.paymentStatus === 'paid' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' :
+                          order.paymentStatus === 'pending' ? 'bg-amber-500/10 border-amber-500/20 text-amber-600' :
+                          'bg-red-500/10 border-red-500/20 text-red-500'
                         )}>
-                          {(order.deliveryMethod === 'pickup' || order.shippingAddress?.addressLine?.toLowerCase().includes('pickup')) ? '🏪 Pickup' : '🚚 Delivery'}
+                          {order.paymentStatus}
                         </span>
                       </div>
-                      <p className="text-[9px] text-slate-450 uppercase tracking-widest mt-1 truncate">
-                        {order.razorpayOrderId ? `Razorpay ID: ${order.razorpayOrderId}` : `Order Ref: #${order._id.substring(0, 8).toUpperCase()}`}
-                      </p>
-                      <p className="text-[8px] text-slate-400 font-mono mt-0.5">{dateStr}</p>
+
+                      <div>
+                        <p className="text-[9px] text-slate-400 uppercase tracking-widest">Order Status</p>
+                        <span className={cn(
+                          'inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider mt-1 border',
+                          order.orderStatus === 'delivered' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' :
+                          order.orderStatus === 'cancelled' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
+                          (order.orderStatus === 'confirmed' || order.orderStatus === 'accepted') ? 'bg-purple-500/10 border-purple-500/20 text-purple-600' :
+                          order.orderStatus === 'shipped' ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-600' :
+                          'bg-blue-500/10 border-blue-500/20 text-blue-600'
+                        )}>
+                          {order.orderStatus === 'confirmed' ? 'Confirmed' : order.orderStatus}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center space-x-3">
+                        <button 
+                          type="button"
+                          onClick={() => setSelectedOrder(order)}
+                          className="px-4 py-2 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] rounded-lg text-[10px] uppercase tracking-widest font-bold transition-all border border-slate-200/50 shadow-sm cursor-pointer"
+                        >
+                          Refine
+                        </button>
+                      </div>
                     </div>
                   </div>
+                );
+              })}
+            </div>
 
-                  <div className="flex flex-wrap items-center gap-6 md:gap-14 shrink-0 text-left md:text-right">
-                    <div>
-                      <p className="text-[9px] text-slate-400 uppercase tracking-widest">Items count</p>
-                      <p className="text-xs font-bold text-slate-800 mt-0.5">{itemsCount} piece{itemsCount !== 1 ? 's' : ''}</p>
-                    </div>
-                    
-                    <div>
-                      <p className="text-[9px] text-slate-400 uppercase tracking-widest">Total Amount</p>
-                      <p className="text-xs font-bold text-slate-800 mt-0.5">{formatPrice(order.totalAmount)}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-[9px] text-slate-400 uppercase tracking-widest">Payment</p>
-                      <span className={cn(
-                        'inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider mt-1 border',
-                        order.paymentStatus === 'paid' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' :
-                        order.paymentStatus === 'pending' ? 'bg-amber-500/10 border-amber-500/20 text-amber-600' :
-                        'bg-red-500/10 border-red-500/20 text-red-500'
-                      )}>
-                        {order.paymentStatus}
-                      </span>
-                    </div>
-
-                    <div>
-                      <p className="text-[9px] text-slate-400 uppercase tracking-widest">Order Status</p>
-                      <span className={cn(
-                        'inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider mt-1 border',
-                        order.orderStatus === 'delivered' ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' :
-                        order.orderStatus === 'cancelled' ? 'bg-red-500/10 border-red-500/20 text-red-500' :
-                        (order.orderStatus === 'confirmed' || order.orderStatus === 'accepted') ? 'bg-purple-500/10 border-purple-500/20 text-purple-600' :
-                        order.orderStatus === 'shipped' ? 'bg-indigo-500/10 border-indigo-500/20 text-indigo-600' :
-                        'bg-blue-500/10 border-blue-500/20 text-blue-600'
-                      )}>
-                        {order.orderStatus === 'confirmed' ? 'Confirmed' : order.orderStatus}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center space-x-3">
-                      <button 
-                        type="button"
-                        onClick={() => setSelectedOrder(order)}
-                        className="px-4 py-2 bg-[#5d463c] hover:bg-[#4c3931] text-[#efe7e5] rounded-lg text-[10px] uppercase tracking-widest font-bold transition-all border border-slate-200/50 shadow-sm cursor-pointer"
-                      >
-                        Refine
-                      </button>
-                    </div>
-                  </div>
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="p-4 sm:p-6 bg-slate-50/70 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <span className="text-[10px] uppercase tracking-widest font-black text-slate-500">
+                  Page {validPage} of {totalPages} (Showing {(validPage - 1) * ITEMS_PER_PAGE + 1} - {Math.min(validPage * ITEMS_PER_PAGE, filteredOrders.length)} of {filteredOrders.length})
+                </span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                    disabled={validPage <= 1}
+                    className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-xs font-bold text-slate-700 px-2">
+                    {validPage} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                    disabled={validPage >= totalPages}
+                    className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                  >
+                    Next
+                  </button>
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            )}
+          </>
         )}
       </div>
 

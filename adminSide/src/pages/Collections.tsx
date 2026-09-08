@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Search, X, Edit2, Plus, Upload } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
 
 interface Collection {
   _id?: string;
@@ -42,15 +43,14 @@ export default function Collections() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchCollections = async () => {
-    setLoading(true);
+  const fetchCollections = async (forceRefresh = false) => {
+    if (collections.length === 0) setLoading(true);
     try {
-      const res = await fetch('/api/admin/collections');
-      const data = await res.json();
-      if (data.success) {
+      const data = await cachedFetch('/api/admin/collections', { forceRefresh, ttlMs: 60000 });
+      if (data && data.success) {
         setCollections(data.data || []);
       } else {
-        console.error('Failed to fetch collections:', data.message);
+        console.error('Failed to fetch collections:', data?.message);
       }
     } catch (err) {
       console.error('Error fetching collections:', err);
@@ -160,7 +160,8 @@ export default function Collections() {
       const data = await res.json();
       if (data.success) {
         setModalOpen(false);
-        fetchCollections();
+        invalidateCache('/api/admin/collections');
+        fetchCollections(true);
       } else {
         setError(data.message || 'Failed to preserve collection records.');
       }

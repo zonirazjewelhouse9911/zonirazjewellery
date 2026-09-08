@@ -14,6 +14,7 @@ import {
   Upload
 } from 'lucide-react';
 import { resolveProductImage } from '../lib/imageResolver';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
 
 interface LooseStone {
   _id: string;
@@ -92,12 +93,11 @@ const LooseStones: React.FC = () => {
   const [formData, setFormData] = useState(initialFormData);
 
   // Fetch loose stones from backend
-  const fetchStones = async () => {
-    setLoading(true);
+  const fetchStones = async (forceRefresh = false) => {
+    if (stones.length === 0) setLoading(true);
     try {
-      const res = await fetch('/api/admin/loose-stones');
-      const data = await res.json();
-      if (data.success) {
+      const data = await cachedFetch('/api/admin/loose-stones', { forceRefresh, ttlMs: 60000 });
+      if (data && data.success) {
         setStones(data.data || []);
       }
     } catch (error) {
@@ -207,7 +207,8 @@ const LooseStones: React.FC = () => {
       });
       const data = await res.json();
       if (data.success) {
-        fetchStones();
+        invalidateCache('/api/admin/loose-stones');
+        fetchStones(true);
       } else {
         alert(data.message || 'Failed to delete stone.');
       }
@@ -264,8 +265,11 @@ const LooseStones: React.FC = () => {
 
       const data = await res.json();
       if (data.success) {
-        setSuccessMessage(editingStoneId ? 'Stone details updated successfully!' : 'Loose stone created successfully!');
-        fetchStones();
+        setSuccessMessage(editingStoneId ? 'Masterpiece stone updated successfully!' : 'New loose stone minted successfully!');
+        setFormData(initialFormData);
+        setStoneImages([]);
+        invalidateCache('/api/admin/loose-stones');
+        fetchStones(true);
         setTimeout(() => {
           setIsModalOpen(false);
         }, 600);
@@ -355,7 +359,7 @@ const LooseStones: React.FC = () => {
               />
             </div>
             <button
-              onClick={fetchStones}
+              onClick={() => fetchStones(true)}
               className="p-2.5 hover:bg-slate-100 rounded-xl text-slate-500 transition-colors"
               title="Refresh ledger"
             >

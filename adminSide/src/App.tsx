@@ -1,5 +1,14 @@
 import { useState, useEffect, lazy, Suspense } from 'react';
 import { resolveProductImage } from './lib/imageResolver';
+import { cachedFetch, invalidateCache } from './lib/apiCache';
+
+const currencyFormatter = new Intl.NumberFormat('en-IN', {
+  style: 'currency',
+  currency: 'INR',
+  maximumFractionDigits: 0
+});
+const formatCurrency = (val: number) => currencyFormatter.format(val || 0);
+const ITEMS_PER_PAGE = 25;
 
 const AdminLogin = lazy(() => import('./pages/AdminLogin'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
@@ -95,6 +104,7 @@ function App() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
   // Selection state for Bulk Actions
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
@@ -103,15 +113,14 @@ function App() {
   // Mobile sidebar state
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  const fetchProducts = async () => {
-    setLoading(true);
+  const fetchProducts = async (forceRefresh = false) => {
+    if (products.length === 0) setLoading(true);
     try {
-      const res = await fetch('/api/admin/products');
-      const data = await res.json();
-      if (data.success) {
+      const data = await cachedFetch('/api/admin/products', { forceRefresh, ttlMs: 60000 });
+      if (data && data.success) {
         setProducts(data.data || []);
       } else {
-        console.error('Failed to retrieve products:', data.message);
+        console.error('Failed to retrieve products:', data?.message);
       }
     } catch (error) {
       console.error('Failed to establish API connection:', error);
@@ -173,7 +182,9 @@ function App() {
         method: 'DELETE'
       });
       const data = await res.json();
-      if (!data.success) {
+      if (data.success) {
+        invalidateCache('/api/admin/products');
+      } else {
         setProducts(previousProducts);
         setSelectedProductIds(previousSelected);
         alert(data.message || 'Failed to delete product.');
@@ -221,7 +232,7 @@ function App() {
     return '';
   };
 
-  // Filter products based on search query
+  // Filter products based on search query with pagination
   const filteredProducts = products.filter(p => {
     const title = (p.product_title || '').toLowerCase();
     const code = (p.product_code || '').toLowerCase();
@@ -229,6 +240,10 @@ function App() {
     const query = searchQuery.toLowerCase();
     return title.includes(query) || code.includes(query) || slug.includes(query);
   });
+
+  const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE) || 1;
+  const validPage = Math.min(Math.max(currentPage, 1), totalPages);
+  const paginatedProducts = filteredProducts.slice((validPage - 1) * ITEMS_PER_PAGE, validPage * ITEMS_PER_PAGE);
 
   const handleToggleSelectProduct = (id: string) => {
     setSelectedProductIds(prev => 
@@ -272,7 +287,9 @@ function App() {
         body: JSON.stringify({ ids: deletingIds }),
       });
       const data = await res.json();
-      if (!data.success) {
+      if (data.success) {
+        invalidateCache('/api/admin/products');
+      } else {
         setProducts(previousProducts);
         setSelectedProductIds(previousSelected);
         alert(data.message || 'Failed to delete selected products.');
@@ -465,6 +482,8 @@ function App() {
               onBack={handleBackToList}
               onSaveSuccess={(product) => {
                 alert(`Masterpiece successfully preserved with ID: ${product._id || product.product_id}`);
+                invalidateCache('/api/admin/products');
+                fetchProducts(true);
                 handleBackToList();
               }}
             />
@@ -560,7 +579,7 @@ function App() {
                   </div>
                 ) : (
                   <div className="divide-y divide-slate-100">
-                    {filteredProducts.map((item) => {
+                    {paginatedProducts.map((item) => {
                       const isSelected = selectedProductIds.includes(item._id);
                       return (
                         <div 
@@ -581,9 +600,12 @@ function App() {
                             <div className="w-20 h-20 bg-[#efe7e5]/40 rounded-2xl flex items-center justify-center border border-slate-200/60 shadow-sm shrink-0 overflow-hidden relative group/img">
                               {getProductImage(item) ? (
                                 <img 
-                                  src={resolveProductImage(getProductImage(item))} 
+                                  src={resolveProductImage(getProductImage(item), true)} 
                                   className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-125" 
                                   alt={item.product_title} 
+                                  loading="lazy"
+                                  width="80"
+                                  height="80"
                                 />
                               ) : (
                                 <span className="text-xl font-serif italic text-brand-gold font-bold">{item.product_title ? item.product_title[0] : 'P'}</span>
@@ -603,7 +625,7 @@ function App() {
                             <div>
                               <p className="text-[9px] text-slate-400 uppercase tracking-widest">Price (Base)</p>
                               <p className="text-xs font-bold text-slate-800 mt-0.5">
-                                {new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(item.price || 0)}
+                                {formatCurrency(item.price || 0)}
                               </p>
                             </div>
                             <div>
@@ -642,6 +664,34 @@ function App() {
                         </div>
                       );
                     })}
+                  </div>
+                )}
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="p-4 sm:p-6 bg-slate-50/70 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <span className="text-[10px] uppercase tracking-widest font-black text-slate-500">
+                      Page {validPage} of {totalPages} (Showing {(validPage - 1) * ITEMS_PER_PAGE + 1} - {Math.min(validPage * ITEMS_PER_PAGE, filteredProducts.length)} of {filteredProducts.length})
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={validPage <= 1}
+                        className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                      >
+                        Previous
+                      </button>
+                      <span className="text-xs font-bold text-slate-700 px-2">
+                        {validPage} / {totalPages}
+                      </span>
+                      <button
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={validPage >= totalPages}
+                        className="px-3 py-1.5 bg-white border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-100 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                      >
+                        Next
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

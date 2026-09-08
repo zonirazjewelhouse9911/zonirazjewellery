@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Trash2, Upload, Link, Eye, CheckCircle2, AlertCircle } from 'lucide-react';
 import { resolveProductImage } from '../lib/imageResolver';
+import { cachedFetch, invalidateCache } from '../lib/apiCache';
 
 interface Banner {
   _id?: string;
@@ -27,15 +28,14 @@ export default function Banners() {
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchBanners = async () => {
-    setLoading(true);
+  const fetchBanners = async (forceRefresh = false) => {
+    if (banners.length === 0) setLoading(true);
     try {
-      const res = await fetch('/api/admin/banners');
-      const data = await res.json();
-      if (data.success) {
+      const data = await cachedFetch('/api/admin/banners', { forceRefresh, ttlMs: 60000 });
+      if (data && data.success) {
         setBanners(data.data || []);
       } else {
-        console.error('Failed to fetch banners:', data.message);
+        console.error('Failed to fetch banners:', data?.message);
       }
     } catch (err) {
       console.error('Error fetching banners:', err);
@@ -125,7 +125,8 @@ export default function Banners() {
         setImageUrl('');
         setLink('');
         setSuccessMsg('Banner successfully saved to directory.');
-        fetchBanners();
+        invalidateCache('/api/admin/banners');
+        fetchBanners(true);
         if (fileInputRef.current) fileInputRef.current.value = '';
       } else {
         setValidationError(resData.message || 'Failed to save banner.');
@@ -147,7 +148,8 @@ export default function Banners() {
       });
       const data = await res.json();
       if (data.success) {
-        fetchBanners();
+        invalidateCache('/api/admin/banners');
+        fetchBanners(true);
       } else {
         alert(data.message || 'Failed to delete banner.');
       }
