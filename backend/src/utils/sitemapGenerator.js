@@ -237,6 +237,20 @@ async function generateSitemap() {
       }
     });
 
+    // Notify zoniraz.com sitemap bridge to refresh Hostinger cache immediately
+    try {
+      const pingUrl = "https://zoniraz.com/sitemap.php?refresh_all=1";
+      if (typeof fetch === 'function') {
+        fetch(pingUrl, {
+          method: 'GET',
+          headers: { 'User-Agent': 'ZonirazBackendSync/1.0' },
+          signal: AbortSignal.timeout(5000)
+        }).catch(() => {});
+      }
+    } catch (pingErr) {
+      // Non-blocking ping warning
+    }
+
     return fileMap;
   } catch (err) {
     console.error("[Sitemap Generator] Generation error:", err);

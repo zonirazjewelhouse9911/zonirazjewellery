@@ -907,24 +907,27 @@ function AppContent() {
         setSelectedBlogSlug(null);
         setCurrentView('blog');
         restoreOrScrollTop();
+      } else if (path.startsWith('/blogs/')) {
+        const slug = path.replace('/blogs/', '').split('?')[0].trim();
+        window.history.replaceState(null, '', slug ? `/blog/${slug}` : '/blog');
+        if (!slug) {
+          setSelectedBlogSlug(null);
+          setCurrentView('blog');
+          restoreOrScrollTop();
+          return;
+        }
+        setSelectedBlogSlug(slug);
+        setCurrentView('blog');
+        restoreOrScrollTop();
       } else if (path === '/blog') {
         setCurrentView('blog');
         setSelectedBlogSlug(null);
         restoreOrScrollTop();
       } else if (path.startsWith('/blog/')) {
         const slug = path.replace('/blog/', '').split('?')[0].trim();
-        const knownBlogSlugs = [
-          'best-jewellery-trends-for-brides-in-2026',
-          'top-5-jewellers-in-alwar',
-          'gold-saving-scheme-smartest-investment',
-          'old-gold-exchange-best-value',
-          'gold-pendant-necklace-layering-guide',
-          'ultimate-bridal-jewellery-guide',
-          'timeless-gold-earring-styles-2026'
-        ];
-        if (!slug || !knownBlogSlugs.includes(slug.toLowerCase())) {
+        if (!slug) {
           setSelectedBlogSlug(null);
-          setCurrentView('not-found');
+          setCurrentView('blog');
           restoreOrScrollTop();
           return;
         }
@@ -1427,7 +1430,7 @@ function AppContent() {
           <ContactPage />
         ) : currentView === 'blog' ? (
           selectedBlogSlug 
-            ? <BlogDetailPage slug={selectedBlogSlug} onBack={() => { setSelectedBlogSlug(null); window.history.pushState(null, '', '/blog'); }} />
+            ? <BlogDetailPage slug={selectedBlogSlug} onBack={() => { setSelectedBlogSlug(null); window.history.pushState(null, '', '/blog'); window.dispatchEvent(new PopStateEvent('popstate')); }} />
             : <BlogPage />
         ) : currentView === 'about' ? (
           <AboutPage />

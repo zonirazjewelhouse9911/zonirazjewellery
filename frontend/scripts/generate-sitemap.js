@@ -351,6 +351,8 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   ht += `  RewriteBase /\n\n`;
   ht += `  # Serve /index.html with HTTP 404 status code when ErrorDocument triggers\n`;
   ht += `  ErrorDocument 404 /index.html\n\n`;
+  ht += `  # 0. Dynamic Live Sitemaps from Backend (Proxy / Cache via sitemap.php)\n`;
+  ht += `  RewriteRule ^(sitemap\\.xml|sitemap-blogs\\.xml|sitemap-products\\.xml|sitemap-categories\\.xml|sitemap-static\\.xml)$ /sitemap.php?file=$1 [L,QSA]\n\n`;
   ht += `  # 1. Do NOT rewrite backend API requests\n`;
   ht += `  RewriteCond %{REQUEST_URI} ^/api [NC]\n`;
   ht += `  RewriteRule ^ - [L]\n\n`;
@@ -382,12 +384,8 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   ht += `  # 6. Whitelist Canonical Category Pages\n`;
   ht += `  RewriteRule ^(${categorySlugs.join('|')})/?$ /index.html [L]\n\n`;
 
-  ht += `  # 7. Whitelist Blog Landing & Active Blog Articles\n`;
-  ht += `  RewriteRule ^blog/?$ /index.html [L]\n`;
-  if (validBlogSlugs.length > 0) {
-    const escapedBlogs = validBlogSlugs.map(s => s.replace(/\s+/g, '-').replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')).join('|');
-    ht += `  RewriteRule ^blog/(${escapedBlogs})/?$ /index.html [L]\n\n`;
-  }
+  ht += `  # 7. Whitelist Blog Landing & Dynamic Blog Articles\n`;
+  ht += `  RewriteRule ^blogs?(/.*)?$ /index.html [L]\n\n`;
 
   ht += `  # 8. Whitelist Active Product Slugs\n`;
   const chunkSize = 40;

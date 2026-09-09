@@ -966,7 +966,15 @@ export default function Blogs({ userRole }: BlogsProps) {
                         <h3 className="font-serif text-lg font-bold text-[#12100e] truncate">{blog.title}</h3>
                         <p className="text-xs text-slate-500 truncate mt-1">{blog.excerpt}</p>
                         <div className="flex items-center space-x-3 mt-2 text-[10px] text-slate-400 font-mono">
-                          <span>/blog/{blog.slug}</span>
+                          <a
+                            href={`https://zoniraz.com/blog/${blog.slug}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="hover:text-[#5d463c] hover:underline"
+                            title="Open live article"
+                          >
+                            /blog/{blog.slug}
+                          </a>
                           <span>•</span>
                           <span>{blog.date}</span>
                         </div>
@@ -980,6 +988,16 @@ export default function Blogs({ userRole }: BlogsProps) {
                       }`}>
                         {blog.isPublished ? 'Live' : 'Draft'}
                       </span>
+
+                      <a
+                        href={`https://zoniraz.com/blog/${blog.slug}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all flex items-center justify-center cursor-pointer"
+                        title="View Live Blog"
+                      >
+                        <Eye size={15} />
+                      </a>
 
                       <button
                         onClick={() => handleOpenEdit(blog)}

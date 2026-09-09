@@ -2,9 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://zoniraz.com/blog</loc>
-    <lastmod>2026-09-08</lastmod>
+    <lastmod>2026-09-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://zoniraz.com/blog/18k-vs-22k-vs-24k-gold-which-should-you-buy-for-jewellery</loc>
+    <lastmod>2026-09-09</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
   </url>
   <url>
     <loc>https://zoniraz.com/blog/best-jewellery-trends-for-brides-in-2026</loc>
@@ -15,6 +21,12 @@
   <url>
     <loc>https://zoniraz.com/blog/top-5-jewellers-in-alwar</loc>
     <lastmod>2026-08-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://zoniraz.com/blog/ultimate-bridal-jewellery-guide</loc>
+    <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -32,12 +44,6 @@
   </url>
   <url>
     <loc>https://zoniraz.com/blog/gold-pendant-necklace-layering-guide</loc>
-    <lastmod>2026-09-03</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://zoniraz.com/blog/ultimate-bridal-jewellery-guide</loc>
     <lastmod>2026-09-03</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

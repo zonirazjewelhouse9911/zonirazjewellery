@@ -116,27 +116,49 @@ const allBlogContent = [
 ];
 
 const BlogDetailPage = ({ slug, onBack }) => {
-  const [blog, setBlog] = React.useState(() => allBlogContent.find(b => b.slug === slug));
-  const [loading, setLoading] = React.useState(false);
+  const initialMatch = React.useMemo(() => allBlogContent.find(b => b.slug === slug), [slug]);
+  const [blog, setBlog] = React.useState(initialMatch || null);
+  const [loading, setLoading] = React.useState(!initialMatch);
 
   React.useEffect(() => {
+    let isMounted = true;
+    const staticMatch = allBlogContent.find(b => b.slug === slug);
+    if (staticMatch) {
+      setBlog(staticMatch);
+      setLoading(false);
+    } else {
+      setBlog(null);
+      setLoading(true);
+    }
+
     const fetchSingleBlog = async () => {
       if (!slug) return;
       try {
-        setLoading(true);
         const res = await fetch(`${API_BASE_URL}/api/blogs/${slug}`);
-
         const data = await res.json();
-        if (data.success && data.data) {
-          setBlog(data.data);
+        if (isMounted) {
+          if (data && data.success && data.data) {
+            setBlog(data.data);
+          } else if (!staticMatch) {
+            setBlog(null);
+          }
         }
       } catch (err) {
         console.error("Error fetching single blog from API:", err);
+        if (isMounted && !staticMatch) {
+          setBlog(null);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
     fetchSingleBlog();
+
+    return () => {
+      isMounted = false;
+    };
   }, [slug]);
 
   if (loading) {
@@ -371,6 +393,103 @@ const BlogDetailPage = ({ slug, onBack }) => {
           line-height: 1.7;
         }
 
+        /* Rich HTML Blog Content */
+        .blog-html-content {
+          font-size: 15px;
+          line-height: 1.85;
+          color: #4a3f37;
+          word-break: break-word;
+        }
+
+        .blog-html-content h1,
+        .blog-html-content h2,
+        .blog-html-content h3,
+        .blog-html-content h4 {
+          font-family: 'Playfair Display', serif;
+          color: #2a221b;
+          font-weight: 600;
+          margin-top: 36px;
+          margin-bottom: 16px;
+          line-height: 1.35;
+        }
+
+        .blog-html-content h1 { font-size: 28px; }
+        .blog-html-content h2 { font-size: 24px; border-bottom: 1px solid #ebdcd0; padding-bottom: 8px; }
+        .blog-html-content h3 { font-size: 20px; }
+        .blog-html-content h4 { font-size: 17px; }
+
+        .blog-html-content p {
+          font-size: 15px;
+          line-height: 1.85;
+          color: #4a3f37;
+          margin-bottom: 20px;
+        }
+
+        .blog-html-content ul,
+        .blog-html-content ol {
+          margin: 18px 0 24px 24px;
+          padding-left: 12px;
+        }
+
+        .blog-html-content ul { list-style-type: disc; }
+        .blog-html-content ol { list-style-type: decimal; }
+
+        .blog-html-content li {
+          margin-bottom: 10px;
+          line-height: 1.75;
+          color: #4a3f37;
+        }
+
+        .blog-html-content table {
+          width: 100%;
+          border-collapse: collapse;
+          margin: 28px 0;
+          background: #ffffff;
+          border-radius: 12px;
+          overflow: hidden;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+          font-size: 14px;
+        }
+
+        .blog-html-content th,
+        .blog-html-content td {
+          padding: 14px 16px;
+          text-align: left;
+          border-bottom: 1px solid #f0e6dd;
+          color: #4a3f37;
+        }
+
+        .blog-html-content th {
+          background-color: #ede3d8;
+          color: #2a221b;
+          font-weight: 700;
+          text-transform: uppercase;
+          font-size: 12px;
+          letter-spacing: 0.5px;
+        }
+
+        .blog-html-content tr:last-child td {
+          border-bottom: none;
+        }
+
+        .blog-html-content img {
+          max-width: 100%;
+          height: auto;
+          border-radius: 16px;
+          margin: 24px 0;
+          box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+        }
+
+        .blog-html-content blockquote {
+          border-left: 4px solid #c5a880;
+          background: #fff9f3;
+          margin: 24px 0;
+          padding: 16px 24px;
+          border-radius: 0 12px 12px 0;
+          font-style: italic;
+          color: #614c38;
+        }
+
         /* CTA */
         .blog-detail-cta {
           background: linear-gradient(90deg, #2a221b, #4a3828);
@@ -488,10 +607,14 @@ const BlogDetailPage = ({ slug, onBack }) => {
             return <p key={i} className="blog-content-para">{block.text || (typeof block === 'string' ? block : '')}</p>;
           })
         ) : typeof blog?.content === 'string' ? (
-          blog.content.trim().startsWith('<') ? (
-            <div className="blog-html-content leading-relaxed space-y-4" dangerouslySetInnerHTML={{ __html: blog.content }} />
+          blog.content.includes('<') ? (
+            <div className="blog-html-content" dangerouslySetInnerHTML={{ __html: blog.content }} />
           ) : (
-            <p className="blog-content-para">{blog.content}</p>
+            <div className="blog-html-content">
+              {blog.content.split('\n\n').map((paragraph, idx) => (
+                <p key={idx} className="blog-content-para">{paragraph}</p>
+              ))}
+            </div>
           )
         ) : null}
 
