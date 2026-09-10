@@ -7,7 +7,7 @@ import AuthModal from './AuthModal';
 import { ChevronRight, MapPin, Truck, Eye, CreditCard } from 'lucide-react';
 
 const stores = [
-  { id: 1, name: "Alwar Kabir Colony Showroom", address: "Tilak Market, 7, Hanuman Burj, Kabir Colony, Alwar, Rajasthan 301001", phone: "97848 36080", timing: "10 AM - 8 PM" },
+  { id: 1, name: "Alwar Kabir Colony Showroom", address: "Tilak Market, 7, Hanuman Burj, Kabir Colony, Alwar, Rajasthan 301001", phone: "97848 36060", timing: "10 AM - 8 PM" },
   { id: 2, name: "Jaipur Palace Showroom", address: "M.I. Road, Opposite Palace Hall, Jaipur, Rajasthan 302001", phone: "98290 12345", timing: "10:30 AM - 8:30 PM" }
 ];
 

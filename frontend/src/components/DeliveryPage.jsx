@@ -578,7 +578,7 @@ export default function DeliveryPage({ initialCategory = 'delivery' }) {
             {/* Need more help? box */}
             <div className="need-help-box">
               <h4>Need more help?</h4>
-              <div className="need-help-phone">97848 36080</div>
+              <div className="need-help-phone">97848 36060</div>
               <div className="need-help-hours">10 AM – 8 PM (Mon–Sat)</div>
               <button className="contact-support-btn" onClick={() => { window.history.pushState(null, '', '/contact'); window.dispatchEvent(new PopStateEvent('popstate')); }}>
                 Contact Us
