@@ -1178,6 +1178,9 @@ function AppContent() {
     let schemas = [];
 
     if (currentView === 'product') {
+      const rawProductSlug = selectedProductId || (window.location.pathname.startsWith('/product/') ? window.location.pathname.replace('/product/', '').split('?')[0] : '');
+      const cleanSlugTitle = decodeURIComponent(rawProductSlug).replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+
       if (selectedProduct) {
         title = `${selectedProduct.name} | ${selectedProduct.category || 'Fine Jewellery'} in Alwar | Zoniraz`;
         description = selectedProduct.description 
@@ -1220,17 +1223,12 @@ function AppContent() {
             { "@type": "ListItem", "position": 3, "name": selectedProduct.name, "item": canonical }
           ]
         });
-      } else if (isProductsLoading) {
-        title = 'Jewellery Showcase | Zoniraz';
-        description = 'Discover handcrafted fine gold, diamond, and designer jewellery collections at Zoniraz.';
-        canonical = `https://zoniraz.com${window.location.pathname || '/product'}`;
-        robotsValue = 'index, follow';
       } else {
-        // Invalid or deleted product
-        title = 'Product Not Found | Zoniraz';
-        description = 'The requested jewellery piece is not available or has been discontinued. Explore our handcrafted gold and diamond collections at Zoniraz.';
-        canonical = `https://zoniraz.com${window.location.pathname || '/product'}`;
-        robotsValue = 'noindex, nofollow';
+        // Reliable fallback for product pages (e.g. while API is cold-starting or loading)
+        title = cleanSlugTitle ? `${cleanSlugTitle} | Zoniraz` : 'Buy Fine Jewellery Online in Alwar | Zoniraz';
+        description = `Discover handcrafted ${cleanSlugTitle || 'fine jewellery'} in Alwar at Zoniraz. Explore premium gold, diamond, and luxury jewellery designs.`;
+        canonical = `https://zoniraz.com/product/${rawProductSlug || ''}`;
+        robotsValue = 'index, follow';
       }
     } else if (currentView === 'rings') {
       const catKey = (selectedCategoryName || 'rings').toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
