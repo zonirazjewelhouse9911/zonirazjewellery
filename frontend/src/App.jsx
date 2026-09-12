@@ -1224,7 +1224,7 @@ function AppContent() {
         title = 'Jewellery Showcase | Zoniraz';
         description = 'Discover handcrafted fine gold, diamond, and designer jewellery collections at Zoniraz.';
         canonical = `https://zoniraz.com${window.location.pathname || '/product'}`;
-        robotsValue = 'noindex, follow';
+        robotsValue = 'index, follow';
       } else {
         // Invalid or deleted product
         title = 'Product Not Found | Zoniraz';
@@ -1391,7 +1391,7 @@ function AppContent() {
       title = 'Buy Fine Gold & Diamond Jewellery Online in Alwar | Zoniraz';
       description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery online in Alwar.';
       canonical = `https://zoniraz.com${window.location.pathname || ''}`;
-      robotsValue = 'noindex, follow';
+      robotsValue = 'index, follow';
     }
 
     document.title = title;
