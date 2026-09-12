@@ -504,7 +504,26 @@ function AppContent() {
   const [termsTab, setTermsTab] = React.useState('terms');
   const [selectedBlogSlug, setSelectedBlogSlug] = React.useState(null);
 
-  const [allProducts, setAllProducts] = React.useState([]);
+  const [allProducts, setAllProducts] = React.useState(() => {
+    try {
+      const cached = sessionStorage.getItem('zoniraz_cached_products');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {}
+    return [];
+  });
+  const [isProductsLoading, setIsProductsLoading] = React.useState(() => {
+    try {
+      const cached = sessionStorage.getItem('zoniraz_cached_products');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) return false;
+      }
+    } catch (e) {}
+    return true;
+  });
 
   // Persist wishlist & cart to localStorage on every change
   React.useEffect(() => {
@@ -729,9 +748,18 @@ function AppContent() {
           });
 
           setAllProducts(fullyMapped);
+          try {
+            sessionStorage.setItem('zoniraz_cached_products', JSON.stringify(fullyMapped));
+          } catch (e) {}
+          setIsProductsLoading(false);
+        } else {
+          setIsProductsLoading(false);
         }
       })
-      .catch(err => console.error('Error fetching all products:', err));
+      .catch(err => {
+        console.error('Error fetching all products:', err);
+        setIsProductsLoading(false);
+      });
   }, []);
 
   React.useEffect(() => {
@@ -1192,6 +1220,11 @@ function AppContent() {
             { "@type": "ListItem", "position": 3, "name": selectedProduct.name, "item": canonical }
           ]
         });
+      } else if (isProductsLoading) {
+        title = 'Jewellery Showcase | Zoniraz';
+        description = 'Discover handcrafted fine gold, diamond, and designer jewellery collections at Zoniraz.';
+        canonical = `https://zoniraz.com${window.location.pathname || '/product'}`;
+        robotsValue = 'noindex, follow';
       } else {
         // Invalid or deleted product
         title = 'Product Not Found | Zoniraz';
@@ -1418,6 +1451,7 @@ function AppContent() {
           <ProductDetailPage
             product={selectedProduct}
             products={allProducts}
+            isLoading={isProductsLoading}
             wishlist={wishlist}
             setWishlist={setWishlist}
             cart={cart}

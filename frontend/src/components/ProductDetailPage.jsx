@@ -45,7 +45,7 @@ const colorOptions = [
   { id: 'White', name: 'White Gold', colorCode: '#D5D9E0' }
 ];
 
-export default function ProductDetailPage({ product, products: propProducts = [], wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
+export default function ProductDetailPage({ product, products: propProducts = [], isLoading = false, wishlist = {}, setWishlist, cart = {}, setCart, onBack }) {
   const { formatPrice } = useCurrency();
   const catStr = (product?.product_category || product?.category || product?.category_id || '').toLowerCase();
   const nameStr = (product?.product_name || product?.name || '').toLowerCase();
@@ -638,6 +638,34 @@ export default function ProductDetailPage({ product, products: propProducts = []
       return () => clearTimeout(t);
     }
   }, [videoOpen]);
+
+  if (isLoading && !product) {
+    return (
+      <div style={{ minHeight: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '100px 24px' }}>
+        <div style={{
+          width: '46px',
+          height: '46px',
+          border: '3px solid rgba(99, 77, 64, 0.15)',
+          borderTop: '3px solid #634d40',
+          borderRadius: '50%',
+          animation: 'zonirazSpin 0.9s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+          marginBottom: '20px'
+        }}></div>
+        <h2 style={{ fontFamily: 'Playfair Display, serif', fontSize: '1.4rem', color: '#634d40', margin: '0 0 8px 0', letterSpacing: '0.5px' }}>
+          Discovering Jewellery Details
+        </h2>
+        <p style={{ fontFamily: 'Inter, sans-serif', color: '#888', fontSize: '13px', margin: 0, letterSpacing: '0.3px' }}>
+          Retrieving authentic craft details from the Zoniraz vault...
+        </p>
+        <style>{`
+          @keyframes zonirazSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
