@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Search, X, Edit2, Plus, Upload } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { cachedFetch, invalidateCache } from '../lib/apiCache';
+import { resolveProductImage } from '../lib/imageResolver';
 
 interface Collection {
   _id?: string;
@@ -233,7 +234,7 @@ export default function Collections() {
               <div className="w-full sm:w-2/5 h-64 sm:h-auto bg-[#efe7e5]/20 overflow-hidden relative border-r border-slate-150/40">
                 {col.image ? (
                   <img 
-                    src={col.image} 
+                    src={resolveProductImage(col.image)} 
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                     alt={col.name} 
                   />

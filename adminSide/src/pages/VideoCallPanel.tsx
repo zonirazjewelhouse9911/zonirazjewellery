@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import SimplePeer from 'simple-peer/simplepeer.min.js';
 import { Video, VideoOff, Mic, MicOff, PhoneOff, PhoneCall, Radio } from 'lucide-react';
+import { resolveProductImage } from '../lib/imageResolver';
 
 // Backend URL for Socket.IO connection (local vs production fallback)
 const BACKEND_URL =
@@ -321,7 +322,7 @@ export default function VideoCallPanel() {
               <div className="flex items-center gap-5 p-5 bg-[#f7f0ee] rounded-2xl">
                 {incomingCall.product.image && (
                   <img
-                    src={incomingCall.product.image}
+                    src={resolveProductImage(incomingCall.product.image)}
                     alt={incomingCall.product.name}
                     className="w-16 h-16 rounded-xl object-cover border-2 border-[#d4c5bd]"
                   />

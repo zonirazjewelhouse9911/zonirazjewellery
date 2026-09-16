@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Loader2, Search, X, Edit2, Plus, Upload } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { cachedFetch, invalidateCache } from '../lib/apiCache';
+import { resolveProductImage } from '../lib/imageResolver';
 
 interface VariantVisibility {
   size: boolean;
@@ -287,7 +288,7 @@ export default function Categories() {
                 <div className="h-60 w-full bg-[#efe7e5]/20 overflow-hidden relative">
                   {cat.image ? (
                     <img 
-                      src={cat.image} 
+                      src={resolveProductImage(cat.image)} 
                       className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                       alt={cat.name} 
                     />

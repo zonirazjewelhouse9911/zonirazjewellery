@@ -1,0 +1,98 @@
+{
+  "timestamp": "2026-09-16T06:17:39.189Z",
+  "total_checks": 10,
+  "passed_checks": 10,
+  "failed_checks": 0,
+  "results": [
+    {
+      "asset_name": "Product Image 1",
+      "url": "https://media.zoniraz.com/uploads/zoniraz/w0nomqlmczi6nnk4hd7s.jpg",
+      "http_status": 200,
+      "content_type": "image/jpeg",
+      "content_length": "1954736",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_name": "Product Image 2",
+      "url": "https://media.zoniraz.com/uploads/zoniraz/y6sxrxtxlay8jzf5qjhh.jpg",
+      "http_status": 200,
+      "content_type": "image/jpeg",
+      "content_length": "414164",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_name": "Product Image 3",
+      "url": "https://media.zoniraz.com/uploads/zoniraz/vb6hxjtyu8t4vhp4bxxl.jpg",
+      "http_status": 200,
+      "content_type": "image/jpeg",
+      "content_length": "153859",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_name": "Pendant Big Letter A",
+      "url": "https://media.zoniraz.com/uploads/A_ia1jon.webp",
+      "http_status": 200,
+      "content_type": "image/webp",
+      "content_length": "143782",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_name": "Pendant Small Letter A",
+      "url": "https://media.zoniraz.com/uploads/a_knigoa.webp",
+      "http_status": 200,
+      "content_type": "image/webp",
+      "content_length": "157164",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_name": "Pendant Big Letter B",
+      "url": "https://media.zoniraz.com/uploads/B_kdvux6.webp",
+      "http_status": 200,
+      "content_type": "image/webp",
+      "content_length": "170784",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_name": "Frontend Logo",
+      "url": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png",
+      "http_status": 200,
+      "content_type": "image/png",
+      "content_length": "1403992",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_name": "Frontend Banner",
+      "url": "https://media.zoniraz.com/uploads/zoniraz_frontend/gold-earrings-banner.jpg",
+      "http_status": 200,
+      "content_type": "image/jpeg",
+      "content_length": "822687",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_name": "Frontend Video",
+      "url": "https://media.zoniraz.com/uploads/zoniraz_frontend/videos/1.mp4",
+      "http_status": 200,
+      "content_type": "video/mp4",
+      "content_length": "15557388",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_name": "Test File",
+      "url": "https://media.zoniraz.com/uploads/test.txt",
+      "http_status": 200,
+      "content_type": "text/plain",
+      "content_length": "16",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    }
+  ]
+}

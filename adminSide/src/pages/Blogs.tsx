@@ -27,6 +27,7 @@ import {
   Lock,
   UserCheck
 } from 'lucide-react';
+import { resolveProductImage } from '../lib/imageResolver';
 
 interface BlogPost {
   _id?: string;
@@ -508,7 +509,7 @@ export default function Blogs({ userRole }: BlogsProps) {
 
               {formImage && (
                 <div className="w-full h-80 md:h-[420px] rounded-3xl overflow-hidden shadow-md">
-                  <img src={formImage} alt={formTitle} className="w-full h-full object-cover" />
+                  <img src={resolveProductImage(formImage)} alt={formTitle} className="w-full h-full object-cover" />
                 </div>
               )}
 
@@ -720,7 +721,7 @@ export default function Blogs({ userRole }: BlogsProps) {
                     ) : formImage ? (
                       <div className="space-y-3">
                         <div className="w-full h-40 rounded-xl overflow-hidden shadow-inner border border-slate-200">
-                          <img src={formImage} alt="Cover Preview" className="w-full h-full object-cover" />
+                          <img src={resolveProductImage(formImage)} alt="Cover Preview" className="w-full h-full object-cover" />
                         </div>
                         <button 
                           type="button" 
@@ -949,7 +950,7 @@ export default function Blogs({ userRole }: BlogsProps) {
                     <div className="flex items-center space-x-5 flex-1 min-w-0">
                       <div className="w-24 h-24 rounded-2xl bg-slate-100 border border-slate-200/60 shadow-sm shrink-0 overflow-hidden relative group/img">
                         <img 
-                          src={blog.image} 
+                          src={resolveProductImage(blog.image)} 
                           alt={blog.title}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-110"
                         />

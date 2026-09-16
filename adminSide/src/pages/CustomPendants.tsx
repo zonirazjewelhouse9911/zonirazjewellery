@@ -193,7 +193,7 @@ export default function CustomPendants() {
             <span>Management & Calibration</span>
           </div>
           <h1 className="text-3xl font-serif font-bold text-[#12100e]">Custom Name Pendant Calibration</h1>
-          <p className="text-xs text-slate-500 mt-1">Configure real Cloudinary letter positions, spacing offsets, and pricing rules.</p>
+          <p className="text-xs text-slate-500 mt-1">Configure real letter positions, spacing offsets, and pricing rules.</p>
         </div>
         <button
           onClick={handleSaveConfig}

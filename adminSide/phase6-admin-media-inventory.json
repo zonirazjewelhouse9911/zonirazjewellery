@@ -1,0 +1,105 @@
+{
+  "generated_at": "2026-09-16T06:17:37.193Z",
+  "total_fields": 9,
+  "fields": [
+    {
+      "field": "gallery",
+      "collection": "Product",
+      "api": "GET /api/admin/products, PUT /api/admin/products/:id, POST /api/admin/products",
+      "admin_component": "adminSide/src/pages/ProductEditor.tsx, adminSide/src/App.tsx",
+      "current_value_format": "Record<metalId, string[]> containing VPS URLs",
+      "expected_vps_value_format": "https://media.zoniraz.com/uploads/zoniraz/<filename>",
+      "resolver_used": "adminSide/src/lib/imageResolver.ts (resolveProductImage)",
+      "display_component": "App.tsx (Product list thumbnail), AdminImageUploader.tsx (Gallery thumbnail list)",
+      "upload_component": "adminSide/src/components/admin/AdminImageUploader.tsx (POST /api/upload)"
+    },
+    {
+      "field": "image",
+      "collection": "Categorie",
+      "api": "GET /api/admin/categories, POST /api/admin/categories, PUT /api/admin/categories/:id",
+      "admin_component": "adminSide/src/pages/Categories.tsx",
+      "current_value_format": "VPS URL string",
+      "expected_vps_value_format": "https://media.zoniraz.com/uploads/zoniraz/<filename>",
+      "resolver_used": "adminSide/src/lib/imageResolver.ts (resolveProductImage)",
+      "display_component": "Categories.tsx (Category Card & Edit Modal)",
+      "upload_component": "Categories.tsx (POST /api/upload with category=categories)"
+    },
+    {
+      "field": "image",
+      "collection": "Collection",
+      "api": "GET /api/admin/collections, POST /api/admin/collections, PUT /api/admin/collections/:id",
+      "admin_component": "adminSide/src/pages/Collections.tsx",
+      "current_value_format": "VPS URL string",
+      "expected_vps_value_format": "https://media.zoniraz.com/uploads/zoniraz/<filename>",
+      "resolver_used": "adminSide/src/lib/imageResolver.ts (resolveProductImage)",
+      "display_component": "Collections.tsx (Collection Card & Edit Modal)",
+      "upload_component": "Collections.tsx (POST /api/upload with category=collections)"
+    },
+    {
+      "field": "imageUrl",
+      "collection": "Banner",
+      "api": "GET /api/admin/banners, POST /api/admin/banners, DELETE /api/admin/banners/:id",
+      "admin_component": "adminSide/src/pages/Banners.tsx",
+      "current_value_format": "VPS URL string",
+      "expected_vps_value_format": "https://media.zoniraz.com/uploads/zoniraz/<filename>",
+      "resolver_used": "adminSide/src/lib/imageResolver.ts (resolveProductImage)",
+      "display_component": "Banners.tsx (Hero Banner Preview & Directory Table)",
+      "upload_component": "Banners.tsx (POST /api/upload with category=banners & dimension validation)"
+    },
+    {
+      "field": "image",
+      "collection": "Blog",
+      "api": "GET /api/admin/blogs, POST /api/admin/blogs, PUT /api/admin/blogs/:id",
+      "admin_component": "adminSide/src/pages/Blogs.tsx",
+      "current_value_format": "VPS URL string or curated external URL",
+      "expected_vps_value_format": "https://media.zoniraz.com/uploads/zoniraz/<filename>",
+      "resolver_used": "adminSide/src/lib/imageResolver.ts (resolveProductImage)",
+      "display_component": "Blogs.tsx (Article Header Preview, Form Upload Thumbnail, Directory Row)",
+      "upload_component": "Blogs.tsx (POST /api/upload with category=blogs)"
+    },
+    {
+      "field": "image, images",
+      "collection": "LooseStone",
+      "api": "GET /api/admin/loose-stones, POST /api/admin/loose-stones, PUT /api/admin/loose-stones/:id",
+      "admin_component": "adminSide/src/pages/LooseStones.tsx",
+      "current_value_format": "VPS URL string / array of VPS URLs",
+      "expected_vps_value_format": "https://media.zoniraz.com/uploads/zoniraz/<filename>",
+      "resolver_used": "adminSide/src/lib/imageResolver.ts (resolveProductImage)",
+      "display_component": "LooseStones.tsx (Directory Table Thumbnail, Modal Multi-Image Grid)",
+      "upload_component": "LooseStones.tsx (POST /api/upload with category=loose-stones)"
+    },
+    {
+      "field": "pendant_assets (letters, hooks)",
+      "collection": "PendantAssetInventory",
+      "api": "GET /api/pendant/config",
+      "admin_component": "adminSide/src/pages/CustomPendants.tsx",
+      "current_value_format": "VPS URL string",
+      "expected_vps_value_format": "https://media.zoniraz.com/uploads/<letter>.webp",
+      "resolver_used": "Direct VPS asset path from pendantAssetInventory.json",
+      "display_component": "CustomPendants.tsx (Live Name Preview & Mirror Reflection Canvas)",
+      "upload_component": "Pre-synced VPS Assets / POST /api/pendant/upload-preview"
+    },
+    {
+      "field": "items[].image, items[].customization.previewImage",
+      "collection": "Order",
+      "api": "GET /api/admin/orders, PUT /api/admin/orders/:id/status",
+      "admin_component": "adminSide/src/pages/Orders.tsx",
+      "current_value_format": "VPS URL string",
+      "expected_vps_value_format": "https://media.zoniraz.com/uploads/zoniraz/<filename> or /uploads/zoniraz/pendant_previews/<filename>",
+      "resolver_used": "adminSide/src/lib/imageResolver.ts (resolveProductImage)",
+      "display_component": "Orders.tsx (Order Detail Modal Item Thumbnail)",
+      "upload_component": "N/A (Recorded during customer checkout via /api/upload or /api/pendant/upload-preview)"
+    },
+    {
+      "field": "product.image",
+      "collection": "VideoCall",
+      "api": "Socket.IO incoming call event payload",
+      "admin_component": "adminSide/src/pages/VideoCallPanel.tsx",
+      "current_value_format": "VPS URL string",
+      "expected_vps_value_format": "https://media.zoniraz.com/uploads/zoniraz/<filename>",
+      "resolver_used": "adminSide/src/lib/imageResolver.ts (resolveProductImage)",
+      "display_component": "VideoCallPanel.tsx (Incoming Call Product Card)",
+      "upload_component": "N/A (Received from customer product detail consultation trigger)"
+    }
+  ]
+}
