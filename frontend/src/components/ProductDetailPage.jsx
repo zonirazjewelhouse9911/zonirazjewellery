@@ -27,8 +27,8 @@ import {
   PhoneOff,
   ChevronRight
 } from 'lucide-react';
-const ringVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498665/zoniraz_frontend/videos/zoniraz_ring_.mp4";
-const banglesVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498569/zoniraz_frontend/videos/Bangles.mp4";
+const ringVideo = "https://media.zoniraz.com/uploads/zoniraz_frontend/videos/zoniraz_ring_.mp4";
+const banglesVideo = "https://media.zoniraz.com/uploads/zoniraz_frontend/videos/Bangles.mp4";
 
 // Lifestyle / model images from Unsplash (free to use)
 const lifestyleImages = [
@@ -2031,15 +2031,15 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
       {/* Breadcrumb */}
       <div className="pdp-breadcrumb">
-        <span onClick={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new Event('popstate')); }}>Home</span>
+        <span onClick={() => { window.history.pushState(null, '', '/'); window.dispatchEvent(new PopStateEvent('popstate')); }}>Home</span>
         <ChevronRight size={10} style={{ color: '#8C827A' }} />
-        <span onClick={() => { window.history.pushState(null, '', '/' + (product.category || 'rings').toLowerCase().replace(/ /g, '-')); window.dispatchEvent(new Event('popstate')); }}>
+        <span onClick={() => { window.history.pushState(null, '', '/' + (product.category || 'rings').toLowerCase().replace(/ /g, '-')); window.dispatchEvent(new PopStateEvent('popstate')); }}>
           {product.category || 'Rings'}
         </span>
         {product.subcategory && (
           <>
             <ChevronRight size={10} style={{ color: '#8C827A' }} />
-            <span onClick={() => { window.history.pushState(null, '', '/' + (product.category || 'rings').toLowerCase().replace(/ /g, '-') + '?subcategory=' + product.subcategory.toLowerCase().replace(/ /g, '-')); window.dispatchEvent(new Event('popstate')); }}>
+            <span onClick={() => { window.history.pushState(null, '', '/' + (product.category || 'rings').toLowerCase().replace(/ /g, '-') + '?subcategory=' + product.subcategory.toLowerCase().replace(/ /g, '-')); window.dispatchEvent(new PopStateEvent('popstate')); }}>
               {product.subcategory}
             </span>
           </>
@@ -2881,7 +2881,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c054ba20ef413c2f925f2066fa2eb967&profile_id=139&oauth2_token_id=57447761"
                   autoPlay loop muted playsInline preload="metadata"
                 >
-                  <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
+                  <track kind="captions" src="https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
                 </video>
               )}
             </div>
@@ -2929,7 +2929,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 preload="metadata"
                 style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
               >
-                <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
+                <track kind="captions" src="https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
               </video>
             </div>
           </div>

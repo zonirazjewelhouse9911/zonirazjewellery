@@ -249,7 +249,18 @@ export default function UserDashboard() {
       
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         <div style={{ fontSize: '11px', color: '#8c7365', textTransform: 'uppercase', letterSpacing: '2px', marginBottom: '24px', marginTop: '15px' }}>
-          <a href="#" style={{ color: '#8c7365', textDecoration: 'none' }}>Home</a> &gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>My Account</span>
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState(null, '', '/');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+            style={{ color: '#8c7365', textDecoration: 'none' }}
+          >
+            Home
+          </a>
+          {' '}&gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>My Account</span>
         </div>
 
         <h1 style={{ fontFamily: "'Playfair Display', serif", fontSize: '28px', fontWeight: '500', color: '#2b221d', marginBottom: '30px', paddingBottom: '16px', borderBottom: '1px solid #d4c5bd' }}>

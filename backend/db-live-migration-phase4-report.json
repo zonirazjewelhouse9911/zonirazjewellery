@@ -1,0 +1,290 @@
+{
+  "timestamp": "2026-09-15T09:24:30.379Z",
+  "backup_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z",
+  "database_live_migration": "PASS",
+  "verification_checklist": {
+    "all_19_collections_scanned": true,
+    "total_documents_scanned": 679,
+    "total_documents_modified": 0,
+    "total_references_replaced": 0,
+    "old_cloudinary_urls_remaining_in_db": 0,
+    "new_vps_media_urls_in_db": 5652,
+    "unresolved_urls_count": 0,
+    "errors_count": 0,
+    "document_count_before_vs_after": "679 == 679",
+    "document_loss": 0,
+    "collection_loss": 0,
+    "http_200_sample_check": "30/30 PASS"
+  },
+  "collection_execution_breakdown": {
+    "orders": {
+      "documents_scanned": 14,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 14
+    },
+    "wallets": {
+      "documents_scanned": 3,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 3
+    },
+    "products": {
+      "documents_scanned": 615,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 615
+    },
+    "users": {
+      "documents_scanned": 12,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 12
+    },
+    "coupons": {
+      "documents_scanned": 1,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 1
+    },
+    "addresses": {
+      "documents_scanned": 7,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 7
+    },
+    "categories": {
+      "documents_scanned": 9,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 9
+    },
+    "pendantconfigs": {
+      "documents_scanned": 0,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 0
+    },
+    "jewellerypricings": {
+      "documents_scanned": 1,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 1
+    },
+    "reveiws": {
+      "documents_scanned": 0,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 0
+    },
+    "banners": {
+      "documents_scanned": 1,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 1
+    },
+    "sellgoldinquiries": {
+      "documents_scanned": 0,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 0
+    },
+    "admins": {
+      "documents_scanned": 1,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 1
+    },
+    "loosestones": {
+      "documents_scanned": 1,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 1
+    },
+    "exchangeinquiries": {
+      "documents_scanned": 0,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 0
+    },
+    "blogs": {
+      "documents_scanned": 8,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 8
+    },
+    "collections": {
+      "documents_scanned": 0,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 0
+    },
+    "goldmines": {
+      "documents_scanned": 3,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 3
+    },
+    "blogaccesses": {
+      "documents_scanned": 3,
+      "documents_modified": 0,
+      "cloudinary_urls_replaced": 0,
+      "vps_urls_written": 0,
+      "unresolved_urls": 0,
+      "errors": 0,
+      "skipped_documents": 3
+    }
+  },
+  "post_scan_breakdown": {
+    "orders": {
+      "docs_count": 14,
+      "cloudinary_remaining": 0,
+      "vps_urls": 11
+    },
+    "wallets": {
+      "docs_count": 3,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "products": {
+      "docs_count": 615,
+      "cloudinary_remaining": 0,
+      "vps_urls": 5628
+    },
+    "users": {
+      "docs_count": 12,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "coupons": {
+      "docs_count": 1,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "addresses": {
+      "docs_count": 7,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "categories": {
+      "docs_count": 9,
+      "cloudinary_remaining": 0,
+      "vps_urls": 9
+    },
+    "pendantconfigs": {
+      "docs_count": 0,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "jewellerypricings": {
+      "docs_count": 1,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "reveiws": {
+      "docs_count": 0,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "banners": {
+      "docs_count": 1,
+      "cloudinary_remaining": 0,
+      "vps_urls": 1
+    },
+    "sellgoldinquiries": {
+      "docs_count": 0,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "admins": {
+      "docs_count": 1,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "loosestones": {
+      "docs_count": 1,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "exchangeinquiries": {
+      "docs_count": 0,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "blogs": {
+      "docs_count": 8,
+      "cloudinary_remaining": 0,
+      "vps_urls": 3
+    },
+    "collections": {
+      "docs_count": 0,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "goldmines": {
+      "docs_count": 3,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    },
+    "blogaccesses": {
+      "docs_count": 3,
+      "cloudinary_remaining": 0,
+      "vps_urls": 0
+    }
+  },
+  "rollback_instructions": "Not needed. Database is fully consistent."
+}

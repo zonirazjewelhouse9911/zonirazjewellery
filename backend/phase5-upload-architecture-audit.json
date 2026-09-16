@@ -1,0 +1,47 @@
+{
+  "generated_at": "2026-09-15T09:58:13.901Z",
+  "total_upload_endpoints_audited": 2,
+  "endpoints_ready_for_vps": 2,
+  "endpoints_requiring_permanent_vps_sync": 2,
+  "endpoints": [
+    {
+      "endpoint": "POST /api/upload",
+      "controller": "backend/src/controllers/productController.js (uploadImages)",
+      "route_file": "backend/src/routes/productRoutes.js",
+      "storage_mechanism": "Multer Disk Storage on App Server (`backend/uploads/zoniraz/`)",
+      "destination_directory": "/uploads/zoniraz/",
+      "filename_generation": "file.fieldname + \"-\" + Date.now() + \"-\" + Math.round(Math.random() * 1E9) + ext",
+      "returned_url_format": "https://media.zoniraz.com/uploads/zoniraz/<filename>",
+      "database_fields_receiving_url": [
+        "Product.gallery",
+        "Categorie.image",
+        "Banner.imageUrl",
+        "Blog.image",
+        "Collection.image"
+      ],
+      "current_vps_sync_status": "Local App Staging (Saved locally in uploads/zoniraz/; requires VPS sync handler or direct upload to VPS)",
+      "cloudinary_sdk_used": false,
+      "notes": "Uploads are saved to local uploads/zoniraz/ and immediately return the media.zoniraz.com URL structure. VPS background sync or direct remote write ensures permanent VPS storage."
+    },
+    {
+      "endpoint": "POST /api/pendant/upload-preview",
+      "controller": "backend/src/controllers/pendantController.js (uploadPreview)",
+      "route_file": "backend/src/routes/pendantRoutes.js",
+      "storage_mechanism": "Base64 Buffer FS Write on App Server (`backend/uploads/zoniraz/pendant_previews/`)",
+      "destination_directory": "/uploads/zoniraz/pendant_previews/",
+      "filename_generation": "\"preview-\" + Date.now() + \"-\" + Math.round(Math.random() * 1E9) + \".png\"",
+      "returned_url_format": "https://media.zoniraz.com/uploads/zoniraz/pendant_previews/<filename>.png",
+      "database_fields_receiving_url": [
+        "Order.items[].customization.previewImage"
+      ],
+      "current_vps_sync_status": "Local App Staging (Saved locally in uploads/zoniraz/pendant_previews/; requires VPS sync handler)",
+      "cloudinary_sdk_used": false,
+      "notes": "Base64 preview snapshots are stored locally and return media.zoniraz.com URLs without Cloudinary dependency."
+    }
+  ],
+  "architecture_summary": {
+    "app_server_role": "Receives multipart/base64 uploads, generates collision-safe filename, returns https://media.zoniraz.com/uploads/...",
+    "media_vps_role": "Hosts permanent media root /var/www/zoniraz-media/uploads/ and serves static assets via Nginx with HTTPS and immutable cache",
+    "vps_sync_mechanism": "Automated SCP/rsync stream to /var/www/zoniraz-media/uploads/"
+  }
+}

@@ -1,0 +1,124 @@
+[
+  {
+    "_id": "6a549f23e55a733b5e9690bb",
+    "user_id": "6a549eece55a733b5e9690b4",
+    "entries": [
+      {
+        "name": "Vikas Jangid",
+        "mobile": 9660472404,
+        "house_number": "3672367",
+        "street_name": "edffefuyeuygeg",
+        "landmark": "eqdqd",
+        "type": "home",
+        "zipcode": "301001",
+        "city": "ALWAR",
+        "state": "Rajasthan",
+        "latitude": "",
+        "longitude": "",
+        "primary": "false",
+        "_id": "6a62f4cdf1f685d0865f1d9e"
+      }
+    ],
+    "__v": 1
+  },
+  {
+    "_id": "6a896d659245da09098f5a9a",
+    "user_id": "6a8969219245da09098f5a8d",
+    "entries": [],
+    "__v": 0
+  },
+  {
+    "_id": "6a896f249245da09098f5abf",
+    "user_id": "6a896edd9245da09098f5ab2",
+    "entries": [],
+    "__v": 0
+  },
+  {
+    "_id": "6a90463558d6a0e2d452e54c",
+    "user_id": "6a9045c158d6a0e2d452e531",
+    "entries": [
+      {
+        "name": "ankush Mishra",
+        "mobile": 8422922817,
+        "house_number": "B 28 ganesh Deval nager near om sai complex shiv sena gali Bhayandar west ",
+        "street_name": "Om sai complex ",
+        "landmark": "Shiv sena gali Bhayandar west ",
+        "type": "home",
+        "zipcode": "401101",
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "latitude": "",
+        "longitude": "",
+        "primary": "false",
+        "_id": "6a90463558d6a0e2d452e54d"
+      }
+    ],
+    "__v": 0
+  },
+  {
+    "_id": "6a91ddb0f81548d94b172ff0",
+    "user_id": "6a91dc8af81548d94b172fcf",
+    "entries": [
+      {
+        "name": "Dharmendra Gupta",
+        "mobile": 9987333274,
+        "house_number": "C 28 ganesh Deval nager near om sai complex shiv sena gali Bhayandar west ",
+        "street_name": "C 28 ganesh Deval nager near om sai complex shiv sena gali Bhayandar west ",
+        "landmark": "Shiv sena gali ",
+        "type": "home",
+        "zipcode": "401101",
+        "city": "Thane",
+        "state": "Maharashtra",
+        "latitude": "",
+        "longitude": "",
+        "primary": "false",
+        "_id": "6a91ddb0f81548d94b172ff1"
+      }
+    ],
+    "__v": 0
+  },
+  {
+    "_id": "6a95076cfd1b3d49489a7dd3",
+    "user_id": "6a950602fd1b3d49489a7dbc",
+    "entries": [
+      {
+        "name": "Manoj",
+        "mobile": 4256252853,
+        "house_number": "1452850525",
+        "street_name": "Alwar Ram Nagar",
+        "landmark": "Ram Nagar",
+        "type": "home",
+        "zipcode": "301001",
+        "city": "Alwar",
+        "state": "Rajtrhan",
+        "latitude": "",
+        "longitude": "",
+        "primary": "false",
+        "_id": "6a95076cfd1b3d49489a7dd4"
+      }
+    ],
+    "__v": 0
+  },
+  {
+    "_id": "6a980c6070ef0dce794a0db7",
+    "user_id": "6a8971e39245da09098f5acf",
+    "entries": [
+      {
+        "name": "Narendra saini",
+        "mobile": 7891561303,
+        "house_number": "13B",
+        "street_name": "SONAWA",
+        "landmark": "NEAR SAINI TENT HOUSE",
+        "type": "home",
+        "zipcode": "301001",
+        "city": "ALWAR",
+        "state": "Rajasthan",
+        "latitude": "",
+        "longitude": "",
+        "primary": "false",
+        "_id": "6a980c6070ef0dce794a0db8"
+      }
+    ],
+    "__v": 0
+  }
+]

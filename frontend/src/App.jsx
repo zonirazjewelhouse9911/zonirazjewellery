@@ -908,7 +908,7 @@ function AppContent() {
         setSelectedCategoryName('Rings');
         setCurrentView('rings');
         restoreOrScrollTop();
-      } else if (path === '/collections') {
+      } else if (path === '/collections' || path === '/jewellery' || path === '/jewellery/') {
         window.history.replaceState(null, '', '/all-collections');
         setCurrentView('all-collections');
         restoreOrScrollTop();
@@ -1174,7 +1174,7 @@ function AppContent() {
     let description = '';
     let canonical = 'https://zoniraz.com/';
     let robotsValue = 'index, follow';
-    let ogImage = 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png';
+    let ogImage = 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png';
     let schemas = [];
 
     if (currentView === 'product') {
@@ -1282,7 +1282,7 @@ function AppContent() {
         "@type": "Organization",
         "name": "Zoniraz Jewels",
         "url": "https://zoniraz.com/",
-        "logo": "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png",
+        "logo": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png",
         "description": "Zoniraz Jewels is a premium luxury jewellery brand in Alwar specializing in fine gold, diamond, and designer jewellery collections.",
         "sameAs": [
           "https://www.facebook.com/zonirazjewel/",
@@ -1328,7 +1328,7 @@ function AppContent() {
           "@type": "LocalBusiness",
           "@id": "https://zoniraz.com/zoniraz-alwar#localbusiness",
           "name": "Zoniraz Jewel House",
-          "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png",
+          "image": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png",
           "telephone": "+91 97848 36060",
           "email": "zonirazjewelhouse@gmail.com",
           "address": {

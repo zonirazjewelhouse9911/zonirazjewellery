@@ -1,0 +1,22 @@
+[
+  {
+    "_id": "6a7c0d9fa65fb39e003f43a3",
+    "title": "1.50 Ct VVS1 Round Solitaire Diamond",
+    "stone_type": "solitaire",
+    "shape": "Round",
+    "weight_carat": 1.5,
+    "quality": "VVS1",
+    "color": "D",
+    "cut_grade": "Excellent",
+    "price": 185000,
+    "discount": 0,
+    "stock": 3,
+    "certificate_no": "GIA-74839201",
+    "description": "",
+    "image": "",
+    "status": "1",
+    "createdAt": "2026-08-12T06:07:27.905Z",
+    "updatedAt": "2026-08-12T06:07:27.905Z",
+    "__v": 0
+  }
+]

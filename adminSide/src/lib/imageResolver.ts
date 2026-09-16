@@ -40,15 +40,12 @@ export const resolveProductImage = (imageName: any, thumbnail = false): string =
     trimmed.startsWith('uploads/')
   ) {
     let resolved = trimmed;
-    // If it doesn't start with / but starts with uploads/, prefix it
     if (trimmed.startsWith('uploads/')) {
       resolved = `/${trimmed}`;
     }
     
-    // Prefix legacy local uploads with production Render backend URL in production
-    const isLocalhost = typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
-    if (!isLocalhost && resolved.startsWith('/uploads/')) {
-      return `https://zonirazjewellery.onrender.com${resolved}`;
+    if (resolved.startsWith('/uploads/')) {
+      return `https://media.zoniraz.com${resolved}`;
     }
     return resolved;
   }

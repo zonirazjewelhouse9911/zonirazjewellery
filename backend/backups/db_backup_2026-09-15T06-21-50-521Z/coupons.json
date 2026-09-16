@@ -1,0 +1,20 @@
+[
+  {
+    "_id": "6a630f87081b92ec68a07a14",
+    "code": "ZONIRAZ001",
+    "discountType": "percentage",
+    "discountValue": 10,
+    "minCartValue": 5000,
+    "expirationDate": "2026-08-23T00:00:00.000Z",
+    "usageLimit": 100,
+    "usedCount": 0,
+    "isActive": true,
+    "restrictions": {
+      "categories": [],
+      "products": []
+    },
+    "createdAt": "2026-07-24T07:08:55.869Z",
+    "updatedAt": "2026-07-24T07:08:55.869Z",
+    "__v": 0
+  }
+]

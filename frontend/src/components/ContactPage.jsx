@@ -337,7 +337,28 @@ export default function ContactPage() {
       <div className="contact-container">
         {/* Breadcrumbs */}
         <div className="contact-breadcrumb">
-          <a href="#">Home</a> &gt; <a href="#contact">Help & Contact</a> &gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>Contact Jewellery Store</span>
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState(null, '', '/');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+          >
+            Home
+          </a>
+          {' '}&gt;{' '}
+          <a
+            href="/contact"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState(null, '', '/contact');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+          >
+            Help &amp; Contact
+          </a>
+          {' '}&gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>Contact Jewellery Store</span>
         </div>
 
         {/* Header */}

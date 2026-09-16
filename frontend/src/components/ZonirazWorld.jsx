@@ -1,7 +1,7 @@
 import React from 'react';
-const ringTopImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498434/zoniraz_frontend/aneka.jpg";
-const ringBottomImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498436/zoniraz_frontend/stretchable-bangles.jpg";
-const heritageImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498480/zoniraz_frontend/shaya-diamonds.jpg";
+const ringTopImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/aneka.jpg";
+const ringBottomImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/stretchable-bangles.jpg";
+const heritageImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/shaya-diamonds.jpg";
 
 export default function ZonirazWorld() {
   return (

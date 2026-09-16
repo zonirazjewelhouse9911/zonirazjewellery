@@ -1,0 +1,104 @@
+{
+  "backup_timestamp": "2026-09-15T06:21:51.470Z",
+  "database_name": "test",
+  "collections": {
+    "orders": {
+      "document_count": 14,
+      "file_size_bytes": 20015,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/orders.json"
+    },
+    "wallets": {
+      "document_count": 3,
+      "file_size_bytes": 2807,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/wallets.json"
+    },
+    "products": {
+      "document_count": 615,
+      "file_size_bytes": 2005774,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/products.json"
+    },
+    "users": {
+      "document_count": 12,
+      "file_size_bytes": 10809,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/users.json"
+    },
+    "coupons": {
+      "document_count": 1,
+      "file_size_bytes": 453,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/coupons.json"
+    },
+    "addresses": {
+      "document_count": 7,
+      "file_size_bytes": 3184,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/addresses.json"
+    },
+    "categories": {
+      "document_count": 9,
+      "file_size_bytes": 6308,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/categories.json"
+    },
+    "pendantconfigs": {
+      "document_count": 0,
+      "file_size_bytes": 2,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/pendantconfigs.json"
+    },
+    "jewellerypricings": {
+      "document_count": 1,
+      "file_size_bytes": 386,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/jewellerypricings.json"
+    },
+    "reveiws": {
+      "document_count": 0,
+      "file_size_bytes": 2,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/reveiws.json"
+    },
+    "banners": {
+      "document_count": 1,
+      "file_size_bytes": 321,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/banners.json"
+    },
+    "sellgoldinquiries": {
+      "document_count": 0,
+      "file_size_bytes": 2,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/sellgoldinquiries.json"
+    },
+    "admins": {
+      "document_count": 1,
+      "file_size_bytes": 666,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/admins.json"
+    },
+    "loosestones": {
+      "document_count": 1,
+      "file_size_bytes": 508,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/loosestones.json"
+    },
+    "exchangeinquiries": {
+      "document_count": 0,
+      "file_size_bytes": 2,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/exchangeinquiries.json"
+    },
+    "blogs": {
+      "document_count": 8,
+      "file_size_bytes": 70931,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/blogs.json"
+    },
+    "collections": {
+      "document_count": 0,
+      "file_size_bytes": 2,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/collections.json"
+    },
+    "goldmines": {
+      "document_count": 3,
+      "file_size_bytes": 3068,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/goldmines.json"
+    },
+    "blogaccesses": {
+      "document_count": 3,
+      "file_size_bytes": 1168,
+      "file_path": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z/blogaccesses.json"
+    }
+  },
+  "total_documents": 679,
+  "total_bytes": 2126408,
+  "verified": true
+}

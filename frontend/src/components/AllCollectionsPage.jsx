@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
 import { cachedFetch } from '../utils/apiCache';
-const collectionBanner = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498430/zoniraz_frontend/collection-banner-1.png";
+const collectionBanner = "https://media.zoniraz.com/uploads/zoniraz_frontend/collection-banner-1.png";
 
 const labelMap = {
   'bridal': 'SIGNATURE',
@@ -37,7 +37,7 @@ export default function AllCollectionsPage({ products = [] }) {
               if (matchingProducts.length > 0 && matchingProducts[0].image) {
                 image = matchingProducts[0].image;
               } else {
-                image = getUploadsUrl('https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png');
+                image = getUploadsUrl('https://media.zoniraz.com/uploads/zoniraz_frontend/zoni.png');
               }
             } else if (!image.startsWith('http') && !image.startsWith('/images/')) {
               image = getUploadsUrl(image);

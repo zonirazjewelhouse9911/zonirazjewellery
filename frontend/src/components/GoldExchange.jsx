@@ -1,14 +1,14 @@
 import React from 'react';
 
-const purityBadgeImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498460/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_04_PM__1_.jpg";
-const purityMarkImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498482/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_04_PM.jpg";
-const sglImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498413/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_05_PM__1_.jpg";
-const igiImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498474/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_05_PM.jpg";
-const trustSafetyImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498434/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_06_PM__1_.jpg";
-const certQualityImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498420/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_06_PM__2_.jpg";
-const naturalDiamondImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498455/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_06_PM.jpg";
-const bisLogoImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498473/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_07_PM__1_.jpg";
-const authenticJewelleryImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498459/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_07_PM.jpg";
+const purityBadgeImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_04_PM__1_.jpg";
+const purityMarkImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_04_PM.jpg";
+const sglImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_05_PM__1_.jpg";
+const igiImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_05_PM.jpg";
+const trustSafetyImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_06_PM__1_.jpg";
+const certQualityImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_06_PM__2_.jpg";
+const naturalDiamondImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_06_PM.jpg";
+const bisLogoImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_07_PM__1_.jpg";
+const authenticJewelleryImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-24_at_12_32_07_PM.jpg";
 
 const certBadges = [
   { id: 1, img: purityBadgeImg, alt: 'Assured Purity & Trusted Quality', title: 'Assured Purity' },

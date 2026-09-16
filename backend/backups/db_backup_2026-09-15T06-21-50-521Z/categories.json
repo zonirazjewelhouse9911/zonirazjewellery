@@ -1,0 +1,245 @@
+[
+  {
+    "_id": "6a50cec0a93445bc66a0d096",
+    "name": "Rings",
+    "slug": "rings",
+    "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784621553/zoniraz/ahvm8zodlioipowtydva.png",
+    "description": "dgfhtersh tgdhsreth ",
+    "config": {
+      "variantVisibility": {
+        "size": true,
+        "metal": true,
+        "purity": true,
+        "diamondQuality": true,
+        "diamondWeight": true
+      },
+      "makingCharges": {
+        "type": "percentage",
+        "value": 0
+      },
+      "weightRules": {
+        "baseSize": 0,
+        "sizeIncrementWeight": 0.14
+      }
+    },
+    "createdAt": "2026-07-10T10:51:44.370Z",
+    "updatedAt": "2026-07-21T08:12:36.220Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a50cf9ba93445bc66a0d0a2",
+    "name": "Earrings",
+    "slug": "earrings",
+    "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784621537/zoniraz/jppuwyodb47njfxfd9v3.png",
+    "description": "hterwthrwtryw cghthrerty",
+    "config": {
+      "variantVisibility": {
+        "size": true,
+        "metal": true,
+        "purity": true,
+        "diamondQuality": true,
+        "diamondWeight": true
+      },
+      "makingCharges": {
+        "type": "percentage",
+        "value": 0
+      },
+      "weightRules": {
+        "baseSize": 0,
+        "sizeIncrementWeight": 0
+      }
+    },
+    "createdAt": "2026-07-10T10:55:23.083Z",
+    "updatedAt": "2026-07-21T08:12:21.213Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a50d020a93445bc66a0d0aa",
+    "name": "Chain",
+    "slug": "chain",
+    "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784952523/zoniraz/gh9chf7wczrwrkz51v2r.png",
+    "description": "",
+    "config": {
+      "variantVisibility": {
+        "size": true,
+        "metal": true,
+        "purity": true,
+        "diamondQuality": true,
+        "diamondWeight": true
+      },
+      "makingCharges": {
+        "type": "percentage",
+        "value": 0
+      },
+      "weightRules": {
+        "baseSize": 0,
+        "sizeIncrementWeight": 0
+      }
+    },
+    "createdAt": "2026-07-10T10:57:36.899Z",
+    "updatedAt": "2026-07-25T04:08:45.798Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a50d0c2a93445bc66a0d0b2",
+    "name": "Nose pin",
+    "slug": "nose-pin",
+    "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784952220/zoniraz/j9eeet3ibfcyaik8pgzm.png",
+    "description": "gbtrnbyr gfhjrtfh gnrtnhr",
+    "config": {
+      "variantVisibility": {
+        "size": true,
+        "metal": true,
+        "purity": true,
+        "diamondQuality": true,
+        "diamondWeight": true
+      },
+      "makingCharges": {
+        "type": "percentage",
+        "value": 0
+      },
+      "weightRules": {
+        "baseSize": 0,
+        "sizeIncrementWeight": 0
+      }
+    },
+    "createdAt": "2026-07-10T11:00:18.236Z",
+    "updatedAt": "2026-07-25T04:04:48.398Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a54a4734de1482b53c4d8ac",
+    "name": "Bangles",
+    "slug": "bangles",
+    "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784621497/zoniraz/zgktducxyoknfadlr7s9.png",
+    "description": "",
+    "config": {
+      "variantVisibility": {
+        "size": true,
+        "metal": true,
+        "purity": true,
+        "diamondQuality": true,
+        "diamondWeight": true
+      },
+      "makingCharges": {
+        "type": "percentage",
+        "value": 0
+      },
+      "weightRules": {
+        "baseSize": 0,
+        "sizeIncrementWeight": 0
+      }
+    },
+    "createdAt": "2026-07-13T08:40:19.147Z",
+    "updatedAt": "2026-07-31T04:54:26.258Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a643698e2eb3cca52cb4d75",
+    "name": "Mangalsutra",
+    "slug": "mangalsutra",
+    "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784952469/zoniraz/vyqqadxyuvo2zqctyjz4.png",
+    "description": "",
+    "config": {
+      "variantVisibility": {
+        "size": true,
+        "metal": true,
+        "purity": true,
+        "diamondQuality": true,
+        "diamondWeight": true
+      },
+      "makingCharges": {
+        "type": "percentage",
+        "value": 0
+      },
+      "weightRules": {
+        "baseSize": 0,
+        "sizeIncrementWeight": 0
+      }
+    },
+    "createdAt": "2026-07-25T04:07:52.559Z",
+    "updatedAt": "2026-07-25T04:07:52.559Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a6436bae2eb3cca52cb4d79",
+    "name": "Pendant",
+    "slug": "pendant",
+    "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784952503/zoniraz/c6gajazp6fsltl8y35jq.png",
+    "description": "",
+    "config": {
+      "variantVisibility": {
+        "size": true,
+        "metal": true,
+        "purity": true,
+        "diamondQuality": true,
+        "diamondWeight": true
+      },
+      "makingCharges": {
+        "type": "percentage",
+        "value": 0
+      },
+      "weightRules": {
+        "baseSize": 0,
+        "sizeIncrementWeight": 0
+      }
+    },
+    "createdAt": "2026-07-25T04:08:26.109Z",
+    "updatedAt": "2026-07-25T04:08:26.109Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a64370ae2eb3cca52cb4d80",
+    "name": "Solitaire",
+    "slug": "solitaire",
+    "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784952584/zoniraz/kwdehtyknrmxt74u5j1w.png",
+    "description": "",
+    "config": {
+      "variantVisibility": {
+        "size": true,
+        "metal": true,
+        "purity": true,
+        "diamondQuality": true,
+        "diamondWeight": true
+      },
+      "makingCharges": {
+        "type": "percentage",
+        "value": 0
+      },
+      "weightRules": {
+        "baseSize": 0,
+        "sizeIncrementWeight": 0
+      }
+    },
+    "createdAt": "2026-07-25T04:09:46.876Z",
+    "updatedAt": "2026-07-25T04:09:46.876Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a64373ae2eb3cca52cb4d84",
+    "name": "Zodiac",
+    "slug": "zodiac",
+    "image": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784952628/zoniraz/rdpqcmjk6idmrh9wrsy7.png",
+    "description": "",
+    "config": {
+      "variantVisibility": {
+        "size": true,
+        "metal": true,
+        "purity": true,
+        "diamondQuality": true,
+        "diamondWeight": true
+      },
+      "makingCharges": {
+        "type": "percentage",
+        "value": 0
+      },
+      "weightRules": {
+        "baseSize": 0,
+        "sizeIncrementWeight": 0
+      }
+    },
+    "createdAt": "2026-07-25T04:10:34.016Z",
+    "updatedAt": "2026-07-25T04:10:34.016Z",
+    "__v": 0
+  }
+]

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-const goldNecklaceSilk = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498423/zoniraz_frontend/gold-necklace-silk.jpg";
+const goldNecklaceSilk = "https://media.zoniraz.com/uploads/zoniraz_frontend/gold-necklace-silk.jpg";
 
 export default function FranchisePage() {
   const [formData, setFormData] = useState({
@@ -85,7 +85,7 @@ export default function FranchisePage() {
 
         .franchise-hero {
           position: relative;
-          background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("https://res.cloudinary.com/fxokwlyu/image/upload/v1788498409/zoniraz_frontend/jewelry_banner_1.png");
+          background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("https://media.zoniraz.com/uploads/zoniraz_frontend/jewelry_banner_1.png");
           background-size: cover;
           background-position: center;
           border-radius: 20px;
@@ -407,7 +407,17 @@ export default function FranchisePage() {
       <div className="franchise-container">
         {/* Breadcrumb */}
         <div className="franchise-breadcrumb">
-          <a href="#">Home</a> / <span>Franchise Enquiry</span>
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState(null, '', '/');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+          >
+            Home
+          </a>
+          {' '}/ <span>Franchise Enquiry</span>
         </div>
 
         {/* Hero Section */}

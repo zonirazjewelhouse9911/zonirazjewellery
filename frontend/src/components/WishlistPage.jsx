@@ -445,7 +445,17 @@ export default function WishlistPage({ products: propProducts = [], wishlist = {
         <div className="wishlist-header-row">
           <div className="wishlist-title-area">
             <div className="wishlist-breadcrumb">
-              <a href="#">Home</a> &gt; <span style={{ color: '#634d40', fontWeight: '600' }}>Wishlist</span>
+              <a
+                href="/"
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.history.pushState(null, '', '/');
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+              >
+                Home
+              </a>
+              {' '}&gt; <span style={{ color: '#634d40', fontWeight: '600' }}>Wishlist</span>
             </div>
             <h1 className="wishlist-title">Your Wishlist</h1>
           </div>

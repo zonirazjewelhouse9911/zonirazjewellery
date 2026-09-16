@@ -2,11 +2,11 @@ import React, { useState, useEffect, memo } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
 import { cachedFetch } from '../utils/apiCache';
 import LazyVideo from './LazyVideo';
-const bridalVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498517/zoniraz_frontend/videos/1.mp4";
-const everydayVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498508/zoniraz_frontend/videos/daleywear.mp4";
-const officeVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498631/zoniraz_frontend/videos/officewear.mp4";
-const solitaireVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498655/zoniraz_frontend/videos/d92d747b23c8205d85da43cb7d302733.mp4";
-const heritageVideo = "https://res.cloudinary.com/fxokwlyu/video/upload/v1788498688/zoniraz_frontend/videos/heritageGold.mp4";
+const bridalVideo = "https://media.zoniraz.com/uploads/zoniraz_frontend/videos/1.mp4";
+const everydayVideo = "https://media.zoniraz.com/uploads/zoniraz_frontend/videos/daleywear.mp4";
+const officeVideo = "https://media.zoniraz.com/uploads/zoniraz_frontend/videos/officewear.mp4";
+const solitaireVideo = "https://media.zoniraz.com/uploads/zoniraz_frontend/videos/d92d747b23c8205d85da43cb7d302733.mp4";
+const heritageVideo = "https://media.zoniraz.com/uploads/zoniraz_frontend/videos/heritageGold.mp4";
 
 const staticCollections = [
   {

@@ -1,0 +1,93 @@
+[
+  {
+    "_id": "6a67562e22a08c021bf2ac31",
+    "user": null,
+    "userEmail": "greaty.gupta89@gmail.com",
+    "totalGold24kGrams": 0.3521,
+    "totalAmountSaved": 5000,
+    "totalBonusEarned": 0,
+    "transactions": [
+      {
+        "transactionId": "WLT-EMI-1785157166949-844",
+        "planId": "GMP-166492554",
+        "installmentNumber": 1,
+        "type": "EMI_CREDIT",
+        "amount": 5000,
+        "goldRate24k": 14200,
+        "goldWeight24kGrams": 0.3521,
+        "paidBy": "USER",
+        "description": "10+1 Gold Mine Month 1 EMI Paid for Plan GMP-166492554",
+        "date": "2026-07-27T12:59:26.949Z",
+        "_id": "6a67562e22a08c021bf2ac32"
+      }
+    ],
+    "createdAt": "2026-07-27T12:59:26.951Z",
+    "updatedAt": "2026-07-27T12:59:26.951Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a682e78852e1c52040e270d",
+    "user": null,
+    "userEmail": "9694299572",
+    "totalGold24kGrams": 0.7042,
+    "totalAmountSaved": 10000,
+    "totalBonusEarned": 0,
+    "transactions": [
+      {
+        "transactionId": "WLT-EMI-1785212536520-982",
+        "planId": "GMP-536339829",
+        "installmentNumber": 1,
+        "type": "EMI_CREDIT",
+        "amount": 5000,
+        "goldRate24k": 14200,
+        "goldWeight24kGrams": 0.3521,
+        "paidBy": "USER",
+        "description": "10+1 Gold Mine Month 1 EMI Paid for Plan GMP-536339829",
+        "date": "2026-07-28T04:22:16.520Z",
+        "_id": "6a682e78852e1c52040e270e"
+      },
+      {
+        "transactionId": "WLT-EMI-1785212553019-380",
+        "planId": "GMP-536339829",
+        "installmentNumber": 2,
+        "type": "EMI_CREDIT",
+        "amount": 5000,
+        "goldRate24k": 14200,
+        "goldWeight24kGrams": 0.3521,
+        "paidBy": "USER",
+        "description": "10+1 Gold Mine EMI #2 Paid for Plan GMP-536339829",
+        "date": "2026-07-28T04:22:33.019Z",
+        "_id": "6a682e89852e1c52040e271d"
+      }
+    ],
+    "createdAt": "2026-07-28T04:22:16.522Z",
+    "updatedAt": "2026-07-28T04:22:33.020Z",
+    "__v": 1
+  },
+  {
+    "_id": "6a683a0fc30a11cc30950ad7",
+    "user": "6a549eece55a733b5e9690b4",
+    "userEmail": "amanroney1166@gmail.com",
+    "totalGold24kGrams": 0.0001,
+    "totalAmountSaved": 2,
+    "totalBonusEarned": 0,
+    "transactions": [
+      {
+        "transactionId": "WLT-EMI-1785215503773-636",
+        "planId": "GMP-503683530",
+        "installmentNumber": 1,
+        "type": "EMI_CREDIT",
+        "amount": 2,
+        "goldRate24k": 14200,
+        "goldWeight24kGrams": 0.0001,
+        "paidBy": "USER",
+        "description": "10+1 Gold Mine Month 1 EMI Paid for Plan GMP-503683530",
+        "date": "2026-07-28T05:11:43.773Z",
+        "_id": "6a683a0fc30a11cc30950ad8"
+      }
+    ],
+    "createdAt": "2026-07-28T05:11:43.775Z",
+    "updatedAt": "2026-07-28T05:11:43.775Z",
+    "__v": 0
+  }
+]

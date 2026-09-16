@@ -1,0 +1,104 @@
+{
+  "audited_at": "2026-09-15T06:46:55.222Z",
+  "collections": {
+    "orders": {
+      "total_documents": 14,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 11
+    },
+    "wallets": {
+      "total_documents": 3,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "products": {
+      "total_documents": 615,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 5628
+    },
+    "users": {
+      "total_documents": 12,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "coupons": {
+      "total_documents": 1,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "addresses": {
+      "total_documents": 7,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "categories": {
+      "total_documents": 9,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 9
+    },
+    "pendantconfigs": {
+      "total_documents": 0,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "jewellerypricings": {
+      "total_documents": 1,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "reveiws": {
+      "total_documents": 0,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "banners": {
+      "total_documents": 1,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 1
+    },
+    "sellgoldinquiries": {
+      "total_documents": 0,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "admins": {
+      "total_documents": 1,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "loosestones": {
+      "total_documents": 1,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "exchangeinquiries": {
+      "total_documents": 0,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "blogs": {
+      "total_documents": 8,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 3
+    },
+    "collections": {
+      "total_documents": 0,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "goldmines": {
+      "total_documents": 3,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    },
+    "blogaccesses": {
+      "total_documents": 3,
+      "cloudinary_urls_remaining": 0,
+      "vps_media_urls": 0
+    }
+  },
+  "total_cloudinary_urls_remaining": 0,
+  "total_vps_media_urls_found": 5652,
+  "broken_vps_urls": [],
+  "integrity_pass": true
+}

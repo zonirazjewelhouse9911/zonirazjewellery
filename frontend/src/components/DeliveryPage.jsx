@@ -553,7 +553,17 @@ export default function DeliveryPage({ initialCategory = 'delivery' }) {
       <div className="delivery-container">
         {/* Breadcrumb */}
         <div className="delivery-breadcrumb">
-          <a href="#">Home</a> &gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>Delivery Information</span>
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState(null, '', '/');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+          >
+            Home
+          </a>
+          {' '}&gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>Delivery Information</span>
         </div>
 
         <h1 className="delivery-page-title">Zoniraz Help Center</h1>

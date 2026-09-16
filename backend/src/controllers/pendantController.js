@@ -91,7 +91,7 @@ exports.calculatePrice = async (req, res) => {
 };
 
 /**
- * Upload high-res canvas composition preview snapshot to Cloudinary on Add to Cart.
+ * Upload high-res canvas composition preview snapshot to media storage on Add to Cart.
  */
 exports.uploadPreview = async (req, res) => {
   try {
@@ -100,15 +100,26 @@ exports.uploadPreview = async (req, res) => {
       return res.status(400).json({ success: false, error: 'imageBase64 is required' });
     }
 
-    const uploadRes = await cloudinary.uploader.upload(imageBase64, {
-      folder: 'zoniraz/pendant_previews',
-      format: 'png'
-    });
+    const fs = require('fs');
+    const path = require('path');
+    const previewDir = path.join(__dirname, '../../uploads/zoniraz/pendant_previews');
+    if (!fs.existsSync(previewDir)) {
+      fs.mkdirSync(previewDir, { recursive: true });
+    }
+
+    const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
+    const filename = `preview-${Date.now()}-${Math.round(Math.random() * 1e9)}.png`;
+    const filePath = path.join(previewDir, filename);
+
+    fs.writeFileSync(filePath, base64Data, 'base64');
+
+    const mediaBase = process.env.MEDIA_BASE_URL || 'https://media.zoniraz.com';
+    const mediaUrl = `${mediaBase}/uploads/zoniraz/pendant_previews/${filename}`;
 
     return res.status(200).json({
       success: true,
-      url: uploadRes.secure_url,
-      publicId: uploadRes.public_id
+      url: mediaUrl,
+      publicId: `zoniraz/pendant_previews/${filename.replace('.png', '')}`
     });
   } catch (err) {
     console.error('Error uploading preview image:', err);

@@ -1,0 +1,14 @@
+[
+  {
+    "_id": "6a180845fadda8b4c5066ce6",
+    "email": "zonirazjewelhouse@gmail.com",
+    "notificationToken": "sample_notification_token",
+    "created_at": "2026-05-21T10:00:00.000Z",
+    "updated_at": "2026-09-11T05:51:08.800Z",
+    "referrel_amount": 500,
+    "otp": "3769",
+    "otpExpiry": 1782820759642,
+    "password": "$2a$10$XrW9eB8Qfx4EKk81kEJSFuq/vVgdSAPAqPrBEMDSjEJsWvOUim/1K",
+    "auth_key": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhZG1pbklkIjoiNmExODA4NDVmYWRkYThiNGM1MDY2Y2U2IiwiZW1haWwiOiJ6b25pcmF6amV3ZWxob3VzZUBnbWFpbC5jb20iLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3ODkxMDU4NjgsImV4cCI6MTc4OTcxMDY2OH0.rf9LS5lhMjNKLls5773Xp8BvhfV92lExNpLUIZ_omEk"
+  }
+]

@@ -1466,10 +1466,30 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
       <div className="rings-container">
         {/* Breadcrumbs */}
         <div className="rings-breadcrumb">
-          <a href="#">Home</a> &gt; <a href={`#${categorySlug}`}>Jewellery</a> &gt;{' '}
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState(null, '', '/');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+          >
+            Home
+          </a>
+          {' '}&gt;{' '}
           {activeSubcrumb ? (
             <>
-              <a href={`#${categorySlug}`}>{category}</a> &gt;{' '}
+              <a
+                href={`/${categorySlug}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  window.history.pushState(null, '', `/${categorySlug}`);
+                  window.dispatchEvent(new PopStateEvent('popstate'));
+                }}
+              >
+                {category}
+              </a>
+              {' '}&gt;{' '}
               <span style={{ color: '#634d40', fontWeight: '600' }}>{activeSubcrumb}</span>
             </>
           ) : (
@@ -1671,7 +1691,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                             playsInline
                             preload="metadata"
                           >
-                            <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
+                            <track kind="captions" src="https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
                           </video>
                         )}
 

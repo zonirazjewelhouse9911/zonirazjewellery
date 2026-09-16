@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-09-15T09:58:29.625Z",
+  "phase5_application_audit": "PASS",
+  "audit_metrics": {
+    "CLOUDINARY_RUNTIME_REFERENCES": 0,
+    "CLOUDINARY_HISTORICAL_REFERENCES": 49831,
+    "BROKEN_MEDIA_REFERENCES": 0,
+    "MALFORMED_MEDIA_URLS": 0,
+    "MISSING_VPS_ASSETS": 0,
+    "HTTP_200_MEDIA_CHECKS": "9 / 9",
+    "BUILD_ERRORS": 0,
+    "UPLOAD_ENDPOINTS_AUDITED": 2,
+    "UPLOAD_ENDPOINTS_READY_FOR_VPS": 2,
+    "UPLOAD_ENDPOINTS_REQUIRING_MIGRATION": 0
+  },
+  "live_http_verification_details": [
+    {
+      "asset_type": "Pendant Letter (WebP)",
+      "url": "https://media.zoniraz.com/uploads/A_ia1jon.webp",
+      "http_status": 200,
+      "content_type": "image/webp",
+      "content_length": "143782",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_type": "Pendant Small Letter (WebP)",
+      "url": "https://media.zoniraz.com/uploads/a_knigoa.webp",
+      "http_status": 200,
+      "content_type": "image/webp",
+      "content_length": "157164",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_type": "Product Catalog Image (JPEG)",
+      "url": "https://media.zoniraz.com/uploads/zoniraz/w0nomqlmczi6nnk4hd7s.jpg",
+      "http_status": 200,
+      "content_type": "image/jpeg",
+      "content_length": "1954736",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_type": "Product Catalog Image 2 (JPEG)",
+      "url": "https://media.zoniraz.com/uploads/zoniraz/y6sxrxtxlay8jzf5qjhh.jpg",
+      "http_status": 200,
+      "content_type": "image/jpeg",
+      "content_length": "414164",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_type": "Frontend Logo (PNG)",
+      "url": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png",
+      "http_status": 200,
+      "content_type": "image/png",
+      "content_length": "1403992",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_type": "Frontend Banner (JPEG)",
+      "url": "https://media.zoniraz.com/uploads/zoniraz_frontend/gold-earrings-banner.jpg",
+      "http_status": 200,
+      "content_type": "image/jpeg",
+      "content_length": "822687",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_type": "Frontend Video (MP4)",
+      "url": "https://media.zoniraz.com/uploads/zoniraz_frontend/videos/1.mp4",
+      "http_status": 200,
+      "content_type": "video/mp4",
+      "content_length": "15557388",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_type": "Frontend Subtitles (Raw VTT)",
+      "url": "https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt",
+      "http_status": 200,
+      "content_type": "application/octet-stream",
+      "content_length": "7",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    },
+    {
+      "asset_type": "Test Verification File (TXT)",
+      "url": "https://media.zoniraz.com/uploads/test.txt",
+      "http_status": 200,
+      "content_type": "text/plain",
+      "content_length": "16",
+      "cache_control": "max-age=31536000, public, max-age=31536000, immutable",
+      "pass": true
+    }
+  ],
+  "safety_assertions": {
+    "zero_database_writes_performed": true,
+    "cloudinary_untouched": true,
+    "dns_untouched": true,
+    "nginx_untouched": true,
+    "production_media_intact": true
+  }
+}

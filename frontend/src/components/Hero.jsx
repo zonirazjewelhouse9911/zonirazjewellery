@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { API_BASE_URL, getUploadsUrl } from '../config';
 import { cachedFetch } from '../utils/apiCache';
 
-const banner2_800 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498454/zoniraz_frontend/zZONIRAZ-800.webp";
-const banner2_1400 = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498476/zoniraz_frontend/zZONIRAZ-1400.webp";
+const banner2_800 = "https://media.zoniraz.com/uploads/zoniraz_frontend/zZONIRAZ-800.webp";
+const banner2_1400 = "https://media.zoniraz.com/uploads/zoniraz_frontend/zZONIRAZ-1400.webp";
 
 const defaultImageSlide = { id: 'def-1', type: 'image', src800: banner2_800, src1400: banner2_1400, title: '' };
 const customTextSlide = { id: 'custom-slide', type: 'custom' };
@@ -142,7 +142,7 @@ export default function Hero() {
               pointerEvents: 'none'
             }}
           >
-            <track kind="captions" src="https://res.cloudinary.com/fxokwlyu/raw/upload/v1788498402/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
+            <track kind="captions" src="https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
           </video>
         ) : currentSlide.type === 'image' ? (
           currentSlide.link ? (

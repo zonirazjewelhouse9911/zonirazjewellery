@@ -1,0 +1,104 @@
+{
+  "started_at": "2026-09-15T06:42:28.202Z",
+  "collections": {
+    "orders": {
+      "total_docs": 14,
+      "modified_docs": 10,
+      "urls_replaced": 11
+    },
+    "wallets": {
+      "total_docs": 3,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "products": {
+      "total_docs": 615,
+      "modified_docs": 614,
+      "urls_replaced": 5628
+    },
+    "users": {
+      "total_docs": 12,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "coupons": {
+      "total_docs": 1,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "addresses": {
+      "total_docs": 7,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "categories": {
+      "total_docs": 9,
+      "modified_docs": 9,
+      "urls_replaced": 9
+    },
+    "pendantconfigs": {
+      "total_docs": 0,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "jewellerypricings": {
+      "total_docs": 1,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "reveiws": {
+      "total_docs": 0,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "banners": {
+      "total_docs": 1,
+      "modified_docs": 1,
+      "urls_replaced": 1
+    },
+    "sellgoldinquiries": {
+      "total_docs": 0,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "admins": {
+      "total_docs": 1,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "loosestones": {
+      "total_docs": 1,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "exchangeinquiries": {
+      "total_docs": 0,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "blogs": {
+      "total_docs": 8,
+      "modified_docs": 3,
+      "urls_replaced": 3
+    },
+    "collections": {
+      "total_docs": 0,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "goldmines": {
+      "total_docs": 3,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    },
+    "blogaccesses": {
+      "total_docs": 3,
+      "modified_docs": 0,
+      "urls_replaced": 0
+    }
+  },
+  "total_docs_checked": 679,
+  "total_docs_modified": 637,
+  "total_urls_replaced": 5652,
+  "completed_at": "2026-09-15T06:45:07.871Z"
+}

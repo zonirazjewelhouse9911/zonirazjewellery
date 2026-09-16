@@ -53,10 +53,10 @@ export default function ZonirazAlwarPage() {
   ];
 
   const featuredCollections = [
-    { name: "Bridal Jewellery Sets", image: "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498409/zoniraz_frontend/jewelry_banner_1.png", link: "/products?collection=bridal" },
-    { name: "Diamond Rings & Solitaires", image: "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498407/zoniraz_frontend/gold_banner__jpg.jpg", link: "/products?category=rings" },
-    { name: "Gold Earrings & Jhumkas", image: "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498411/zoniraz_frontend/banner_2_jpg.jpg", link: "/products?category=earrings" },
-    { name: "Exclusive Necklaces", image: "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoniraz_banner_5_jpg.jpg", link: "/products?category=necklaces" }
+    { name: "Bridal Jewellery Sets", image: "https://media.zoniraz.com/uploads/zoniraz_frontend/jewelry_banner_1.png", link: "/products?collection=bridal" },
+    { name: "Diamond Rings & Solitaires", image: "https://media.zoniraz.com/uploads/zoniraz_frontend/gold_banner__jpg.jpg", link: "/products?category=rings" },
+    { name: "Gold Earrings & Jhumkas", image: "https://media.zoniraz.com/uploads/zoniraz_frontend/banner_2_jpg.jpg", link: "/products?category=earrings" },
+    { name: "Exclusive Necklaces", image: "https://media.zoniraz.com/uploads/zoniraz_frontend/zoniraz_banner_5_jpg.jpg", link: "/products?category=necklaces" }
   ];
 
   const faqs = [

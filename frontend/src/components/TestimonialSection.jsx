@@ -1,5 +1,5 @@
 import React from 'react';
-const heroModelImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498432/zoniraz_frontend/hero-model.png";
+const heroModelImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/hero-model.png";
 
 const testimonials = [
   {
@@ -37,7 +37,7 @@ export default function TestimonialSection() {
 
         <div className="testimonial-grid">
           <article className="testimonial-feature-card">
-            <img src="https://res.cloudinary.com/fxokwlyu/image/upload/v1788498410/zoniraz_frontend/WhatsApp_Image_2026-07-09_at_12_56_20_PM__2_.jpg" alt="Happy customer wearing stylish jewellery" loading="lazy" decoding="async" width="400" height="500" />
+            <img src="https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-07-09_at_12_56_20_PM__2_.jpg" alt="Happy customer wearing stylish jewellery" loading="lazy" decoding="async" width="400" height="500" />
             <div className="testimonial-feature-body">
               <div className="testimonial-stars">★★★★★</div>
               <p>

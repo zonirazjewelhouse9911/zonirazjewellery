@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "6a50d786e215761fdcb6b40f",
+    "diamond_rate": 0,
+    "gemstone_rate": 0,
+    "gst_percent": 3,
+    "createdAt": "2026-07-10T11:29:10.415Z",
+    "updatedAt": "2026-08-29T12:07:05.075Z",
+    "__v": 0,
+    "gold_rate_24k": 15300,
+    "diamond_rate_ef_vvs": 139000,
+    "diamond_rate_fg_si": 155000,
+    "diamond_rate_gh_vs": 105000,
+    "diamond_rate_ij_si": 85000
+  }
+]

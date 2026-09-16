@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { API_BASE_URL } from '../config';
 import { AuthContext } from '../context/AuthContext';
 import { Sparkles, Gift, CheckCircle, Calculator, Clock, ChevronRight, ShieldCheck, ArrowRight, RefreshCw, AlertCircle, Heart, Calendar, Award } from 'lucide-react';
-const ringImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788843502/zoniraz_frontend/WhatsApp_Image_2026-09-08_at_10.22.34_AM.jpg";
+const ringImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/WhatsApp_Image_2026-09-08_at_10.22.34_AM.jpg";
 
 export default function GoldMinePage() {
   const { user, token } = useContext(AuthContext);
@@ -207,7 +207,7 @@ export default function GoldMinePage() {
           currency: orderData.currency,
           name: 'Zoniraz Jewellery House',
           description: `10+1 Gold Mine Plan Registration - 1st Month ₹${monthlyAmount.toLocaleString('en-IN')}`,
-          image: 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png',
+          image: 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni.png',
           prefill: {
             name: userName || '',
             email: userEmail,
@@ -310,7 +310,7 @@ export default function GoldMinePage() {
           currency: orderData.currency,
           name: 'Zoniraz Jewellery House',
           description: `Gold Mine Plan ${planId} Installment - ₹${amountToPay.toLocaleString('en-IN')}`,
-          image: 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png',
+          image: 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni.png',
           prefill: {
             name: userName || '',
             email: userEmail,

@@ -82,49 +82,24 @@ class ProductController {
         return res.status(400).json({ success: false, error: 'No files uploaded' });
       }
 
+      const mediaBase = process.env.MEDIA_BASE_URL || 'https://media.zoniraz.com';
       const uploadedFiles = [];
-      for (const file of req.files) {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: 'zoniraz',
-          resource_type: 'auto'
-        });
 
+      for (const file of req.files) {
+        const fileUrl = `${mediaBase}/uploads/zoniraz/${file.filename}`;
         uploadedFiles.push({
           filename: file.filename,
-          url: result.secure_url
+          url: fileUrl
         });
-
-        // Clean up the local temporary file
-        try {
-          if (fs.existsSync(file.path)) {
-            fs.unlinkSync(file.path);
-          }
-        } catch (unlinkError) {
-          console.error(`Failed to delete local temp file ${file.path}:`, unlinkError);
-        }
       }
 
       return res.status(200).json({
         success: true,
-        message: 'Files uploaded to Cloudinary successfully',
+        message: 'Files uploaded successfully to media storage',
         data: uploadedFiles
       });
     } catch (error) {
       console.error('Upload Controller Error:', error);
-
-      // Clean up any remaining temp files in case of upload failure
-      if (req.files) {
-        req.files.forEach(file => {
-          try {
-            if (fs.existsSync(file.path)) {
-              fs.unlinkSync(file.path);
-            }
-          } catch (e) {
-            console.error('Failed to clean up file after failure:', e);
-          }
-        });
-      }
-
       return res.status(500).json({ success: false, error: error.message || 'Internal Server Error during upload' });
     }
   }

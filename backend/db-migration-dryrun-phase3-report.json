@@ -1,0 +1,259 @@
+{
+  "generated_at": "2026-09-15T09:20:17.068Z",
+  "database_migration_ready": "YES",
+  "summary": {
+    "total_collections_scanned": 19,
+    "total_documents_scanned": 679,
+    "total_original_cloudinary_references": 5652,
+    "unique_cloudinary_urls": 5646,
+    "successfully_mapped_urls": 5646,
+    "unresolved_urls_count": 0,
+    "missing_vps_mappings_count": 0,
+    "malformed_urls_count": 0,
+    "real_collisions_count": 5,
+    "active_database_vps_urls": 5652,
+    "active_database_cloudinary_urls_remaining": 0
+  },
+  "collections_breakdown": {
+    "orders": {
+      "total_docs": 14,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 11
+    },
+    "wallets": {
+      "total_docs": 3,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "products": {
+      "total_docs": 615,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 5628
+    },
+    "users": {
+      "total_docs": 12,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "coupons": {
+      "total_docs": 1,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "addresses": {
+      "total_docs": 7,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "categories": {
+      "total_docs": 9,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 9
+    },
+    "pendantconfigs": {
+      "total_docs": 0,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "jewellerypricings": {
+      "total_docs": 1,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "reveiws": {
+      "total_docs": 0,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "banners": {
+      "total_docs": 1,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 1
+    },
+    "sellgoldinquiries": {
+      "total_docs": 0,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "admins": {
+      "total_docs": 1,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "loosestones": {
+      "total_docs": 1,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "exchangeinquiries": {
+      "total_docs": 0,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "blogs": {
+      "total_docs": 8,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 3
+    },
+    "collections": {
+      "total_docs": 0,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "goldmines": {
+      "total_docs": 3,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    },
+    "blogaccesses": {
+      "total_docs": 3,
+      "cloudinary_urls": 0,
+      "vps_media_urls": 0
+    }
+  },
+  "sample_mappings": [
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784184921/zoniraz/vb6hxjtyu8t4vhp4bxxl.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/vb6hxjtyu8t4vhp4bxxl.jpg",
+      "relative_path": "zoniraz/vb6hxjtyu8t4vhp4bxxl.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1785819110/zoniraz/cxpnuv7uun8cezlqzwpk.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/cxpnuv7uun8cezlqzwpk.jpg",
+      "relative_path": "zoniraz/cxpnuv7uun8cezlqzwpk.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1785820813/zoniraz/eyyff28ruadotjy0y0z6.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/eyyff28ruadotjy0y0z6.jpg",
+      "relative_path": "zoniraz/eyyff28ruadotjy0y0z6.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1787114702/zoniraz/qebjvr9hgm9uvboxgpqd.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/qebjvr9hgm9uvboxgpqd.jpg",
+      "relative_path": "zoniraz/qebjvr9hgm9uvboxgpqd.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1787035087/zoniraz/qzd8ooj08d5nmregh2jf.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/qzd8ooj08d5nmregh2jf.jpg",
+      "relative_path": "zoniraz/qzd8ooj08d5nmregh2jf.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1787121226/zoniraz/szmpe8wa5evrijj9rgb9.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/szmpe8wa5evrijj9rgb9.jpg",
+      "relative_path": "zoniraz/szmpe8wa5evrijj9rgb9.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784112720/zoniraz/rj8aaqmxiajp5bakelp5.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/rj8aaqmxiajp5bakelp5.jpg",
+      "relative_path": "zoniraz/rj8aaqmxiajp5bakelp5.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784112721/zoniraz/apiaryrum36prjvausrl.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/apiaryrum36prjvausrl.jpg",
+      "relative_path": "zoniraz/apiaryrum36prjvausrl.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784112723/zoniraz/pnoamejinxruiirkf9j5.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/pnoamejinxruiirkf9j5.jpg",
+      "relative_path": "zoniraz/pnoamejinxruiirkf9j5.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784112747/zoniraz/jmeatbbcgcgr6skkwvy3.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/jmeatbbcgcgr6skkwvy3.jpg",
+      "relative_path": "zoniraz/jmeatbbcgcgr6skkwvy3.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784112747/zoniraz/vwqcy3ks1lutkfn8gjdk.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/vwqcy3ks1lutkfn8gjdk.jpg",
+      "relative_path": "zoniraz/vwqcy3ks1lutkfn8gjdk.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784112748/zoniraz/nw9rgqvul65pshiogp2y.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/nw9rgqvul65pshiogp2y.jpg",
+      "relative_path": "zoniraz/nw9rgqvul65pshiogp2y.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784112748/zoniraz/yiiatkcfgwkcrazfaqvl.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/yiiatkcfgwkcrazfaqvl.jpg",
+      "relative_path": "zoniraz/yiiatkcfgwkcrazfaqvl.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784112768/zoniraz/yazalns6nag8r1gwihzl.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/yazalns6nag8r1gwihzl.jpg",
+      "relative_path": "zoniraz/yazalns6nag8r1gwihzl.jpg",
+      "exists_in_vps_manifest": true
+    },
+    {
+      "old_cloudinary_url": "https://res.cloudinary.com/fxokwlyu/image/upload/v1784112768/zoniraz/huwj4teaagqmnocaepca.jpg",
+      "new_vps_media_url": "https://media.zoniraz.com/uploads/zoniraz/huwj4teaagqmnocaepca.jpg",
+      "relative_path": "zoniraz/huwj4teaagqmnocaepca.jpg",
+      "exists_in_vps_manifest": true
+    }
+  ],
+  "unresolved_urls": [],
+  "missing_vps_mappings": [],
+  "malformed_urls": [],
+  "real_collisions": [
+    {
+      "newUrl": "https://media.zoniraz.com/uploads/zoniraz/cxpnuv7uun8cezlqzwpk.jpg",
+      "sources": [
+        "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1785819110/zoniraz/cxpnuv7uun8cezlqzwpk.jpg",
+        "https://res.cloudinary.com/fxokwlyu/image/upload/v1785819110/zoniraz/cxpnuv7uun8cezlqzwpk.jpg"
+      ]
+    },
+    {
+      "newUrl": "https://media.zoniraz.com/uploads/zoniraz/eyyff28ruadotjy0y0z6.jpg",
+      "sources": [
+        "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1785820813/zoniraz/eyyff28ruadotjy0y0z6.jpg",
+        "https://res.cloudinary.com/fxokwlyu/image/upload/v1785820813/zoniraz/eyyff28ruadotjy0y0z6.jpg"
+      ]
+    },
+    {
+      "newUrl": "https://media.zoniraz.com/uploads/zoniraz/qebjvr9hgm9uvboxgpqd.jpg",
+      "sources": [
+        "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1787114702/zoniraz/qebjvr9hgm9uvboxgpqd.jpg",
+        "https://res.cloudinary.com/fxokwlyu/image/upload/v1787114702/zoniraz/qebjvr9hgm9uvboxgpqd.jpg"
+      ]
+    },
+    {
+      "newUrl": "https://media.zoniraz.com/uploads/zoniraz/qzd8ooj08d5nmregh2jf.jpg",
+      "sources": [
+        "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1787035087/zoniraz/qzd8ooj08d5nmregh2jf.jpg",
+        "https://res.cloudinary.com/fxokwlyu/image/upload/v1787035087/zoniraz/qzd8ooj08d5nmregh2jf.jpg"
+      ]
+    },
+    {
+      "newUrl": "https://media.zoniraz.com/uploads/zoniraz/szmpe8wa5evrijj9rgb9.jpg",
+      "sources": [
+        "https://res.cloudinary.com/fxokwlyu/image/upload/f_auto,q_auto/v1787121226/zoniraz/szmpe8wa5evrijj9rgb9.jpg",
+        "https://res.cloudinary.com/fxokwlyu/image/upload/v1787121226/zoniraz/szmpe8wa5evrijj9rgb9.jpg"
+      ]
+    }
+  ],
+  "backup_status": {
+    "backup_timestamp": "2026-09-15T06:21:51.470Z",
+    "backup_directory": "/Users/vikasjangid/Downloads/rezworld/newZoniraj/backend/backups/db_backup_2026-09-15T06-21-50-521Z",
+    "total_backed_up_documents": 679,
+    "backup_verified": true
+  },
+  "safety_assertions": {
+    "zero_database_writes_performed": true,
+    "frontend_untouched": true,
+    "backend_untouched": true,
+    "cloudinary_untouched": true,
+    "vps_media_untouched": true
+  }
+}

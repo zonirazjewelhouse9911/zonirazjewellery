@@ -1,9 +1,9 @@
 import React from 'react';
 
 // Import images to make collections look beautiful
-const meshClusterRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498420/zoniraz_frontend/mesh_cluster_ring.jpg";
-const dancingHoopsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498439/zoniraz_frontend/dancing-hoops.jpg";
-const infinityNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498427/zoniraz_frontend/infinity-necklaces.jpg";
+const meshClusterRingImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/mesh_cluster_ring.jpg";
+const dancingHoopsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/dancing-hoops.jpg";
+const infinityNecklacesImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/infinity-necklaces.jpg";
 
 export default function AboutPage() {
   return (
@@ -405,7 +405,17 @@ export default function AboutPage() {
       <div className="about-container">
         {/* Breadcrumb */}
         <div className="about-breadcrumb">
-          <a href="#">Home</a> &gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>About Zoniraz</span>
+          <a
+            href="/"
+            onClick={(e) => {
+              e.preventDefault();
+              window.history.pushState(null, '', '/');
+              window.dispatchEvent(new PopStateEvent('popstate'));
+            }}
+          >
+            Home
+          </a>
+          {' '}&gt; <span style={{ color: '#2b221d', fontWeight: '600' }}>About Zoniraz</span>
         </div>
 
         {/* Hero */}

@@ -6,39 +6,39 @@ import { CartContext } from '../context/CartContext';
 import { useCurrency } from '../context/CurrencyContext';
 import AuthModal from './AuthModal';
 import { Coins, TrendingDown, RefreshCw, X, ArrowLeft, ChevronDown } from 'lucide-react';
-const messageBandsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498478/zoniraz_frontend/message-bands.jpg";
-const postcardsBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498414/zoniraz_frontend/postcards-banner.jpg";
-const switchEarringsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498461/zoniraz_frontend/switch-earrings.jpg";
-const dancingHoopsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498439/zoniraz_frontend/dancing-hoops.jpg";
-const stretchableBanglesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498436/zoniraz_frontend/stretchable-bangles.jpg";
-const watchCharmsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498414/zoniraz_frontend/watch-charms.jpg";
-const solitaireSetsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498425/zoniraz_frontend/solitaire-sets.jpg";
-const gulnaaraImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498457/zoniraz_frontend/gulnaara.jpg";
-const mangalsutraEarringsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498451/zoniraz_frontend/mangalsutra-earrings.jpg";
-const trendyMangalsutrasImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498431/zoniraz_frontend/trendy-mangalsutras.webp";
-const layeredNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498446/zoniraz_frontend/layered-necklaces.jpg";
-const infinityNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498427/zoniraz_frontend/infinity-necklaces.jpg";
-const silverEarringsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498421/zoniraz_frontend/silver-earrings.jpg";
-const silverNecklacesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498477/zoniraz_frontend/silver-necklaces.jpg";
-const silverBraceletsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498426/zoniraz_frontend/silver-bracelets.jpg";
-const silverRingsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498422/zoniraz_frontend/silver-rings.jpg";
-const giftCardsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498452/zoniraz_frontend/gift-cards.jpg";
-const wearYourWinsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498479/zoniraz_frontend/wear-your-wins.jpg";
-const caratlaneIconicsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498443/zoniraz_frontend/caratlane-iconics.jpg";
-const customerFavouritesImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498471/zoniraz_frontend/customer-favourites.jpg";
-const nineKtImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498469/zoniraz_frontend/nine-kt.jpg";
-const mensPlatinumImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498449/zoniraz_frontend/mens-platinum.jpg";
-const anekaImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498434/zoniraz_frontend/aneka.jpg";
-const giftsForMomImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498459/zoniraz_frontend/gifts-for-mom.jpg";
+const messageBandsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/message-bands.jpg";
+const postcardsBannerImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/postcards-banner.jpg";
+const switchEarringsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/switch-earrings.jpg";
+const dancingHoopsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/dancing-hoops.jpg";
+const stretchableBanglesImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/stretchable-bangles.jpg";
+const watchCharmsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/watch-charms.jpg";
+const solitaireSetsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/solitaire-sets.jpg";
+const gulnaaraImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/gulnaara.jpg";
+const mangalsutraEarringsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/mangalsutra-earrings.jpg";
+const trendyMangalsutrasImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/trendy-mangalsutras.webp";
+const layeredNecklacesImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/layered-necklaces.jpg";
+const infinityNecklacesImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/infinity-necklaces.jpg";
+const silverEarringsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/silver-earrings.jpg";
+const silverNecklacesImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/silver-necklaces.jpg";
+const silverBraceletsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/silver-bracelets.jpg";
+const silverRingsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/silver-rings.jpg";
+const giftCardsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/gift-cards.jpg";
+const wearYourWinsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/wear-your-wins.jpg";
+const caratlaneIconicsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/caratlane-iconics.jpg";
+const customerFavouritesImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/customer-favourites.jpg";
+const nineKtImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/nine-kt.jpg";
+const mensPlatinumImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/mens-platinum.jpg";
+const anekaImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/aneka.jpg";
+const giftsForMomImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/gifts-for-mom.jpg";
 import { products } from '../data/products';
 
-const goldNecklaceSilkImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498423/zoniraz_frontend/gold-necklace-silk.jpg";
-const heartFusionRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498456/zoniraz_frontend/heart_fusion_ring.jpg";
-const infinityDiamondRingImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498424/zoniraz_frontend/infinity_diamond_ring.jpg";
-const goldEarringsBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498412/zoniraz_frontend/gold-earrings-banner.jpg";
-const goldZodiacBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498454/zoniraz_frontend/gold-zodiac-banner.jpg";
-const yellowGoldNosePinBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498472/zoniraz_frontend/yellow-gold-nose-pin-banner.jpg";
-const yellowGoldSolitaireBannerImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498481/zoniraz_frontend/yellow-gold-solitaire-banner.jpg";
+const goldNecklaceSilkImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/gold-necklace-silk.jpg";
+const heartFusionRingImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/heart_fusion_ring.jpg";
+const infinityDiamondRingImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/infinity_diamond_ring.jpg";
+const goldEarringsBannerImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/gold-earrings-banner.jpg";
+const goldZodiacBannerImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/gold-zodiac-banner.jpg";
+const yellowGoldNosePinBannerImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/yellow-gold-nose-pin-banner.jpg";
+const yellowGoldSolitaireBannerImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/yellow-gold-solitaire-banner.jpg";
 
 const fallbackCategories = [
   { categoryName: 'Rings', products: [] },
@@ -497,7 +497,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
           {/* Center: Brand Logo */}
           <div className="header-brand">
             <a href="/" className="brand-logo-text">
-              <img src="https://res.cloudinary.com/fxokwlyu/image/upload/v1788498406/zoniraz_frontend/zoni.png" alt="Zoniraz Logo" className="header-brand-logo-img" decoding="async" width="180" height="60" />
+              <img src="https://media.zoniraz.com/uploads/zoniraz_frontend/zoni.png" alt="Zoniraz Logo" className="header-brand-logo-img" decoding="async" width="180" height="60" />
             </a>
           </div>
 

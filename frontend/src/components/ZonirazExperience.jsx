@@ -1,6 +1,6 @@
 import React from 'react';
-const consultationImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498479/zoniraz_frontend/consultation-desk.jpg";
-const blogsImg = "https://res.cloudinary.com/fxokwlyu/image/upload/v1788498423/zoniraz_frontend/gold-necklace-silk.jpg";
+const consultationImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/consultation-desk.jpg";
+const blogsImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/gold-necklace-silk.jpg";
 
 export default function ZonirazExperience() {
   return (

@@ -1,0 +1,38 @@
+[
+  {
+    "_id": "6a892c7bfbefc95541ab8546",
+    "email": "vikasjangid3352@gmail.com",
+    "username": "vikasjangid3352",
+    "password": "$2a$10$es3Z4saWIbZKbAkEuQrHO.cUS6MezcgmxDy6OuqneZfNeL2P6kCka",
+    "name": "Blog Writer",
+    "role": "blog_writer",
+    "isActive": true,
+    "createdAt": "2026-08-22T04:58:35.695Z",
+    "updatedAt": "2026-08-22T04:58:35.695Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a893a7b3b752d83a4a7caac",
+    "email": "ishikasachdeva2005@gmail.com",
+    "username": "ishikasachdeva2005",
+    "password": "$2a$10$7tkmJJuiNUaXuA1TceNudezCtYs5HbY73NhWy9kEAoy88ZqJHxgwm",
+    "name": "Blog Writer",
+    "role": "blog_writer",
+    "isActive": true,
+    "createdAt": "2026-08-22T05:58:19.759Z",
+    "updatedAt": "2026-08-22T05:58:19.759Z",
+    "__v": 0
+  },
+  {
+    "_id": "6a89440d9245da09098f5a4d",
+    "email": "komalsani.rizeworld@gmail.com",
+    "username": "komalsani.rizeworld",
+    "password": "$2a$10$7tkmJJuiNUaXuA1TceNudezCtYs5HbY73NhWy9kEAoy88ZqJHxgwm",
+    "name": "Blog Writer",
+    "role": "blog_writer",
+    "isActive": true,
+    "createdAt": "2026-08-22T06:39:09.675Z",
+    "updatedAt": "2026-08-22T06:39:09.675Z",
+    "__v": 0
+  }
+]

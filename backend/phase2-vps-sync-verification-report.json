@@ -1,0 +1,21 @@
+{
+  "completed_at": "2026-09-15T09:15:05.088Z",
+  "total_discovered": 6760,
+  "total_staged": 6760,
+  "total_assets_copied": 6730,
+  "total_assets_skipped_already_verified": 30,
+  "total_assets_verified": 6760,
+  "failed_assets": 0,
+  "missing_assets": 0,
+  "total_bytes_verified": 2252972265,
+  "destination_directory": "/var/www/zoniraz-media/uploads",
+  "checksum_verification": "PASSED_100_PERCENT",
+  "http_verification": {
+    "total_checked": 6760,
+    "http_200_count": 6760,
+    "failed_count": 0,
+    "failed_urls": [],
+    "pass": true
+  },
+  "zero_data_loss_pass": true
+}
