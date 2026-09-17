@@ -98,6 +98,89 @@ function spa404Plugin() {
     },
     configurePreviewServer(server) {
       server.middlewares.use(handleMiddleware)
+    },
+    transformIndexHtml(html, ctx) {
+      const rawUrl = ctx.originalUrl || ctx.path || ''
+      const clean = rawUrl.split('?')[0].replace(/^\/+|\/+$/g, '')
+
+      const categoryTitles = {
+        rings: 'Luxury Rings | Gold & Diamond Rings Online in Alwar | Zoniraz',
+        earrings: 'Diamond & Gold Earrings Online in Alwar | Zoniraz',
+        pendants: 'Gold & Diamond Pendants Online in Alwar | Zoniraz',
+        necklaces: 'Gold & Diamond Necklaces Online in Alwar | Zoniraz',
+        bangles: 'Gold & Diamond Bangles Online in Alwar | Zoniraz',
+        bracelets: 'Designer Gold & Diamond Bracelets Online in Alwar | Zoniraz',
+        mangalsutras: 'Modern Diamond & Gold Mangalsutras in Alwar | Zoniraz',
+        'nose-pins': 'Gold & Diamond Nose Pins Online in Alwar | Zoniraz',
+        solitaires: 'Certified Solitaire Diamond Jewellery in Alwar | Zoniraz',
+        'gold-coins': '24K 999 Purity Gold Coins in Alwar | Zoniraz'
+      }
+
+      const staticTitles = {
+        about: 'About Zoniraz | Luxury Diamond & Gold Jewellery Heritage in Alwar',
+        contact: 'Contact Zoniraz | Fine Jewellery Showroom in Alwar',
+        'zoniraz-alwar': 'Zoniraz Jewellery Store in Alwar | Best Gold & Diamond Shop',
+        franchise: 'Jewellery Franchise Opportunity | Partner with Zoniraz in Alwar',
+        'sell-gold': 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
+        'buy-gold': 'Buy 24K Digital & Physical Gold Online in Alwar | Zoniraz',
+        'gold-mine': '10+1 Monthly Gold Savings Scheme in Alwar | Zoniraz Gold Mine',
+        'loose-stones': 'Certified Loose Diamonds & Solitaires in Alwar | Zoniraz',
+        'custom-name-pendant': 'Custom Name Pendant Maker in Gold & Diamond | Zoniraz',
+        'all-collections': 'Explore Designer Jewellery Collections in Alwar | Zoniraz',
+        delivery: 'Delivery, Shipping & Return Information | Zoniraz',
+        blog: 'Jewellery Guides, Trends & Buying Advice Blog | Zoniraz',
+        privacy: 'Privacy Policy | Zoniraz Jewels',
+        terms: 'Terms and Conditions | Zoniraz Jewels'
+      }
+
+      let title = ''
+      let desc = ''
+      let canonical = `https://zoniraz.com/${clean}`
+
+      if (clean.startsWith('product/')) {
+        const slug = clean.replace('product/', '').trim()
+        const seoFile = path.resolve(__dirname, 'public/products_seo.json')
+        if (fs.existsSync(seoFile)) {
+          try {
+            const data = JSON.parse(fs.readFileSync(seoFile, 'utf-8'))
+            if (data[slug]) {
+              title = data[slug].title
+              desc = data[slug].description
+              canonical = data[slug].canonical
+            }
+          } catch (_) {}
+        }
+        if (!title) {
+          const cleanTitle = decodeURIComponent(slug).replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+          title = `${cleanTitle} | Fine Jewellery in Alwar | Zoniraz`
+          desc = `Buy ${cleanTitle} online in Alwar at Zoniraz Jewels.`
+        }
+      } else if (clean.startsWith('blog/')) {
+        const bSlug = clean.replace('blog/', '').trim()
+        const cleanBlog = decodeURIComponent(bSlug).replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+        title = `${cleanBlog} | Zoniraz Blog`
+      } else if (categoryTitles[clean]) {
+        title = categoryTitles[clean]
+      } else if (staticTitles[clean]) {
+        title = staticTitles[clean]
+      }
+
+      if (title) {
+        html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${title}</title>`)
+        html = html.replace(/<meta\s+property=["']og:title["']\s+content=["'][^"']*["']\s*\/?>/i, `<meta property="og:title" content="${title}" />`)
+        html = html.replace(/<meta\s+name=["']twitter:title["']\s+content=["'][^"']*["']\s*\/?>/i, `<meta name="twitter:title" content="${title}" />`)
+      }
+      if (desc) {
+        html = html.replace(/<meta\s+name=["']description["'][\s\S]*?content=["'][\s\S]*?["']\s*\/?>/i, `<meta name="description" content="${desc}" />`)
+        html = html.replace(/<meta\s+property=["']og:description["']\s+content=["'][^"']*["']\s*\/?>/i, `<meta property="og:description" content="${desc}" />`)
+        html = html.replace(/<meta\s+name=["']twitter:description["']\s+content=["'][^"']*["']\s*\/?>/i, `<meta name="twitter:description" content="${desc}" />`)
+      }
+      if (canonical) {
+        html = html.replace(/<link\s+id=["']canonical-link["']\s+rel=["']canonical["']\s+href=["'][^"']*["']\s*\/?>/i, `<link id="canonical-link" rel="canonical" href="${canonical}" />`)
+        html = html.replace(/<meta\s+property=["']og:url["']\s+content=["'][^"']*["']\s*\/?>/i, `<meta property="og:url" content="${canonical}" />`)
+      }
+
+      return html
     }
   }
 }

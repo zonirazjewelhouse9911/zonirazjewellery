@@ -349,8 +349,9 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   let ht = `<IfModule mod_rewrite.c>\n`;
   ht += `  RewriteEngine On\n`;
   ht += `  RewriteBase /\n\n`;
-  ht += `  # Serve /index.html with HTTP 404 status code when ErrorDocument triggers\n`;
-  ht += `  ErrorDocument 404 /index.html\n\n`;
+  ht += `  DirectoryIndex index.php index.html\n\n`;
+  ht += `  # Serve /index.php with HTTP 404 status code when ErrorDocument triggers\n`;
+  ht += `  ErrorDocument 404 /index.php\n\n`;
   ht += `  # 0. Dynamic Live Sitemaps from Backend (Proxy / Cache via sitemap.php)\n`;
   ht += `  RewriteRule ^(sitemap\\.xml|sitemap-blogs\\.xml|sitemap-products\\.xml|sitemap-categories\\.xml|sitemap-static\\.xml)$ /sitemap.php?file=$1 [L,QSA]\n\n`;
   ht += `  # 1. Do NOT rewrite backend API requests\n`;
@@ -375,29 +376,29 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   ht += `  RewriteRule ^profile/ten-plus-one-product(/.*)?$ /gold-mine [R=301,L]\n\n`;
 
   ht += `  # 4. Whitelist Homepage\n`;
-  ht += `  RewriteRule ^$ /index.html [L]\n`;
-  ht += `  RewriteRule ^index\\.html$ - [L]\n\n`;
+  ht += `  RewriteRule ^$ /index.php [L]\n`;
+  ht += `  RewriteRule ^index\\.html$ /index.php [L]\n\n`;
 
   ht += `  # 5. Whitelist Static & Informational Pages\n`;
-  ht += `  RewriteRule ^(${staticSlugs.join('|')})/?$ /index.html [L]\n\n`;
+  ht += `  RewriteRule ^(${staticSlugs.join('|')})/?$ /index.php [L]\n\n`;
 
   ht += `  # 6. Whitelist Canonical Category Pages\n`;
-  ht += `  RewriteRule ^(${categorySlugs.join('|')})/?$ /index.html [L]\n\n`;
+  ht += `  RewriteRule ^(${categorySlugs.join('|')})/?$ /index.php [L]\n\n`;
 
   ht += `  # 7. Whitelist Blog Landing & Dynamic Blog Articles\n`;
-  ht += `  RewriteRule ^blogs?(/.*)?$ /index.html [L]\n\n`;
+  ht += `  RewriteRule ^blogs?(/.*)?$ /index.php [L]\n\n`;
 
   ht += `  # 8. Whitelist Active Product Slugs\n`;
   const chunkSize = 40;
   for (let i = 0; i < validProductSlugs.length; i += chunkSize) {
     const chunk = validProductSlugs.slice(i, i + chunkSize);
     const escaped = chunk.map(s => s.replace(/\s+/g, '(?:%20|[\\s-])').replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')).join('|');
-    ht += `  RewriteRule ^product/(${escaped})/?$ /index.html [L]\n`;
+    ht += `  RewriteRule ^product/(${escaped})/?$ /index.php [L]\n`;
   }
 
   ht += `\n  # 9. Strict Nonexistent Route Fallback: HTTP 404\n`;
-  ht += `  # Nonexistent URLs will NOT rewrite to /index.html with 200\n`;
-  ht += `  # They trigger ErrorDocument 404 (/index.html with HTTP 404 status)\n`;
+  ht += `  # Nonexistent URLs will NOT rewrite to /index.php with 200\n`;
+  ht += `  # They trigger ErrorDocument 404 (/index.php with HTTP 404 status)\n`;
   ht += `  RewriteCond %{REQUEST_FILENAME} !-f\n`;
   ht += `  RewriteCond %{REQUEST_FILENAME} !-d\n`;
   ht += `  RewriteRule ^ - [R=404,L]\n`;
