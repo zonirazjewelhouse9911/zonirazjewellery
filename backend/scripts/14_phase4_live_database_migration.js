@@ -37,6 +37,10 @@ function deepReplaceUsingVerifiedMap(obj, urlMap, tracker = { replaced: 0, unmap
     return obj.map(item => deepReplaceUsingVerifiedMap(item, urlMap, tracker));
   }
 
+  if (obj instanceof Date) {
+    return obj;
+  }
+
   if (typeof obj === 'object') {
     const newObj = {};
     for (const key of Object.keys(obj)) {

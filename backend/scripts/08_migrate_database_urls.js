@@ -53,6 +53,10 @@ function deepReplaceUrls(obj, changeLog = []) {
     return obj.map(item => deepReplaceUrls(item, changeLog));
   }
 
+  if (obj instanceof Date) {
+    return obj;
+  }
+
   if (typeof obj === 'object') {
     // If it's a BSON / Mongoose object or plain object
     const newObj = {};

@@ -142,6 +142,15 @@ class ProductService {
       productData.solitaires_weight = weight;
     }
 
+    if (!productData.create_date || !(productData.create_date instanceof Date) || isNaN(productData.create_date.getTime())) {
+      if (typeof productData.create_date === 'string' && !isNaN(new Date(productData.create_date).getTime())) {
+        productData.create_date = new Date(productData.create_date);
+      } else {
+        productData.create_date = new Date();
+      }
+    }
+    productData.modify_date = new Date();
+
     const product = new Product(productData);
     return await product.save();
   }
@@ -200,11 +209,34 @@ class ProductService {
       updateData.solitaires_weight = weight;
     }
 
+    // Do not allow client payload to corrupt or change create_date on existing items
+    if ('create_date' in updateData) {
+      delete updateData.create_date;
+    }
+
+    // Ensure existing product has a valid create_date
+    if (!product.create_date || !(product.create_date instanceof Date) || isNaN(product.create_date.getTime())) {
+      product.create_date = (product._id && typeof product._id.getTimestamp === 'function')
+        ? product._id.getTimestamp()
+        : new Date();
+    }
+
+    // Always refresh modify_date to current timestamp
+    product.modify_date = new Date();
+    delete updateData.modify_date;
+
     // Assign fields dynamically
     Object.keys(updateData).forEach(key => {
-      // Exclude _id updates
-      if (key !== '_id' && key !== '__v') {
-        product[key] = updateData[key];
+      // Exclude _id, __v, and timestamps
+      if (key !== '_id' && key !== '__v' && key !== 'createdAt' && key !== 'updatedAt') {
+        const val = updateData[key];
+        // Defensive check: do not assign empty plain objects to fields that expect primitive or date types
+        if (val && typeof val === 'object' && !Array.isArray(val) && !(val instanceof Date) && Object.keys(val).length === 0) {
+          if (!['custom_diamond_rates', 'custom_solitaire_prices', 'gallery'].includes(key)) {
+            return;
+          }
+        }
+        product[key] = val;
       }
     });
 

@@ -318,8 +318,18 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       normalizedGallery[targetKey] = (parsedGallery as any)[key];
     });
 
+    // Omit server-managed timestamps and internal fields from form state
+    const {
+      create_date: _cd,
+      modify_date: _md,
+      createdAt: _ca,
+      updatedAt: _ua,
+      __v: _v,
+      ...productBase
+    } = product;
+
     return {
-      ...product,
+      ...productBase,
       price: Number(product.price || 0),
       discount: Number(product.discount || 0),
       stock: Number(product.stock || 0),
@@ -503,8 +513,17 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     const cleanSizeId = showSizing ? formData.size_id : '';
     const cleanBangleSizeId = showSizing ? formData.banglesize_id : '0';
 
+    const {
+      create_date: _cd,
+      modify_date: _md,
+      createdAt: _ca,
+      updatedAt: _ua,
+      __v: _v,
+      ...safeFormData
+    } = formData as any;
+
     const payload = {
-      ...formData,
+      ...safeFormData,
       product_id: computedProductId,
       size_id: cleanSizeId,
       banglesize_id: cleanBangleSizeId,
