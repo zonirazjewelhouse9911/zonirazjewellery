@@ -790,7 +790,8 @@ function AppContent() {
         }
       }
 
-      const path = window.location.pathname.toLowerCase();
+      const rawPath = window.location.pathname.toLowerCase();
+      const path = (rawPath.length > 1 && rawPath.endsWith('/')) ? rawPath.slice(0, -1) : rawPath;
       const search = window.location.search;
       const searchParams = new URLSearchParams(search);
 
@@ -814,7 +815,7 @@ function AppContent() {
 
       if (path.startsWith('/product-') || path.startsWith('/product/')) {
         const rawSlug = path.startsWith('/product-') ? path.replace('/product-', '') : path.replace('/product/', '');
-        const slug = rawSlug.split('?')[0].trim();
+        const slug = rawSlug.split('?')[0].replace(/\/+$/, '').trim();
         // Prevent internal/legacy API endpoints from generating soft-404 product pages
         if (!slug || slug.toLowerCase().startsWith('getproduct')) {
           setSelectedProductId(null);
@@ -1151,9 +1152,10 @@ function AppContent() {
     return params;
   };
 
+  const cleanSelectedId = String(selectedProductId || '').replace(/\/+$/, '').toLowerCase();
   const selectedProduct = (allProducts.length > 0 ? allProducts : products).find(p => 
-    String(p.id || p._id || p.product_id) === String(selectedProductId) ||
-    String(p.product_slug || p.slug || '').toLowerCase() === String(selectedProductId).toLowerCase()
+    String(p.id || p._id || p.product_id).toLowerCase() === cleanSelectedId ||
+    String(p.product_slug || p.slug || '').toLowerCase() === cleanSelectedId
   ) || null;
 
   React.useEffect(() => {
