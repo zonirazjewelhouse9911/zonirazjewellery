@@ -115,6 +115,11 @@ const ShopByCollection = memo(function ShopByCollection({ products = [] }) {
 
   return (
     <section className="shop-collection-section">
+      <div className="home-main-h1-container">
+        <h1 className="home-main-h1">Shop Jewellery Across India</h1>
+        <div className="home-main-h1-divider" />
+      </div>
+
       <div className="shop-collection-header" style={{ cursor: 'pointer' }} onClick={() => window.location.hash = 'collections'}>
         <h2 className="shop-collection-title">Shop by Collection</h2>
         <p className="shop-collection-subtitle">Curated categories crafted for every occasion</p>
