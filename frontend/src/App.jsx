@@ -309,7 +309,7 @@ const getKeywordsForView = (currentView, queryParams, categoryName) => {
 
   return {
     url: 'https://zoniraz.com/',
-    primary: 'Buy fine gold & diamond jewellery online in Alwar',
+    primary: 'Best diamond jewellery in Alwar',
     secondary: ['bis hallmarked jewellery alwar', 'certified diamond jewellery online alwar'],
     lsi: ['designer diamond jewellery alwar', 'luxury bridal jewellery alwar']
   };
@@ -1274,7 +1274,7 @@ function AppContent() {
         ]
       });
     } else if (currentView === 'home') {
-      title = 'Buy Fine Gold & Diamond Jewellery Online in Alwar | Zoniraz';
+      title = 'Best Diamond Jewellery in Alwar | Zoniraz';
       description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery online in Alwar. Browse handcrafted rings, necklaces, bangles, and bridal collections.';
       canonical = 'https://zoniraz.com/';
       robotsValue = 'index, follow';
@@ -1388,7 +1388,7 @@ function AppContent() {
         });
       }
     } else {
-      title = 'Buy Fine Gold & Diamond Jewellery Online in Alwar | Zoniraz';
+      title = 'Best Diamond Jewellery in Alwar | Zoniraz';
       description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery online in Alwar.';
       canonical = `https://zoniraz.com${window.location.pathname || ''}`;
       robotsValue = 'index, follow';

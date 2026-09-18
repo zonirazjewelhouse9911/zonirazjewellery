@@ -132,9 +132,29 @@ $staticPages = [
         'canonical' => $domain . '/privacy'
     ],
     'terms' => [
-        'title' => 'Terms and Conditions | Zoniraz Jewels',
-        'description' => 'Read the terms and conditions for shopping online and visiting Zoniraz Jewel House.',
+        'title' => 'Terms & Conditions | Zoniraz Jewels',
+        'description' => 'Terms of service, purchasing policies, warranties, and conditions for shopping at Zoniraz Jewels.',
         'canonical' => $domain . '/terms'
+    ],
+    'cart' => [
+        'title' => 'Shopping Bag | Zoniraz',
+        'description' => 'Review your selected luxury jewellery pieces in your Zoniraz shopping bag.',
+        'canonical' => $domain . '/cart'
+    ],
+    'checkout' => [
+        'title' => 'Secure Checkout | Zoniraz',
+        'description' => 'Complete your luxury jewellery order securely with Zoniraz.',
+        'canonical' => $domain . '/checkout'
+    ],
+    'wishlist' => [
+        'title' => 'My Wishlist | Zoniraz',
+        'description' => 'View and manage your saved jewellery pieces at Zoniraz.',
+        'canonical' => $domain . '/wishlist'
+    ],
+    'profile' => [
+        'title' => 'My Account & Ledger | Zoniraz',
+        'description' => 'Manage your Zoniraz profile, orders, addresses, and 10+1 Gold Mine wallet.',
+        'canonical' => $domain . '/profile'
     ]
 ];
 
