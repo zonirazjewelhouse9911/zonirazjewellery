@@ -46,7 +46,14 @@ const categories = [
   'mangalsutras',
   'nose-pins',
   'solitaires',
-  'gold-coins'
+  'gold-coins',
+  'chain',
+  'zodiac',
+  'brooches',
+  'anklets',
+  'mens-jewellery',
+  'womens-jewellery',
+  'kids-jewellery'
 ].map(cat => ({
   url: `/${cat}`,
   priority: '0.8',
@@ -342,8 +349,10 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   ];
 
   const categorySlugs = [
-    'rings', 'earrings', 'pendants', 'necklaces', 'bangles',
-    'bracelets', 'mangalsutras', 'nose-pins', 'solitaires', 'gold-coins'
+    'rings', 'earrings', 'pendants', 'pendant', 'necklaces', 'bangles',
+    'bracelets', 'mangalsutras', 'mangalsutra', 'nose-pins', 'nose-pin',
+    'solitaires', 'solitaire', 'gold-coins', 'coins', 'chain', 'chains',
+    'zodiac', 'brooches', 'anklets', 'mens-jewellery', 'womens-jewellery', 'kids-jewellery'
   ];
 
   let ht = `<IfModule mod_rewrite.c>\n`;
@@ -388,13 +397,8 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   ht += `  # 7. Whitelist Blog Landing & Dynamic Blog Articles\n`;
   ht += `  RewriteRule ^blogs?(/.*)?$ /index.php [L]\n\n`;
 
-  ht += `  # 8. Whitelist Active Product Slugs\n`;
-  const chunkSize = 40;
-  for (let i = 0; i < validProductSlugs.length; i += chunkSize) {
-    const chunk = validProductSlugs.slice(i, i + chunkSize);
-    const escaped = chunk.map(s => s.replace(/\s+/g, '(?:%20|[\\s-])').replace(/[-[\]{}()*+?.,\\^$|#]/g, '\\$&')).join('|');
-    ht += `  RewriteRule ^product/(${escaped})/?$ /index.php [L]\n`;
-  }
+  ht += `  # 8. Whitelist Dynamic Product Slugs\n`;
+  ht += `  RewriteRule ^product/([^/]+)/?$ /index.php [L]\n`;
 
   ht += `\n  # 9. Strict Nonexistent Route Fallback: HTTP 404\n`;
   ht += `  # Nonexistent URLs will NOT rewrite to /index.php with 200\n`;

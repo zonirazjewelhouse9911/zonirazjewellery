@@ -27,6 +27,21 @@ $categories = [
         'description' => 'Explore designer gold and diamond pendants in Alwar at Zoniraz. From classic solitaires to custom name pendants, find your perfect piece.',
         'canonical' => $domain . '/pendants'
     ],
+    'pendant' => [
+        'title' => 'Gold & Diamond Pendants Online in Alwar | Zoniraz',
+        'description' => 'Explore designer gold and diamond pendants in Alwar at Zoniraz. From classic solitaires to custom name pendants, find your perfect piece.',
+        'canonical' => $domain . '/pendant'
+    ],
+    'chain' => [
+        'title' => 'Gold & Diamond Chains Online in Alwar | Zoniraz',
+        'description' => 'Buy pure gold chains and diamond chains in Alwar at Zoniraz. Explore rope chains, box chains, Cuban link chains, and daily wear designs.',
+        'canonical' => $domain . '/chain'
+    ],
+    'chains' => [
+        'title' => 'Gold & Diamond Chains Online in Alwar | Zoniraz',
+        'description' => 'Buy pure gold chains and diamond chains in Alwar at Zoniraz. Explore rope chains, box chains, Cuban link chains, and daily wear designs.',
+        'canonical' => $domain . '/chains'
+    ],
     'necklaces' => [
         'title' => 'Gold & Diamond Necklaces Online in Alwar | Zoniraz',
         'description' => 'Shop timeless gold, diamond, and bridal necklaces in Alwar at Zoniraz. Handcrafted luxury designs with certified gemstones and BIS hallmark.',
@@ -47,20 +62,70 @@ $categories = [
         'description' => 'Explore contemporary and traditional diamond mangalsutras in Alwar at Zoniraz. Authentic black bead sacred designs crafted in 14K & 18K gold.',
         'canonical' => $domain . '/mangalsutras'
     ],
+    'mangalsutra' => [
+        'title' => 'Modern Diamond & Gold Mangalsutras in Alwar | Zoniraz',
+        'description' => 'Explore contemporary and traditional diamond mangalsutras in Alwar at Zoniraz. Authentic black bead sacred designs crafted in 14K & 18K gold.',
+        'canonical' => $domain . '/mangalsutra'
+    ],
     'nose-pins' => [
         'title' => 'Gold & Diamond Nose Pins Online in Alwar | Zoniraz',
         'description' => 'Shop sparkling diamond nose pins and gold nose rings in Alwar at Zoniraz. Lightweight, comfortable, and certified fine jewellery designs.',
         'canonical' => $domain . '/nose-pins'
+    ],
+    'nose-pin' => [
+        'title' => 'Gold & Diamond Nose Pins Online in Alwar | Zoniraz',
+        'description' => 'Shop sparkling diamond nose pins and gold nose rings in Alwar at Zoniraz. Lightweight, comfortable, and certified fine jewellery designs.',
+        'canonical' => $domain . '/nose-pin'
     ],
     'solitaires' => [
         'title' => 'Certified Solitaire Diamond Jewellery in Alwar | Zoniraz',
         'description' => 'Experience radiant certified solitaire diamonds in Alwar at Zoniraz. Handcrafted solitaire engagement rings, pendants, and stud earrings.',
         'canonical' => $domain . '/solitaires'
     ],
+    'solitaire' => [
+        'title' => 'Certified Solitaire Diamond Jewellery in Alwar | Zoniraz',
+        'description' => 'Experience radiant certified solitaire diamonds in Alwar at Zoniraz. Handcrafted solitaire engagement rings, pendants, and stud earrings.',
+        'canonical' => $domain . '/solitaire'
+    ],
     'gold-coins' => [
         'title' => '24K 999 Purity Gold Coins in Alwar | Zoniraz',
         'description' => 'Buy 24K pure gold coins with tamper-proof certicard packaging in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, and gold investment.',
         'canonical' => $domain . '/gold-coins'
+    ],
+    'coins' => [
+        'title' => '24K 999 Purity Gold Coins in Alwar | Zoniraz',
+        'description' => 'Buy 24K pure gold coins with tamper-proof certicard packaging in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, and gold investment.',
+        'canonical' => $domain . '/coins'
+    ],
+    'zodiac' => [
+        'title' => 'Zodiac Sign Gold & Diamond Jewellery in Alwar | Zoniraz',
+        'description' => 'Discover personalized zodiac sign pendants and astrological jewellery in gold and diamonds at Zoniraz. Handcrafted for all 12 astrological signs.',
+        'canonical' => $domain . '/zodiac'
+    ],
+    'brooches' => [
+        'title' => 'Designer Gold & Gemstone Brooches in Alwar | Zoniraz',
+        'description' => 'Shop exquisite handcrafted lapel pins and gold brooches in Alwar at Zoniraz. Elegant accents for formal occasions and celebrations.',
+        'canonical' => $domain . '/brooches'
+    ],
+    'anklets' => [
+        'title' => 'Gold & Diamond Anklets Online in Alwar | Zoniraz',
+        'description' => 'Explore traditional and modern gold payals and diamond anklets in Alwar at Zoniraz. Elegant bridal and daily wear designs.',
+        'canonical' => $domain . '/anklets'
+    ],
+    'mens-jewellery' => [
+        'title' => "Men's Gold & Diamond Jewellery in Alwar | Zoniraz",
+        'description' => 'Shop bold rings, kadas, chains, bracelets, and cufflinks for men at Zoniraz in Alwar. Certified gold and diamond craftsmanship.',
+        'canonical' => $domain . '/mens-jewellery'
+    ],
+    'womens-jewellery' => [
+        'title' => "Women's Luxury Jewellery Collection in Alwar | Zoniraz",
+        'description' => 'Explore women\'s fine jewellery in Alwar at Zoniraz. Bestselling rings, necklaces, earrings, bangles, and bridal ornaments in 14K & 18K gold.',
+        'canonical' => $domain . '/womens-jewellery'
+    ],
+    'kids-jewellery' => [
+        'title' => 'Kids Gold Jewellery & Nazariya in Alwar | Zoniraz',
+        'description' => 'Buy safe, lightweight gold jewellery for kids and babies at Zoniraz in Alwar. Handcrafted nazariya bangles, evil eye bracelets, and cute pendants.',
+        'canonical' => $domain . '/kids-jewellery'
     ]
 ];
 
@@ -155,6 +220,16 @@ $staticPages = [
         'title' => 'My Account & Ledger | Zoniraz',
         'description' => 'Manage your Zoniraz profile, orders, addresses, and 10+1 Gold Mine wallet.',
         'canonical' => $domain . '/profile'
+    ],
+    'wallet' => [
+        'title' => 'Digital Gold & Savings Wallet | Zoniraz',
+        'description' => 'View your gold savings balance and manage your Zoniraz digital gold wallet.',
+        'canonical' => $domain . '/wallet'
+    ],
+    'admin-call' => [
+        'title' => 'Admin Video Consultation | Zoniraz',
+        'description' => 'Live VIP video jewellery consultation with Zoniraz jewellery experts.',
+        'canonical' => $domain . '/admin-call'
     ]
 ];
 
@@ -163,21 +238,25 @@ $title = 'Best Diamond Jewellery in Alwar | Zoniraz';
 $description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery online in Alwar. Browse handcrafted rings, necklaces, bangles, and bridal collections.';
 $canonical = $domain . '/';
 $image = 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png';
+$isMatchedRoute = false;
 
 if ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.php') {
     // Homepage
     $title = 'Best Diamond Jewellery in Alwar | Zoniraz';
     $canonical = $domain . '/';
+    $isMatchedRoute = true;
 } elseif (isset($categories[$cleanPath])) {
-    // Category Page
+    // Exact Matched Category Page
     $title = $categories[$cleanPath]['title'];
     $description = $categories[$cleanPath]['description'];
     $canonical = $categories[$cleanPath]['canonical'];
+    $isMatchedRoute = true;
 } elseif (isset($staticPages[$cleanPath])) {
-    // Static Page
+    // Exact Matched Static Page
     $title = $staticPages[$cleanPath]['title'];
     $description = $staticPages[$cleanPath]['description'];
     $canonical = $staticPages[$cleanPath]['canonical'];
+    $isMatchedRoute = true;
 } elseif (strpos($cleanPath, 'blog/') === 0) {
     // Single Blog Article
     $blogSlug = substr($cleanPath, 5);
@@ -185,6 +264,7 @@ if ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.ph
     $title = $cleanBlog . ' | Zoniraz Blog';
     $description = 'Read our latest fine jewellery insights, diamond buying guides, and styling tips on the Zoniraz blog.';
     $canonical = $domain . '/blog/' . $blogSlug;
+    $isMatchedRoute = true;
 } elseif (strpos($cleanPath, 'product/') === 0) {
     // Product Page
     $productSlug = substr($cleanPath, 8);
@@ -215,6 +295,26 @@ if ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.ph
         $description = 'Buy ' . $slugTitle . ' online in Alwar at Zoniraz Jewels. Crafted in premium gold and certified diamonds. Certificate of authenticity included.';
         $canonical = $domain . '/product/' . $cleanProductSlug;
     }
+    $isMatchedRoute = true;
+} elseif (preg_match('/^[a-z0-9-]+$/i', $cleanPath)) {
+    // Dynamic Fallback for any other valid category/collection slug
+    $categoryListPattern = '/^(rings|earrings|pendants|pendant|necklaces|bangles|bracelets|mangalsutras|mangalsutra|nose-pins|nose-pin|solitaires|solitaire|gold-coins|coins|chain|chains|zodiac|brooches|anklets|mens-jewellery|womens-jewellery|kids-jewellery)$/i';
+    if (preg_match($categoryListPattern, $cleanPath)) {
+        $catName = ucwords(str_replace('-', ' ', $cleanPath));
+        $title = $catName . ' | Gold & Diamond Jewellery in Alwar | Zoniraz';
+        $description = 'Explore luxury handcrafted ' . strtolower($catName) . ' in Alwar at Zoniraz Jewels. Certified diamonds and 100% BIS hallmarked gold.';
+        $canonical = $domain . '/' . $cleanPath;
+        $isMatchedRoute = true;
+    }
+}
+
+// Ensure proper HTTP response status code
+if ($isMatchedRoute) {
+    http_response_code(200);
+} else {
+    http_response_code(404);
+    $title = 'Page Not Found | Zoniraz';
+    $description = 'The page you requested could not be found at Zoniraz Jewels.';
 }
 
 // Read index.html

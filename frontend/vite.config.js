@@ -13,8 +13,10 @@ function spa404Plugin() {
     'buy-gold', 'gold-mine', 'loose-stones', 'custom-name-pendant',
     'all-collections', 'delivery', 'privacy', 'terms', 'cart',
     'checkout', 'wishlist', 'profile', 'admin-call', 'wallet',
-    'rings', 'earrings', 'pendants', 'necklaces', 'bangles',
-    'bracelets', 'mangalsutras', 'nose-pins', 'solitaires', 'gold-coins',
+    'rings', 'earrings', 'pendants', 'pendant', 'necklaces', 'bangles',
+    'bracelets', 'mangalsutras', 'mangalsutra', 'nose-pins', 'nose-pin',
+    'solitaires', 'solitaire', 'gold-coins', 'coins', 'chain', 'chains',
+    'zodiac', 'brooches', 'anklets', 'mens-jewellery', 'womens-jewellery', 'kids-jewellery',
     'blog'
   ])
 
@@ -46,16 +48,11 @@ function spa404Plugin() {
         const content = fs.readFileSync(sitemapPath, 'utf-8')
         return content.includes(`/blog/${bSlug}</loc>`)
       }
-      return false
+      return Boolean(bSlug)
     }
     if (clean.startsWith('product/')) {
       const slug = clean.replace('product/', '').trim()
-      const sitemapPath = path.resolve(__dirname, 'public/sitemap-products.xml')
-      if (fs.existsSync(sitemapPath)) {
-        const content = fs.readFileSync(sitemapPath, 'utf-8')
-        return content.includes(`/product/${slug}</loc>`)
-      }
-      return false
+      return Boolean(slug)
     }
     return false
   }
@@ -107,13 +104,26 @@ function spa404Plugin() {
         rings: 'Luxury Rings | Gold & Diamond Rings Online in Alwar | Zoniraz',
         earrings: 'Diamond & Gold Earrings Online in Alwar | Zoniraz',
         pendants: 'Gold & Diamond Pendants Online in Alwar | Zoniraz',
+        pendant: 'Gold & Diamond Pendants Online in Alwar | Zoniraz',
         necklaces: 'Gold & Diamond Necklaces Online in Alwar | Zoniraz',
         bangles: 'Gold & Diamond Bangles Online in Alwar | Zoniraz',
         bracelets: 'Designer Gold & Diamond Bracelets Online in Alwar | Zoniraz',
         mangalsutras: 'Modern Diamond & Gold Mangalsutras in Alwar | Zoniraz',
+        mangalsutra: 'Modern Diamond & Gold Mangalsutras in Alwar | Zoniraz',
         'nose-pins': 'Gold & Diamond Nose Pins Online in Alwar | Zoniraz',
+        'nose-pin': 'Gold & Diamond Nose Pins Online in Alwar | Zoniraz',
         solitaires: 'Certified Solitaire Diamond Jewellery in Alwar | Zoniraz',
-        'gold-coins': '24K 999 Purity Gold Coins in Alwar | Zoniraz'
+        solitaire: 'Certified Solitaire Diamond Jewellery in Alwar | Zoniraz',
+        'gold-coins': '24K 999 Purity Gold Coins in Alwar | Zoniraz',
+        coins: '24K 999 Purity Gold Coins in Alwar | Zoniraz',
+        chain: 'Gold & Diamond Chains Online in Alwar | Zoniraz',
+        chains: 'Gold & Diamond Chains Online in Alwar | Zoniraz',
+        zodiac: 'Zodiac Sign Gold & Diamond Jewellery in Alwar | Zoniraz',
+        brooches: 'Designer Gold & Gemstone Brooches in Alwar | Zoniraz',
+        anklets: 'Gold & Diamond Anklets Online in Alwar | Zoniraz',
+        'mens-jewellery': "Men's Gold & Diamond Jewellery in Alwar | Zoniraz",
+        'womens-jewellery': "Women's Luxury Jewellery Collection in Alwar | Zoniraz",
+        'kids-jewellery': 'Kids Gold Jewellery & Nazariya in Alwar | Zoniraz'
       }
 
       const staticTitles = {
