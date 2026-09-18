@@ -3,6 +3,7 @@ const cloudinary = require('../config/cloudinary');
 const fs = require('fs');
 const { generateSitemap } = require('../utils/sitemapGenerator');
 const cacheManager = require('../utils/cacheManager');
+const { uploadToMediaServer } = require('../services/mediaStorageService');
 
 const productCache = new Map();
 
@@ -82,14 +83,14 @@ class ProductController {
         return res.status(400).json({ success: false, error: 'No files uploaded' });
       }
 
-      const mediaBase = process.env.MEDIA_BASE_URL || 'https://media.zoniraz.com';
       const uploadedFiles = [];
 
       for (const file of req.files) {
-        const fileUrl = `${mediaBase}/uploads/zoniraz/${file.filename}`;
+        // Stream directly to media.zoniraz.com VPS storage
+        const uploaded = await uploadToMediaServer(file, 'zoniraz');
         uploadedFiles.push({
-          filename: file.filename,
-          url: fileUrl
+          filename: uploaded.filename,
+          url: uploaded.url
         });
       }
 

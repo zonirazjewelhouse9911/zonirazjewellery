@@ -100,25 +100,25 @@ exports.uploadPreview = async (req, res) => {
       return res.status(400).json({ success: false, error: 'imageBase64 is required' });
     }
 
+    const filename = `preview-${Date.now()}-${Math.round(Math.random() * 1e9)}.png`;
+
+    // Local staging backup (optional)
     const fs = require('fs');
     const path = require('path');
     const previewDir = path.join(__dirname, '../../uploads/zoniraz/pendant_previews');
     if (!fs.existsSync(previewDir)) {
       fs.mkdirSync(previewDir, { recursive: true });
     }
-
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, '');
-    const filename = `preview-${Date.now()}-${Math.round(Math.random() * 1e9)}.png`;
-    const filePath = path.join(previewDir, filename);
+    fs.writeFileSync(path.join(previewDir, filename), base64Data, 'base64');
 
-    fs.writeFileSync(filePath, base64Data, 'base64');
-
-    const mediaBase = process.env.MEDIA_BASE_URL || 'https://media.zoniraz.com';
-    const mediaUrl = `${mediaBase}/uploads/zoniraz/pendant_previews/${filename}`;
+    // Stream directly to persistent media VPS
+    const { uploadBase64ToMediaServer } = require('../services/mediaStorageService');
+    const uploaded = await uploadBase64ToMediaServer(imageBase64, filename, 'zoniraz/pendant_previews');
 
     return res.status(200).json({
       success: true,
-      url: mediaUrl,
+      url: uploaded.url,
       publicId: `zoniraz/pendant_previews/${filename.replace('.png', '')}`
     });
   } catch (err) {
