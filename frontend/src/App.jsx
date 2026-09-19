@@ -445,13 +445,13 @@ const STATIC_PAGE_SEO = {
     url: 'https://zoniraz.com/privacy',
     title: 'Privacy Policy | Zoniraz Jewels',
     description: 'Read the privacy policy of Zoniraz Jewels. Learn how we safeguard your personal data, transactions, and browsing information.',
-    robots: 'noindex, follow'
+    robots: 'index, follow'
   },
   terms: {
     url: 'https://zoniraz.com/terms',
     title: 'Terms & Conditions | Zoniraz Jewels',
     description: 'Terms of service, purchasing policies, warranties, and conditions for shopping at Zoniraz Jewels.',
-    robots: 'noindex, follow'
+    robots: 'index, follow'
   },
   cart: {
     url: 'https://zoniraz.com/cart',
@@ -1278,13 +1278,12 @@ function AppContent() {
       };
 
       canonical = `https://zoniraz.com/${catMeta.canonicalSlug}`;
+      robotsValue = 'index, follow';
 
       if (hasFilterParams) {
-        robotsValue = 'noindex, follow';
         title = `${selectedCategoryName || 'Jewellery'} Collection | Zoniraz`;
         description = `Browse filtered selection of ${selectedCategoryName || 'jewellery'} at Zoniraz Jewels in Alwar.`;
       } else {
-        robotsValue = 'index, follow';
         title = catMeta.title;
         description = catMeta.description;
       }
