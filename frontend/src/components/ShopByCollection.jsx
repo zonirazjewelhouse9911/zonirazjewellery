@@ -54,6 +54,19 @@ const labelMap = {
   'heritage': 'CLASSIC'
 };
 
+const getVideoForSlug = (slug, rawImage) => {
+  if (typeof rawImage === 'string' && (rawImage.endsWith('.mp4') || rawImage.endsWith('.webm') || rawImage.includes('/videos/'))) {
+    return rawImage;
+  }
+  const s = String(slug || '').toLowerCase();
+  if (s.includes('bridal')) return bridalVideo;
+  if (s.includes('everyday') || s.includes('daily')) return everydayVideo;
+  if (s.includes('office') || s.includes('work')) return officeVideo;
+  if (s.includes('solitaire')) return solitaireVideo;
+  if (s.includes('heritage') || s.includes('gold') || s.includes('classic')) return heritageVideo;
+  return null;
+};
+
 const defaultImages = {
   'bridal': null,
   'everyday': null,
@@ -71,40 +84,51 @@ const ShopByCollection = memo(function ShopByCollection({ products = [] }) {
         if (resData.success && resData.data && resData.data.length > 0) {
           const mapped = resData.data.map(col => {
             const id = col.slug || col._id;
-            const label = col.tags?.[0]?.toUpperCase() || labelMap[col.slug] || 'COLLECTION';
+            const cleanSlug = String(col.slug || id || '').toLowerCase();
 
-            const cleanSlug = String(col.slug || '').toLowerCase();
-            const matchingProducts = products.filter(p => {
-              const tagsList = p.tags ? (Array.isArray(p.tags) ? p.tags : [p.tags]) : [];
-              const matchesTag = tagsList.some(t => String(t).toLowerCase() === cleanSlug);
-              const matchesName = String(p.name || '').toLowerCase().includes(cleanSlug);
-              return matchesTag || matchesName;
-            });
+            let matchedLabel = 'COLLECTION';
+            if (col.tags && col.tags.length > 0) {
+              const upperTag = String(col.tags[0]).toUpperCase();
+              if (upperTag !== 'COLLECTION') matchedLabel = upperTag;
+            }
+            if (matchedLabel === 'COLLECTION') {
+              if (cleanSlug.includes('bridal')) matchedLabel = 'SIGNATURE';
+              else if (cleanSlug.includes('everyday')) matchedLabel = 'LIFESTYLE';
+              else if (cleanSlug.includes('office')) matchedLabel = 'ELEGANT';
+              else if (cleanSlug.includes('solitaire')) matchedLabel = 'FINE JEWELLERY';
+              else if (cleanSlug.includes('heritage')) matchedLabel = 'CLASSIC';
+            }
 
-            let image = col.image;
+            const video = getVideoForSlug(cleanSlug, col.image);
+
+            let image = typeof col.image === 'string' && (col.image.endsWith('.mp4') || col.image.includes('/videos/')) ? null : col.image;
             if (!image || image === '/images/site/default-collection.jpg') {
+              const matchingProducts = products.filter(p => {
+                const tagsList = p.tags ? (Array.isArray(p.tags) ? p.tags : [p.tags]) : [];
+                const matchesTag = tagsList.some(t => String(t).toLowerCase() === cleanSlug);
+                const matchesName = String(p.name || '').toLowerCase().includes(cleanSlug);
+                return matchesTag || matchesName;
+              });
+
               if (matchingProducts.length > 0 && matchingProducts[0].image) {
                 image = matchingProducts[0].image;
               } else {
-                image = defaultImages[col.slug] || null;
+                image = defaultImages[cleanSlug] || null;
               }
-            } else if (!image.startsWith('http') && !image.startsWith('/images/')) {
+            } else if (image && !image.startsWith('http') && !image.startsWith('/images/')) {
               image = getUploadsUrl(image);
             }
 
-            const video = col.slug === 'bridal' ? bridalVideo : (col.slug === 'everyday' ? everydayVideo : (col.slug === 'office' ? officeVideo : (col.slug === 'solitaire' ? solitaireVideo : (col.slug === 'heritage' ? heritageVideo : null))));
-
-            const colSlug = String(col.slug || id || '').toLowerCase();
-            let href = `/rings?subcategory=${colSlug}`;
-            if (colSlug.includes('office')) href = '/rings?subcategory=office-wear';
-            else if (colSlug.includes('solitaire')) href = '/rings?subcategory=solitaire';
-            else if (colSlug.includes('bridal')) href = '/rings?subcategory=bridal';
-            else if (colSlug.includes('everyday')) href = '/rings?subcategory=everyday';
-            else if (colSlug.includes('heritage')) href = '/rings?subcategory=heritage';
+            let href = `/rings?subcategory=${cleanSlug}`;
+            if (cleanSlug.includes('office')) href = '/rings?subcategory=office-wear';
+            else if (cleanSlug.includes('solitaire')) href = '/rings?subcategory=solitaire';
+            else if (cleanSlug.includes('bridal')) href = '/rings?subcategory=bridal';
+            else if (cleanSlug.includes('everyday')) href = '/rings?subcategory=everyday';
+            else if (cleanSlug.includes('heritage')) href = '/rings?subcategory=heritage';
 
             return {
               id,
-              label,
+              label: matchedLabel,
               title: col.name,
               image,
               video,

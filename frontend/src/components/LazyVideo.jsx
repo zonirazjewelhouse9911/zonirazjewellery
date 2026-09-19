@@ -15,6 +15,7 @@ const LazyVideo = memo(function LazyVideo({
 }) {
   const [isInView, setIsInView] = useState(false);
   const containerRef = useRef(null);
+  const videoRef = useRef(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -34,6 +35,20 @@ const LazyVideo = memo(function LazyVideo({
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    if (isInView && videoRef.current && autoPlay) {
+      const vid = videoRef.current;
+      vid.defaultMuted = true;
+      vid.muted = true;
+      const playPromise = vid.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(() => {
+          // Autoplay was prevented or pending
+        });
+      }
+    }
+  }, [isInView, autoPlay, src]);
+
   return (
     <div
       ref={containerRef}
@@ -48,6 +63,7 @@ const LazyVideo = memo(function LazyVideo({
     >
       {isInView ? (
         <video
+          ref={videoRef}
           autoPlay={autoPlay}
           loop={loop}
           muted={muted}
