@@ -1,21 +1,14 @@
-const collectionModel = require('../../models/collectionModel');
+const collectionService = require('../collectionService');
 
 exports.getCollection = async () => {
     try {
-        const data = await collectionModel.find()
-        if (!data) {
-            return {
-                success: false,
-                message: "No collection found",
-
-            }
-        }
+        const data = await collectionService.getAllCollections();
         return {
             success: true,
             data: data,
             message: "Collection fetched successfully",
-            count: data.length
-        }
+            count: data ? data.length : 0
+        };
     } catch (error) {
         console.log(error.message);
 
@@ -23,7 +16,7 @@ exports.getCollection = async () => {
             success: false,
             message: "Something went wrong",
             error: error.message
-        }
+        };
     }
-}
+};
 

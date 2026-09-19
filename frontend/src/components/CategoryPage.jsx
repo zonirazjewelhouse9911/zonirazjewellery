@@ -6,6 +6,56 @@ import { CartContext } from '../context/CartContext';
 import { AuthContext } from '../context/AuthContext';
 import { useVideoCall } from '../context/VideoCallContext';
 import { useCurrency } from '../context/CurrencyContext';
+export const matchesSubcategoryOrCollection = (product, target) => {
+  if (!target) return true;
+  const targetClean = String(target).toLowerCase().replace(/-/g, ' ').trim();
+  const sub = String(product.subcategory || product.product_subcategory || '').toLowerCase().trim();
+  const title = String(product.name || product.product_title || '').toLowerCase();
+  const cat = String(product.category || product.product_category || '').toLowerCase();
+  const tags = Array.isArray(product.tags) ? product.tags.map(t => String(t).toLowerCase()) : [];
+
+  // Direct exact or substring subcategory match
+  if (sub && (sub === targetClean || sub.includes(targetClean) || targetClean.includes(sub))) {
+    return true;
+  }
+
+  // Tag match
+  if (tags.some(t => t === targetClean || t.includes(targetClean))) {
+    return true;
+  }
+
+  // Office Wear collection
+  if (targetClean === 'office' || targetClean === 'office wear') {
+    return sub.includes('office') || title.includes('office');
+  }
+
+  // Solitaire Dream collection
+  if (targetClean === 'solitaire' || targetClean === 'solitaire dream' || targetClean === 'solitaires') {
+    return sub.includes('solitaire') || title.includes('solitaire') || cat.includes('solitaire');
+  }
+
+  // Bridal Collection
+  if (targetClean === 'bridal' || targetClean === 'bridal collection' || targetClean === 'engagement' || targetClean === 'wedding') {
+    return sub.includes('engagement') || sub.includes('couple') || sub.includes('bridal') || title.includes('engagement') || title.includes('bridal') || title.includes('wedding');
+  }
+
+  // Everyday Wear collection
+  if (targetClean === 'everyday' || targetClean === 'everyday wear' || targetClean === 'daily' || targetClean === 'dailywear' || targetClean === 'daily wear') {
+    return sub.includes('daily') || sub.includes('everyday') || sub.includes('stud') || sub.includes('band') || title.includes('daily') || title.includes('everyday');
+  }
+
+  // Heritage Gold collection
+  if (targetClean === 'heritage' || targetClean === 'heritage gold' || targetClean === 'classic') {
+    return sub.includes('classic') || sub.includes('traditional') || sub.includes('religious') || title.includes('gold') || title.includes('heritage') || String(product.material || '').includes('gold');
+  }
+
+  // Love & Heart collection
+  if (targetClean.includes('heart') || targetClean.includes('love')) {
+    return sub.includes('heart') || sub.includes('love') || title.includes('heart') || title.includes('love');
+  }
+
+  return false;
+};
 
 export default function CategoryPage({ category, wishlist = {}, setWishlist, cart = {}, setCart, allProducts = [] }) {
   const { addToCart } = useContext(CartContext);
@@ -522,15 +572,10 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
       if (!isMatch) return false;
     }
 
-    // Filter by URL subcategory query param
-    const targetSubcategory = queryParams.subcategory || queryParams.style;
+    // Filter by URL subcategory or collection query param
+    const targetSubcategory = queryParams.subcategory || queryParams.style || queryParams.collection;
     if (targetSubcategory) {
-      const sub = String(product.subcategory || '');
-      if (!sub) return false;
-      
-      const subSlug = sub.toLowerCase().replace(/ /g, '-').trim();
-      const targetSlug = String(targetSubcategory).trim();
-      const isMatch = (subSlug === targetSlug || subSlug.includes(targetSlug) || targetSlug.includes(subSlug));
+      const isMatch = matchesSubcategoryOrCollection(product, targetSubcategory);
       if (!isMatch) {
         return false;
       }
@@ -640,6 +685,12 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   const formatBreadcrumbName = (str) => {
     if (!str) return '';
     const cleanRaw = String(str).toLowerCase().replace(/-/g, ' ').trim();
+    if (cleanRaw === 'office wear' || cleanRaw === 'office') return 'Office Wear';
+    if (cleanRaw === 'solitaire' || cleanRaw === 'solitaires' || cleanRaw === 'solitaire dream') return 'Solitaire Dream';
+    if (cleanRaw === 'bridal' || cleanRaw === 'bridal collection' || cleanRaw === 'engagement' || cleanRaw === 'engagement rings') return 'Bridal Collection';
+    if (cleanRaw === 'everyday' || cleanRaw === 'everyday wear' || cleanRaw === 'dailywear' || cleanRaw === 'daily wear') return 'Everyday Wear';
+    if (cleanRaw === 'heritage' || cleanRaw === 'heritage gold') return 'Heritage Gold';
+
     const foundProd = products.find(p => {
       const pSub = String(p.subcategory || '').toLowerCase().replace(/-/g, ' ').trim();
       return pSub === cleanRaw;
@@ -650,7 +701,7 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
     return cleanRaw.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
   };
 
-  const rawSubcrumb = queryParams.subcategory || queryParams.style || queryParams.metal || queryParams.stone || queryParams.gender;
+  const rawSubcrumb = queryParams.subcategory || queryParams.style || queryParams.collection || queryParams.metal || queryParams.stone || queryParams.gender;
   const activeSubcrumb = rawSubcrumb ? formatBreadcrumbName(rawSubcrumb) : null;
   const categorySlug = String(category).toLowerCase().replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-');
 
@@ -1522,6 +1573,16 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                 {category}
                 <button disabled>✕</button>
               </span>
+              {activeSubcrumb && (
+                <span className="badge-chip" key="subcrumb">
+                  {activeSubcrumb}
+                  <button onClick={() => {
+                    const categorySlug = (category || 'rings').toLowerCase().replace(/ /g, '-');
+                    window.history.pushState(null, '', '/' + categorySlug);
+                    window.dispatchEvent(new Event('popstate'));
+                  }}>✕</button>
+                </span>
+              )}
               {selectedSizes.map(size => (
                 <span className="badge-chip" key={`sz-${size}`}>
                   Size: {size}

@@ -8,22 +8,41 @@ class CollectionService {
     if (cached) return cached;
 
     const collections = await Collection.find().sort({ priority: 1, name: 1 }).lean();
-    // Only select minimal fields needed for collection tag matching instead of full heavy product docs
-    const products = await Product.find().select('product_title description product_slug tags').lean();
+    // Select relevant product metadata for collection matching
+    const products = await Product.find().select('product_title product_slug tags product_subcategory product_category').lean();
 
-    // Map through collections and dynamically calculate matching products based on tags/slug
+    // Map through collections and dynamically calculate matching products based on subcategory, tags, and titles
     const collectionsWithStats = collections.map(col => {
       const colSlug = (col.slug || '').toLowerCase();
       const colTags = (col.tags || []).map(t => t.toLowerCase());
 
       const linkedProducts = products.filter(p => {
         const title = (p.product_title || '').toLowerCase();
-        const desc = (p.description || '').toLowerCase();
         const slug = (p.product_slug || '').toLowerCase();
-        
-        // Match if title, description, or slug contains the collection's slug, or any of the collection's tags
-        const slugMatch = colSlug && (title.includes(colSlug) || desc.includes(colSlug) || slug.includes(colSlug));
-        const tagMatch = colTags.some(tag => tag && (title.includes(tag) || desc.includes(tag) || slug.includes(tag)));
+        const subcat = (p.product_subcategory || '').toLowerCase();
+        const cat = (p.product_category || '').toLowerCase();
+        const tags = Array.isArray(p.tags) ? p.tags.map(t => String(t).toLowerCase()) : [];
+
+        // Direct collection-specific subcategory heuristics
+        if (colSlug.includes('office')) {
+          return subcat.includes('office') || title.includes('office');
+        }
+        if (colSlug.includes('solitaire')) {
+          return subcat.includes('solitaire') || title.includes('solitaire') || cat.includes('solitaire');
+        }
+        if (colSlug.includes('bridal')) {
+          return subcat.includes('engagement') || subcat.includes('couple') || subcat.includes('bridal') || title.includes('engagement') || title.includes('bridal') || title.includes('wedding');
+        }
+        if (colSlug.includes('everyday')) {
+          return subcat.includes('daily') || subcat.includes('everyday') || subcat.includes('stud') || subcat.includes('band') || title.includes('daily') || title.includes('everyday');
+        }
+        if (colSlug.includes('heritage')) {
+          return subcat.includes('classic') || subcat.includes('traditional') || subcat.includes('religious') || title.includes('gold') || title.includes('heritage');
+        }
+
+        const colClean = colSlug.replace(/-/g, ' ');
+        const slugMatch = colSlug && (subcat.includes(colClean) || title.includes(colClean) || slug.includes(colSlug));
+        const tagMatch = colTags.some(tag => tag && (subcat.includes(tag) || title.includes(tag) || tags.includes(tag)));
         
         return slugMatch || tagMatch;
       });

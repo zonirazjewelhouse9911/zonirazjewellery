@@ -916,6 +916,30 @@ function AppContent() {
       } else if (path === '/all-collections') {
         setCurrentView('all-collections');
         restoreOrScrollTop();
+      } else if (
+        path === '/office' || path === '/office-wear' ||
+        path === '/bridal' || path === '/bridal-collection' ||
+        path === '/everyday' || path === '/everyday-wear' ||
+        path === '/solitaire' || path === '/solitaire-dream' ||
+        path === '/heritage' || path === '/heritage-gold'
+      ) {
+        const subSlugMap = {
+          '/office': 'office-wear',
+          '/office-wear': 'office-wear',
+          '/bridal': 'bridal',
+          '/bridal-collection': 'bridal',
+          '/everyday': 'everyday',
+          '/everyday-wear': 'everyday',
+          '/solitaire': 'solitaire',
+          '/solitaire-dream': 'solitaire',
+          '/heritage': 'heritage',
+          '/heritage-gold': 'heritage'
+        };
+        const subSlug = subSlugMap[path] || 'office-wear';
+        window.history.replaceState(null, '', `/rings?subcategory=${subSlug}`);
+        setSelectedCategoryName('Rings');
+        setCurrentView('rings');
+        restoreOrScrollTop();
       } else if (path === '/wishlist') {
         setCurrentView('wishlist');
         restoreOrScrollTop();
@@ -1483,7 +1507,7 @@ function AppContent() {
         ) : currentView === 'profile' ? (
           <UserDashboard />
         ) : currentView === 'all-collections' ? (
-          <AllCollectionsPage products={allProducts} />
+          <AllCollectionsPage products={allProducts} wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} />
         ) : currentView === 'checkout' ? (
           <CheckoutPage />
         ) : currentView === 'sell-gold' ? (

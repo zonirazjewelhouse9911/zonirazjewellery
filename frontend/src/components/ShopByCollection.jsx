@@ -14,35 +14,35 @@ const staticCollections = [
     label: 'SIGNATURE',
     title: 'Bridal Collection',
     video: bridalVideo,
-    href: '#bridal',
+    href: '/rings?subcategory=bridal',
   },
   {
     id: 'everyday',
     label: 'LIFESTYLE',
     title: 'Everyday Wear',
     video: everydayVideo,
-    href: '#everyday',
+    href: '/rings?subcategory=everyday',
   },
   {
     id: 'office',
     label: 'ELEGANT',
     title: 'Office Wear',
     video: officeVideo,
-    href: '#office',
+    href: '/rings?subcategory=office-wear',
   },
   {
     id: 'solitaire',
     label: 'FINE JEWELLERY',
     title: 'Solitaire Dream',
     video: solitaireVideo,
-    href: '#solitaire',
+    href: '/rings?subcategory=solitaire',
   },
   {
     id: 'heritage',
     label: 'CLASSIC',
     title: 'Heritage Gold',
     video: heritageVideo,
-    href: '#heritage',
+    href: '/rings?subcategory=heritage',
   },
 ];
 
@@ -94,13 +94,21 @@ const ShopByCollection = memo(function ShopByCollection({ products = [] }) {
 
             const video = col.slug === 'bridal' ? bridalVideo : (col.slug === 'everyday' ? everydayVideo : (col.slug === 'office' ? officeVideo : (col.slug === 'solitaire' ? solitaireVideo : (col.slug === 'heritage' ? heritageVideo : null))));
 
+            const colSlug = String(col.slug || id || '').toLowerCase();
+            let href = `/rings?subcategory=${colSlug}`;
+            if (colSlug.includes('office')) href = '/rings?subcategory=office-wear';
+            else if (colSlug.includes('solitaire')) href = '/rings?subcategory=solitaire';
+            else if (colSlug.includes('bridal')) href = '/rings?subcategory=bridal';
+            else if (colSlug.includes('everyday')) href = '/rings?subcategory=everyday';
+            else if (colSlug.includes('heritage')) href = '/rings?subcategory=heritage';
+
             return {
               id,
               label,
               title: col.name,
               image,
               video,
-              href: `#${id}`
+              href
             };
           });
           setCollections(mapped);
@@ -120,7 +128,10 @@ const ShopByCollection = memo(function ShopByCollection({ products = [] }) {
         <div className="home-main-h1-divider" />
       </div>
 
-      <div className="shop-collection-header" style={{ cursor: 'pointer' }} onClick={() => window.location.hash = 'collections'}>
+      <div className="shop-collection-header" style={{ cursor: 'pointer' }} onClick={() => {
+        window.history.pushState(null, '', '/all-collections');
+        window.dispatchEvent(new PopStateEvent('popstate'));
+      }}>
         <h2 className="shop-collection-title">Shop by Collection</h2>
         <p className="shop-collection-subtitle">Curated categories crafted for every occasion</p>
       </div>
