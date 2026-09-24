@@ -50,13 +50,13 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const catStr = (product?.product_category || product?.category || product?.category_id || '').toLowerCase();
   const nameStr = (product?.product_name || product?.name || '').toLowerCase();
   const isRing = catStr.includes('ring') || nameStr.includes('ring');
-  const isBangleOrBracelet = !isRing && (catStr.includes('bangle') || catStr.includes('bracelet') || nameStr.includes('bangle') || nameStr.includes('bracelet'));
-  const isTennisBracelet = catStr === 'tennis bracelets' || catStr === 'tennis bracelet';
-  const isChain = catStr === 'chains' || catStr === 'chain';
-  const isMangalsutra = catStr === 'mangalsutra' || catStr === 'mangalsutras';
+  const isTennisBracelet = catStr.includes('bracelet') || nameStr.includes('bracelet');
+  const isBangle = !isRing && !isTennisBracelet && (catStr.includes('bangle') || nameStr.includes('bangle'));
+  const isChain = catStr === 'chains' || catStr === 'chain' || nameStr.includes('chain');
+  const isMangalsutra = catStr === 'mangalsutra' || catStr === 'mangalsutras' || nameStr.includes('mangalsutra');
 
   const isAanaSizeProduct = isChain || isMangalsutra || isTennisBracelet;
-  const showSizing = isRing || isBangleOrBracelet || isAanaSizeProduct;
+  const showSizing = isRing || isBangle || isAanaSizeProduct;
 
   const isPlainGold = useMemo(() => {
     const pType = String(product?.product_type || '').toLowerCase().trim();
@@ -115,15 +115,26 @@ export default function ProductDetailPage({ product, products: propProducts = []
     return mapped.length > 0 ? mapped : ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
   }, [product?.solitaires_quality, product?.custom_solitaire_prices]);
 
+  const parseBangleAana = (sz) => {
+    const parts = String(sz).split('.');
+    const inch = parseInt(parts[0], 10) || 0;
+    const aana = parseInt(parts[1], 10) || 0;
+    return inch * 16 + aana;
+  };
+
   const getProductSizes = () => {
     if (!product) return [];
     if (product.size_id) {
-      return product.size_id.split(',').map(s => s.trim()).filter(Boolean);
+      const raw = product.size_id.split(',').map(s => s.trim()).filter(Boolean);
+      if (isBangle) {
+        return raw.sort((a, b) => parseBangleAana(a) - parseBangleAana(b));
+      }
+      return raw;
     }
     if (isRing) {
       return [5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16].map(String);
     }
-    if (isBangleOrBracelet) {
+    if (isBangle) {
       return ['2.2', '2.4', '2.6', '2.8', '2.10', '3.0'];
     }
     if (isChain) {
@@ -151,8 +162,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
         ? '288' // Default 18 Inches in Aana (288 * 0.0625 = 18)
         : isTennisBracelet
           ? '320' // 20 Inches in Aana
-          : isBangleOrBracelet
-            ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
+          : isBangle
+            ? (product?.banglesize_id && product?.banglesize_id !== '0'
+                ? product.banglesize_id
+                : (activeSizes.includes('2.6') ? '2.6' : (activeSizes[0] || '2.6')))
             : 12
   );
   const [isCustomSizeSelected, setIsCustomSizeSelected] = useState(false);
@@ -375,6 +388,16 @@ export default function ProductDetailPage({ product, products: propProducts = []
     setSelectedImage(0);
   }, [selectedKarat, selectedColor]);
 
+  // Ensure default size (2.6 for bangles) is selected when product loads
+  useEffect(() => {
+    if (isBangle) {
+      const def = (product?.banglesize_id && product?.banglesize_id !== '0')
+        ? product.banglesize_id
+        : (activeSizes.includes('2.6') ? '2.6' : (activeSizes[0] || '2.6'));
+      setSelectedSize(def);
+    }
+  }, [product?.product_slug, product?.product_id, product?._id, isBangle]);
+
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - left) / width) * 100;
@@ -465,9 +488,15 @@ export default function ProductDetailPage({ product, products: propProducts = []
     let active = true;
     const defaultSize = isChain
       ? '320'
-      : isBangleOrBracelet
-        ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
-        : 12;
+      : isTennisBracelet
+        ? '320'
+        : isMangalsutra
+          ? '288'
+          : isBangle
+            ? (product?.banglesize_id && product?.banglesize_id !== '0'
+                ? product.banglesize_id
+                : (activeSizes.includes('2.6') ? '2.6' : (activeSizes[0] || '2.6')))
+            : 12;
     const defaultKarat = defaultKaratChoice;
     const defaultColor = availableColors[0]?.id || 'Yellow';
     const defaultDiamond = diamondOptions[0] || (isPlainGold ? '' : 'IJ-SI');
@@ -2179,7 +2208,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
           <div className="pdp-customise-box" style={{ flexWrap: 'wrap' }}>
             {showSizing && (
               <div className="pdp-custom-item">
-                <span className="pdp-custom-label">{isAanaSizeProduct ? 'Length' : isBangleOrBracelet ? 'Bangle Size' : 'Ring Size'}</span>
+                <span className="pdp-custom-label">{isAanaSizeProduct ? 'Length' : isBangle ? 'Bangle Size' : 'Ring Size'}</span>
                 <select
                   className="pdp-custom-select"
                   value={isCustomSizeSelected ? 'Custom' : selectedSize}
@@ -2397,7 +2426,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
           )}
 
           {/* Sizing guide */}
-          {(isRing || isBangleOrBracelet) && (
+          {(isRing || isBangle) && (
             <div className="pdp-ring-size-row">
               <span>{isRing ? 'Not sure about your ring size?' : 'Not sure about your bangle size?'}</span>
               <span className="pdp-learn-how-link" onClick={() => setSizingVideoOpen(true)} style={{ cursor: 'pointer' }}>LEARN HOW ▶</span>
@@ -2616,7 +2645,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">
-                    {isChain ? 'Chain Length' : isMangalsutra ? 'Mangalsutra Length' : isTennisBracelet ? 'Bracelet Length' : isBangleOrBracelet ? 'Bangle Size' : 'Ring Size'}
+                    {isChain ? 'Chain Length' : isMangalsutra ? 'Mangalsutra Length' : isTennisBracelet ? 'Bracelet Length' : isBangle ? 'Bangle Size' : 'Ring Size'}
                   </span>
                   <span className="pdp-detail-val">
                     {isAanaSizeProduct

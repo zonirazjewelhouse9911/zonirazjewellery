@@ -417,12 +417,6 @@ const STATIC_PAGE_SEO = {
     description: 'Buy GIA and IGI certified natural loose diamonds and precious gemstones in Alwar. Custom design your dream ring or pendant with Zoniraz.',
     robots: 'index, follow'
   },
-  'custom-name-pendant': {
-    url: 'https://zoniraz.com/custom-name-pendant',
-    title: 'Custom Name Pendant Maker in Gold & Diamond | Zoniraz',
-    description: 'Design personalized custom name pendants in real gold and diamonds at Zoniraz. Choose your font, metal color, and preview live before crafting.',
-    robots: 'index, follow'
-  },
   'all-collections': {
     url: 'https://zoniraz.com/all-collections',
     title: 'Explore Designer Jewellery Collections in Alwar | Zoniraz',
@@ -1023,12 +1017,9 @@ function AppContent() {
       } else if (path === '/loose-stones') {
         setCurrentView('loose-stones');
         restoreOrScrollTop();
-      } else if (path === '/custom-pendant' || path === '/custom-pendant-prototype') {
-        window.history.replaceState(null, '', '/custom-name-pendant');
-        setCurrentView('custom-name-pendant');
-        restoreOrScrollTop();
-      } else if (path === '/custom-name-pendant') {
-        setCurrentView('custom-name-pendant');
+      } else if (path === '/custom-pendant' || path === '/custom-pendant-prototype' || path === '/custom-name-pendant') {
+        window.history.replaceState(null, '', '/');
+        setCurrentView('home');
         restoreOrScrollTop();
       } else if (path === '/shipping' || path === '/international-shipping' || path === '/payment' || path === '/returns' || path === '/giftcards') {
         window.history.replaceState(null, '', '/delivery');
@@ -1522,10 +1513,6 @@ function AppContent() {
           <LooseStonesPage />
         ) : currentView === 'zoniraz-alwar' ? (
           <ZonirazAlwarPage />
-        ) : currentView === 'custom-name-pendant' ? (
-          <PendantGenerator />
-        ) : currentView === 'custom-pendant-prototype' ? (
-          <PendantPrototype />
         ) : currentView === 'admin-call' ? (
           <AdminVideoPanel />
         ) : currentView === 'not-found' ? (

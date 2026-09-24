@@ -171,11 +171,6 @@ $staticPages = [
         'description' => 'Buy GIA and IGI certified natural loose diamonds and precious gemstones in Alwar. Custom design your dream ring or pendant with Zoniraz.',
         'canonical' => $domain . '/loose-stones'
     ],
-    'custom-name-pendant' => [
-        'title' => 'Custom Name Pendant Maker in Gold & Diamond | Zoniraz',
-        'description' => 'Design personalized custom name pendants in real gold and diamonds at Zoniraz. Choose your font, metal color, and preview live before crafting.',
-        'canonical' => $domain . '/custom-name-pendant'
-    ],
     'all-collections' => [
         'title' => 'Explore Designer Jewellery Collections in Alwar | Zoniraz',
         'description' => 'Browse curated fine jewellery collections by Zoniraz. Discover bridal masterpieces, everyday minimalist styles, and heritage gold creations.',

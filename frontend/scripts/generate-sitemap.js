@@ -30,7 +30,6 @@ const staticPages = [
   { url: '/buy-gold', priority: '0.8', changefreq: 'weekly' },
   { url: '/gold-mine', priority: '0.8', changefreq: 'weekly' },
   { url: '/loose-stones', priority: '0.8', changefreq: 'weekly' },
-  { url: '/custom-name-pendant', priority: '0.8', changefreq: 'weekly' },
   { url: '/delivery', priority: '0.7', changefreq: 'weekly' },
   { url: '/all-collections', priority: '0.8', changefreq: 'weekly' }
 ];
@@ -343,7 +342,7 @@ async function main() {
 function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   const staticSlugs = [
     'about', 'contact', 'zoniraz-alwar', 'franchise', 'sell-gold',
-    'buy-gold', 'gold-mine', 'loose-stones', 'custom-name-pendant',
+    'buy-gold', 'gold-mine', 'loose-stones',
     'all-collections', 'delivery', 'privacy', 'terms', 'cart',
     'checkout', 'wishlist', 'profile', 'admin-call', 'wallet'
   ];
@@ -378,8 +377,7 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   ht += `  RewriteRule ^plans/gold-mine/?$ /gold-mine [R=301,L]\n`;
   ht += `  RewriteRule ^buy-loose-stones/?$ /loose-stones [R=301,L]\n`;
   ht += `  RewriteRule ^loose-diamonds/?$ /loose-stones [R=301,L]\n`;
-  ht += `  RewriteRule ^custom-pendant/?$ /custom-name-pendant [R=301,L]\n`;
-  ht += `  RewriteRule ^custom-pendant-prototype/?$ /custom-name-pendant [R=301,L]\n`;
+  ht += `  RewriteRule ^(custom-pendant|custom-pendant-prototype|custom-name-pendant)/?$ / [R=301,L]\n`;
   ht += `  RewriteRule ^(shipping|international-shipping|payment|returns|giftcards)/?$ /delivery [R=301,L]\n`;
   ht += `  RewriteRule ^blogs/?$ /blog [R=301,L]\n`;
   ht += `  RewriteRule ^profile/ten-plus-one-product(/.*)?$ /gold-mine [R=301,L]\n\n`;

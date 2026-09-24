@@ -27,8 +27,7 @@
   RewriteRule ^plans/gold-mine/?$ /gold-mine [R=301,L]
   RewriteRule ^buy-loose-stones/?$ /loose-stones [R=301,L]
   RewriteRule ^loose-diamonds/?$ /loose-stones [R=301,L]
-  RewriteRule ^custom-pendant/?$ /custom-name-pendant [R=301,L]
-  RewriteRule ^custom-pendant-prototype/?$ /custom-name-pendant [R=301,L]
+  RewriteRule ^(custom-pendant|custom-pendant-prototype|custom-name-pendant)/?$ / [R=301,L]
   RewriteRule ^(shipping|international-shipping|payment|returns|giftcards)/?$ /delivery [R=301,L]
   RewriteRule ^blogs/?$ /blog [R=301,L]
   RewriteRule ^profile/ten-plus-one-product(/.*)?$ /gold-mine [R=301,L]
@@ -38,7 +37,7 @@
   RewriteRule ^index\.html$ /index.php [L]
 
   # 5. Whitelist Static & Informational Pages
-  RewriteRule ^(about|contact|zoniraz-alwar|franchise|sell-gold|buy-gold|gold-mine|loose-stones|custom-name-pendant|all-collections|delivery|privacy|terms|cart|checkout|wishlist|profile|admin-call|wallet)/?$ /index.php [L]
+  RewriteRule ^(about|contact|zoniraz-alwar|franchise|sell-gold|buy-gold|gold-mine|loose-stones|all-collections|delivery|privacy|terms|cart|checkout|wishlist|profile|admin-call|wallet)/?$ /index.php [L]
 
   # 6. Whitelist Canonical Category Pages
   RewriteRule ^(rings|earrings|pendants|pendant|necklaces|bangles|bracelets|mangalsutras|mangalsutra|nose-pins|nose-pin|solitaires|solitaire|gold-coins|coins|chain|chains|zodiac|brooches|anklets|mens-jewellery|womens-jewellery|kids-jewellery)/?$ /index.php [L]

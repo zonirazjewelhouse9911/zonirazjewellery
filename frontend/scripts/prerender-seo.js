@@ -144,7 +144,7 @@ async function main() {
     'product', 'rings', 'earrings', 'pendants', 'necklaces', 'bangles',
     'bracelets', 'mangalsutras', 'nose-pins', 'solitaires', 'gold-coins',
     'about', 'contact', 'zoniraz-alwar', 'franchise', 'sell-gold', 'buy-gold',
-    'gold-mine', 'loose-stones', 'custom-name-pendant', 'all-collections',
+    'gold-mine', 'loose-stones', 'all-collections',
     'delivery', 'privacy', 'terms', 'cart', 'checkout', 'wishlist', 'profile',
     'admin-call', 'wallet', 'blog'
   ];

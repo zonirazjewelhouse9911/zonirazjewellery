@@ -10,7 +10,7 @@ const __dirname = path.dirname(__filename)
 function spa404Plugin() {
   const staticSlugs = new Set([
     '', 'about', 'contact', 'zoniraz-alwar', 'franchise', 'sell-gold',
-    'buy-gold', 'gold-mine', 'loose-stones', 'custom-name-pendant',
+    'buy-gold', 'gold-mine', 'loose-stones',
     'all-collections', 'delivery', 'privacy', 'terms', 'cart',
     'checkout', 'wishlist', 'profile', 'admin-call', 'wallet',
     'rings', 'earrings', 'pendants', 'pendant', 'necklaces', 'bangles',
@@ -28,8 +28,9 @@ function spa404Plugin() {
     'plans/gold-mine': '/gold-mine',
     'buy-loose-stones': '/loose-stones',
     'loose-diamonds': '/loose-stones',
-    'custom-pendant': '/custom-name-pendant',
-    'custom-pendant-prototype': '/custom-name-pendant',
+    'custom-pendant': '/',
+    'custom-pendant-prototype': '/',
+    'custom-name-pendant': '/',
     'shipping': '/delivery',
     'international-shipping': '/delivery',
     'payment': '/delivery',
@@ -135,7 +136,6 @@ function spa404Plugin() {
         'buy-gold': 'Buy 24K Digital & Physical Gold Online in Alwar | Zoniraz',
         'gold-mine': '10+1 Monthly Gold Savings Scheme in Alwar | Zoniraz Gold Mine',
         'loose-stones': 'Certified Loose Diamonds & Solitaires in Alwar | Zoniraz',
-        'custom-name-pendant': 'Custom Name Pendant Maker in Gold & Diamond | Zoniraz',
         'all-collections': 'Explore Designer Jewellery Collections in Alwar | Zoniraz',
         delivery: 'Delivery, Shipping & Return Information | Zoniraz',
         blog: 'Jewellery Guides, Trends & Buying Advice Blog | Zoniraz',

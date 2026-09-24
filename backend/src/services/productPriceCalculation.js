@@ -178,9 +178,17 @@ exports.productPricing = async (req, res) => {
                 const weightPerInch = base_gold_weight / baseLength;
                 gross_gold_weight = weightPerInch * sizeInInches;
             } else if (catStr.includes("bangle")) {
-                const baseBangleSize = Number(product_data.banglesize_id || 2.4);
-                const weightPerStep = 0.5;
-                gross_gold_weight = base_gold_weight + ((size - baseBangleSize) / 0.2) * weightPerStep;
+                const parseBangleAana = (sz) => {
+                    if (!sz || sz === '0') return 38; // Default 2.6 (2*16 + 6 = 38 aana)
+                    const parts = String(sz).split('.');
+                    const inch = parseInt(parts[0], 10) || 2;
+                    const aana = parseInt(parts[1], 10) || 0;
+                    return inch * 16 + aana;
+                };
+                const baseBangleAana = parseBangleAana(product_data.banglesize_id && product_data.banglesize_id !== '0' ? product_data.banglesize_id : '2.6');
+                const selectedBangleAana = parseBangleAana(size);
+                const weightPerAana = 0.25; // 0.5g per 2 aana
+                gross_gold_weight = base_gold_weight + (selectedBangleAana - baseBangleAana) * weightPerAana;
             } else {
                 const weight_differenceINsize_g = 0.140;
                 gross_gold_weight = size === 12 ? base_gold_weight : base_gold_weight + (size - 12) * weight_differenceINsize_g;
