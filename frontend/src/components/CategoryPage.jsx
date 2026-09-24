@@ -260,15 +260,18 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
               if (p.tags.includes('white gold') || p.tags.includes('white-gold')) matList.push('white gold');
             }
 
+            const pTypeLower = String(p.product_type || '').toLowerCase().trim();
+            const isPG = pTypeLower === 'gold' || pTypeLower.includes('plain gold') || pTypeLower.includes('plan gold');
+
             // Numeric weight & specification indications
-            if (Number(p.gold_weight) > 0) matList.push('gold');
-            if (Number(p.diamond_weight) > 0 || Number(p.diamond_count) > 0 || p.diamond_quality) matList.push('diamond');
+            if (Number(p.gold_weight) > 0 || isPG) matList.push('gold');
+            if (!isPG && (Number(p.diamond_weight) > 0 || Number(p.diamond_count) > 0 || p.diamond_quality)) matList.push('diamond');
             if (Number(p.gemstone_weight) > 0 || Number(p.noof_gem) > 0 || p.color_stone || Number(p.gemstone_price) > 0) matList.push('gemstone');
-            if (Number(p.solitaires_weight) > 0 || Number(p.solitaire_weight) > 0 || Number(p.solitaires_price) > 0 || p.solitaires_quality) matList.push('diamond');
+            if (!isPG && (Number(p.solitaires_weight) > 0 || Number(p.solitaire_weight) > 0 || Number(p.solitaires_price) > 0 || p.solitaires_quality)) matList.push('diamond');
 
             // Product name / title keyword inspection
             if (titleLower.includes('gold')) matList.push('gold');
-            if (titleLower.includes('diamond')) matList.push('diamond');
+            if (!isPG && titleLower.includes('diamond')) matList.push('diamond');
             if (titleLower.includes('platinum')) matList.push('platinum');
             if (titleLower.includes('gemstone') || titleLower.includes('ruby') || titleLower.includes('emerald') || titleLower.includes('sapphire') || titleLower.includes('topaz') || titleLower.includes('pearl')) matList.push('gemstone');
 

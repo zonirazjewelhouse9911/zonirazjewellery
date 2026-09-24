@@ -58,7 +58,8 @@ exports.productBasePricing = async (req, res) => {
 
             const makingCharges = item.making_charges || 0;
             const gst_percent = current_price.gst_percent || 3;
-            const gold_weight = item.gold_weight || 0;
+            const raw_gold_weight = item.gold_weight || item.gross_weight || item.weight || 0;
+            const gold_weight = raw_gold_weight;
             let rawSolitaire = item.solitaires_quality ? String(item.solitaires_quality) : '1';
             if (rawSolitaire.includes(',')) {
                 const parts = rawSolitaire.split(',').map(s => s.trim()).filter(s => s !== '0');
@@ -81,12 +82,30 @@ exports.productBasePricing = async (req, res) => {
             }
             const gemstone_price = item.gemstone_price || 0;
 
-            if (item.product_type && item.product_type.toLowerCase() === "diamond") {
+            const pType = String(item.product_type || '').toLowerCase().trim();
+            const cType = String(item.custom_type || '').toLowerCase().trim();
+            const isPlainGold = 
+                pType === 'gold' ||
+                pType === 'plain gold' ||
+                pType === 'plain gold jewelry' ||
+                pType === 'plain gold jewellery' ||
+                pType === 'plan gold jewelry' ||
+                pType === 'plan gold jewellery' ||
+                pType === 'plain_gold' ||
+                pType === 'plain-gold' ||
+                pType.includes('plain gold') ||
+                pType.includes('plan gold') ||
+                cType === 'gold' ||
+                cType.includes('plain gold') ||
+                cType.includes('plan gold');
+
+            const isDiamondType = !isPlainGold && (pType === "diamond" || (!pType && (Number(item.diamond_weight || 0) > 0 || item.diamond_quality)));
+
+            if (isDiamondType) {
                 const total_diamond_weight = (item.diamond_weight || 0);
                 const diamond_weight_g = total_diamond_weight * 0.2;
                 const gemstone_weight_g = (item.gemstone_weight || 0) * 0.2;
 
-                const raw_gold_weight = item.gold_weight || item.weight || 0;
                 const solitaire_weight_g = (item.solitaires_weight || item.solitaire_weight || 0) * 0.2;
                 // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Solitaire Weight (g) - Gemstone Weight (g)
                 const net_gold_weight = Math.max(0, raw_gold_weight - diamond_weight_g - solitaire_weight_g - gemstone_weight_g);
@@ -120,16 +139,18 @@ exports.productBasePricing = async (req, res) => {
                     gold_weight: net_gold_weight
                 };
             } else {
-                const gold_rate_18kt = current_price.gold_rate_24k * 75 / 100;
-                item_gold_price = gold_weight * gold_rate_18kt;
+                const gold_rate_22kt = Math.floor(current_price.gold_rate_24k * 91.6 / 100);
+                const effectiveGoldWeight = raw_gold_weight;
+                item_gold_price = Math.floor(effectiveGoldWeight * gold_rate_22kt);
 
                 // Making charges = Net Gold Weight * 24K Gold Rate * Making Percentage / 100
-                const gold_cost_24k = gold_weight * current_price.gold_rate_24k;
+                const gold_cost_24k = effectiveGoldWeight * current_price.gold_rate_24k;
                 const making_charges_amount = Math.round(gold_cost_24k * makingCharges / 100);
 
-                const materials_cost = item_gold_price;
+                const materials_cost = item_gold_price + solitaire_price + gemstone_price;
                 item_base_price = materials_cost + making_charges_amount;
-                item_base_price_withGST = item_base_price + (item_base_price * gst_percent / 100);
+                const gst_amount = Math.round(item_base_price * (gst_percent / 100));
+                item_base_price_withGST = Math.round(item_base_price + gst_amount);
 
                 return {
                     _id: item._id,
@@ -138,9 +159,11 @@ exports.productBasePricing = async (req, res) => {
                     product_type: item.product_type,
                     gold_price: Math.round(item_gold_price),
                     diamond_price: 0,
+                    solitaire_price: Math.round(solitaire_price),
                     making_charges: Math.round(making_charges_amount),
+                    gst_amount: gst_amount,
                     base_price_withGST: Math.round(item_base_price_withGST),
-                    gold_weight: gold_weight
+                    gold_weight: effectiveGoldWeight
                 };
             }
         });

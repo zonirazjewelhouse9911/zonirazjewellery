@@ -397,7 +397,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
           setFormData(sanitized);
           setIncludeMetal(Number(product.gold_weight || 0) > 0 || isNew);
           setIncludeSolitaire(Number(product.solitaires_price || 0) > 0);
-          setIncludeDiamond(Number(product.diamond_weight || 0) > 0 || Number(product.diamond_count || 0) > 0);
+          const isPG = (product.product_type || '').toLowerCase().includes('gold');
+          setIncludeDiamond(!isPG && (Number(product.diamond_weight || 0) > 0 || Number(product.diamond_count || 0) > 0));
           setIncludeGemstone(Number(product.gemstone_weight || 0) > 0 || Number(product.noof_gem || 0) > 0 || Number(product.gemstone_price || 0) > 0 || !!product.gemstone_info);
           setIncludeColorStone(Number(product.color_stone_weight || 0) > 0 || Number(product.color_stone_count || 0) > 0 || Number(product.color_stone_price || 0) > 0 || !!product.color_stone);
         } else {
@@ -422,6 +423,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     }
     if (pt === 'platinum' || activeMetals.includes('4')) {
       return 'Platinum Weight (g) *';
+    }
+    if (pt === 'gold' || pt.includes('plain gold')) {
+      return 'Gold Weight (22k) *';
     }
     return 'Gold Weight (14k) *';
   };
@@ -470,7 +474,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       numberFields.push({ key: 'gold_weight', label: getMetalWeightLabel().replace(' *', '') });
     }
 
-    if (includeDiamond) {
+    const isPlainGoldType = formData.product_type === 'gold' || (formData.product_type || '').toLowerCase().includes('plain gold');
+
+    if (!isPlainGoldType && includeDiamond) {
       numberFields.push({ key: 'diamond_weight', label: 'Diamond Weight' });
       numberFields.push({ key: 'diamond_count', label: 'Diamond Count' });
     }
@@ -534,10 +540,10 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       solitaires_weight: includeSolitaire ? Number(formData.solitaires_weight || formData.solitaire_weight || 0) : 0,
       solitaire_weight: includeSolitaire ? Number(formData.solitaire_weight || formData.solitaires_weight || 0) : 0,
       // Handle diamond presence
-      diamond_weight: includeDiamond ? Number(formData.diamond_weight || 0) : 0,
-      diamond_count: includeDiamond ? Number(formData.diamond_count || 0) : 0,
-      diamond_quality: includeDiamond ? formData.diamond_quality : '',
-      custom_diamond_rates: includeDiamond ? (formData.custom_diamond_rates || {}) : {},
+      diamond_weight: (isPlainGoldType || !includeDiamond) ? 0 : Number(formData.diamond_weight || 0),
+      diamond_count: (isPlainGoldType || !includeDiamond) ? 0 : Number(formData.diamond_count || 0),
+      diamond_quality: (isPlainGoldType || !includeDiamond) ? '' : formData.diamond_quality,
+      custom_diamond_rates: (isPlainGoldType || !includeDiamond) ? {} : (formData.custom_diamond_rates || {}),
       // Handle gemstone presence
       gemstone_info: includeGemstone ? (formData.gemstone_info || null) : null,
       gemstone_weight: includeGemstone ? Number(formData.gemstone_weight || 0) : 0,
@@ -576,14 +582,16 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
           const sanitized = sanitizeIncomingProduct(data.data);
           setFormData(sanitized);
           setIncludeSolitaire(Number(data.data.solitaires_price || 0) > 0);
-          setIncludeDiamond(Number(data.data.diamond_weight || 0) > 0 || Number(data.data.diamond_count || 0) > 0);
+          const isRespPG = (data.data.product_type || '').toLowerCase().includes('gold');
+          setIncludeDiamond(!isRespPG && (Number(data.data.diamond_weight || 0) > 0 || Number(data.data.diamond_count || 0) > 0));
           setIncludeGemstone(Number(data.data.gemstone_weight || 0) > 0 || Number(data.data.noof_gem || 0) > 0 || Number(data.data.gemstone_price || 0) > 0 || !!data.data.gemstone_info);
           setIncludeColorStone(Number(data.data.color_stone_weight || 0) > 0 || Number(data.data.color_stone_count || 0) > 0 || Number(data.data.color_stone_price || 0) > 0 || !!data.data.color_stone);
         } else {
           const sanitized = sanitizeIncomingProduct(data.data);
           setFormData(sanitized);
           setIncludeSolitaire(Number(data.data.solitaires_price || 0) > 0);
-          setIncludeDiamond(Number(data.data.diamond_weight || 0) > 0 || Number(data.data.diamond_count || 0) > 0);
+          const isRespPG = (data.data.product_type || '').toLowerCase().includes('gold');
+          setIncludeDiamond(!isRespPG && (Number(data.data.diamond_weight || 0) > 0 || Number(data.data.diamond_count || 0) > 0));
           setIncludeGemstone(Number(data.data.gemstone_weight || 0) > 0 || Number(data.data.noof_gem || 0) > 0 || Number(data.data.gemstone_price || 0) > 0 || !!data.data.gemstone_info);
           setIncludeColorStone(Number(data.data.color_stone_weight || 0) > 0 || Number(data.data.color_stone_count || 0) > 0 || Number(data.data.color_stone_price || 0) > 0 || !!data.data.color_stone);
         }
@@ -899,7 +907,23 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Product Type*</label>
                 <select
                   value={formData.product_type}
-                  onChange={(e) => setFormData({ ...formData, product_type: e.target.value })}
+                  onChange={(e) => {
+                    const newType = e.target.value;
+                    const isPG = newType === 'gold' || newType.toLowerCase().includes('gold');
+                    setFormData({
+                      ...formData,
+                      product_type: newType,
+                      ...(isPG ? {
+                        diamond_weight: 0,
+                        diamond_count: 0,
+                        diamond_quality: '',
+                        custom_diamond_rates: {}
+                      } : {})
+                    });
+                    if (isPG) {
+                      setIncludeDiamond(false);
+                    }
+                  }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
                 >
                   <option value="diamond">Diamond Jewelry</option>
@@ -1124,15 +1148,17 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   <span className="text-[12px] uppercase tracking-wider font-bold text-[#12100e]">Includes Gold</span>
                 </label>
 
-                <label className="flex items-center space-x-3 cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={includeDiamond}
-                    onChange={(e) => setIncludeDiamond(e.target.checked)}
-                    className="w-5 h-5 accent-[#5d463c] rounded"
-                  />
-                  <span className="text-[12px] uppercase tracking-wider font-bold text-[#12100e]">Includes Diamonds</span>
-                </label>
+                {formData.product_type !== 'gold' && (
+                  <label className="flex items-center space-x-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={includeDiamond}
+                      onChange={(e) => setIncludeDiamond(e.target.checked)}
+                      className="w-5 h-5 accent-[#5d463c] rounded"
+                    />
+                    <span className="text-[12px] uppercase tracking-wider font-bold text-[#12100e]">Includes Diamonds</span>
+                  </label>
+                )}
 
                 <label className="flex items-center space-x-3 cursor-pointer select-none">
                   <input

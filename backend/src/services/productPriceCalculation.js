@@ -31,7 +31,7 @@ exports.productPricing = async (req, res) => {
     else if (normalizedMetal.includes('22')) normalizedMetal = '22k';
     else if (normalizedMetal.includes('24')) normalizedMetal = '24k';
     else if (normalizedMetal.includes('14')) normalizedMetal = '14k';
-    else normalizedMetal = '14k';
+    else normalizedMetal = '';
 
     let normalizedDiamond = String(rawDiamond || '').toUpperCase().trim();
     if (normalizedDiamond === '1') normalizedDiamond = 'IJ-SI';
@@ -116,18 +116,44 @@ exports.productPricing = async (req, res) => {
         const gemstone_price = product_data.gemstone_price || 0;
         const color_stone_price = product_data.color_stone_price || 0;
 
-        // Resolve diamond rate based on purity grade
-        const diamondRateField = DIAMOND_RATE_FIELD_BY_GRADE[normalizedDiamond];
-        let diamond_rate = current_price.diamond_rate || 0;
-        if (diamondRateField && product_data[diamondRateField] !== undefined && product_data[diamondRateField] > 0) {
-            diamond_rate = product_data[diamondRateField];
-        } else if (diamondRateField) {
-            if (current_price[diamondRateField] !== undefined && current_price[diamondRateField] !== null) {
-                diamond_rate = current_price[diamondRateField];
-            }
+        // Check if item is Plain Gold Jewelry
+        const pTypeRaw = String(product_data.product_type || '').toLowerCase().trim();
+        const cTypeRaw = String(product_data.custom_type || '').toLowerCase().trim();
+        const isPlainGold = 
+            pTypeRaw === 'gold' ||
+            pTypeRaw === 'plain gold' ||
+            pTypeRaw === 'plain gold jewelry' ||
+            pTypeRaw === 'plain gold jewellery' ||
+            pTypeRaw === 'plan gold jewelry' ||
+            pTypeRaw === 'plan gold jewellery' ||
+            pTypeRaw === 'plain_gold' ||
+            pTypeRaw === 'plain-gold' ||
+            pTypeRaw.includes('plain gold') ||
+            pTypeRaw.includes('plan gold') ||
+            cTypeRaw === 'gold' ||
+            cTypeRaw.includes('plain gold') ||
+            cTypeRaw.includes('plan gold');
+
+        if (!normalizedMetal) {
+            normalizedMetal = isPlainGold ? '22k' : '14k';
         }
 
-        const total_diamond_weight = (product_data.diamond_weight || 0);
+        // Resolve diamond rate based on purity grade (if not plain gold)
+        const diamondRateField = DIAMOND_RATE_FIELD_BY_GRADE[normalizedDiamond];
+        let diamond_rate = current_price.diamond_rate || 0;
+        if (!isPlainGold) {
+            if (diamondRateField && product_data[diamondRateField] !== undefined && product_data[diamondRateField] > 0) {
+                diamond_rate = product_data[diamondRateField];
+            } else if (diamondRateField) {
+                if (current_price[diamondRateField] !== undefined && current_price[diamondRateField] !== null) {
+                    diamond_rate = current_price[diamondRateField];
+                }
+            }
+        } else {
+            diamond_rate = 0;
+        }
+
+        const total_diamond_weight = isPlainGold ? 0 : (product_data.diamond_weight || 0);
         real_diamond_weight = total_diamond_weight;
 
         let base_gold_weight = product_data.gold_weight || product_data.gross_weight || product_data.weight || 0;
@@ -161,103 +187,134 @@ exports.productPricing = async (req, res) => {
             }
         }
 
-        // Karat purity density multiplier relative to 14K (base weight reference)
+        // Karat purity density multiplier:
+        // Plain Gold Jewelry: base gold weight is defined at 22K (91.6% purity).
+        // Diamond Jewelry: base gold weight is defined at 14K (58.5% purity).
         let karat_weight_multiplier = 1.0;
         let gold_rate_used = 0;
 
-        switch (normalizedMetal) {
-            case "9k":
-                karat_weight_multiplier = 37 / 58.5;
-                gold_rate_used = current_price.gold_rate_24k * 0.37;
-                break;
-            case "18k":
-                karat_weight_multiplier = 75 / 58.5;
-                gold_rate_used = current_price.gold_rate_24k * 0.75;
-                break;
-            case "22k":
-                karat_weight_multiplier = 91.6 / 58.5;
-                gold_rate_used = current_price.gold_rate_24k * 0.916;
-                break;
-            case "24k":
-                karat_weight_multiplier = 100 / 58.5;
-                gold_rate_used = current_price.gold_rate_24k;
-                break;
-            default: // 14k
-                karat_weight_multiplier = 1.0;
-                gold_rate_used = Math.floor(current_price.gold_rate_24k * 0.585);
-                break;
+        if (isPlainGold) {
+            switch (normalizedMetal) {
+                case "9k":
+                    karat_weight_multiplier = 37 / 91.6;
+                    gold_rate_used = current_price.gold_rate_24k * 0.37;
+                    break;
+                case "14k":
+                    karat_weight_multiplier = 58.5 / 91.6;
+                    gold_rate_used = Math.floor(current_price.gold_rate_24k * 0.585);
+                    break;
+                case "18k":
+                    karat_weight_multiplier = 75 / 91.6;
+                    gold_rate_used = current_price.gold_rate_24k * 0.75;
+                    break;
+                case "24k":
+                    karat_weight_multiplier = 100 / 91.6;
+                    gold_rate_used = current_price.gold_rate_24k;
+                    break;
+                default: // 22k
+                    karat_weight_multiplier = 1.0;
+                    gold_rate_used = current_price.gold_rate_24k * 0.916;
+                    break;
+            }
+        } else {
+            switch (normalizedMetal) {
+                case "9k":
+                    karat_weight_multiplier = 37 / 58.5;
+                    gold_rate_used = current_price.gold_rate_24k * 0.37;
+                    break;
+                case "18k":
+                    karat_weight_multiplier = 75 / 58.5;
+                    gold_rate_used = current_price.gold_rate_24k * 0.75;
+                    break;
+                case "22k":
+                    karat_weight_multiplier = 91.6 / 58.5;
+                    gold_rate_used = current_price.gold_rate_24k * 0.916;
+                    break;
+                case "24k":
+                    karat_weight_multiplier = 100 / 58.5;
+                    gold_rate_used = current_price.gold_rate_24k;
+                    break;
+                default: // 14k
+                    karat_weight_multiplier = 1.0;
+                    gold_rate_used = Math.floor(current_price.gold_rate_24k * 0.585);
+                    break;
+            }
         }
 
         gross_gold_weight = gross_gold_weight * karat_weight_multiplier;
 
         // Net Gold Weight = Gross Gold Weight - Diamond Weight (g) - Solitaire Weight (g) - Gemstone Weight (g) - Color Stone Weight (g)
-        const diamond_weight_g = total_diamond_weight * 0.2;
+        const diamond_weight_g = isPlainGold ? 0 : (total_diamond_weight * 0.2);
         const solitaire_weight_g = (product_data.solitaires_weight || product_data.solitaire_weight || 0) * 0.2;
         const gemstone_weight_g = (product_data.gemstone_weight || 0) * 0.2;
         const color_stone_weight_g = (product_data.color_stone_weight || 0) * 0.2;
         const net_gold_weight = Math.max(0, gross_gold_weight - diamond_weight_g - solitaire_weight_g - gemstone_weight_g - color_stone_weight_g);
         real_gold_weight = net_gold_weight;
 
-        // Diamond rate calculation
-        if (product_data.custom_diamond_rates && product_data.custom_diamond_rates[rawDiamond] !== undefined) {
-            diamond_rate = Number(product_data.custom_diamond_rates[rawDiamond]) || 0;
-        } else if (product_data.custom_diamond_rates && product_data.custom_diamond_rates[normalizedDiamond] !== undefined) {
-            diamond_rate = Number(product_data.custom_diamond_rates[normalizedDiamond]) || 0;
-        }
-
-        if (!diamond_rate && product_data.custom_diamond_rates) {
-            const foundKey = Object.keys(product_data.custom_diamond_rates).find(k => k.toLowerCase() === String(rawDiamond).toLowerCase() || k.toLowerCase() === String(normalizedDiamond).toLowerCase());
-            if (foundKey && product_data.custom_diamond_rates[foundKey] !== undefined) {
-                diamond_rate = Number(product_data.custom_diamond_rates[foundKey]) || 0;
+        // Diamond rate calculation (only if not plain gold)
+        if (!isPlainGold) {
+            if (product_data.custom_diamond_rates && product_data.custom_diamond_rates[rawDiamond] !== undefined) {
+                diamond_rate = Number(product_data.custom_diamond_rates[rawDiamond]) || 0;
+            } else if (product_data.custom_diamond_rates && product_data.custom_diamond_rates[normalizedDiamond] !== undefined) {
+                diamond_rate = Number(product_data.custom_diamond_rates[normalizedDiamond]) || 0;
             }
-        }
 
-        // Check Daily Pricing benchmarks for custom diamond rates
-        if (!diamond_rate && current_price && current_price.custom_diamond_rates) {
-            if (current_price.custom_diamond_rates[rawDiamond] !== undefined) {
-                diamond_rate = Number(current_price.custom_diamond_rates[rawDiamond]) || 0;
-            } else if (current_price.custom_diamond_rates[normalizedDiamond] !== undefined) {
-                diamond_rate = Number(current_price.custom_diamond_rates[normalizedDiamond]) || 0;
-            } else {
-                const foundKey = Object.keys(current_price.custom_diamond_rates).find(k => k.toLowerCase() === String(rawDiamond).toLowerCase() || k.toLowerCase() === String(normalizedDiamond).toLowerCase());
-                if (foundKey && current_price.custom_diamond_rates[foundKey] !== undefined) {
-                    diamond_rate = Number(current_price.custom_diamond_rates[foundKey]) || 0;
+            if (!diamond_rate && product_data.custom_diamond_rates) {
+                const foundKey = Object.keys(product_data.custom_diamond_rates).find(k => k.toLowerCase() === String(rawDiamond).toLowerCase() || k.toLowerCase() === String(normalizedDiamond).toLowerCase());
+                if (foundKey && product_data.custom_diamond_rates[foundKey] !== undefined) {
+                    diamond_rate = Number(product_data.custom_diamond_rates[foundKey]) || 0;
                 }
             }
-        }
 
-        if (!diamond_rate) {
-            switch (normalizedDiamond) {
-                case "IJ-SI":
-                case "1":
-                    diamond_rate = product_data.diamond_rate_ij_si || current_price.diamond_rate_ij_si || 0;
-                    break;
-                case "GH-VS":
-                case "2":
-                    diamond_rate = product_data.diamond_rate_gh_vs || current_price.diamond_rate_gh_vs || 0;
-                    break;
-                case "EF-VVS":
-                case "3":
-                    diamond_rate = product_data.diamond_rate_ef_vvs || current_price.diamond_rate_ef_vvs || 0;
-                    break;
-                case "FG-SI":
-                case "4":
-                    diamond_rate = product_data.diamond_rate_fg_si || current_price.diamond_rate_fg_si || 0;
-                    break;
-                default:
-                    diamond_rate = product_data.diamond_rate_ij_si || current_price.diamond_rate_ij_si || current_price.diamond_rate || 0;
+            // Check Daily Pricing benchmarks for custom diamond rates
+            if (!diamond_rate && current_price && current_price.custom_diamond_rates) {
+                if (current_price.custom_diamond_rates[rawDiamond] !== undefined) {
+                    diamond_rate = Number(current_price.custom_diamond_rates[rawDiamond]) || 0;
+                } else if (current_price.custom_diamond_rates[normalizedDiamond] !== undefined) {
+                    diamond_rate = Number(current_price.custom_diamond_rates[normalizedDiamond]) || 0;
+                } else {
+                    const foundKey = Object.keys(current_price.custom_diamond_rates).find(k => k.toLowerCase() === String(rawDiamond).toLowerCase() || k.toLowerCase() === String(normalizedDiamond).toLowerCase());
+                    if (foundKey && current_price.custom_diamond_rates[foundKey] !== undefined) {
+                        diamond_rate = Number(current_price.custom_diamond_rates[foundKey]) || 0;
+                    }
+                }
             }
+
+            if (!diamond_rate) {
+                switch (normalizedDiamond) {
+                    case "IJ-SI":
+                    case "1":
+                        diamond_rate = product_data.diamond_rate_ij_si || current_price.diamond_rate_ij_si || 0;
+                        break;
+                    case "GH-VS":
+                    case "2":
+                        diamond_rate = product_data.diamond_rate_gh_vs || current_price.diamond_rate_gh_vs || 0;
+                        break;
+                    case "EF-VVS":
+                    case "3":
+                        diamond_rate = product_data.diamond_rate_ef_vvs || current_price.diamond_rate_ef_vvs || 0;
+                        break;
+                    case "FG-SI":
+                    case "4":
+                        diamond_rate = product_data.diamond_rate_fg_si || current_price.diamond_rate_fg_si || 0;
+                        break;
+                    default:
+                        diamond_rate = product_data.diamond_rate_ij_si || current_price.diamond_rate_ij_si || current_price.diamond_rate || 0;
+                }
+            }
+        } else {
+            diamond_rate = 0;
         }
 
         item_gold_price = net_gold_weight * gold_rate_used;
-        item_diamond_price = total_diamond_weight * diamond_rate;
+        item_diamond_price = isPlainGold ? 0 : (total_diamond_weight * diamond_rate);
 
         // Making charges = Net Gold Weight * 24K Gold Rate * Making Percentage / 100
         const gold_cost_24k = net_gold_weight * current_price.gold_rate_24k;
         making_charges_amount = Math.round(gold_cost_24k * (product_data.making_charges || 0) / 100);
 
         // Check if item is Silver or Platinum
-        const pType = String(product_data.product_type || '').toLowerCase();
+        const pType = pTypeRaw;
         const isSilverOrPlatinum = pType === 'silver' || pType === 'platinum' || normalizedMetal === 'silver' || normalizedMetal === 'platinum';
 
         let baseProductPrice = 0;
@@ -279,10 +336,10 @@ exports.productPricing = async (req, res) => {
             gold_price: Math.round(item_gold_price),
             gold_rate_used: Math.round(gold_rate_used),
             price: item_base_price_withGST,
-            diamond_weight: real_diamond_weight,
-            diamond_price: Math.round(item_diamond_price),
-            diamond_rate_used: diamond_rate,
-            diamond_grade: normalizedDiamond || null,
+            diamond_weight: isPlainGold ? 0 : real_diamond_weight,
+            diamond_price: isPlainGold ? 0 : Math.round(item_diamond_price),
+            diamond_rate_used: isPlainGold ? 0 : diamond_rate,
+            diamond_grade: isPlainGold ? null : (normalizedDiamond || null),
             solitaire_price: Math.round(solitaire_price),
             making_charges: making_charges_amount,
             gst_amount: gst_amount,

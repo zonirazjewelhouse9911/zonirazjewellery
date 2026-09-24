@@ -58,6 +58,26 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const isAanaSizeProduct = isChain || isMangalsutra || isTennisBracelet;
   const showSizing = isRing || isBangleOrBracelet || isAanaSizeProduct;
 
+  const isPlainGold = useMemo(() => {
+    const pType = String(product?.product_type || '').toLowerCase().trim();
+    const cType = String(product?.custom_type || '').toLowerCase().trim();
+    return (
+      pType === 'gold' ||
+      pType === 'plain gold' ||
+      pType === 'plain gold jewelry' ||
+      pType === 'plain gold jewellery' ||
+      pType === 'plan gold jewelry' ||
+      pType === 'plan gold jewellery' ||
+      pType === 'plain_gold' ||
+      pType === 'plain-gold' ||
+      pType.includes('plain gold') ||
+      pType.includes('plan gold') ||
+      cType === 'gold' ||
+      cType.includes('plain gold') ||
+      cType.includes('plan gold')
+    );
+  }, [product?.product_type, product?.custom_type]);
+
   const hasSolitaire = useMemo(() => {
     return Boolean(
       Number(product?.solitaires_weight || product?.solitaire_weight || 0) > 0 ||
@@ -220,6 +240,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
   }, [product]);
 
   const diamondOptions = useMemo(() => {
+    if (isPlainGold) return [];
     if (!product?.diamond_quality) {
       return ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
     }
@@ -242,7 +263,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
     }
 
     return mapped.length > 0 ? mapped : ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
-  }, [product?.diamond_quality, product?.custom_diamond_rates]);
+  }, [isPlainGold, product?.diamond_quality, product?.custom_diamond_rates]);
 
   const karatOptions = useMemo(() => {
     if (!product) return ['14 KT', '18 KT'];
@@ -287,35 +308,48 @@ export default function ProductDetailPage({ product, products: propProducts = []
     }
 
     if (options.length === 0) {
-      options = ['14 KT', '18 KT'];
+      options = isPlainGold ? ['22 KT', '18 KT', '14 KT'] : ['14 KT', '18 KT'];
     }
 
-    const order = ['14 KT', '18 KT', '22 KT', '24 KT', '9 KT', 'Platinum'];
+    const order = isPlainGold
+      ? ['22 KT', '24 KT', '18 KT', '14 KT', '9 KT', 'Platinum']
+      : ['14 KT', '18 KT', '22 KT', '24 KT', '9 KT', 'Platinum'];
     options.sort((a, b) => order.indexOf(a) - order.indexOf(b));
 
     return options;
-  }, [product?.karat_id, product?.metal_type, product?.product_type]);
+  }, [isPlainGold, product?.karat_id, product?.metal_type, product?.product_type]);
 
-  const [selectedKarat, setSelectedKarat] = useState(() => karatOptions[0] || '14 KT');
+  const defaultKaratChoice = useMemo(() => {
+    if (isPlainGold && karatOptions.includes('22 KT')) {
+      return '22 KT';
+    }
+    return karatOptions[0] || (isPlainGold ? '22 KT' : '14 KT');
+  }, [isPlainGold, karatOptions]);
+
+  const [selectedKarat, setSelectedKarat] = useState(defaultKaratChoice);
   const selectedMetal = selectedKarat === 'Platinum' ? 'Platinum' : `${selectedKarat} ${selectedColor}`;
 
   useEffect(() => {
     if (karatOptions && karatOptions.length > 0) {
       if (!selectedKarat || !karatOptions.includes(selectedKarat)) {
-        setSelectedKarat(karatOptions[0]);
+        setSelectedKarat(defaultKaratChoice);
       }
     }
-  }, [karatOptions]);
-  const [selectedDiamond, setSelectedDiamond] = useState('IJ-SI');
+  }, [karatOptions, defaultKaratChoice]);
+  const [selectedDiamond, setSelectedDiamond] = useState(isPlainGold ? '' : 'IJ-SI');
   const [selectedSolitaire, setSelectedSolitaire] = useState('IJ-SI');
 
   useEffect(() => {
+    if (isPlainGold) {
+      setSelectedDiamond('');
+      return;
+    }
     if (diamondOptions && diamondOptions.length > 0) {
       if (!selectedDiamond || !diamondOptions.includes(selectedDiamond)) {
         setSelectedDiamond(diamondOptions[0] || 'IJ-SI');
       }
     }
-  }, [diamondOptions]);
+  }, [isPlainGold, diamondOptions]);
 
   useEffect(() => {
     if (solitaireOptions && solitaireOptions.length > 0) {
@@ -362,8 +396,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
   const [pricingDetails, setPricingDetails] = useState({
     price: product?.price || 0,
-    goldCost: Math.round((product?.price || 0) * 0.65),
-    diamondCost: Math.round((product?.price || 0) * 0.25),
+    goldCost: Math.round((product?.price || 0) * (isPlainGold ? 1.0 : 0.65)),
+    diamondCost: isPlainGold ? 0 : Math.round((product?.price || 0) * 0.25),
     solitaireCost: initialSolitaireCost,
     gemstoneCost: 0,
     makingCharges: 0,
@@ -392,15 +426,15 @@ export default function ProductDetailPage({ product, products: propProducts = []
         if (data.success && active && Array.isArray(data.data)) {
           const matched = data.data.find(item => String(item._id) === String(prodId) || String(item.product_id) === String(prodId));
           if (matched) {
-            const price = matched.base_price_withGST;
             const goldCost = matched.gold_price !== undefined ? matched.gold_price : 0;
-            const diamondCost = matched.diamond_price !== undefined ? matched.diamond_price : 0;
+            const diamondCost = isPlainGold ? 0 : (matched.diamond_price !== undefined ? matched.diamond_price : 0);
 
             const solitaireCost = (matched.solitaire_price && matched.solitaire_price > 0) ? matched.solitaire_price : initialSolitaireCost;
             const gemstoneCost = (product.gemstone_weight || 0) * 1500;
             const makingCharges = matched.making_charges !== undefined ? matched.making_charges : (product.making_charges || 0);
             const subtotal = goldCost + diamondCost + solitaireCost + gemstoneCost + makingCharges;
             const gst = matched.gst_amount !== undefined ? matched.gst_amount : Math.round(subtotal * 0.03);
+            const price = isPlainGold ? (subtotal + gst) : matched.base_price_withGST;
 
             setPricingDetails({
               price: price,
@@ -434,14 +468,14 @@ export default function ProductDetailPage({ product, products: propProducts = []
       : isBangleOrBracelet
         ? (product?.banglesize_id && product?.banglesize_id !== '0' ? product.banglesize_id : '2.4')
         : 12;
-    const defaultKarat = karatOptions[0] || '14 KT';
+    const defaultKarat = defaultKaratChoice;
     const defaultColor = availableColors[0]?.id || 'Yellow';
-    const defaultDiamond = diamondOptions[0] || 'IJ-SI';
+    const defaultDiamond = diamondOptions[0] || (isPlainGold ? '' : 'IJ-SI');
 
     const isCustomized = String(selectedSize) !== String(defaultSize) ||
       selectedKarat !== defaultKarat ||
       selectedColor !== defaultColor ||
-      selectedDiamond !== defaultDiamond ||
+      (!isPlainGold && selectedDiamond !== defaultDiamond) ||
       (hasSolitaire && selectedSolitaire !== (solitaireOptions && solitaireOptions[0] ? solitaireOptions[0] : 'IJ-SI'));
 
     if (!isCustomized) {
@@ -452,14 +486,14 @@ export default function ProductDetailPage({ product, products: propProducts = []
             if (data.success && active && Array.isArray(data.data)) {
               const matched = data.data.find(item => String(item._id) === String(prodId) || String(item.product_id) === String(prodId));
               if (matched) {
-                const price = matched.base_price_withGST;
                 const goldCost = matched.gold_price !== undefined ? matched.gold_price : 0;
-                const diamondCost = matched.diamond_price !== undefined ? matched.diamond_price : 0;
+                const diamondCost = isPlainGold ? 0 : (matched.diamond_price !== undefined ? matched.diamond_price : 0);
                 const solitaireCost = (matched.solitaire_price && matched.solitaire_price > 0) ? matched.solitaire_price : initialSolitaireCost;
                 const gemstoneCost = (product.gemstone_weight || 0) * 1500;
                 const makingCharges = matched.making_charges !== undefined ? matched.making_charges : (product.making_charges || 0);
                 const subtotal = goldCost + diamondCost + solitaireCost + gemstoneCost + makingCharges;
                 const gst = matched.gst_amount !== undefined ? matched.gst_amount : Math.round(subtotal * 0.03);
+                const price = isPlainGold ? (subtotal + gst) : matched.base_price_withGST;
 
                 setPricingDetails({
                   price: price,
@@ -485,13 +519,14 @@ export default function ProductDetailPage({ product, products: propProducts = []
         const prodId = product?._id || product?.product_id || product?.id;
         if (!prodId) return;
 
-        let metalKey = "14k";
+        let metalKey = isPlainGold ? "22k" : "14k";
         if (selectedMetal.includes("18")) metalKey = "18k";
         else if (selectedMetal.includes("9")) metalKey = "9k";
         else if (selectedMetal.includes("22")) metalKey = "22k";
         else if (selectedMetal.includes("24")) metalKey = "24k";
+        else if (selectedMetal.includes("14")) metalKey = "14k";
 
-        let diamondKey = selectedDiamond;
+        let diamondKey = isPlainGold ? '' : selectedDiamond;
         if (selectedDiamond === "EF-VS") diamondKey = "EF-VVS";
 
         const [priceRes, ratesRes] = await Promise.all([
@@ -516,14 +551,14 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
         if (data.success && active) {
           const rates = (ratesData && ratesData.success) ? ratesData.data : { gold_rate_24k: 5200, gst_percent: 3 };
-          const price = data.price || pricingDetails.price;
 
           // Compute gold rate based on karat
-          let goldRate = rates.gold_rate_14k || 3033;
+          let goldRate = isPlainGold ? Math.floor(rates.gold_rate_24k * 0.916) : (rates.gold_rate_14k || 3033);
           if (metalKey === "18k") goldRate = rates.gold_rate_24k * 18 / 24;
           else if (metalKey === "9k") goldRate = rates.gold_rate_24k * 9 / 24;
-          else if (metalKey === "22k") goldRate = rates.gold_rate_24k * 22 / 24;
-          else if (metalKey === "24k") goldRate = rates.gold_rate_24k * 24 / 24;
+          else if (metalKey === "22k") goldRate = rates.gold_rate_24k * 0.916;
+          else if (metalKey === "24k") goldRate = rates.gold_rate_24k;
+          else if (metalKey === "14k") goldRate = rates.gold_rate_14k || Math.floor(rates.gold_rate_24k * 0.585);
 
           const goldCost = data.gold_price !== undefined ? data.gold_price : Math.round((data.gold_weight || product.gold_weight || 0) * goldRate);
 
@@ -538,8 +573,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   selectedDiamond === "FG-SI" ? (product.diamond_rate_fg_si || product.diamond_rate_ij_si || rates.diamond_rate || 85000) :
                     (rates.diamond_rate || 85000);
 
-          const diamondRateUsed = (data.diamond_rate_used && data.diamond_rate_used > 0) ? data.diamond_rate_used : fallbackDiamondRate;
-          const diamondCost = data.diamond_price !== undefined ? data.diamond_price : Math.round((data.diamond_weight || product.diamond_weight || 0) * diamondRateUsed);
+          const diamondRateUsed = isPlainGold ? 0 : ((data.diamond_rate_used && data.diamond_rate_used > 0) ? data.diamond_rate_used : fallbackDiamondRate);
+          const diamondCost = isPlainGold ? 0 : (data.diamond_price !== undefined ? data.diamond_price : Math.round((data.diamond_weight || product.diamond_weight || 0) * diamondRateUsed));
           const gemstoneCost = (product.gemstone_price && product.gemstone_price > 0)
             ? product.gemstone_price
             : (product.gemstone_weight || 0) * (rates.gemstone_rate || 1500);
@@ -562,6 +597,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
           const subtotal = goldCost + diamondCost + gemstoneCost + colorStoneCost + makingCharges + solitaireCost;
           const gst = data.gst_amount !== undefined ? data.gst_amount : Math.round(subtotal * 0.03);
+          const price = data.price || (subtotal + gst);
 
           setPricingDetails({
             price: price,
@@ -780,7 +816,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
 
   const handleAddToCart = () => {
-    addToCart(product, 1, selectedMetal, selectedSize, selectedDiamond, {
+    addToCart(product, 1, selectedMetal, selectedSize, isPlainGold ? null : selectedDiamond, {
       grossWeight: pricingDetails?.grossWeight || product?.gross_weight || product?.gold_weight || 0,
       goldWeight: pricingDetails?.goldWeight || product?.gold_weight || 0
     });
@@ -2178,16 +2214,18 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 {karatOptions.map(k => <option key={k} value={k}>{k}</option>)}
               </select>
             </div>
-            <div className="pdp-custom-item">
-              <span className="pdp-custom-label">Diamond</span>
-              <select
-                className="pdp-custom-select"
-                value={selectedDiamond}
-                onChange={e => setSelectedDiamond(e.target.value)}
-              >
-                {diamondOptions.map(d => <option key={d} value={d}>{d}</option>)}
-              </select>
-            </div>
+            {!isPlainGold && diamondOptions.length > 0 && (
+              <div className="pdp-custom-item">
+                <span className="pdp-custom-label">Diamond</span>
+                <select
+                  className="pdp-custom-select"
+                  value={selectedDiamond}
+                  onChange={e => setSelectedDiamond(e.target.value)}
+                >
+                  {diamondOptions.map(d => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
+            )}
             {hasSolitaire && (
               <div className="pdp-custom-item">
                 <span className="pdp-custom-label">Solitaire</span>
@@ -2292,7 +2330,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
                       </span>
                     </div>
                   )}
-                  <div><strong>Diamond</strong><span>{selectedDiamond}</span></div>
+                  {!isPlainGold && (
+                    <div><strong>Diamond</strong><span>{selectedDiamond}</span></div>
+                  )}
                   {hasSolitaire && (
                     <div><strong>Solitaire</strong><span>{selectedSolitaire}</span></div>
                   )}
@@ -2479,7 +2519,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
           const grossWeight = (pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
             ? pricingDetails.grossWeight
             : (product.gross_weight || product.gold_weight || product.weight || 0);
-          const diamondW_g = (product.diamond_weight || 0) * 0.2;
+          const diamondW_g = isPlainGold ? 0 : ((product.diamond_weight || 0) * 0.2);
           const gemstoneW_g = (product.gemstone_weight || 0) * 0.2;
           const netWeight = (pricingDetails.goldWeight && pricingDetails.goldWeight > 0)
             ? pricingDetails.goldWeight
@@ -2492,7 +2532,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             ? 'Platinum'
             : `${displayKarat} ${displayColor} Gold`;
 
-          const hasDiamond = Number(product.diamond_weight || 0) > 0;
+          const hasDiamond = !isPlainGold && Number(product.diamond_weight || 0) > 0;
           const hasGem = Number(product.gemstone_weight || 0) > 0;
 
           let matParts = [metalMaterial];
@@ -2526,27 +2566,29 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
               </div>
 
-              <div className="pdp-detail-group">
-                <div className="pdp-detail-group-title">
-                  <Gem size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Diamond
+              {!isPlainGold && (Number(product.diamond_weight || 0) > 0 || product.diamond_quality) && (
+                <div className="pdp-detail-group">
+                  <div className="pdp-detail-group-title">
+                    <Gem size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Diamond
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Quality</span>
+                    <span className="pdp-detail-val">{selectedDiamond}</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Total Weight</span>
+                    <span className="pdp-detail-val">{product.diamond_weight || 0} ct</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Setting</span>
+                    <span className="pdp-detail-val">Hand Setting</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Number</span>
+                    <span className="pdp-detail-val">{product.diamond_count || product.noof_gem || 0} Diamonds</span>
+                  </div>
                 </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Quality</span>
-                  <span className="pdp-detail-val">{selectedDiamond}</span>
-                </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Total Weight</span>
-                  <span className="pdp-detail-val">{product.diamond_weight || 0} ct</span>
-                </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Setting</span>
-                  <span className="pdp-detail-val">Hand Setting</span>
-                </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Number</span>
-                  <span className="pdp-detail-val">{product.diamond_count || product.noof_gem || 0} Diamonds</span>
-                </div>
-              </div>
+              )}
 
               {hasSolitaire && (
                 <div className="pdp-detail-group">
@@ -2621,10 +2663,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 <span className="pdp-detail-key">Gold Value</span>
                 <span className="pdp-detail-val">{formatPrice(pricingDetails.goldCost)}</span>
               </div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Diamond Value</span>
-                <span className="pdp-detail-val">{formatPrice(pricingDetails.diamondCost)}</span>
-              </div>
+              {!isPlainGold && pricingDetails.diamondCost > 0 && (
+                <div className="pdp-detail-row">
+                  <span className="pdp-detail-key">Diamond Value</span>
+                  <span className="pdp-detail-val">{formatPrice(pricingDetails.diamondCost)}</span>
+                </div>
+              )}
               {(pricingDetails.solitaireCost > 0 || hasSolitaire) && (
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Solitaire Value</span>
@@ -2662,7 +2706,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
         )}
 
         {activeTab === 'weight' && (() => {
-          const diamondW_ct = product.diamond_weight || 0;
+          const diamondW_ct = isPlainGold ? 0 : (product.diamond_weight || 0);
           const diamondW_g = diamondW_ct * 0.2;
 
           const solitaireW_ct = product.solitaires_weight || product.solitaire_weight || 0;
@@ -2679,7 +2723,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             : (product.gross_weight || product.gold_weight || product.weight || 0);
           const goldW = (pricingDetails.goldWeight && pricingDetails.goldWeight > 0)
             ? pricingDetails.goldWeight
-            : Math.max(0, grossW - diamondW_g - solitaireW_g - gemstoneW_g - colorStoneW_g);
+            : (isPlainGold ? grossW : Math.max(0, grossW - diamondW_g - solitaireW_g - gemstoneW_g - colorStoneW_g));
           const netW = goldW;
 
           return (

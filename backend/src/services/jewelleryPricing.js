@@ -14,6 +14,27 @@ const categoryMap = {
   "7": "Chains"
 };
 
+const isPlainGoldProduct = (product) => {
+  if (!product) return false;
+  const pType = String(product.product_type || '').toLowerCase().trim();
+  const cType = String(product.custom_type || '').toLowerCase().trim();
+  return (
+    pType === 'gold' ||
+    pType === 'plain gold' ||
+    pType === 'plain gold jewelry' ||
+    pType === 'plain gold jewellery' ||
+    pType === 'plan gold jewelry' ||
+    pType === 'plan gold jewellery' ||
+    pType === 'plain_gold' ||
+    pType === 'plain-gold' ||
+    pType.includes('plain gold') ||
+    pType.includes('plan gold') ||
+    cType === 'gold' ||
+    cType.includes('plain gold') ||
+    cType.includes('plan gold')
+  );
+};
+
 class JewelleryPricingService {
   /**
    * Fetches the latest daily rates from the database.
@@ -113,18 +134,15 @@ class JewelleryPricingService {
     const updatedProducts = [];
 
     for (const product of products) {
-      // 1. Calculate Gold Purity Rate (Base gold weight is specified for 14K Gold)
-      let goldRate = rates.gold_rate_14k;
-      
-      // If product has a specific karat setting, we could adjust the rate proportionately.
-      // E.g. If uploader specifies 18K gold weight, goldRate = rates.gold_rate_14k * 18/14.
-      // Since our base weight field is "Gold Weight (14k)", we use gold_rate_14k directly.
+      const isPlainGold = isPlainGoldProduct(product);
+      // 1. Calculate Gold Purity Rate (Base gold weight is specified for 14K Gold for diamond, 22K for plain gold)
+      const goldRate = isPlainGold ? Math.floor(rates.gold_rate_24k * 0.916) : rates.gold_rate_14k;
       const goldCost = (product.gold_weight || 0) * goldRate;
 
       // 2. Calculate Diamond Cost
       const diamondCount = product.diamond_count || 1;
-      const totalDiamondWeight = (product.diamond_weight || 0) * diamondCount;
-      const diamondCost = totalDiamondWeight * rates.diamond_rate;
+      const totalDiamondWeight = isPlainGold ? 0 : (product.diamond_weight || 0) * diamondCount;
+      const diamondCost = isPlainGold ? 0 : (totalDiamondWeight * rates.diamond_rate);
 
       // 3. Calculate Gemstone Cost
       const gemstoneCost = (product.gemstone_weight || 0) * (rates.gemstone_rate || 0);
@@ -201,13 +219,15 @@ class JewelleryPricingService {
       throw new Error("Product not found");
     }
 
+    const isPlainGold = isPlainGoldProduct(product);
+
     // Fallback if daily rates are not configured (both are 0)
     if (rates.gold_rate_14k === 0 && rates.diamond_rate === 0) {
       return {
         price: product.price || 0,
         goldWeight: product.gold_weight || 0,
-        goldCost: Math.round((product.price || 0) * 0.65),
-        diamondCost: Math.round((product.price || 0) * 0.25),
+        goldCost: Math.round((product.price || 0) * (isPlainGold ? 1.0 : 0.65)),
+        diamondCost: isPlainGold ? 0 : Math.round((product.price || 0) * 0.25),
         gemstoneCost: 0,
         makingCharges: product.makingCharges || 0,
         subtotal: product.price || 0,
@@ -217,18 +237,38 @@ class JewelleryPricingService {
     }
 
     // 1. Gold Purity Factor
-    let purityFactor = 1.0; // base is 14k
-    if (metal) {
-      if (metal.includes("18 KT") || metal.includes("18K")) {
-        purityFactor = 18 / 14;
-      } else if (metal.includes("22 KT") || metal.includes("22K")) {
-        purityFactor = 22 / 14;
-      } else if (metal.includes("9 KT") || metal.includes("9K")) {
-        purityFactor = 9 / 14;
-      } else if (metal.toLowerCase().includes("platinum")) {
-        purityFactor = 1.8; // Platinum multiplier
-      } else if (metal.toLowerCase().includes("silver")) {
-        purityFactor = 0.1; // Silver factor
+    // For Plain Gold Jewelry: base gold weight is defined at 22K (91.6% purity).
+    // For Diamond Jewelry: base gold weight is defined at 14K (58.5% purity).
+    let purityFactor = 1.0;
+    if (isPlainGold) {
+      if (metal) {
+        if (metal.includes("24 KT") || metal.includes("24K")) {
+          purityFactor = 24 / 22;
+        } else if (metal.includes("22 KT") || metal.includes("22K")) {
+          purityFactor = 1.0;
+        } else if (metal.includes("18 KT") || metal.includes("18K")) {
+          purityFactor = 18 / 22;
+        } else if (metal.includes("14 KT") || metal.includes("14K")) {
+          purityFactor = 14 / 22;
+        } else if (metal.includes("9 KT") || metal.includes("9K")) {
+          purityFactor = 9 / 22;
+        }
+      }
+    } else {
+      if (metal) {
+        if (metal.includes("18 KT") || metal.includes("18K")) {
+          purityFactor = 18 / 14;
+        } else if (metal.includes("22 KT") || metal.includes("22K")) {
+          purityFactor = 22 / 14;
+        } else if (metal.includes("24 KT") || metal.includes("24K")) {
+          purityFactor = 24 / 14;
+        } else if (metal.includes("9 KT") || metal.includes("9K")) {
+          purityFactor = 9 / 14;
+        } else if (metal.toLowerCase().includes("platinum")) {
+          purityFactor = 1.8; // Platinum multiplier
+        } else if (metal.toLowerCase().includes("silver")) {
+          purityFactor = 0.1; // Silver factor
+        }
       }
     }
 
@@ -244,7 +284,8 @@ class JewelleryPricingService {
     if (goldWeight < 0) goldWeight = 0;
 
     // 3. Gold Component Cost
-    const goldCost = goldWeight * rates.gold_rate_14k * purityFactor;
+    const baseGoldRate = isPlainGold ? Math.floor(rates.gold_rate_24k * 0.916) : rates.gold_rate_14k;
+    const goldCost = goldWeight * baseGoldRate * purityFactor;
 
     // 4. Diamond Purity / Quality Factor
     let diamondQualityFactor = 1.0; // base is FG-SI
@@ -263,8 +304,8 @@ class JewelleryPricingService {
 
     // 5. Diamond Cost
     const diamondCount = product.diamond_count || 1;
-    const totalDiamondWeight = (product.diamond_weight || 0) * diamondCount;
-    const diamondCost = totalDiamondWeight * rates.diamond_rate * diamondQualityFactor;
+    const totalDiamondWeight = isPlainGold ? 0 : (product.diamond_weight || 0) * diamondCount;
+    const diamondCost = isPlainGold ? 0 : (totalDiamondWeight * rates.diamond_rate * diamondQualityFactor);
 
     // 6. Gemstone Cost
     const gemstoneCost = (product.gemstone_weight || 0) * (rates.gemstone_rate || 0);
