@@ -162,34 +162,42 @@ exports.productPricing = async (req, res) => {
         // Convert size from Aana to Inches (1 Aana = 0.0625 Inch)
         const sizeInInches = size * 0.0625;
 
-        if (!isNaN(size) && size > 0) {
+        if ((rawSize !== undefined && rawSize !== null && rawSize !== '') || (!isNaN(size) && size > 0)) {
             const catStr = (product_data.category || product_data.product_category || product_data.category_id || '').toLowerCase();
+            const nameStr = (product_data.product_title || product_data.product_name || product_data.name || '').toLowerCase();
+            const isRing = catStr.includes('ring') || nameStr.includes('ring');
+            const isTennisBracelet = catStr.includes('bracelet') || nameStr.includes('bracelet');
+            const isBangle = !isRing && !isTennisBracelet && (catStr.includes('bangle') || nameStr.includes('bangle') || product_data.category_id === '5' || product_data.category_id === '4');
 
-            if (catStr === "chains" || catStr === "chain") {
+            if (catStr === "chains" || catStr === "chain" || nameStr.includes("chain")) {
                 const baseLength = product_data.base_length || 20;
                 const weightPerInch = 0.5;
                 gross_gold_weight = base_gold_weight + ((sizeInInches - baseLength) * weightPerInch);
-            } else if (catStr === "mangalsutra" || catStr === "mangalsutras") {
+            } else if (catStr === "mangalsutra" || catStr === "mangalsutras" || nameStr.includes("mangalsutra")) {
                 const baseLength = product_data.base_length || 18;
                 const weightPerInch = 0.5;
                 gross_gold_weight = base_gold_weight + ((sizeInInches - baseLength) * weightPerInch);
-            } else if (catStr === "tennis bracelets" || catStr === "tennis bracelet" || catStr === "bracelets" || catStr === "bracelet") {
+            } else if (isTennisBracelet) {
                 const baseLength = product_data.base_length || 20;
                 const weightPerInch = base_gold_weight / baseLength;
                 gross_gold_weight = weightPerInch * sizeInInches;
-            } else if (catStr.includes("bangle")) {
+            } else if (isBangle || catStr.includes("bangle") || nameStr.includes("bangle")) {
                 const parseBangleAana = (sz) => {
                     if (!sz || sz === '0') return 38; // Default 2.6 (2*16 + 6 = 38 aana)
-                    const parts = String(sz).split('.');
+                    const str = String(sz).trim();
+                    const parts = str.split('.');
                     const inch = parseInt(parts[0], 10) || 2;
                     const aana = parseInt(parts[1], 10) || 0;
                     return inch * 16 + aana;
                 };
-                const baseBangleAana = parseBangleAana(product_data.banglesize_id && product_data.banglesize_id !== '0' ? product_data.banglesize_id : '2.6');
-                const selectedBangleAana = parseBangleAana(size);
+                const defaultBangleSize = (product_data.banglesize_id && product_data.banglesize_id !== '0')
+                    ? String(product_data.banglesize_id).trim()
+                    : '2.6';
+                const baseBangleAana = parseBangleAana(defaultBangleSize);
+                const selectedBangleAana = parseBangleAana(rawSize || size);
                 const weightPerAana = 0.25; // 0.5g per 2 aana
                 gross_gold_weight = base_gold_weight + (selectedBangleAana - baseBangleAana) * weightPerAana;
-            } else {
+            } else if (!isNaN(size) && size > 0) {
                 const weight_differenceINsize_g = 0.140;
                 gross_gold_weight = size === 12 ? base_gold_weight : base_gold_weight + (size - 12) * weight_differenceINsize_g;
             }

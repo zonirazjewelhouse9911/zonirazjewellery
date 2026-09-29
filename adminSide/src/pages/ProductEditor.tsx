@@ -208,7 +208,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     stock: 0,
     gender: '2',
     size_id: '',
-    banglesize_id: '0',
+    banglesize_id: '2.6',
     karat_id: '',
     metal_type: '',
     gallery: {},
@@ -371,6 +371,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       custom_solitaire_prices: parsedCustomSolPrices,
       solitaire_setting: product.solitaire_setting || product.solitaires_setting || 'Prong Setting',
       solitaires_setting: product.solitaires_setting || product.solitaire_setting || 'Prong Setting',
+      banglesize_id: (product.banglesize_id && product.banglesize_id !== '0') ? String(product.banglesize_id).trim() : '2.6',
       making_charges: Number(product.making_charges || 0),
       makingCharges: Number(product.makingCharges || 0)
     };
@@ -521,7 +522,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     const showSizing = isRing || isBangle || isTennisBracelet || isChain || isMangalsutra;
 
     const cleanSizeId = showSizing ? formData.size_id : '';
-    const cleanBangleSizeId = showSizing ? formData.banglesize_id : '0';
+    const cleanBangleSizeId = isBangle ? (formData.banglesize_id || '2.6') : '0';
 
     const {
       create_date: _cd,
@@ -1870,12 +1871,95 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
 
               const isAanaCategory = isChain || isMangalsutra || isTennisBracelet;
 
+              const currentDefaultBangleSize = (formData.banglesize_id && formData.banglesize_id !== '0')
+                ? formData.banglesize_id
+                : '2.6';
+
+              const handleSetDefaultBangleSize = (newDefaultSize: string) => {
+                let updatedSizes = [...activeSizes];
+                if (!updatedSizes.includes(newDefaultSize)) {
+                  updatedSizes.push(newDefaultSize);
+                }
+                setFormData({
+                  ...formData,
+                  banglesize_id: newDefaultSize,
+                  size_id: updatedSizes.join(',')
+                });
+              };
+
               return (
                 <div className="space-y-6 pt-10 border-t border-slate-200/80">
+                  {/* Bangle Default Size Configuration Banner */}
+                  {isBangle && (
+                    <div className="bg-gradient-to-r from-amber-50/80 via-orange-50/40 to-amber-50/80 border border-amber-200/90 rounded-2xl p-5 space-y-4 shadow-sm">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center justify-center px-2 py-0.5 rounded-full bg-[#5d463c] text-[#efe7e5] text-[10px] font-extrabold uppercase tracking-wider">
+                              ★ Base Size
+                            </span>
+                            <h4 className="text-sm font-serif font-bold text-[#12100e]">
+                              Default Bangle Size (Pricing & Weight Basis)
+                            </h4>
+                          </div>
+                          <p className="text-xs text-stone-600 leading-relaxed">
+                            The product's base weight (<strong className="text-stone-900 font-semibold">{formData.gold_weight || 0}g</strong>) and base price are calibrated at this default size.
+                            Weights and prices for all other sizes will be automatically calculated relative to this size (±0.25g per Aana / 0.5g per 2 Aana).
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2 shrink-0 bg-white/90 p-2 rounded-xl border border-amber-200">
+                          <label className="text-xs font-bold text-stone-700 whitespace-nowrap">Default Size:</label>
+                          <select
+                            value={currentDefaultBangleSize}
+                            onChange={(e) => handleSetDefaultBangleSize(e.target.value)}
+                            className="px-3 py-1.5 bg-white border border-[#5d463c]/30 rounded-lg text-xs font-bold text-[#5d463c] shadow-sm focus:outline-none focus:ring-2 focus:ring-[#5d463c]"
+                          >
+                            {BANGLE_SIZES.map(sz => (
+                              <option key={sz} value={sz}>
+                                Size {sz} {sz === '2.4' ? '(Small/Medium)' : sz === '2.6' ? '(Standard)' : sz === '2.8' ? '(Large)' : ''}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-2 pt-3 border-t border-amber-200/60">
+                        <span className="text-[11px] font-semibold text-stone-600 mr-1">Quick Select Default:</span>
+                        {['2.2', '2.4', '2.6', '2.8', '2.10', '3.0'].map(sz => {
+                          const isCurrent = currentDefaultBangleSize === sz;
+                          return (
+                            <button
+                              key={sz}
+                              type="button"
+                              onClick={() => handleSetDefaultBangleSize(sz)}
+                              className={cn(
+                                "px-3 py-1 text-[11px] font-bold rounded-lg transition-all cursor-pointer flex items-center gap-1.5",
+                                isCurrent
+                                  ? "bg-[#5d463c] text-white shadow-sm ring-2 ring-[#5d463c]/40 font-extrabold"
+                                  : "bg-white/90 border border-stone-300 text-stone-700 hover:border-[#5d463c] hover:bg-white"
+                              )}
+                            >
+                              {isCurrent && <span>★</span>}
+                              <span>{sz}</span>
+                              {isCurrent && <span className="text-[9px] opacity-90 font-normal">(Default)</span>}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="flex items-center justify-between">
-                    <h3 className="text-lg font-serif font-bold text-[#12100e]">
-                      {titleLabel}
-                    </h3>
+                    <div>
+                      <h3 className="text-lg font-serif font-bold text-[#12100e]">
+                        {titleLabel}
+                      </h3>
+                      {isBangle && (
+                        <p className="text-xs text-stone-500 mt-0.5">
+                          Select which bangle sizes customers can choose from. Click a size to toggle whitelist, or click the star to make it default.
+                        </p>
+                      )}
+                    </div>
                     <span className="text-[9px] uppercase tracking-widest text-[#5d463c] font-bold">
                       {activeSizes.length} Selected
                     </span>
@@ -1883,23 +1967,45 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6 gap-3">
                     {sizesList.map(sz => {
                       const isChecked = activeSizes.includes(sz);
+                      const isDefault = isBangle && currentDefaultBangleSize === sz;
                       const displayLabel = isAanaCategory
                         ? `${sz} Aana (${(Number(sz) * 0.0625).toFixed(1).replace(/\.0$/, '')}")`
                         : sz;
                       return (
-                        <button
-                          key={sz}
-                          type="button"
-                          onClick={() => handleSizeToggle(sz)}
-                          className={cn(
-                            'flex items-center justify-center py-3 px-2 rounded-xl border text-center transition-all duration-200 text-[11px] font-bold cursor-pointer',
-                            isChecked
-                              ? 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c] shadow-md'
-                              : 'bg-slate-50 border border-slate-200 text-[#12100e]/50 hover:border-[#5d463c]/40'
+                        <div key={sz} className="relative group">
+                          <button
+                            type="button"
+                            onClick={() => handleSizeToggle(sz)}
+                            className={cn(
+                              'w-full flex flex-col items-center justify-center py-3 px-2 rounded-xl border text-center transition-all duration-200 text-[11px] font-bold cursor-pointer relative',
+                              isChecked
+                                ? isDefault
+                                  ? 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c] shadow-md ring-2 ring-amber-400/80'
+                                  : 'bg-[#5d463c] text-[#efe7e5] border-[#5d463c] shadow-md'
+                                : 'bg-slate-50 border border-slate-200 text-[#12100e]/50 hover:border-[#5d463c]/40'
+                            )}
+                          >
+                            <span>{displayLabel}</span>
+                            {isDefault && (
+                              <span className="text-[9px] text-amber-300 font-extrabold tracking-wide uppercase mt-0.5 flex items-center gap-0.5">
+                                ★ DEFAULT
+                              </span>
+                            )}
+                          </button>
+                          {isBangle && !isDefault && (
+                            <button
+                              type="button"
+                              title={`Set ${sz} as default baseline size`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleSetDefaultBangleSize(sz);
+                              }}
+                              className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity bg-amber-100 hover:bg-amber-200 text-amber-900 text-[9px] font-bold px-1.5 py-0.5 rounded shadow-sm cursor-pointer z-10"
+                            >
+                              Make Default
+                            </button>
                           )}
-                        >
-                          {displayLabel}
-                        </button>
+                        </div>
                       );
                     })}
                   </div>
