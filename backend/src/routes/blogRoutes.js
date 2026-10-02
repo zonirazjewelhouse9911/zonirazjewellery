@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const blogController = require("../controllers/blogController");
+const httpCache = require("../middleware/httpCache");
 
 // Public routes for user frontend
-router.get("/blogs", blogController.getAllBlogs);
-router.get("/blogs/:slug", blogController.getBlogBySlug);
+router.get("/blogs", httpCache(60), blogController.getAllBlogs);
+router.get("/blogs/:slug", httpCache(60), blogController.getBlogBySlug);
 
 // Dedicated Blog Writer Login
 router.post("/blogs/login", blogController.blogWriterLogin);

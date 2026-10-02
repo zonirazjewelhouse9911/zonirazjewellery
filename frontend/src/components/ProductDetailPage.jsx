@@ -2954,7 +2954,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   src="https://player.vimeo.com/external/371433846.sd.mp4?s=236da2f3c054ba20ef413c2f925f2066fa2eb967&profile_id=139&oauth2_token_id=57447761"
                   autoPlay loop muted playsInline preload="metadata"
                 >
-                  <track kind="captions" src="https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
+                  <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
                 </video>
               )}
             </div>
@@ -3002,7 +3002,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 preload="metadata"
                 style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
               >
-                <track kind="captions" src="https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
+                <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
               </video>
             </div>
           </div>

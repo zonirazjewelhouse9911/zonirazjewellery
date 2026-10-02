@@ -100,6 +100,7 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
   const [pincodeLoading, setPincodeLoading] = useState(false);
   const [pincodeError, setPincodeError] = useState('');
   const [isPincodeOpen, setIsPincodeOpen] = useState(false);
+  const [loadedBanners, setLoadedBanners] = useState(() => new Set());
   const pincodeWrapperRef = useRef(null);
 
   const { currency, setCurrency, currencies, activeCurrencyConfig, formatPrice } = useCurrency();
@@ -878,6 +879,14 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                   <div
                     key={idx}
                     className="nav-item-container"
+                    onMouseEnter={() => {
+                      setLoadedBanners(prev => {
+                        if (prev.has(categorySlug)) return prev;
+                        const next = new Set(prev);
+                        next.add(categorySlug);
+                        return next;
+                      });
+                    }}
                   >
                     <a href={`/${categorySlug}`} className="nav-item-trigger" onClick={(e) => { e.preventDefault(); window.history.pushState(null, '', `/${categorySlug}`); window.dispatchEvent(new PopStateEvent('popstate')); }}>
                       {displayName}
@@ -969,7 +978,11 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                         {/* Column 4: Banners */}
                         <div className="mega-banners">
                           <div className="mega-banner-card">
-                            <img src={banner1} alt="Featured Collection" loading="lazy" decoding="async" width="300" height="150" />
+                            {loadedBanners.has(categorySlug) ? (
+                              <img src={banner1} alt="Featured Collection" loading="lazy" decoding="async" width="300" height="150" />
+                            ) : (
+                              <div style={{ width: '100%', height: '100%', minHeight: 140, background: 'linear-gradient(135deg, #fdfbf9 0%, #f4eee9 100%)', borderRadius: '8px' }} />
+                            )}
                             <div className="banner-label">New Arrivals</div>
                           </div>
                         </div>

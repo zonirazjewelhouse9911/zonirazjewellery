@@ -166,6 +166,7 @@ const ShopByCollection = memo(function ShopByCollection({ products = [] }) {
           {displayed[0].video ? (
             <LazyVideo
               src={displayed[0].video}
+              poster={displayed[0].image}
               className="collection-card-img"
             />
           ) : (
@@ -185,6 +186,7 @@ const ShopByCollection = memo(function ShopByCollection({ products = [] }) {
               {col.video ? (
                 <LazyVideo
                   src={col.video}
+                  poster={col.image}
                   className="collection-card-img"
                   style={{ objectFit: 'cover', width: '100%', height: '100%', display: 'block' }}
                 />

@@ -19,7 +19,9 @@ exports.getSimilarProducts = async (productId, limit = 4) => {
             queryOr.unshift({ _id: productId });
         }
 
-        const targetProduct = await Product.findOne({ $or: queryOr }).lean();
+        const targetProduct = await Product.findOne({ $or: queryOr })
+            .select('category_id category product_category subcategory_id product_subcategory product_type')
+            .lean();
 
         if (!targetProduct) {
             return {
@@ -56,7 +58,10 @@ exports.getSimilarProducts = async (productId, limit = 4) => {
             matchQuery.$or.push({ product_type: targetProduct.product_type });
         }
 
-        const data = await Product.find(matchQuery).limit(Number(limit) || 4).lean();
+        const data = await Product.find(matchQuery)
+            .select('product_id product_title name slug product_slug price basePrice product_category product_subcategory gallery stock status feature discount')
+            .limit(Number(limit) || 4)
+            .lean();
 
         return {
             success: true,

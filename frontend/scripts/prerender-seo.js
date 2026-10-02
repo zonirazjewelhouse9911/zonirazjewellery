@@ -82,7 +82,7 @@ function computeProductMetadata(p) {
 
   const canonical = `${DOMAIN}/product/${slug}`;
 
-  let image = 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png';
+  let image = 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png';
   if (p.image) {
     image = p.image;
   } else if (Array.isArray(p.images) && p.images.length > 0) {

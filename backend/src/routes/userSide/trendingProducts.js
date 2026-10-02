@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../../models/productModel');
 const cacheManager = require('../../utils/cacheManager');
+const httpCache = require('../../middleware/httpCache');
 
 // GET /api/userSide/trending-products - Fetch most bought & trending products
-router.get('/trending-products', async (req, res) => {
+router.get('/trending-products', httpCache(60), async (req, res) => {
   try {
     const cachedPayload = await cacheManager.get('trending_products');
     if (cachedPayload) {
@@ -19,11 +20,17 @@ router.get('/trending-products', async (req, res) => {
         { is_popular: true },
         { tags: { $in: ['trending', 'bestseller', 'popular', 'top', 'trending-now'] } }
       ]
-    }).lean();
+    })
+      .select('product_id product_title name slug product_slug price basePrice product_category product_subcategory gallery stock status feature is_trending is_bestseller is_popular tags discount')
+      .lean();
 
     // Fallback: If less than 6 tagged trending products exist, fetch top items from vault
     if (!products || products.length < 6) {
-      products = await Product.find().sort({ create_date: -1 }).limit(30).lean();
+      products = await Product.find()
+        .select('product_id product_title name slug product_slug price basePrice product_category product_subcategory gallery stock status feature is_trending is_bestseller is_popular tags discount')
+        .sort({ create_date: -1 })
+        .limit(30)
+        .lean();
     }
 
     const payload = {

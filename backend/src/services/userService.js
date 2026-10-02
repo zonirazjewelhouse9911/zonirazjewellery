@@ -98,15 +98,19 @@ class UserService {
 
     let user = null;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      user = await User.findById(id).lean();
+      user = await User.findById(id).select('-password -otp -otpExpiry').lean();
     }
 
     if (!user) {
       return null;
     }
 
-    // Get order history and statistics using lean
-    const orders = await Order.find({ userId: user._id }).sort({ createdAt: -1 }).lean();
+    // Get order history and address document in parallel using lean
+    const [orders, addressDoc] = await Promise.all([
+      Order.find({ userId: user._id }).sort({ createdAt: -1 }).lean(),
+      Address.findOne({ user_id: user._id }).lean()
+    ]);
+
     const orderCount = orders.length;
     const lifetimeValue = orders.reduce((sum, order) => {
       if (order.paymentStatus === 'paid') {
@@ -115,8 +119,6 @@ class UserService {
       return sum;
     }, 0);
 
-    // Fetch saved profile addresses
-    const addressDoc = await Address.findOne({ user_id: user._id }).lean();
     const savedAddresses = (addressDoc?.entries || []).map((e, idx) => ({
       fullName: e.name || user.name || user.userName || 'Customer',
       phone: String(e.mobile || user.phone || user.userPhone || ''),

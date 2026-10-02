@@ -152,14 +152,14 @@ export default React.memo(function ZonirazAssurance() {
                     loop
                     muted={index !== activeIndex || isMuted}
                     playsInline
-                    preload="metadata"
+                    preload={index === activeIndex ? "metadata" : "none"}
                     poster={story.poster}
                     style={{ objectFit: 'cover' }}
-                    autoPlay
+                    autoPlay={index === activeIndex}
                   >
                     {story.webm && <source src={story.webm} type="video/webm" />}
-                    <source src={story.video} type="video/mp4" />
-                    <track kind="captions" src="https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
+                    {index === activeIndex && <source src={story.video} type="video/mp4" />}
+                    <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
                   </video>
                 ) : (
                   <img src={story.image} alt={story.title} className="za-card-bg-img" loading="lazy" decoding="async" width="400" height="500" />

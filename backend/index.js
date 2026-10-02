@@ -323,7 +323,10 @@ io.on('connection', (socket) => {
 // ─────────────────────────────────────────────────────────────────────────────
 
 // Connect to database and start server
-connectDB();
+const { warmUpCaches } = require('./src/utils/cacheWarmer');
+connectDB().then(() => {
+  warmUpCaches();
+}).catch(() => {});
 
 server.listen(process.env.PORT || 55000, () => {
   console.log(`Server is running on http://localhost:${process.env.PORT || 55000}`);

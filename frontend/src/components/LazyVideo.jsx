@@ -10,7 +10,6 @@ const LazyVideo = memo(function LazyVideo({
   loop = true,
   muted = true,
   playsInline = true,
-  preload = 'metadata',
   objectFit = 'cover'
 }) {
   const [isInView, setIsInView] = useState(false);
@@ -22,10 +21,20 @@ const LazyVideo = memo(function LazyVideo({
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsInView(true);
-          observer.disconnect();
+          if (videoRef.current && autoPlay) {
+            videoRef.current.play().catch(() => {});
+          }
+        } else {
+          // Pause when scrolled out of view to stop network buffering & save CPU/RAM
+          if (videoRef.current) {
+            videoRef.current.pause();
+          }
         }
       },
-      { rootMargin: '200px' }
+      {
+        rootMargin: '0px',
+        threshold: 0.15
+      }
     );
 
     if (containerRef.current) {
@@ -33,21 +42,7 @@ const LazyVideo = memo(function LazyVideo({
     }
 
     return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (isInView && videoRef.current && autoPlay) {
-      const vid = videoRef.current;
-      vid.defaultMuted = true;
-      vid.muted = true;
-      const playPromise = vid.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Autoplay was prevented or pending
-        });
-      }
-    }
-  }, [isInView, autoPlay, src]);
+  }, [autoPlay]);
 
   return (
     <div
@@ -58,6 +53,7 @@ const LazyVideo = memo(function LazyVideo({
         overflow: 'hidden',
         width: '100%',
         height: '100%',
+        background: '#f8f4f0',
         ...style
       }}
     >
@@ -68,7 +64,7 @@ const LazyVideo = memo(function LazyVideo({
           loop={loop}
           muted={muted}
           playsInline={playsInline}
-          preload={preload}
+          preload="metadata"
           poster={poster}
           style={{
             width: '100%',
@@ -79,7 +75,7 @@ const LazyVideo = memo(function LazyVideo({
         >
           {webm && <source src={webm} type="video/webm" />}
           {src && <source src={src} type="video/mp4" />}
-          <track kind="captions" src="https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
+          <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
         </video>
       ) : poster ? (
         <img
@@ -99,7 +95,7 @@ const LazyVideo = memo(function LazyVideo({
           style={{
             width: '100%',
             height: '100%',
-            backgroundColor: '#f5efed'
+            background: 'linear-gradient(135deg, #fbf7f4 0%, #ede6df 100%)'
           }}
         />
       )}

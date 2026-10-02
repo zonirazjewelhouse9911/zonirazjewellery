@@ -142,7 +142,7 @@ export default function Hero() {
               pointerEvents: 'none'
             }}
           >
-            <track kind="captions" src="https://media.zoniraz.com/uploads/zoniraz_frontend/empty.vtt" srcLang="en" label="English" default />
+            <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
           </video>
         ) : currentSlide.type === 'image' ? (
           currentSlide.link ? (

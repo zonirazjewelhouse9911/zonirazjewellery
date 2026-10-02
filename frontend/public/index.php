@@ -232,7 +232,7 @@ $staticPages = [
 $title = 'Best Diamond Jewellery in Alwar | Zoniraz';
 $description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery online in Alwar. Browse handcrafted rings, necklaces, bangles, and bridal collections.';
 $canonical = $domain . '/';
-$image = 'https://res.cloudinary.com/fxokwlyu/image/upload/v1788498405/zoniraz_frontend/zoni1.png';
+$image = 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png';
 $isMatchedRoute = false;
 
 if ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.php') {
