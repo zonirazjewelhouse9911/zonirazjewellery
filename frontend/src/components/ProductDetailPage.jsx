@@ -890,8 +890,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
   return (
     <div className="pdp-wrapper" ref={topRef}>
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-
         .pdp-wrapper {
           background: #FAF8F6;
           font-family: 'Plus Jakarta Sans', sans-serif;
@@ -2846,6 +2844,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
                       src={(p.images && p.images.length > 0) ? p.images[activeImgIndex] : p.image}
                       alt={p.name}
                       className="pdp-related-img"
+                      loading="lazy"
+                      decoding="async"
+                      width="280"
+                      height="280"
                     />
 
                     {p.images && p.images.length > 1 && (

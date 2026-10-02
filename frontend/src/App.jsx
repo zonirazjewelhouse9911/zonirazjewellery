@@ -473,9 +473,84 @@ const STATIC_PAGE_SEO = {
   }
 };
 
+function getInitialRouteState() {
+  if (typeof window === 'undefined') {
+    return { view: 'home', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  }
+
+  const path = (window.location.pathname || '').toLowerCase();
+  const searchParams = new URLSearchParams(window.location.search || '');
+
+  if (path.startsWith('/product-') || path.startsWith('/product/')) {
+    const rawSlug = path.startsWith('/product-') ? path.replace('/product-', '') : path.replace('/product/', '');
+    const slug = rawSlug.split('?')[0].replace(/\/+$/, '').trim();
+    if (!slug || slug.toLowerCase().startsWith('getproduct')) {
+      return { view: 'not-found', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+    }
+    return { view: 'product', productId: slug, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  }
+
+  if (path === '/wishlist') return { view: 'wishlist', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/cart') return { view: 'cart', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/profile' || path.startsWith('/profile/')) return { view: 'profile', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/checkout') return { view: 'checkout', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/contact') return { view: 'contact', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/blog' || path === '/blogs') return { view: 'blog', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path.startsWith('/blog/') || path.startsWith('/blogs/')) {
+    const slug = path.replace(/^\/blogs?\//, '').split('?')[0].trim();
+    return { view: 'blog', productId: null, categoryName: 'Rings', blogSlug: slug || null, helpCategory: 'delivery' };
+  }
+  if (path === '/about') return { view: 'about', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/zoniraz-alwar' || path === '/zoniraz-alwar/') return { view: 'zoniraz-alwar', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/franchise') return { view: 'franchise', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/sell-gold' || path === '/exchange') return { view: 'sell-gold', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/buy-gold') return { view: 'buy-gold', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/gold-mine' || path === '/plans/gold-mine') return { view: 'gold-mine', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/loose-stones' || path === '/buy-loose-stones' || path === '/loose-diamonds') return { view: 'loose-stones', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/delivery' || path === '/shipping' || path === '/payment' || path === '/returns' || path === '/giftcards') return { view: 'delivery', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/terms') return { view: 'terms', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/privacy') return { view: 'privacy', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/admin-call') return { view: 'admin-call', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/all-collections') return { view: 'all-collections', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+
+  if (path !== '/' && path !== '/index.html') {
+    const routeOnly = path.substring(1);
+    const cleanPathSegment = routeOnly.replace(/[^a-z0-9]/g, '');
+    const knownCategories = [
+      "Rings", "Bracelets", "Brooches", "Chains", "Chain", "Bangles", "Anklets", 
+      "Necklaces", "Pendants", "Pendant", "Mangalsutras", "Mangalsutra", "Nose Pins", "Nose pin", "Earrings", 
+      "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
+    ];
+    let matchedCategory = knownCategories.find(cat => 
+      cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanPathSegment ||
+      cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanPathSegment + 's' ||
+      cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanPathSegment + 'es'
+    );
+    if (matchedCategory) {
+      return { view: 'rings', productId: null, categoryName: matchedCategory, blogSlug: null, helpCategory: 'delivery' };
+    }
+  }
+
+  if (searchParams.has('category')) {
+    const cat = searchParams.get('category');
+    const knownCategories = [
+      "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
+      "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
+      "Gold Coins", "Solitaires", "Coins", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
+    ];
+    const matched = knownCategories.find(k => k.toLowerCase() === (cat || '').toLowerCase());
+    if (matched) {
+      return { view: 'rings', productId: null, categoryName: matched, blogSlug: null, helpCategory: 'delivery' };
+    }
+  }
+
+  return { view: 'home', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+}
+
 function AppContent() {
   const { isAuthModalOpen, setIsAuthModalOpen } = useContext(AuthContext);
-  const [currentView, setCurrentView] = React.useState('home');
+  const initialRoute = React.useMemo(() => getInitialRouteState(), []);
+  const [currentView, setCurrentView] = React.useState(initialRoute.view);
   const [wishlist, setWishlist] = React.useState(() => {
     try {
       const saved = localStorage.getItem('zoniraj_wishlist');
@@ -492,11 +567,11 @@ function AppContent() {
       return {};
     }
   });
-  const [selectedProductId, setSelectedProductId] = React.useState(null);
-  const [helpCategory, setHelpCategory] = React.useState('delivery');
-  const [selectedCategoryName, setSelectedCategoryName] = React.useState('Rings');
+  const [selectedProductId, setSelectedProductId] = React.useState(initialRoute.productId);
+  const [helpCategory, setHelpCategory] = React.useState(initialRoute.helpCategory);
+  const [selectedCategoryName, setSelectedCategoryName] = React.useState(initialRoute.categoryName);
   const [termsTab, setTermsTab] = React.useState('terms');
-  const [selectedBlogSlug, setSelectedBlogSlug] = React.useState(null);
+  const [selectedBlogSlug, setSelectedBlogSlug] = React.useState(initialRoute.blogSlug);
 
   const [allProducts, setAllProducts] = React.useState(() => {
     try {
