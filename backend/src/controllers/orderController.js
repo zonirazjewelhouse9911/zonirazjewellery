@@ -3,8 +3,12 @@ const orderService = require('../services/orderService');
 class OrderController {
   getOrders = async (req, res) => {
     try {
-      const orders = await orderService.getAllOrders();
-      return res.status(200).json({ success: true, data: orders });
+      const { page, limit, status, userId } = req.query;
+      const result = await orderService.getAllOrders({ page, limit, status, userId });
+      if (page && limit && result.pagination) {
+        return res.status(200).json({ success: true, data: result.orders, pagination: result.pagination });
+      }
+      return res.status(200).json({ success: true, data: result });
     } catch (error) {
       console.error('Get Orders Controller Error:', error);
       return res.status(500).json({ success: false, message: 'Failed to fetch order history' });

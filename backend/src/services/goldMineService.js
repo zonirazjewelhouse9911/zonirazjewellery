@@ -6,7 +6,7 @@ const goldMineEmailService = require('./goldMineEmailService');
 // Helper to get current live 24k gold rate
 async function getCurrent24kRate() {
   try {
-    const pricing = await JewelleryPricing.findOne().sort({ createdAt: -1 });
+    const pricing = await JewelleryPricing.findOne().sort({ createdAt: -1 }).lean();
     if (pricing && pricing.gold_rate_24k > 0) {
       return pricing.gold_rate_24k;
     }
@@ -279,10 +279,9 @@ exports.getUserPlans = async (userEmail) => {
   }
 
   const liveRate24k = await getCurrent24kRate();
-  const plans = await GoldMine.find({ userEmail: userEmail.toLowerCase().trim() }).sort({ createdAt: -1 });
+  const plans = await GoldMine.find({ userEmail: userEmail.toLowerCase().trim() }).sort({ createdAt: -1 }).lean();
 
-  const enrichedPlans = plans.map(p => {
-    const pObj = p.toObject();
+  const enrichedPlans = plans.map(pObj => {
     const g24k = pObj.totalGold24kGrams || 0;
 
     // Karat weight conversions:
@@ -313,13 +312,12 @@ exports.getPlanDetails = async (planId) => {
     return { success: false, message: 'Plan ID is required', data: null };
   }
 
-  const plan = await GoldMine.findOne({ planId: planId });
-  if (!plan) {
+  const pObj = await GoldMine.findOne({ planId: planId }).lean();
+  if (!pObj) {
     return { success: false, message: 'Plan not found', data: null };
   }
 
   const liveRate24k = await getCurrent24kRate();
-  const pObj = plan.toObject();
   const g24k = pObj.totalGold24kGrams || 0;
 
   pObj.karatWeights = {
@@ -341,10 +339,9 @@ exports.getPlanDetails = async (planId) => {
 // 5. Admin: Get all 10+1 Gold Mine plans across all users
 exports.getAllPlans = async () => {
   const liveRate24k = await getCurrent24kRate();
-  const plans = await GoldMine.find().sort({ createdAt: -1 });
+  const plans = await GoldMine.find().sort({ createdAt: -1 }).lean();
 
-  const enrichedPlans = plans.map(p => {
-    const pObj = p.toObject();
+  const enrichedPlans = plans.map(pObj => {
     const g24k = pObj.totalGold24kGrams || 0;
     pObj.karatWeights = {
       '24K': parseFloat(g24k.toFixed(3)),

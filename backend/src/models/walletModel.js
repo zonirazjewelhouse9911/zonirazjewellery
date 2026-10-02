@@ -32,5 +32,7 @@ const walletSchema = new mongoose.Schema({
   timestamps: true
 });
 
+walletSchema.index({ user: 1 });
+
 const Wallet = mongoose.model('Wallet', walletSchema);
 module.exports = Wallet;

@@ -5,26 +5,44 @@ const { generateSitemap } = require('../utils/sitemapGenerator');
 const cacheManager = require('../utils/cacheManager');
 const { uploadToMediaServer } = require('../services/mediaStorageService');
 
-const productCache = new Map();
-
-function invalidateProductCaches() {
-  productCache.delete('products');
-  cacheManager.del('navbar_data');
-  cacheManager.del('all_collections');
-  cacheManager.del('trending_products');
-  cacheManager.del('product_base_pricing_all');
+async function invalidateProductCaches() {
+  await Promise.all([
+    cacheManager.del('products'),
+    cacheManager.del('navbar_data'),
+    cacheManager.del('all_collections'),
+    cacheManager.del('trending_products'),
+    cacheManager.del('product_base_pricing_all')
+  ]);
 }
 
 class ProductController {
   getProducts = async (req, res) => {
     try {
-      if (productCache.has('products')) {
-        return res.status(200).json(productCache.get('products'));
+      const { page, limit, category, subcategory, sort, select } = req.query;
+      const isPaginated = page !== undefined && limit !== undefined;
+      const cacheKey = isPaginated 
+        ? `products:page:${page}:limit:${limit}:cat:${category || 'all'}:subcat:${subcategory || 'all'}:sort:${sort || 'desc'}`
+        : 'products';
+
+      const cached = await cacheManager.get(cacheKey);
+      if (cached) {
+        return res.status(200).json(cached);
       }
-      const products = await productService.getAllProducts();
-      const payload = { success: true, data: products };
-      productCache.set('products', payload);
-      setTimeout(() => productCache.delete('products'), 5 * 60 * 1000);
+
+      const result = await productService.getAllProducts({ page, limit, category, subcategory, sort, select });
+      
+      let payload;
+      if (isPaginated && result.pagination) {
+        payload = {
+          success: true,
+          data: result.products,
+          pagination: result.pagination
+        };
+      } else {
+        payload = { success: true, data: result };
+      }
+
+      await cacheManager.set(cacheKey, payload, 300000); // 5 min cache
       return res.status(200).json(payload);
     } catch (error) {
       console.error('Get Products Controller Error:', error);

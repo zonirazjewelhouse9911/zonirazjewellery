@@ -72,5 +72,9 @@ const sellGoldInquirySchema = new mongoose.Schema({
   timestamps: true // Auto-handles createdAt and updatedAt
 });
 
+sellGoldInquirySchema.index({ email: 1 });
+sellGoldInquirySchema.index({ phone: 1 });
+sellGoldInquirySchema.index({ status: 1, createdAt: -1 });
+
 const SellGoldInquiry = mongoose.model('sellgoldinquirie', sellGoldInquirySchema);
 module.exports = SellGoldInquiry;

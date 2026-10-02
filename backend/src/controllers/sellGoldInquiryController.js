@@ -3,8 +3,12 @@ const sellGoldInquiryService = require('../services/sellGoldInquiryService');
 class SellGoldInquiryController {
   getInquiries = async (req, res) => {
     try {
-      const inquiries = await sellGoldInquiryService.getAllInquiries();
-      return res.status(200).json({ success: true, data: inquiries });
+      const { page, limit, status } = req.query;
+      const result = await sellGoldInquiryService.getAllInquiries({ page, limit, status });
+      if (page && limit && result.pagination) {
+        return res.status(200).json({ success: true, data: result.inquiries, pagination: result.pagination });
+      }
+      return res.status(200).json({ success: true, data: result });
     } catch (error) {
       console.error('Get Sell Gold Inquiries Controller Error:', error);
       return res.status(500).json({ success: false, message: 'Failed to retrieve sell gold program inquiries' });

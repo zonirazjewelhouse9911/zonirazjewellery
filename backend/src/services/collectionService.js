@@ -4,12 +4,13 @@ const cacheManager = require('../utils/cacheManager');
 
 class CollectionService {
   async getAllCollections() {
-    const cached = cacheManager.get('all_collections');
+    const cached = await cacheManager.get('all_collections');
     if (cached) return cached;
 
-    const collections = await Collection.find().sort({ priority: 1, name: 1 }).lean();
-    // Select relevant product metadata for collection matching
-    const products = await Product.find().select('product_title product_slug tags product_subcategory product_category').lean();
+    const [collections, products] = await Promise.all([
+      Collection.find().sort({ priority: 1, name: 1 }).lean(),
+      Product.find({ status: { $ne: '0' } }).select('product_title product_slug tags product_subcategory product_category').lean()
+    ]);
 
     // Map through collections and dynamically calculate matching products based on subcategory, tags, and titles
     const collectionsWithStats = collections.map(col => {
@@ -53,7 +54,7 @@ class CollectionService {
       };
     });
 
-    cacheManager.set('all_collections', collectionsWithStats, 180000); // 3 min cache
+    await cacheManager.set('all_collections', collectionsWithStats, 180000); // 3 min cache
     return collectionsWithStats;
   }
 
@@ -84,7 +85,7 @@ class CollectionService {
 
     const collection = new Collection(collectionData);
     const saved = await collection.save();
-    cacheManager.del('all_collections');
+    await cacheManager.del('all_collections');
     return saved;
   }
 
@@ -120,7 +121,7 @@ class CollectionService {
     });
 
     const saved = await collection.save();
-    cacheManager.del('all_collections');
+    await cacheManager.del('all_collections');
     return saved;
   }
 }

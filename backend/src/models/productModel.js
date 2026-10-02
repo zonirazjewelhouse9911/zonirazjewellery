@@ -284,5 +284,15 @@ productSchema.index({ is_popular: 1, status: 1 });
 productSchema.index({ tags: 1 });
 productSchema.index({ create_date: -1 });
 
+// Full-text search index for keyword searching in titles, descriptions, and codes
+productSchema.index({ product_title: "text", description: "text", product_code: "text" });
+
+// Compound indexes for category/subcategory filtering combined with price & date sorting
+productSchema.index({ category_id: 1, price: 1, status: 1 });
+productSchema.index({ category_id: 1, create_date: -1, status: 1 });
+productSchema.index({ product_category: 1, price: 1, status: 1 });
+productSchema.index({ product_category: 1, create_date: -1, status: 1 });
+productSchema.index({ price: 1, status: 1 });
+
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;

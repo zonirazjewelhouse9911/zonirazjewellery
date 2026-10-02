@@ -48,10 +48,10 @@ async function getCategoryName(categoryId) {
   try {
     let category = null;
     if (categoryId.match(/^[0-9a-fA-F]{24}$/)) {
-      category = await Category.findById(categoryId);
+      category = await Category.findById(categoryId).lean();
     }
     if (!category) {
-      category = await Category.findOne({ slug: categoryId });
+      category = await Category.findOne({ slug: categoryId }).lean();
     }
     if (category) {
       return category.name;
@@ -83,8 +83,39 @@ function getMetalTypeName(metalType) {
 }
 
 class ProductService {
-  async getAllProducts() {
-    return await Product.find().sort({ create_date: -1 }).lean();
+  async getAllProducts({ page, limit, category, subcategory, sort = -1, select } = {}) {
+    let query = {};
+    if (category) query.product_category = category;
+    if (subcategory) query.product_subcategory = subcategory;
+
+    let queryBuilder = Product.find(query).sort({ create_date: sort }).lean();
+
+    if (select) {
+      queryBuilder = queryBuilder.select(select);
+    }
+
+    if (page && limit) {
+      const pageNum = Math.max(1, Number(page));
+      const limitNum = Math.max(1, Number(limit));
+      const skip = (pageNum - 1) * limitNum;
+
+      const [products, total] = await Promise.all([
+        queryBuilder.skip(skip).limit(limitNum),
+        Product.countDocuments(query)
+      ]);
+
+      return {
+        products,
+        pagination: {
+          total,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(total / limitNum)
+        }
+      };
+    }
+
+    return await queryBuilder;
   }
 
   async getProductById(id) {

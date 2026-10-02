@@ -165,6 +165,7 @@ orderSchema.index({ userId: 1, createdAt: -1 });
 orderSchema.index({ createdAt: -1 });
 orderSchema.index({ paymentStatus: 1 });
 orderSchema.index({ orderStatus: 1 });
+orderSchema.index({ razorpayOrderId: 1 });
 
 const order = mongoose.model('order', orderSchema);
 module.exports = order;

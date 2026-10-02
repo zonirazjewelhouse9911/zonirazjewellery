@@ -4,7 +4,7 @@ const cacheManager = require("../../utils/cacheManager");
 
 exports.navbar = async (req, res) => {
     try {
-        const cached = cacheManager.get("navbar_data");
+        const cached = await cacheManager.get("navbar_data");
         if (cached) {
             return {
                 message: "NAVEBAR",
@@ -76,7 +76,7 @@ exports.navbar = async (req, res) => {
             }
         ]);
 
-        cacheManager.set("navbar_data", data, 600000); // 10 minutes cache
+        await cacheManager.set("navbar_data", data, 600000); // 10 minutes cache
 
         return {
             message: "NAVEBAR",

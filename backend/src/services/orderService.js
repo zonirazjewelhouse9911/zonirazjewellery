@@ -1,9 +1,35 @@
 const Order = require('../models/orderModel');
 
 class OrderService {
-  async getAllOrders() {
-    // Sort by createdAt: -1 to show latest orders first using lean
-    return await Order.find().sort({ createdAt: -1 }).lean();
+  async getAllOrders({ page, limit, status, userId } = {}) {
+    let query = {};
+    if (status) query.orderStatus = String(status).toLowerCase();
+    if (userId) query.userId = userId;
+
+    let queryBuilder = Order.find(query).sort({ createdAt: -1 }).lean();
+
+    if (page && limit) {
+      const pageNum = Math.max(1, Number(page));
+      const limitNum = Math.max(1, Number(limit));
+      const skip = (pageNum - 1) * limitNum;
+
+      const [orders, total] = await Promise.all([
+        queryBuilder.skip(skip).limit(limitNum),
+        Order.countDocuments(query)
+      ]);
+
+      return {
+        orders,
+        pagination: {
+          total,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(total / limitNum)
+        }
+      };
+    }
+
+    return await queryBuilder;
   }
 
   async getOrderById(id) {

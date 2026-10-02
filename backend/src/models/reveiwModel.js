@@ -31,7 +31,10 @@ const reveiwSchema = new mongoose.Schema({
   ]
 }, {
   timestamps: true
-})
+});
+
+reveiwSchema.index({ userId: 1 });
+reveiwSchema.index({ "products.productId": 1 });
 
 const Reveiw = mongoose.model("Reveiw", reveiwSchema);
 module.exports = Reveiw;

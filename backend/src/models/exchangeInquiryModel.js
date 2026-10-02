@@ -34,7 +34,11 @@ const exchangeInquirySchema = new mongoose.Schema({
   }
 }, {
   timestamps: true // Auto-handles createdAt and updatedAt
-});
+ });
+
+exchangeInquirySchema.index({ email: 1 });
+exchangeInquirySchema.index({ phone: 1 });
+exchangeInquirySchema.index({ status: 1, createdAt: -1 });
 
 const ExchangeInquiry = mongoose.model('exchangeinquiries', exchangeInquirySchema);
 module.exports = ExchangeInquiry;

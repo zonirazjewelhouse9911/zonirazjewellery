@@ -4,8 +4,8 @@ const Address = require('../models/address');
 
 class UserService {
   async getAllUsers() {
-    // Return all users sorted by name using lean
-    const users = await User.find().sort({ name: 1 }).lean();
+    // Return all users sorted by name using lean, excluding sensitive auth fields
+    const users = await User.find().select('-password -otp -otpExpiry').sort({ name: 1 }).lean();
     if (!users || users.length === 0) return [];
 
     const userIds = users.map(u => u._id);

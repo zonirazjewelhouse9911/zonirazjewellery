@@ -33,5 +33,7 @@ const blogAccessSchema = new mongoose.Schema({
   timestamps: true
 });
 
+blogAccessSchema.index({ username: 1 });
+
 const BlogAccess = mongoose.model("BlogAccess", blogAccessSchema);
 module.exports = BlogAccess;

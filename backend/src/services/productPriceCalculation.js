@@ -52,18 +52,15 @@ exports.productPricing = async (req, res) => {
         let making_charges_amount = 0;
         let gst_amount = 0;
 
-        let product_data = null;
-        if (mongoose.Types.ObjectId.isValid(product_id)) {
-            product_data = await Product.findById(product_id);
-        }
-        if (!product_data) {
-            product_data = await Product.findOne({
-                $or: [
-                    { product_id: product_id },
-                    { product_slug: product_id }
-                ]
-            });
-        }
+        const productQuery = mongoose.Types.ObjectId.isValid(product_id)
+            ? { $or: [{ _id: product_id }, { product_id: product_id }, { product_slug: product_id }] }
+            : { $or: [{ product_id: product_id }, { product_slug: product_id }] };
+
+        const [product_data, current_price] = await Promise.all([
+            Product.findOne(productQuery).lean(),
+            livePrice.findOne().sort({ createdAt: -1 }).lean()
+        ]);
+
         if (!product_data) {
             return res.status(404).json({
                 success: false,
@@ -72,7 +69,6 @@ exports.productPricing = async (req, res) => {
             });
         }
 
-        const current_price = await livePrice.findOne().sort({ createdAt: -1 });
         if (!current_price) {
             return res.status(404).json({
                 success: false,

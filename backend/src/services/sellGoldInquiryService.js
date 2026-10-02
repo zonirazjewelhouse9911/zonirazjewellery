@@ -1,8 +1,34 @@
 const SellGoldInquiry = require('../models/sellGoldInquiryModel');
 
 class SellGoldInquiryService {
-  async getAllInquiries() {
-    return await SellGoldInquiry.find().sort({ createdAt: -1 });
+  async getAllInquiries({ page, limit, status } = {}) {
+    let query = {};
+    if (status) query.status = status;
+
+    let queryBuilder = SellGoldInquiry.find(query).sort({ createdAt: -1 }).lean();
+
+    if (page && limit) {
+      const pageNum = Math.max(1, Number(page));
+      const limitNum = Math.max(1, Number(limit));
+      const skip = (pageNum - 1) * limitNum;
+
+      const [inquiries, total] = await Promise.all([
+        queryBuilder.skip(skip).limit(limitNum),
+        SellGoldInquiry.countDocuments(query)
+      ]);
+
+      return {
+        inquiries,
+        pagination: {
+          total,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(total / limitNum)
+        }
+      };
+    }
+
+    return await queryBuilder;
   }
 
   async getInquiryById(id) {
@@ -12,7 +38,7 @@ class SellGoldInquiryService {
 
     let inquiry = null;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      inquiry = await SellGoldInquiry.findById(id);
+      inquiry = await SellGoldInquiry.findById(id).lean();
     }
     return inquiry;
   }

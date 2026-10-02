@@ -2,7 +2,7 @@ const Coupon = require('../models/couponModel');
 
 class CouponService {
   async getAllCoupons() {
-    return await Coupon.find().sort({ createdAt: -1 });
+    return await Coupon.find().sort({ createdAt: -1 }).lean();
   }
 
   async getCouponById(id) {
@@ -12,10 +12,10 @@ class CouponService {
 
     let coupon = null;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      coupon = await Coupon.findById(id);
+      coupon = await Coupon.findById(id).lean();
     }
     if (!coupon) {
-      coupon = await Coupon.findOne({ code: id.toUpperCase() });
+      coupon = await Coupon.findOne({ code: id.toUpperCase() }).lean();
     }
     return coupon;
   }

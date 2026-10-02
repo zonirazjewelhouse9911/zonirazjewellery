@@ -3,8 +3,12 @@ const exchangeInquiryService = require('../services/exchangeInquiryService');
 class ExchangeInquiryController {
   getInquiries = async (req, res) => {
     try {
-      const inquiries = await exchangeInquiryService.getAllInquiries();
-      return res.status(200).json({ success: true, data: inquiries });
+      const { page, limit, status } = req.query;
+      const result = await exchangeInquiryService.getAllInquiries({ page, limit, status });
+      if (page && limit && result.pagination) {
+        return res.status(200).json({ success: true, data: result.inquiries, pagination: result.pagination });
+      }
+      return res.status(200).json({ success: true, data: result });
     } catch (error) {
       console.error('Get Inquiries Controller Error:', error);
       return res.status(500).json({ success: false, message: 'Failed to retrieve exchange program inquiries' });

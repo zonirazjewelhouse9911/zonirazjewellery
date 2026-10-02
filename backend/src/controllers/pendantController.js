@@ -8,7 +8,7 @@ const cacheManager = require('../utils/cacheManager');
  */
 exports.getConfig = async (req, res) => {
   try {
-    const cached = cacheManager.get('pendant_config');
+    const cached = await cacheManager.get('pendant_config');
     if (cached) {
       return res.status(200).json(cached);
     }
@@ -33,7 +33,7 @@ exports.getConfig = async (req, res) => {
       inventory: assetInventory,
       config: dbConfig
     };
-    cacheManager.set('pendant_config', payload, 300000); // 5 min cache
+    await cacheManager.set('pendant_config', payload, 300000); // 5 min cache
 
     return res.status(200).json(payload);
   } catch (err) {
@@ -145,7 +145,7 @@ exports.updateConfig = async (req, res) => {
     if (letterCalibrations) configDoc.letterCalibrations = letterCalibrations;
 
     await configDoc.save();
-    cacheManager.del('pendant_config');
+    await cacheManager.del('pendant_config');
     return res.status(200).json({ success: true, message: 'Pendant configuration updated successfully', data: configDoc });
   } catch (err) {
     console.error('Error updating pendant config:', err);

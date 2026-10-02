@@ -35,5 +35,9 @@ const goldMineSchema = new mongoose.Schema({
   timestamps: true
 });
 
+goldMineSchema.index({ user: 1, status: 1 });
+goldMineSchema.index({ userEmail: 1 });
+goldMineSchema.index({ createdAt: -1 });
+
 const GoldMine = mongoose.model('GoldMine', goldMineSchema);
 module.exports = GoldMine;

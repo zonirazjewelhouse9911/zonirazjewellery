@@ -40,7 +40,7 @@ class JewelleryPricingService {
    * Fetches the latest daily rates from the database.
    */
   async getLatestRates() {
-    const cached = cacheManager.get("jewellery_rates");
+    const cached = await cacheManager.get("jewellery_rates");
     if (cached) return cached;
 
     let rates = await JewelleryPricing.findOne().sort({ updatedAt: -1 }).lean();
@@ -57,7 +57,7 @@ class JewelleryPricingService {
         gemstone_rate: 0,
         gst_percent: 3
       };
-      cacheManager.set("jewellery_rates", defaultRates, 180000);
+      await cacheManager.set("jewellery_rates", defaultRates, 180000);
       return defaultRates;
     }
     const ratesObj = rates;
@@ -67,7 +67,7 @@ class JewelleryPricingService {
     ratesObj.gold_rate_14k = g14 > 0 ? g14 : Math.round(g24 * 14 / 24);
     ratesObj.custom_diamond_rates = ratesObj.custom_diamond_rates || {};
 
-    cacheManager.set("jewellery_rates", ratesObj, 180000);
+    await cacheManager.set("jewellery_rates", ratesObj, 180000);
     return ratesObj;
   }
 
@@ -119,19 +119,35 @@ class JewelleryPricingService {
       });
       await rates.save();
     }
-    cacheManager.del("jewellery_rates");
-    cacheManager.del("product_base_pricing_all");
+    await Promise.all([
+      cacheManager.del("jewellery_rates"),
+      cacheManager.del("product_base_pricing_all")
+    ]);
     return rates;
   }
 
   /**
    * Recalculates prices of all products in the database using current rates.
+   * Optimized to avoid N+1 queries by pre-fetching categories and using bulkWrite.
    */
   async recalculateAllProducts() {
-    const rates = await this.getLatestRates();
-    const products = await Product.find();
+    const [rates, products, allCategories] = await Promise.all([
+      this.getLatestRates(),
+      Product.find().lean(),
+      Category.find().lean()
+    ]);
+
+    // Build fast in-memory category lookup maps (avoids N queries in loop)
+    const categoryMapById = new Map();
+    const categoryMapByName = new Map();
+    for (const cat of allCategories) {
+      if (cat._id) categoryMapById.set(cat._id.toString(), cat);
+      if (cat.name) categoryMapByName.set(cat.name.toLowerCase().trim(), cat);
+      if (cat.slug) categoryMapByName.set(cat.slug.toLowerCase().trim(), cat);
+    }
 
     const updatedProducts = [];
+    const bulkOps = [];
 
     for (const product of products) {
       const isPlainGold = isPlainGoldProduct(product);
@@ -150,16 +166,15 @@ class JewelleryPricingService {
       // 4. Calculate Solitaire Cost
       const solitaireCost = product.solitaires_price || 0;
 
-      // 5. Resolve Category and calculate making charges
+      // 5. Resolve Category in memory (No N+1 DB queries!)
       let category = null;
       if (product.category_id) {
-        if (product.category_id.match(/^[0-9a-fA-F]{24}$/)) {
-          category = await Category.findById(product.category_id);
-        }
-        if (!category) {
+        if (categoryMapById.has(product.category_id.toString())) {
+          category = categoryMapById.get(product.category_id.toString());
+        } else {
           const catName = categoryMap[product.category_id] || product.product_category;
-          if (catName) {
-            category = await Category.findOne({ name: catName });
+          if (catName && categoryMapByName.has(catName.toLowerCase().trim())) {
+            category = categoryMapByName.get(catName.toLowerCase().trim());
           }
         }
       }
@@ -194,16 +209,23 @@ class JewelleryPricingService {
       const gst = subtotal * (gstPercent / 100);
       const finalPrice = Math.round(subtotal + gst);
 
-      // 7. Update product document price and basePrice fields
-      product.price = finalPrice;
-      product.basePrice = finalPrice;
-      
-      await product.save();
+      bulkOps.push({
+        updateOne: {
+          filter: { _id: product._id },
+          update: { $set: { price: finalPrice, basePrice: finalPrice } }
+        }
+      });
+
       updatedProducts.push({
         id: product._id,
         title: product.product_title || product.name,
         price: finalPrice
       });
+    }
+
+    // Execute all updates in a single batch write instead of N individual saves
+    if (bulkOps.length > 0) {
+      await Product.bulkWrite(bulkOps);
     }
 
     return updatedProducts;
@@ -214,7 +236,7 @@ class JewelleryPricingService {
    */
   async calculateDynamicPrice({ product_id, size, metal, diamond }) {
     const rates = await this.getLatestRates();
-    const product = await Product.findById(product_id);
+    const product = await Product.findById(product_id).lean();
     if (!product) {
       throw new Error("Product not found");
     }
@@ -317,12 +339,12 @@ class JewelleryPricingService {
     let category = null;
     if (product.category_id) {
       if (product.category_id.match(/^[0-9a-fA-F]{24}$/)) {
-        category = await Category.findById(product.category_id);
+        category = await Category.findById(product.category_id).lean();
       }
       if (!category) {
         const catName = categoryMap[product.category_id] || product.product_category;
         if (catName) {
-          category = await Category.findOne({ name: catName });
+          category = await Category.findOne({ name: catName }).lean();
         }
       }
     }

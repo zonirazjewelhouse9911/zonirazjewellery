@@ -3,11 +3,11 @@ const cacheManager = require('../utils/cacheManager');
 
 class CategoryService {
   async getAllCategories() {
-    const cached = cacheManager.get('all_categories');
+    const cached = await cacheManager.get('all_categories');
     if (cached) return cached;
 
     const categories = await Category.find().sort({ name: 1 }).lean();
-    cacheManager.set('all_categories', categories, 180000); // 3 min cache
+    await cacheManager.set('all_categories', categories, 180000); // 3 min cache
     return categories;
   }
 
@@ -38,8 +38,10 @@ class CategoryService {
 
     const category = new Category(categoryData);
     const saved = await category.save();
-    cacheManager.del('all_categories');
-    cacheManager.del('navbar_data');
+    await Promise.all([
+      cacheManager.del('all_categories'),
+      cacheManager.del('navbar_data')
+    ]);
     return saved;
   }
 
@@ -75,8 +77,10 @@ class CategoryService {
     });
 
     const saved = await category.save();
-    cacheManager.del('all_categories');
-    cacheManager.del('navbar_data');
+    await Promise.all([
+      cacheManager.del('all_categories'),
+      cacheManager.del('navbar_data')
+    ]);
     return saved;
   }
 

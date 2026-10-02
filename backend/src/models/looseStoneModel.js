@@ -77,4 +77,8 @@ const looseStoneSchema = new mongoose.Schema({
   timestamps: true
 });
 
+looseStoneSchema.index({ stone_type: 1, status: 1 });
+looseStoneSchema.index({ price: 1, status: 1 });
+looseStoneSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('LooseStone', looseStoneSchema);

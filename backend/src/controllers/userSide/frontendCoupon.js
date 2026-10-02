@@ -7,7 +7,7 @@ exports.verifyCoupon = async (req, res) => {
         if (!code) return res.status(400).json({ error: 'Coupon code is required' });
 
         const cleanCode = String(code).trim().toUpperCase();
-        const coupon = await Coupon.findOne({ code: cleanCode, isActive: true });
+        const coupon = await Coupon.findOne({ code: cleanCode, isActive: true }).lean();
 
         if (!coupon) {
             return res.status(400).json({ error: 'Invalid or inactive coupon code' });

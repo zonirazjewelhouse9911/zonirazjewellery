@@ -1,8 +1,34 @@
 const ExchangeInquiry = require('../models/exchangeInquiryModel');
 
 class ExchangeInquiryService {
-  async getAllInquiries() {
-    return await ExchangeInquiry.find().sort({ createdAt: -1 });
+  async getAllInquiries({ page, limit, status } = {}) {
+    let query = {};
+    if (status) query.status = status;
+
+    let queryBuilder = ExchangeInquiry.find(query).sort({ createdAt: -1 }).lean();
+
+    if (page && limit) {
+      const pageNum = Math.max(1, Number(page));
+      const limitNum = Math.max(1, Number(limit));
+      const skip = (pageNum - 1) * limitNum;
+
+      const [inquiries, total] = await Promise.all([
+        queryBuilder.skip(skip).limit(limitNum),
+        ExchangeInquiry.countDocuments(query)
+      ]);
+
+      return {
+        inquiries,
+        pagination: {
+          total,
+          page: pageNum,
+          limit: limitNum,
+          totalPages: Math.ceil(total / limitNum)
+        }
+      };
+    }
+
+    return await queryBuilder;
   }
 
   async getInquiryById(id) {
@@ -12,7 +38,7 @@ class ExchangeInquiryService {
 
     let inquiry = null;
     if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      inquiry = await ExchangeInquiry.findById(id);
+      inquiry = await ExchangeInquiry.findById(id).lean();
     }
     return inquiry;
   }

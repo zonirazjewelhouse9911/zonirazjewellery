@@ -53,5 +53,7 @@ const couponSchema = new mongoose.Schema({
   timestamps: true // Auto-handles createdAt and updatedAt
 });
 
+couponSchema.index({ isActive: 1, expirationDate: 1 });
+
 const Coupon = mongoose.model('Coupon', couponSchema);
 module.exports = Coupon;

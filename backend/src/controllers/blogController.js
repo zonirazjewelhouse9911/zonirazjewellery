@@ -192,8 +192,31 @@ exports.getAllBlogs = async (req, res) => {
       ];
     }
 
-    // Sort by createdAt descending so LATEST blog is first!
-    const blogs = await Blog.find(query).sort({ createdAt: -1 }).lean();
+    const page = req.query.page ? Math.max(1, Number(req.query.page)) : null;
+    const limit = req.query.limit ? Math.max(1, Number(req.query.limit)) : null;
+
+    let queryBuilder = Blog.find(query).select('-content').sort({ createdAt: -1 }).lean();
+
+    if (page && limit) {
+      const skip = (page - 1) * limit;
+      const [blogs, total] = await Promise.all([
+        queryBuilder.skip(skip).limit(limit),
+        Blog.countDocuments(query)
+      ]);
+      return res.status(200).json({
+        success: true,
+        count: blogs.length,
+        pagination: {
+          total,
+          page,
+          limit,
+          totalPages: Math.ceil(total / limit)
+        },
+        data: blogs
+      });
+    }
+
+    const blogs = await queryBuilder;
 
     return res.status(200).json({
       success: true,

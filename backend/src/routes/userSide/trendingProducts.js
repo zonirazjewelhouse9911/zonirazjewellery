@@ -6,7 +6,7 @@ const cacheManager = require('../../utils/cacheManager');
 // GET /api/userSide/trending-products - Fetch most bought & trending products
 router.get('/trending-products', async (req, res) => {
   try {
-    const cachedPayload = cacheManager.get('trending_products');
+    const cachedPayload = await cacheManager.get('trending_products');
     if (cachedPayload) {
       return res.status(200).json(cachedPayload);
     }
@@ -33,7 +33,7 @@ router.get('/trending-products', async (req, res) => {
       data: products
     };
 
-    cacheManager.set('trending_products', payload, 300000); // 5 minutes cache
+    await cacheManager.set('trending_products', payload, 300000); // 5 minutes cache
 
     return res.status(200).json(payload);
   } catch (error) {

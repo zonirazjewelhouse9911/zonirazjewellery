@@ -4,7 +4,7 @@ const JewelleryPricing = require('../models/jewelleryPricingModel');
 // Helper to get current live 24k gold rate
 async function getCurrent24kRate() {
   try {
-    const pricing = await JewelleryPricing.findOne().sort({ createdAt: -1 });
+    const pricing = await JewelleryPricing.findOne().sort({ createdAt: -1 }).lean();
     if (pricing && pricing.gold_rate_24k > 0) {
       return pricing.gold_rate_24k;
     }
@@ -145,14 +145,13 @@ exports.getUserWalletDetails = async (userEmail) => {
 // 3. Admin: Get all wallets summary & aggregate metrics
 exports.getAllWallets = async () => {
   const liveRate24k = await getCurrent24kRate();
-  const wallets = await Wallet.find().sort({ updatedAt: -1 });
+  const wallets = await Wallet.find().sort({ updatedAt: -1 }).lean();
 
   let aggregateGold24k = 0;
   let aggregateAmountSaved = 0;
   let aggregateBonusEarned = 0;
 
-  const enrichedWallets = wallets.map(w => {
-    const wObj = w.toObject();
+  const enrichedWallets = wallets.map(wObj => {
     const g24k = wObj.totalGold24kGrams || 0;
     aggregateGold24k += g24k;
     aggregateAmountSaved += wObj.totalAmountSaved || 0;
