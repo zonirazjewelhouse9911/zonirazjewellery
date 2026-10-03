@@ -148,7 +148,7 @@ const ShopByCollection = memo(function ShopByCollection({ products = [] }) {
   return (
     <section className="shop-collection-section">
       <div className="home-main-h1-container">
-        <h1 className="home-main-h1">Shop Jewellery Across India</h1>
+        <h1 className="home-main-h1">Shop Diamond Jewellery Across India</h1>
         <div className="home-main-h1-divider" />
       </div>
 

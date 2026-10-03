@@ -73,10 +73,10 @@ export default function Hero() {
 
   // Rotating texts for the custom slide
   const rotatingTexts = [
-    "A Symphony of Brilliance and Elegance",
-    "Handcrafted Masterpieces Tailored for You",
-    "Exchange Your Gold for Infinite Value",
-    "Lifetime Maintenance & Complete Transparency"
+    "Trusted Diamond Jewellery Exporters in India",
+    "Sell Old Gold Online | Trusted Value & Easy Exchange",
+    "Affordable Diamond Jewellery in Alwar, Rajasthan",
+    "Shop Classic & Elegant Diamond Jewellery in Rajasthan"
   ];
   const [textIndex, setTextIndex] = useState(0);
   const [textFade, setTextFade] = useState(true);
@@ -247,8 +247,8 @@ export default function Hero() {
               <h2 className={`hero-custom-text ${textFade ? 'active' : ''}`}>
                 {rotatingTexts[textIndex]}
               </h2>
-              <p className="hero-custom-desc">Curating elegance for every precious milestone</p>
-              <a href="#collections" className="hero-custom-btn">EXPLORE COLLECTIONS &rarr;</a>
+              <p className="hero-custom-desc">Luxury Jewellery Brand in India</p>
+              <a href="/all-collections" className="hero-custom-btn">EXPLORE COLLECTIONS &rarr;</a>
             </div>
           </div>
         )}

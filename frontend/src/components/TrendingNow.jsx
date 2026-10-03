@@ -32,7 +32,7 @@ const TrendingNow = memo(function TrendingNow() {
         title="Click to view all trending & most bought products"
       >
         <h2 className="trending-title">Trending Now &rarr;</h2>
-        <p className="trending-subtitle">Jewellery pieces everyone’s eyeing right now (Click to view all)</p>
+        <p className="trending-subtitle">Shop the Latest Gold & Diamond Jewellery Designs</p>
         <div className="trending-underline" />
       </div>
 

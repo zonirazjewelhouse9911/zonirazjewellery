@@ -3,22 +3,22 @@ const heroModelImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/hero-mo
 
 const testimonials = [
   {
-    name: 'Priya S.',
-    role: 'Bride-to-be',
-    location: 'Mumbai, India',
-    quote: 'The detailing was exquisite and the finish felt so premium. It made my bridal look feel complete.'
+    name: 'Harsha Narang',
+    role: 'Verified Customer',
+    location: 'Alwar, India',
+    quote: 'Best quality diamonds and designs in alwar city as compared with other brands'
   },
   {
-    name: 'Aarav & Meera',
-    role: 'Engagement gift',
-    location: 'Bengaluru, India',
-    quote: 'We chose this piece for a special occasion and the craftsmanship exceeded all expectations.'
+    name: 'Vikas Gangawat',
+    role: 'Loyal Customer',
+    location: 'Alwar, India',
+    quote: 'One of the best online jewellery shop. Awesome collection n behavior of owner n services is excellent. Recommend zoniraz !'
   },
   {
-    name: 'Nisha K.',
-    role: 'Loyal customer',
-    location: 'London, UK',
-    quote: 'Every time I shop here, I feel like I’m choosing something timeless and beautifully made.'
+    name: 'Shilpa Chawla',
+    role: 'Verified Customer',
+    location: 'Alwar, India',
+    quote: "I recently explored gold jewellery in Alwar and Zoniraz had one of the best collections I've seen."
   }
 ];
 
@@ -30,8 +30,7 @@ export default function TestimonialSection() {
           <p className="testimonial-eyebrow">CLIENT LOVE</p>
           <h2>Why our customers keep coming back</h2>
           <p>
-            From bridal sparkle to everyday elegance, our jewellery is loved for its beauty, comfort,
-            and lasting craftsmanship.
+            From bridal sparkle to everyday elegance, our jewellery is loved for its beauty, best diamond quality, comfort, and lasting craftsmanship.
           </p>
         </div>
 
@@ -41,10 +40,9 @@ export default function TestimonialSection() {
             <div className="testimonial-feature-body">
               <div className="testimonial-stars">★★★★★</div>
               <p>
-                “The moment I wore it, I knew it was exactly the kind of piece I had been searching for.
-                Elegant, light, and full of charm.”
+                “One of the best online gold & diamond jewellery shop. I am very impressed with their services and recommend all to definitely buy.”
               </p>
-              <span>— Ayesha, Delhi, India</span>
+              <span>— Rahul Sharma, Alwar, India</span>
             </div>
           </article>
 

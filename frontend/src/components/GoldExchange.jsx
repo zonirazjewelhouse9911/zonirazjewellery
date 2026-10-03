@@ -39,11 +39,14 @@ export default function GoldExchange() {
 
           <h3 className="ge-card-title">Sell Your Old Gold</h3>
           <p className="ge-card-description">
-            Turn your unused gold into instant value with our transparent in-store valuation process.
+            Sell old gold online with a simple and transparent valuation process.
+          </p>
+          <p className="ge-card-description ge-card-subdesc">
+            Exchange old gold with a transparent valuation process and get fair value for your jewellery. Check the latest old gold rate and use our old gold calculator to estimate your gold's value before you sell.
           </p>
           <p className="ge-card-fineprint">* ALWAR BRANCH ONLY</p>
 
-          <a href="#sell-gold" className="ge-card-btn">
+          <a href="/sell-gold" className="ge-card-btn">
             SELL OLD GOLD &rarr;
           </a>
 
