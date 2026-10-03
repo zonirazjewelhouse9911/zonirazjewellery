@@ -83,7 +83,19 @@ const hashToCategoryMap = {
   'origami': 'rings',
   'women': 'rings',
   'men': 'rings',
-  'kids': 'rings'
+  'kids': 'rings',
+  'women-jewellery': 'rings',
+  'womens-jewellery': 'rings',
+  'women-jewelry': 'rings',
+  'womens-jewelry': 'rings',
+  'men-jewellery': 'rings',
+  'mens-jewellery': 'rings',
+  'men-jewelry': 'rings',
+  'mens-jewelry': 'rings',
+  'kids-jewellery': 'rings',
+  'kid-jewellery': 'rings',
+  'kids-jewelry': 'rings',
+  'kid-jewelry': 'rings'
 };
 
 const getKeywordsForView = (currentView, queryParams, categoryName) => {
@@ -365,6 +377,21 @@ const CATEGORY_SEO_METADATA = {
     canonicalSlug: 'gold-coins',
     title: '24K 999 Purity Gold Coins in Alwar | Zoniraz',
     description: 'Buy 24K pure gold coins with tamper-proof certicard packaging in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, and gold investment.'
+  },
+  'women-jewellery': {
+    canonicalSlug: 'women-jewellery',
+    title: "Women's Jewellery Online in Alwar | Gold & Diamond Designs | Zoniraz",
+    description: "Explore curated women's fine jewellery in Alwar at Zoniraz. Browse diamond rings, gold necklaces, earrings, bangles and bridal sets crafted with perfection."
+  },
+  'men-jewellery': {
+    canonicalSlug: 'men-jewellery',
+    title: "Men's Jewellery Online in Alwar | Rings, Chains & Kada | Zoniraz",
+    description: "Shop premium men's jewellery in Alwar at Zoniraz. Discover bold gold rings, diamond studs, chains, and designer kadas for men."
+  },
+  'kids-jewellery': {
+    canonicalSlug: 'kids-jewellery',
+    title: "Kids Jewellery Online in Alwar | Gold & Diamond Jewellery | Zoniraz",
+    description: "Buy delicate and safe kids jewellery in Alwar at Zoniraz. Explore cute pendants, lightweight earrings, and adjustable bangles for children."
   }
 };
 
@@ -512,6 +539,28 @@ function getInitialRouteState() {
   if (path === '/privacy') return { view: 'privacy', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/admin-call') return { view: 'admin-call', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/all-collections') return { view: 'all-collections', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/women' || path === '/women-jewellery' || path === '/womens-jewellery' || path === '/women-jewelry' || path === '/womens-jewelry') {
+    return { view: 'rings', productId: null, categoryName: "Women's Jewellery", blogSlug: null, helpCategory: 'delivery' };
+  }
+  if (path === '/men' || path === '/mens' || path === '/men-jewellery' || path === '/mens-jewellery' || path === '/men-jewelry' || path === '/mens-jewelry') {
+    return { view: 'rings', productId: null, categoryName: "Men's Jewellery", blogSlug: null, helpCategory: 'delivery' };
+  }
+  if (path === '/kids' || path === '/kid' || path === '/kids-jewellery' || path === '/kid-jewellery' || path === '/kids-jewelry' || path === '/kid-jewelry') {
+    return { view: 'rings', productId: null, categoryName: "Kids Jewellery", blogSlug: null, helpCategory: 'delivery' };
+  }
+
+  if (searchParams.has('gender')) {
+    const g = (searchParams.get('gender') || '').toLowerCase();
+    if (g === 'women' || g === 'female' || g === 'femail') {
+      return { view: 'rings', productId: null, categoryName: "Women's Jewellery", blogSlug: null, helpCategory: 'delivery' };
+    }
+    if (g === 'men' || g === 'male' || g === 'mail') {
+      return { view: 'rings', productId: null, categoryName: "Men's Jewellery", blogSlug: null, helpCategory: 'delivery' };
+    }
+    if (g === 'kids' || g === 'kid' || g === 'child') {
+      return { view: 'rings', productId: null, categoryName: "Kids Jewellery", blogSlug: null, helpCategory: 'delivery' };
+    }
+  }
 
   if (path !== '/' && path !== '/index.html') {
     const routeOnly = path.substring(1);
@@ -1114,6 +1163,27 @@ function AppContent() {
       } else if (path === '/admin-call') {
         setCurrentView('admin-call');
         restoreOrScrollTop();
+      } else if (
+        path === '/women' || path === '/women-jewellery' || path === '/womens-jewellery' ||
+        path === '/women-jewelry' || path === '/womens-jewelry'
+      ) {
+        setSelectedCategoryName("Women's Jewellery");
+        setCurrentView('rings');
+        restoreOrScrollTop();
+      } else if (
+        path === '/men' || path === '/mens' || path === '/men-jewellery' ||
+        path === '/mens-jewellery' || path === '/men-jewelry' || path === '/mens-jewelry'
+      ) {
+        setSelectedCategoryName("Men's Jewellery");
+        setCurrentView('rings');
+        restoreOrScrollTop();
+      } else if (
+        path === '/kids' || path === '/kid' || path === '/kids-jewellery' ||
+        path === '/kid-jewellery' || path === '/kids-jewelry' || path === '/kid-jewelry'
+      ) {
+        setSelectedCategoryName("Kids Jewellery");
+        setCurrentView('rings');
+        restoreOrScrollTop();
       } else if (path !== '/' && path !== '/index.html') {
         // Match canonical and recognized categories
         const routeOnly = path.substring(1);
@@ -1123,6 +1193,24 @@ function AppContent() {
           "Necklaces", "Pendants", "Pendant", "Mangalsutras", "Mangalsutra", "Nose Pins", "Nose pin", "Earrings", 
           "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
         ];
+        if (cleanPathSegment === 'women' || cleanPathSegment === 'womenjewellery' || cleanPathSegment === 'womensjewellery' || cleanPathSegment === 'womenjewelry' || cleanPathSegment === 'womensjewelry') {
+          setSelectedCategoryName("Women's Jewellery");
+          setCurrentView('rings');
+          restoreOrScrollTop();
+          return;
+        }
+        if (cleanPathSegment === 'men' || cleanPathSegment === 'mens' || cleanPathSegment === 'menjewellery' || cleanPathSegment === 'mensjewellery' || cleanPathSegment === 'menjewelry' || cleanPathSegment === 'mensjewelry') {
+          setSelectedCategoryName("Men's Jewellery");
+          setCurrentView('rings');
+          restoreOrScrollTop();
+          return;
+        }
+        if (cleanPathSegment === 'kids' || cleanPathSegment === 'kid' || cleanPathSegment === 'kidsjewellery' || cleanPathSegment === 'kidjewellery' || cleanPathSegment === 'kidsjewelry') {
+          setSelectedCategoryName("Kids Jewellery");
+          setCurrentView('rings');
+          restoreOrScrollTop();
+          return;
+        }
         let matchedCategory = knownCategories.find(cat => 
           cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanPathSegment
         );
@@ -1143,7 +1231,28 @@ function AppContent() {
           restoreOrScrollTop();
         }
       } else {
-        // Home view, handle query parameters (e.g. ?category=rings)
+        // Home view, handle query parameters (e.g. ?category=rings or ?gender=women)
+        if (searchParams.has('gender')) {
+          const gen = (searchParams.get('gender') || '').toLowerCase();
+          if (gen === 'women' || gen === 'female' || gen === 'femail') {
+            setSelectedCategoryName("Women's Jewellery");
+            setCurrentView('rings');
+            restoreOrScrollTop();
+            return;
+          }
+          if (gen === 'men' || gen === 'male' || gen === 'mail') {
+            setSelectedCategoryName("Men's Jewellery");
+            setCurrentView('rings');
+            restoreOrScrollTop();
+            return;
+          }
+          if (gen === 'kids' || gen === 'kid' || gen === 'child') {
+            setSelectedCategoryName("Kids Jewellery");
+            setCurrentView('rings');
+            restoreOrScrollTop();
+            return;
+          }
+        }
         if (searchParams.has('category')) {
           const cat = searchParams.get('category');
           const knownCategories = [
@@ -1337,6 +1446,9 @@ function AppContent() {
       else if (catKey.includes('nose')) canonSlug = 'nose-pins';
       else if (catKey.includes('solitaire')) canonSlug = 'solitaires';
       else if (catKey.includes('coin')) canonSlug = 'gold-coins';
+      else if (catKey.includes('women')) canonSlug = 'women-jewellery';
+      else if (catKey.includes('men')) canonSlug = 'men-jewellery';
+      else if (catKey.includes('kid')) canonSlug = 'kids-jewellery';
       else if (catKey.includes('ring')) canonSlug = 'rings';
       else canonSlug = catKey;
 
@@ -1376,7 +1488,7 @@ function AppContent() {
         "@type": "Organization",
         "name": "Zoniraz Jewels",
         "url": "https://zoniraz.com/",
-        "logo": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png",
+        "logo": "https://zoniraz.com/icon-512.png",
         "description": "Zoniraz Jewels is a premium luxury jewellery brand in Alwar specializing in fine gold, diamond, and designer jewellery collections.",
         "sameAs": [
           "https://www.facebook.com/zonirazjewel/",

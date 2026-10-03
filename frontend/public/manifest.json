@@ -3,14 +3,22 @@
   "name": "Zoniraz Jewels",
   "icons": [
     {
-      "src": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni.png",
+      "src": "/favicon-48x48.png",
       "type": "image/png",
-      "sizes": "192x192"
+      "sizes": "48x48",
+      "purpose": "any"
     },
     {
-      "src": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png",
+      "src": "/icon-192.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ],
   "start_url": "/",

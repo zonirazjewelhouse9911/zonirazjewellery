@@ -50,9 +50,11 @@ const categories = [
   'zodiac',
   'brooches',
   'anklets',
-  'mens-jewellery',
+  'women-jewellery',
+  'men-jewellery',
+  'kids-jewellery',
   'womens-jewellery',
-  'kids-jewellery'
+  'mens-jewellery'
 ].map(cat => ({
   url: `/${cat}`,
   priority: '0.8',
@@ -351,7 +353,10 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
     'rings', 'earrings', 'pendants', 'pendant', 'necklaces', 'bangles',
     'bracelets', 'mangalsutras', 'mangalsutra', 'nose-pins', 'nose-pin',
     'solitaires', 'solitaire', 'gold-coins', 'coins', 'chain', 'chains',
-    'zodiac', 'brooches', 'anklets', 'mens-jewellery', 'womens-jewellery', 'kids-jewellery'
+    'zodiac', 'brooches', 'anklets',
+    'women', 'women-jewellery', 'womens-jewellery', 'women-jewelry', 'womens-jewelry',
+    'men', 'mens', 'men-jewellery', 'mens-jewellery', 'men-jewelry', 'mens-jewelry',
+    'kids', 'kid', 'kids-jewellery', 'kid-jewellery', 'kids-jewelry', 'kid-jewelry'
   ];
 
   let ht = `<IfModule mod_rewrite.c>\n`;

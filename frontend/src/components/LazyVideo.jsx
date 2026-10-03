@@ -25,15 +25,15 @@ const LazyVideo = memo(function LazyVideo({
             videoRef.current.play().catch(() => {});
           }
         } else {
-          // Pause when scrolled out of view to stop network buffering & save CPU/RAM
+          // Pause when scrolled far out of view to preserve memory
           if (videoRef.current) {
             videoRef.current.pause();
           }
         }
       },
       {
-        rootMargin: '0px',
-        threshold: 0.15
+        rootMargin: '300px',
+        threshold: 0.05
       }
     );
 
@@ -64,7 +64,7 @@ const LazyVideo = memo(function LazyVideo({
           loop={loop}
           muted={muted}
           playsInline={playsInline}
-          preload="metadata"
+          preload="auto"
           poster={poster}
           style={{
             width: '100%',

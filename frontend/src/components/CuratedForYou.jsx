@@ -7,9 +7,9 @@ const kids800 = "https://media.zoniraz.com/uploads/zoniraz_frontend/kids-800.web
 const kids1400 = "https://media.zoniraz.com/uploads/zoniraz_frontend/kids-1400.webp";
 
 const genderCards = [
-  { id: 'women', label: 'Women Jewellery', image800: women800, image1400: women1400, href: '#women' },
-  { id: 'men',   label: 'Men Jewellery',   image800: men800,   image1400: men1400,   href: '#men'   },
-  { id: 'kids',  label: 'Kids Jewellery',  image800: kids800,  image1400: kids1400,  href: '#kids'  },
+  { id: 'women', label: 'Women Jewellery', image800: women800, image1400: women1400, href: '/women-jewellery' },
+  { id: 'men',   label: 'Men Jewellery',   image800: men800,   image1400: men1400,   href: '/men-jewellery'   },
+  { id: 'kids',  label: 'Kids Jewellery',  image800: kids800,  image1400: kids1400,  href: '/kids-jewellery'  },
 ];
 
 export default function CuratedForYou() {
@@ -26,7 +26,7 @@ export default function CuratedForYou() {
         {genderCards.map((card) => (
           <a key={card.id} href={card.href} className="cfy-card">
             <div className="cfy-card-img-wrap">
-              <picture>
+              <picture style={{ display: 'block', width: '100%', height: '100%' }}>
                 <source srcSet={card.image800} media="(max-width: 768px)" type="image/webp" />
                 <source srcSet={card.image1400} type="image/webp" />
                 <img src={card.image1400} alt={card.label} className="cfy-card-img" loading="lazy" decoding="async" width="400" height="500" />
