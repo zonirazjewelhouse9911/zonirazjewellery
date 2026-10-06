@@ -31,6 +31,7 @@ const staticPages = [
   { url: '/gold-mine', priority: '0.8', changefreq: 'weekly' },
   { url: '/loose-stones', priority: '0.8', changefreq: 'weekly' },
   { url: '/delivery', priority: '0.7', changefreq: 'weekly' },
+  { url: '/faq', priority: '0.8', changefreq: 'weekly' },
   { url: '/all-collections', priority: '0.8', changefreq: 'weekly' }
 ];
 

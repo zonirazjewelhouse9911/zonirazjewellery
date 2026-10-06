@@ -38,6 +38,7 @@ const BuyGoldPage = lazy(() => import('./components/BuyGoldPage'));
 const GoldMinePage = lazy(() => import('./components/GoldMinePage'));
 const LooseStonesPage = lazy(() => import('./components/LooseStonesPage'));
 const ZonirazAlwarPage = lazy(() => import('./components/ZonirazAlwarPage'));
+const FAQPage = lazy(() => import('./components/FAQPage'));
 const PendantPrototype = lazy(() => import('./components/PendantGenerator/PendantPrototype'));
 const PendantGenerator = lazy(() => import('./components/PendantGenerator/PendantGenerator'));
 import { AuthProvider, AuthContext } from './context/AuthContext';
@@ -474,6 +475,12 @@ const STATIC_PAGE_SEO = {
     description: 'Terms of service, purchasing policies, warranties, and conditions for shopping at Zoniraz Jewels.',
     robots: 'index, follow'
   },
+  faq: {
+    url: 'https://zoniraz.com/faq',
+    title: 'Frequently Asked Questions (FAQ) | Zoniraz Jewels',
+    description: 'Find answers to frequently asked questions about Zoniraz jewellery collections, bridal jewellery in Alwar, international delivery, and franchise opportunities.',
+    robots: 'index, follow'
+  },
   cart: {
     url: 'https://zoniraz.com/cart',
     title: 'Shopping Bag | Zoniraz',
@@ -537,6 +544,7 @@ function getInitialRouteState() {
   if (path === '/delivery' || path === '/shipping' || path === '/payment' || path === '/returns' || path === '/giftcards') return { view: 'delivery', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/terms') return { view: 'terms', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/privacy') return { view: 'privacy', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/faq' || path === '/faqs' || path === '/f-and-q' || path === '/f&q') return { view: 'faq', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/admin-call') return { view: 'admin-call', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/all-collections') return { view: 'all-collections', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/women' || path === '/women-jewellery' || path === '/womens-jewellery' || path === '/women-jewelry' || path === '/womens-jewelry') {
@@ -1160,6 +1168,9 @@ function AppContent() {
       } else if (path === '/privacy') {
         setCurrentView('privacy');
         restoreOrScrollTop();
+      } else if (path === '/faq' || path === '/faqs' || path === '/f-and-q' || path === '/f&q') {
+        setCurrentView('faq');
+        restoreOrScrollTop();
       } else if (path === '/admin-call') {
         setCurrentView('admin-call');
         restoreOrScrollTop();
@@ -1591,6 +1602,71 @@ function AppContent() {
           ]
         });
       }
+
+      if (currentView === 'faq') {
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What types of jewellery does Zoniraz offer?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Zoniraz offers a wide range of diamond jewellery, rings, earrings, nose pins, pendants and other elegant jewellery designs for everyday wear and special occasions."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does Zoniraz offer bridal and wedding jewellery in Alwar?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, Zoniraz offers jewellery for brides and weddings, including bridal jewellery, wedding jewellery, diamond necklace sets, diamond earrings and diamond nose pins in Alwar."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does Zoniraz deliver jewellery internationally?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, Zoniraz supports international jewellery shipping and worldwide delivery for eligible orders."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does Zoniraz offer jewellery franchise opportunities in India?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, Zoniraz provides opportunities for entrepreneurs interested in entering the jewellery business through a jewellery franchise model, subject to business requirements and eligibility."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What are the benefits of opening a Zoniraz jewellery franchise?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A Zoniraz franchise can provide entrepreneurs with the opportunity to operate under an established jewellery brand while accessing a range of jewellery products, brand support and business expertise."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can international customers order jewellery from Zoniraz?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, international customers can enquire about jewellery orders and worldwide jewellery delivery. Zoniraz provides support for overseas orders and international jewellery shipping."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How can I contact Zoniraz for jewellery enquiries?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "You can contact Zoniraz through the contact details provided on the official website for product, order and jewellery-related enquiries."
+              }
+            }
+          ]
+        });
+      }
     } else {
       title = 'Best Diamond Jewellery in Alwar | Zoniraz';
       description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery online in Alwar.';
@@ -1680,6 +1756,8 @@ function AppContent() {
           <TermsPage />
         ) : currentView === 'privacy' ? (
           <PrivacyPage />
+        ) : currentView === 'faq' ? (
+          <FAQPage />
         ) : currentView === 'wishlist' ? (
           <WishlistPage products={allProducts} wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} />
         ) : currentView === 'cart' ? (

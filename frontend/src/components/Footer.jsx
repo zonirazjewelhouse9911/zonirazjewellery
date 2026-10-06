@@ -21,6 +21,7 @@ export default function Footer() {
             <li><a href="/payment">Payment Options</a></li>
             <li><a href="/returns">Returns</a></li>
             <li><a href="/giftcards">Gift Cards</a></li>
+            <li><a href="/faq">FAQ</a></li>
           </ul>
         </div>
 
@@ -32,6 +33,7 @@ export default function Footer() {
             <li><a href="/blog">Blog</a></li>
             <li><a href="/contact">Contact Us</a></li>
             <li><a href="/about">About Zoniraz</a></li>
+            <li><a href="/faq">Frequently Asked Questions</a></li>
           </ul>
         </div>
 
