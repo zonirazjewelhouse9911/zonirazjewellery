@@ -196,6 +196,16 @@ $staticPages = [
         'description' => 'Terms of service, purchasing policies, warranties, and conditions for shopping at Zoniraz Jewels.',
         'canonical' => $domain . '/terms'
     ],
+    'faq' => [
+        'title' => 'Frequently Asked Questions (FAQ) | Zoniraz Jewels',
+        'description' => 'Find answers to frequently asked questions about Zoniraz jewellery collections, bridal jewellery in Alwar, international shipping, franchise opportunities, and customer support.',
+        'canonical' => $domain . '/faq'
+    ],
+    'faqs' => [
+        'title' => 'Frequently Asked Questions (FAQ) | Zoniraz Jewels',
+        'description' => 'Find answers to frequently asked questions about Zoniraz jewellery collections, bridal jewellery in Alwar, international shipping, franchise opportunities, and customer support.',
+        'canonical' => $domain . '/faq'
+    ],
     'cart' => [
         'title' => 'Shopping Bag | Zoniraz',
         'description' => 'Review your selected luxury jewellery pieces in your Zoniraz shopping bag.',
