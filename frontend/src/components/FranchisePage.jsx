@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-const goldNecklaceSilk = "https://media.zoniraz.com/uploads/zoniraz_frontend/gold-necklace-silk.jpg";
+const jewelryBanner = "https://media.zoniraz.com/uploads/zoniraz_frontend/jewelry_banner_1.png";
 
 export default function FranchisePage() {
   const [formData, setFormData] = useState({
@@ -83,44 +83,33 @@ export default function FranchisePage() {
           color: #c5a880;
         }
 
-        .franchise-hero {
-          position: relative;
-          background-image: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0.45)), url("https://media.zoniraz.com/uploads/zoniraz_frontend/jewelry_banner_1.png");
-          background-size: cover;
-          background-position: center;
+        .franchise-hero-banner {
+          width: 100%;
           border-radius: 20px;
-          height: 380px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          padding: 20px;
+          overflow: hidden;
           margin-bottom: 50px;
           box-shadow: 0 10px 30px rgba(93, 70, 60, 0.15);
+          background-color: #1a1614;
         }
 
-        .franchise-hero-content {
-          max-width: 800px;
-          color: #ffffff;
+        .franchise-hero-banner img {
+          width: 100%;
+          height: auto;
+          display: block;
+          object-fit: cover;
+          border-radius: 20px;
         }
 
-        .franchise-hero-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 56px;
-          font-weight: 400;
-          margin-bottom: 16px;
-          letter-spacing: -0.5px;
-          text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .franchise-hero-subtitle {
-          font-size: 15px;
-          font-weight: 300;
-          line-height: 1.6;
-          max-width: 600px;
-          margin: 0 auto;
-          color: rgba(255, 255, 255, 0.9);
-          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        .sr-only {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0, 0, 0, 0);
+          white-space: nowrap;
+          border: 0;
         }
 
         /* Three Value Cards */
@@ -372,9 +361,6 @@ export default function FranchisePage() {
           .franchise-form-card {
             grid-template-columns: 1fr;
           }
-          .franchise-hero-title {
-            font-size: 42px;
-          }
         }
 
         @media (max-width: 768px) {
@@ -392,11 +378,12 @@ export default function FranchisePage() {
           .franchise-info-panel, .franchise-form-panel {
             padding: 40px 24px;
           }
-          .franchise-hero-title {
-            font-size: 32px;
+          .franchise-hero-banner {
+            margin-bottom: 30px;
+            border-radius: 14px;
           }
-          .franchise-hero {
-            height: 300px;
+          .franchise-hero-banner img {
+            border-radius: 14px;
           }
           .info-panel-title {
             font-size: 28px;
@@ -420,14 +407,15 @@ export default function FranchisePage() {
           {' '}/ <span>Franchise Enquiry</span>
         </div>
 
-        {/* Hero Section */}
-        <div className="franchise-hero">
-          <div className="franchise-hero-content">
-            <h1 className="franchise-hero-title">Luxury Jewellery Franchise</h1>
-            <p className="franchise-hero-subtitle">
-              Partner with one of India's leading famous jewellery brands and establish a premium retail jewellery franchise showroom.
-            </p>
-          </div>
+        {/* Hero Banner Image */}
+        <div className="franchise-hero-banner">
+          <h1 className="sr-only">Luxury Jewellery Franchise - Zoniraz Jewel House</h1>
+          <img
+            src={jewelryBanner}
+            alt="Luxury Jewellery Franchise - Jewellery that speaks luxury in silence"
+            width="1200"
+            height="380"
+          />
         </div>
 
         {/* Three Value Proposition Cards */}
