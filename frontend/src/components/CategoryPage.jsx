@@ -66,10 +66,14 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
   const categoryProductTypesMap = {
     "Rings": ['Rings', 'Band', 'Cluster', 'Floral'],
     "Earrings": ['Earrings', 'Studs', 'Hoops', 'Detachable'],
-    "Bracelets & Bangles": ['Bracelet', 'Bangle', 'Charms'],
+    "Bracelets & Bangles": ['Bracelet', 'Bangle', 'Charms', 'Kada'],
+    "Bracelets": ['Bracelet', 'Bangle', 'Charms', 'Kada'],
+    "Bangles": ['Bangle', 'Bracelet', 'Charms', 'Kada'],
     "Solitaires": ['Solitaire', 'Ring', 'Set'],
     "Mangalsutras": ['Mangalsutra', 'Earrings', 'Combo'],
     "Necklaces & Pendants": ['Necklace', 'Pendant', 'Choker'],
+    "Necklaces": ['Necklace', 'Pendant', 'Choker'],
+    "Pendants": ['Pendant', 'Necklace', 'Choker'],
     "Collections": ['Set', 'Pendant', 'Iconics']
   };
 
@@ -564,13 +568,41 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
         if (!isKids) return false;
       }
     } else if (category && category !== 'All Products' && category !== 'Catalog' && category !== 'Trending Now' && category !== 'Trending' && category !== 'trending-now') {
-      // Standard product category filter (Rings, Earrings, Necklaces, etc.)
-      const prodCatClean = String(product.category || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      // Standard product category filter (Rings, Earrings, Necklaces, Bangles, Bracelets, etc.)
+      const prodCatClean = String(product.category || product.product_category || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       const pageCatClean = String(category).toLowerCase().replace(/[^a-z0-9]/g, '');
-      let isMatch = (prodCatClean === pageCatClean);
-      if (!isMatch) {
-        if (prodCatClean.endsWith('s') && prodCatClean.slice(0, -1) === pageCatClean) isMatch = true;
-        if (pageCatClean.endsWith('s') && pageCatClean.slice(0, -1) === prodCatClean) isMatch = true;
+
+      // Check if it's Bangles or Bracelets page/category
+      const isBanglesOrBraceletsPage = pageCatClean.includes('bangle') || pageCatClean.includes('bracelet');
+      const isBanglesOrBraceletsProd = prodCatClean.includes('bangle') || 
+                                       prodCatClean.includes('bracelet') || 
+                                       String(product.name || product.product_title || '').toLowerCase().includes('bangle') || 
+                                       String(product.name || product.product_title || '').toLowerCase().includes('bracelet') || 
+                                       String(product.name || product.product_title || '').toLowerCase().includes('kada') ||
+                                       String(product.subcategory || product.product_subcategory || '').toLowerCase().includes('bangle') ||
+                                       String(product.subcategory || product.product_subcategory || '').toLowerCase().includes('bracelet') ||
+                                       String(product.subcategory || product.product_subcategory || '').toLowerCase().includes('kada');
+
+      // Check if it's Necklaces or Pendants combined category
+      const isNecklacesOrPendantsPage = pageCatClean.includes('necklace') || pageCatClean.includes('pendant');
+      const isNecklacesOrPendantsProd = prodCatClean.includes('necklace') || 
+                                        prodCatClean.includes('pendant') || 
+                                        String(product.name || product.product_title || '').toLowerCase().includes('necklace') || 
+                                        String(product.name || product.product_title || '').toLowerCase().includes('pendant');
+
+      let isMatch = false;
+      if (isBanglesOrBraceletsPage) {
+        isMatch = isBanglesOrBraceletsProd;
+      } else if (isNecklacesOrPendantsPage && (pageCatClean.includes('necklacespendants') || pageCatClean.includes('necklacesandpendants'))) {
+        isMatch = isNecklacesOrPendantsProd;
+      } else if (prodCatClean === pageCatClean) {
+        isMatch = true;
+      } else if (prodCatClean.endsWith('s') && prodCatClean.slice(0, -1) === pageCatClean) {
+        isMatch = true;
+      } else if (pageCatClean.endsWith('s') && pageCatClean.slice(0, -1) === prodCatClean) {
+        isMatch = true;
+      } else if (prodCatClean.includes(pageCatClean) || pageCatClean.includes(prodCatClean)) {
+        isMatch = true;
       }
       if (!isMatch) return false;
     }

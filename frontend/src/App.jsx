@@ -590,7 +590,7 @@ function getInitialRouteState() {
     const routeOnly = path.substring(1);
     const cleanPathSegment = routeOnly.replace(/[^a-z0-9]/g, '');
     const knownCategories = [
-      "Rings", "Bracelets", "Brooches", "Chains", "Chain", "Bangles", "Anklets", 
+      "Rings", "Bracelets & Bangles", "Bracelets", "Brooches", "Chains", "Chain", "Bangles", "Anklets", 
       "Necklaces", "Pendants", "Pendant", "Mangalsutras", "Mangalsutra", "Nose Pins", "Nose pin", "Earrings", 
       "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
     ];
@@ -607,7 +607,7 @@ function getInitialRouteState() {
   if (searchParams.has('category')) {
     const cat = searchParams.get('category');
     const knownCategories = [
-      "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
+      "Rings", "Bracelets & Bangles", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
       "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
       "Gold Coins", "Solitaires", "Coins", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
     ];
@@ -1219,7 +1219,7 @@ function AppContent() {
         const routeOnly = path.substring(1);
         const cleanPathSegment = routeOnly.replace(/[^a-z0-9]/g, '');
         const knownCategories = [
-          "Rings", "Bracelets", "Brooches", "Chains", "Chain", "Bangles", "Anklets", 
+          "Rings", "Bracelets & Bangles", "Bracelets", "Brooches", "Chains", "Chain", "Bangles", "Anklets", 
           "Necklaces", "Pendants", "Pendant", "Mangalsutras", "Mangalsutra", "Nose Pins", "Nose pin", "Earrings", 
           "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
         ];
