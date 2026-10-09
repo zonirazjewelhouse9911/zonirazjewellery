@@ -7,7 +7,7 @@ const JewelleryPricing = require('../models/jewelleryPricingModel');
 // GET /api/goldmine/live-rate
 router.get('/goldmine/live-rate', async (req, res) => {
   try {
-    const pricing = await JewelleryPricing.findOne().sort({ createdAt: -1 });
+    const pricing = await JewelleryPricing.findOne().sort({ updatedAt: -1 });
     const liveRate24k = pricing && pricing.gold_rate_24k > 0 ? pricing.gold_rate_24k : 7200;
     return res.status(200).json({
       success: true,

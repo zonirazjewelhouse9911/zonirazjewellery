@@ -37,7 +37,7 @@
   RewriteRule ^index\.html$ /index.php [L]
 
   # 5. Whitelist Static & Informational Pages
-  RewriteRule ^(about|contact|zoniraz-alwar|franchise|sell-gold|buy-gold|gold-mine|loose-stones|all-collections|delivery|privacy|terms|cart|checkout|wishlist|profile|admin-call|wallet)/?$ /index.php [L]
+  RewriteRule ^(about|contact|zoniraz-alwar|franchise|export|exports|jewellery-export|sell-gold|buy-gold|gold-mine|loose-stones|all-collections|delivery|privacy|terms|faq|cart|checkout|wishlist|profile|admin-call|wallet)/?$ /index.php [L]
 
   # 6. Whitelist Canonical Category Pages
   RewriteRule ^(rings|earrings|pendants|pendant|necklaces|bangles|bracelets|mangalsutras|mangalsutra|nose-pins|nose-pin|solitaires|solitaire|gold-coins|coins|chain|chains|zodiac|brooches|anklets|women|women-jewellery|womens-jewellery|women-jewelry|womens-jewelry|men|mens|men-jewellery|mens-jewellery|men-jewelry|mens-jewelry|kids|kid|kids-jewellery|kid-jewellery|kids-jewelry|kid-jewelry)/?$ /index.php [L]

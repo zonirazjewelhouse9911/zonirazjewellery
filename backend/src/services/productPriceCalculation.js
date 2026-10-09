@@ -58,7 +58,7 @@ exports.productPricing = async (req, res) => {
 
         const [product_data, current_price] = await Promise.all([
             Product.findOne(productQuery).lean(),
-            livePrice.findOne().sort({ createdAt: -1 }).lean()
+            livePrice.findOne().sort({ updatedAt: -1 }).lean()
         ]);
 
         if (!product_data) {
@@ -138,12 +138,12 @@ exports.productPricing = async (req, res) => {
         const diamondRateField = DIAMOND_RATE_FIELD_BY_GRADE[normalizedDiamond];
         let diamond_rate = current_price.diamond_rate || 0;
         if (!isPlainGold) {
-            if (diamondRateField && product_data[diamondRateField] !== undefined && product_data[diamondRateField] > 0) {
+            if (diamondRateField && current_price[diamondRateField] !== undefined && current_price[diamondRateField] !== null && current_price[diamondRateField] > 0) {
+                diamond_rate = current_price[diamondRateField];
+            } else if (diamondRateField && product_data[diamondRateField] !== undefined && product_data[diamondRateField] > 0) {
                 diamond_rate = product_data[diamondRateField];
-            } else if (diamondRateField) {
-                if (current_price[diamondRateField] !== undefined && current_price[diamondRateField] !== null) {
-                    diamond_rate = current_price[diamondRateField];
-                }
+            } else if (current_price.diamond_rate_ij_si) {
+                diamond_rate = current_price.diamond_rate_ij_si;
             }
         } else {
             diamond_rate = 0;

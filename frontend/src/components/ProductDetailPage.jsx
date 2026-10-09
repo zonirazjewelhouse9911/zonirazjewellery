@@ -596,10 +596,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
             : 0;
 
           const fallbackDiamondRate = customDiamondPrice > 0 ? customDiamondPrice :
-            selectedDiamond === "IJ-SI" ? (product.diamond_rate_ij_si || rates.diamond_rate || 85000) :
-              selectedDiamond === "GH-VS" ? (product.diamond_rate_gh_vs || product.diamond_rate_ij_si || rates.diamond_rate || 85000) :
-                selectedDiamond === "EF-VVS" ? (product.diamond_rate_ef_vvs || product.diamond_rate_gh_vs || rates.diamond_rate || 85000) :
-                  selectedDiamond === "FG-SI" ? (product.diamond_rate_fg_si || product.diamond_rate_ij_si || rates.diamond_rate || 85000) :
+            selectedDiamond === "IJ-SI" ? (rates.diamond_rate_ij_si || rates.diamond_rate || product.diamond_rate_ij_si || 85000) :
+              selectedDiamond === "GH-VS" ? (rates.diamond_rate_gh_vs || rates.diamond_rate || product.diamond_rate_gh_vs || 85000) :
+                selectedDiamond === "EF-VVS" ? (rates.diamond_rate_ef_vvs || rates.diamond_rate || product.diamond_rate_ef_vvs || 85000) :
+                  selectedDiamond === "FG-SI" ? (rates.diamond_rate_fg_si || rates.diamond_rate || product.diamond_rate_fg_si || 85000) :
                     (rates.diamond_rate || 85000);
 
           const diamondRateUsed = isPlainGold ? 0 : ((data.diamond_rate_used && data.diamond_rate_used > 0) ? data.diamond_rate_used : fallbackDiamondRate);

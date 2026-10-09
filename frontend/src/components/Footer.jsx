@@ -18,6 +18,7 @@ export default function Footer() {
           <ul className="footer-links-list">
             <li><a href="/delivery">Track Package Delivery</a></li>
             <li><a href="/shipping">International Jewellery Shipping</a></li>
+            <li><a href="/export">Global Jewellery Export</a></li>
             <li><a href="/payment">Payment Options</a></li>
             <li><a href="/returns">Returns</a></li>
             <li><a href="/giftcards">Gift Cards</a></li>
@@ -30,6 +31,7 @@ export default function Footer() {
           <h4 className="footer-col-title">Information</h4>
           <ul className="footer-links-list">
             <li><a href="/gold-mine" style={{ color: '#F5C451', fontWeight: 'bold' }}>Gold Saving Scheme Online</a></li>
+            <li><a href="/export">Export Enquiry</a></li>
             <li><a href="/blog">Blog</a></li>
             <li><a href="/contact">Contact Us</a></li>
             <li><a href="/about">About Zoniraz</a></li>

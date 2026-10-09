@@ -1471,14 +1471,6 @@
     "category": "Earrings",
     "name": "Posie Diamond Earrings for Women | Zoniraz"
   },
-  "eva-earring": {
-    "title": "Eva Diamond Earrings for Women | Zoniraz",
-    "description": "Shop the elegant Eva Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
-    "canonical": "https://zoniraz.com/product/eva-earring",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/hjed8d8tdmswxg99rpfr.jpg",
-    "category": "Earrings",
-    "name": "Eva Diamond Earrings for Women | Zoniraz"
-  },
   "flora-earring": {
     "title": "Flora Diamond Earrings for Women | Zoniraz",
     "description": "Shop the elegant Flora Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
@@ -1494,6 +1486,14 @@
     "image": "https://media.zoniraz.com/uploads/zoniraz/bifvgyoxq7i6hcn8fmfu.jpg",
     "category": "Pendants",
     "name": "Georgia Diamond Pendants for Women | Zoniraz"
+  },
+  "eva-earring": {
+    "title": "Eva Diamond Earrings for Women | Zoniraz",
+    "description": "Shop the elegant Eva Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
+    "canonical": "https://zoniraz.com/product/eva-earring",
+    "image": "https://media.zoniraz.com/uploads/zoniraz/hjed8d8tdmswxg99rpfr.jpg",
+    "category": "Earrings",
+    "name": "Eva Diamond Earrings for Women | Zoniraz"
   },
   "kiera-earring": {
     "title": "Kiera Diamond Earrings for Women | Zoniraz",

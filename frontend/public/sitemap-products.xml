@@ -1105,12 +1105,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://zoniraz.com/product/eva-earring</loc>
-    <lastmod>2026-09-30</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://zoniraz.com/product/flora-earring</loc>
     <lastmod>2026-09-30</lastmod>
     <changefreq>weekly</changefreq>
@@ -1118,6 +1112,12 @@
   </url>
   <url>
     <loc>https://zoniraz.com/product/georgia-pendant</loc>
+    <lastmod>2026-09-30</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://zoniraz.com/product/eva-earring</loc>
     <lastmod>2026-09-30</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>

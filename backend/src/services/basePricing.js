@@ -8,7 +8,7 @@ exports.productBasePricing = async (req, res) => {
 
         // If requesting all products, check cache
         if (!targetProductId) {
-            const cached = cacheManager.get('product_base_pricing_all');
+            const cached = await cacheManager.get('product_base_pricing_all');
             if (cached) {
                 return {
                     success: true,
@@ -18,7 +18,7 @@ exports.productBasePricing = async (req, res) => {
             }
         }
 
-        const current_price = await livePrice.findOne().sort({ createdAt: -1 }).lean();
+        const current_price = await livePrice.findOne().sort({ updatedAt: -1 }).lean();
         if (!current_price) {
             return {
                 success: false,
@@ -113,7 +113,7 @@ exports.productBasePricing = async (req, res) => {
                 const gold_rate_14k = Math.floor(current_price.gold_rate_24k * 58.5 / 100);
                 item_gold_price = Math.floor(net_gold_weight * gold_rate_14k);
 
-                const item_diamond_rate = item.diamond_rate_ij_si || current_price.diamond_rate_ij_si || 0;
+                const item_diamond_rate = current_price.diamond_rate_ij_si || current_price.diamond_rate || item.diamond_rate_ij_si || 0;
                 item_diamond_price = total_diamond_weight * item_diamond_rate;
 
                 // Making charges = Net Gold Weight * 24K Gold Rate * Making Percentage / 100
@@ -169,7 +169,7 @@ exports.productBasePricing = async (req, res) => {
         });
 
         if (!targetProductId) {
-            cacheManager.set('product_base_pricing_all', calculated_products, 180000); // 3 min cache
+            await cacheManager.set('product_base_pricing_all', calculated_products, 180000); // 3 min cache
         }
 
         return {

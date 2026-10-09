@@ -30,6 +30,7 @@ const staticPages = [
   { url: '/buy-gold', priority: '0.8', changefreq: 'weekly' },
   { url: '/gold-mine', priority: '0.8', changefreq: 'weekly' },
   { url: '/loose-stones', priority: '0.8', changefreq: 'weekly' },
+  { url: '/export', priority: '0.9', changefreq: 'weekly' },
   { url: '/delivery', priority: '0.7', changefreq: 'weekly' },
   { url: '/faq', priority: '0.8', changefreq: 'weekly' },
   { url: '/all-collections', priority: '0.8', changefreq: 'weekly' }
@@ -344,9 +345,9 @@ async function main() {
 
 function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   const staticSlugs = [
-    'about', 'contact', 'zoniraz-alwar', 'franchise', 'sell-gold',
+    'about', 'contact', 'zoniraz-alwar', 'franchise', 'export', 'exports', 'jewellery-export', 'sell-gold',
     'buy-gold', 'gold-mine', 'loose-stones',
-    'all-collections', 'delivery', 'privacy', 'terms', 'cart',
+    'all-collections', 'delivery', 'privacy', 'terms', 'faq', 'cart',
     'checkout', 'wishlist', 'profile', 'admin-call', 'wallet'
   ];
 

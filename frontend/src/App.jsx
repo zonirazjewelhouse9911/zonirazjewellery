@@ -39,6 +39,7 @@ const GoldMinePage = lazy(() => import('./components/GoldMinePage'));
 const LooseStonesPage = lazy(() => import('./components/LooseStonesPage'));
 const ZonirazAlwarPage = lazy(() => import('./components/ZonirazAlwarPage'));
 const FAQPage = lazy(() => import('./components/FAQPage'));
+const ExportPage = lazy(() => import('./components/ExportPage'));
 const PendantPrototype = lazy(() => import('./components/PendantGenerator/PendantPrototype'));
 const PendantGenerator = lazy(() => import('./components/PendantGenerator/PendantGenerator'));
 import { AuthProvider, AuthContext } from './context/AuthContext';
@@ -271,6 +272,14 @@ const getKeywordsForView = (currentView, queryParams, categoryName) => {
       lsi: ["jewellery business franchise alwar"]
     };
   }
+  if (currentView === 'export') {
+    return {
+      url: "https://zoniraz.com/export",
+      primary: "Global jewellery export in Alwar India",
+      secondary: ["international gold jewellery export","diamond jewellery exporter india"],
+      lsi: ["b2b jewellery manufacturer exporter","custom jewellery OEM exporter"]
+    };
+  }
   if (currentView === 'contact') {
     return {
       url: "https://zoniraz.com/contact",
@@ -421,6 +430,12 @@ const STATIC_PAGE_SEO = {
     description: 'Join Zoniraz as a retail jewellery franchise partner. Explore high-growth business opportunities in fine gold, diamond, and lifestyle jewellery.',
     robots: 'index, follow'
   },
+  export: {
+    url: 'https://zoniraz.com/export',
+    title: 'Global Jewellery Export & B2B Manufacturing | Zoniraz Jewels',
+    description: 'Zoniraz fine gold and diamond jewellery export division. BIS hallmarked gold, IGI/GIA certified natural diamonds, custom OEM B2B manufacturing, and insured global delivery.',
+    robots: 'index, follow'
+  },
   'sell-gold': {
     url: 'https://zoniraz.com/sell-gold',
     title: 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
@@ -537,6 +552,7 @@ function getInitialRouteState() {
   if (path === '/about') return { view: 'about', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/zoniraz-alwar' || path === '/zoniraz-alwar/') return { view: 'zoniraz-alwar', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/franchise') return { view: 'franchise', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/export' || path === '/exports' || path === '/jewellery-export' || path === '/global-export') return { view: 'export', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/sell-gold' || path === '/exchange') return { view: 'sell-gold', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/buy-gold') return { view: 'buy-gold', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/gold-mine' || path === '/plans/gold-mine') return { view: 'gold-mine', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
@@ -1125,6 +1141,9 @@ function AppContent() {
       } else if (path === '/franchise') {
         setCurrentView('franchise');
         restoreOrScrollTop();
+      } else if (path === '/export' || path === '/exports' || path === '/jewellery-export' || path === '/global-export') {
+        setCurrentView('export');
+        restoreOrScrollTop();
       } else if (path === '/exchange') {
         window.history.replaceState(null, '', '/sell-gold');
         setCurrentView('sell-gold');
@@ -1667,6 +1686,21 @@ function AppContent() {
           ]
         });
       }
+
+      if (currentView === 'export') {
+        schemas.push({
+          "@context": "https://schema.org",
+          "@type": "Service",
+          "serviceType": "Jewellery Export & Custom B2B Manufacturing",
+          "provider": {
+            "@type": "Organization",
+            "name": "Zoniraz Jewel House",
+            "url": "https://zoniraz.com/export"
+          },
+          "areaServed": ["Worldwide", "US", "CA", "GB", "AE", "AU", "EU"],
+          "description": "Exporting BIS hallmarked fine gold and IGI/GIA certified diamond jewellery worldwide."
+        });
+      }
     } else {
       title = 'Best Diamond Jewellery in Alwar | Zoniraz';
       description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery online in Alwar.';
@@ -1750,6 +1784,8 @@ function AppContent() {
           <AboutPage />
         ) : currentView === 'franchise' ? (
           <FranchisePage />
+        ) : currentView === 'export' ? (
+          <ExportPage />
         ) : currentView === 'delivery' ? (
           <DeliveryPage initialCategory={helpCategory} />
         ) : currentView === 'terms' ? (

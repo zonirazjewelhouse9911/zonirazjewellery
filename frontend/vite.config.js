@@ -9,9 +9,9 @@ const __dirname = path.dirname(__filename)
 
 function spa404Plugin() {
   const staticSlugs = new Set([
-    '', 'about', 'contact', 'zoniraz-alwar', 'franchise', 'sell-gold',
+    '', 'about', 'contact', 'zoniraz-alwar', 'franchise', 'export', 'exports', 'jewellery-export', 'sell-gold',
     'buy-gold', 'gold-mine', 'loose-stones',
-    'all-collections', 'delivery', 'privacy', 'terms', 'cart',
+    'all-collections', 'delivery', 'privacy', 'terms', 'faq', 'cart',
     'checkout', 'wishlist', 'profile', 'admin-call', 'wallet',
     'rings', 'earrings', 'pendants', 'pendant', 'necklaces', 'bangles',
     'bracelets', 'mangalsutras', 'mangalsutra', 'nose-pins', 'nose-pin',
@@ -132,12 +132,14 @@ function spa404Plugin() {
         contact: 'Contact Zoniraz | Fine Jewellery Showroom in Alwar',
         'zoniraz-alwar': 'Zoniraz Jewellery Store in Alwar | Best Gold & Diamond Shop',
         franchise: 'Jewellery Franchise Opportunity | Partner with Zoniraz in Alwar',
+        export: 'Global Jewellery Export & B2B Manufacturing | Zoniraz Jewels',
         'sell-gold': 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
         'buy-gold': 'Buy 24K Digital & Physical Gold Online in Alwar | Zoniraz',
         'gold-mine': '10+1 Monthly Gold Savings Scheme in Alwar | Zoniraz Gold Mine',
         'loose-stones': 'Certified Loose Diamonds & Solitaires in Alwar | Zoniraz',
         'all-collections': 'Explore Designer Jewellery Collections in Alwar | Zoniraz',
         delivery: 'Delivery, Shipping & Return Information | Zoniraz',
+        faq: 'Frequently Asked Questions (FAQ) | Zoniraz Jewels',
         blog: 'Jewellery Guides, Trends & Buying Advice Blog | Zoniraz',
         privacy: 'Privacy Policy | Zoniraz Jewels',
         terms: 'Terms and Conditions | Zoniraz Jewels'

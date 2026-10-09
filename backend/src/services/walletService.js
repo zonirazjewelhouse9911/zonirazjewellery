@@ -4,7 +4,7 @@ const JewelleryPricing = require('../models/jewelleryPricingModel');
 // Helper to get current live 24k gold rate
 async function getCurrent24kRate() {
   try {
-    const pricing = await JewelleryPricing.findOne().sort({ createdAt: -1 }).lean();
+    const pricing = await JewelleryPricing.findOne().sort({ updatedAt: -1 }).lean();
     if (pricing && pricing.gold_rate_24k > 0) {
       return pricing.gold_rate_24k;
     }

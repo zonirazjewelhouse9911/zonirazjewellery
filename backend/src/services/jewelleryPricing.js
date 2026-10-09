@@ -75,9 +75,14 @@ class JewelleryPricingService {
    * Updates or creates the daily jewellery rates.
    */
   async updateRates(rateData) {
-    let rates = await JewelleryPricing.findOne();
+    let rates = await JewelleryPricing.findOne().sort({ updatedAt: -1 });
     const gold_rate_24k = Number(rateData.gold_rate_24k) || 0;
-    const gold_rate_14k = Math.round(gold_rate_24k * 14 / 24);
+    const gold_rate_14k = Math.round(gold_rate_24k * 58.5 / 100);
+    const diamond_rate_ij_si = Number(rateData.diamond_rate_ij_si) || 0;
+    const diamond_rate_gh_vs = Number(rateData.diamond_rate_gh_vs) || 0;
+    const diamond_rate_ef_vvs = Number(rateData.diamond_rate_ef_vvs) || 0;
+    const diamond_rate_fg_si = Number(rateData.diamond_rate_fg_si) || 0;
+    const diamond_rate = Number(rateData.diamond_rate) || diamond_rate_ij_si || diamond_rate_gh_vs || diamond_rate_ef_vvs || diamond_rate_fg_si || 0;
 
     let customDiamondRates = {};
     if (rateData.custom_diamond_rates) {
@@ -95,11 +100,11 @@ class JewelleryPricingService {
     if (rates) {
       rates.gold_rate_24k = gold_rate_24k;
       rates.gold_rate_14k = gold_rate_14k;
-      rates.diamond_rate = Number(rateData.diamond_rate) || 0;
-      rates.diamond_rate_ij_si = Number(rateData.diamond_rate_ij_si) || 0;
-      rates.diamond_rate_gh_vs = Number(rateData.diamond_rate_gh_vs) || 0;
-      rates.diamond_rate_ef_vvs = Number(rateData.diamond_rate_ef_vvs) || 0;
-      rates.diamond_rate_fg_si = Number(rateData.diamond_rate_fg_si) || 0;
+      rates.diamond_rate = diamond_rate;
+      rates.diamond_rate_ij_si = diamond_rate_ij_si || diamond_rate;
+      rates.diamond_rate_gh_vs = diamond_rate_gh_vs || diamond_rate;
+      rates.diamond_rate_ef_vvs = diamond_rate_ef_vvs || diamond_rate;
+      rates.diamond_rate_fg_si = diamond_rate_fg_si || diamond_rate;
       rates.custom_diamond_rates = customDiamondRates;
       rates.gemstone_rate = Number(rateData.gemstone_rate) || 0;
       rates.gst_percent = (rateData.gst_percent !== undefined && !isNaN(Number(rateData.gst_percent))) ? Number(rateData.gst_percent) : (rates.gst_percent || 3);
@@ -108,11 +113,11 @@ class JewelleryPricingService {
       rates = new JewelleryPricing({
         gold_rate_24k,
         gold_rate_14k,
-        diamond_rate: Number(rateData.diamond_rate) || 0,
-        diamond_rate_ij_si: Number(rateData.diamond_rate_ij_si) || 0,
-        diamond_rate_gh_vs: Number(rateData.diamond_rate_gh_vs) || 0,
-        diamond_rate_ef_vvs: Number(rateData.diamond_rate_ef_vvs) || 0,
-        diamond_rate_fg_si: Number(rateData.diamond_rate_fg_si) || 0,
+        diamond_rate,
+        diamond_rate_ij_si: diamond_rate_ij_si || diamond_rate,
+        diamond_rate_gh_vs: diamond_rate_gh_vs || diamond_rate,
+        diamond_rate_ef_vvs: diamond_rate_ef_vvs || diamond_rate,
+        diamond_rate_fg_si: diamond_rate_fg_si || diamond_rate,
         custom_diamond_rates: customDiamondRates,
         gemstone_rate: Number(rateData.gemstone_rate) || 0,
         gst_percent: (rateData.gst_percent !== undefined && !isNaN(Number(rateData.gst_percent))) ? Number(rateData.gst_percent) : 3
@@ -121,7 +126,9 @@ class JewelleryPricingService {
     }
     await Promise.all([
       cacheManager.del("jewellery_rates"),
-      cacheManager.del("product_base_pricing_all")
+      cacheManager.del("product_base_pricing_all"),
+      cacheManager.del("admin_products_all"),
+      cacheManager.del("user_products_all")
     ]);
     return rates;
   }
@@ -151,63 +158,74 @@ class JewelleryPricingService {
 
     for (const product of products) {
       const isPlainGold = isPlainGoldProduct(product);
-      // 1. Calculate Gold Purity Rate (Base gold weight is specified for 14K Gold for diamond, 22K for plain gold)
-      const goldRate = isPlainGold ? Math.floor(rates.gold_rate_24k * 0.916) : rates.gold_rate_14k;
-      const goldCost = (product.gold_weight || 0) * goldRate;
+      const raw_gold_weight = product.gold_weight || product.gross_weight || product.weight || 0;
+      let makingChargesPercent = product.making_charges || product.makingCharges || 0;
+      const gst_percent = rates.gst_percent ?? 3;
 
-      // 2. Calculate Diamond Cost
-      const diamondCount = product.diamond_count || 1;
-      const totalDiamondWeight = isPlainGold ? 0 : (product.diamond_weight || 0) * diamondCount;
-      const diamondCost = isPlainGold ? 0 : (totalDiamondWeight * rates.diamond_rate);
-
-      // 3. Calculate Gemstone Cost
-      const gemstoneCost = (product.gemstone_weight || 0) * (rates.gemstone_rate || 0);
-
-      // 4. Calculate Solitaire Cost
-      const solitaireCost = product.solitaires_price || 0;
-
-      // 5. Resolve Category in memory (No N+1 DB queries!)
-      let category = null;
-      if (product.category_id) {
-        if (categoryMapById.has(product.category_id.toString())) {
-          category = categoryMapById.get(product.category_id.toString());
-        } else {
-          const catName = categoryMap[product.category_id] || product.product_category;
-          if (catName && categoryMapByName.has(catName.toLowerCase().trim())) {
-            category = categoryMapByName.get(catName.toLowerCase().trim());
-          }
-        }
+      let rawSolitaire = product.solitaires_quality ? String(product.solitaires_quality) : '1';
+      if (rawSolitaire.includes(',')) {
+        const parts = rawSolitaire.split(',').map(s => s.trim()).filter(s => s !== '0');
+        rawSolitaire = parts.length > 0 ? parts[0] : '1';
+      } else if (rawSolitaire === '0' || !rawSolitaire) {
+        rawSolitaire = '1';
       }
+
+      let solitaire_price = 0;
+      if (rawSolitaire === "IJ-SI" || rawSolitaire === "1") {
+        solitaire_price = product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_ef_vvs || product.solitaire_price_fg_si || product.solitaires_price || 0;
+      } else if (rawSolitaire === "GH-VS" || rawSolitaire === "2") {
+        solitaire_price = product.solitaire_price_gh_vs || product.solitaire_price_ij_si || product.solitaire_price_ef_vvs || product.solitaire_price_fg_si || product.solitaires_price || 0;
+      } else if (rawSolitaire === "EF-VVS" || rawSolitaire === "3") {
+        solitaire_price = product.solitaire_price_ef_vvs || product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_fg_si || product.solitaires_price || 0;
+      } else if (rawSolitaire === "FG-SI" || rawSolitaire === "4") {
+        solitaire_price = product.solitaire_price_fg_si || product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_ef_vvs || product.solitaires_price || 0;
+      } else {
+        solitaire_price = product.solitaire_price_ij_si || product.solitaire_price_gh_vs || product.solitaire_price_ef_vvs || product.solitaire_price_fg_si || product.solitaires_price || 0;
+      }
+      const gemstone_price = product.gemstone_price || 0;
 
       const pType = String(product.product_type || '').toLowerCase();
       const isSilverOrPlatinum = pType === 'silver' || pType === 'platinum';
-      let baseProductPrice = 0;
+
+      let finalPrice = 0;
       if (isSilverOrPlatinum) {
-        baseProductPrice = Number(product.price || product.basePrice || 0);
+        const baseProductPrice = Number(product.price || product.basePrice || 0);
+        const makingCharges = baseProductPrice * (makingChargesPercent / 100);
+        const subtotal = baseProductPrice + gemstone_price + solitaire_price + makingCharges;
+        finalPrice = Math.round(subtotal + subtotal * (gst_percent / 100));
+      } else if (!isPlainGold && (pType === 'diamond' || (!pType && (Number(product.diamond_weight || 0) > 0 || product.diamond_quality)))) {
+        const total_diamond_weight = product.diamond_weight || 0;
+        const diamond_weight_g = total_diamond_weight * 0.2;
+        const gemstone_weight_g = (product.gemstone_weight || 0) * 0.2;
+        const solitaire_weight_g = (product.solitaires_weight || product.solitaire_weight || 0) * 0.2;
+        const net_gold_weight = Math.max(0, raw_gold_weight - diamond_weight_g - solitaire_weight_g - gemstone_weight_g);
+
+        const gold_rate_14k = Math.floor(rates.gold_rate_24k * 58.5 / 100);
+        const item_gold_price = Math.floor(net_gold_weight * gold_rate_14k);
+
+        const item_diamond_rate = rates.diamond_rate_ij_si || rates.diamond_rate || product.diamond_rate_ij_si || 0;
+        const item_diamond_price = total_diamond_weight * item_diamond_rate;
+
+        const gold_cost_24k = net_gold_weight * rates.gold_rate_24k;
+        const making_charges_amount = Math.round(gold_cost_24k * makingChargesPercent / 100);
+
+        const materials_cost = item_gold_price + item_diamond_price + solitaire_price + gemstone_price;
+        const item_base_price = materials_cost + making_charges_amount;
+        const gst_amount = Math.round(item_base_price * (gst_percent / 100));
+        finalPrice = Math.round(item_base_price + gst_amount);
+      } else {
+        const gold_rate_22kt = Math.floor(rates.gold_rate_24k * 91.6 / 100);
+        const effectiveGoldWeight = raw_gold_weight;
+        const item_gold_price = Math.floor(effectiveGoldWeight * gold_rate_22kt);
+
+        const gold_cost_24k = effectiveGoldWeight * rates.gold_rate_24k;
+        const making_charges_amount = Math.round(gold_cost_24k * makingChargesPercent / 100);
+
+        const materials_cost = item_gold_price + solitaire_price + gemstone_price;
+        const item_base_price = materials_cost + making_charges_amount;
+        const gst_amount = Math.round(item_base_price * (gst_percent / 100));
+        finalPrice = Math.round(item_base_price + gst_amount);
       }
-
-      let makingCharges = 0;
-      const baseCost = baseProductPrice + goldCost + diamondCost + gemstoneCost + solitaireCost;
-      
-      if (product.making_charges || product.makingCharges) {
-        const mcPercent = product.making_charges || product.makingCharges || 0;
-        makingCharges = baseCost * (mcPercent / 100);
-      } else if (category && category.config && category.config.makingCharges) {
-        const mc = category.config.makingCharges;
-        if (mc.type === "fixed") {
-          makingCharges = mc.value || 0;
-        } else if (mc.type === "percentage") {
-          makingCharges = baseCost * ((mc.value || 0) / 100);
-        }
-      }
-
-      // 6. Total Cost before Tax
-      const subtotal = baseCost + makingCharges;
-
-      // 6. Add GST Tax (standard is 3%)
-      const gstPercent = rates.gst_percent ?? 3;
-      const gst = subtotal * (gstPercent / 100);
-      const finalPrice = Math.round(subtotal + gst);
 
       bulkOps.push({
         updateOne: {
