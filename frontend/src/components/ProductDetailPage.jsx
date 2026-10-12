@@ -49,11 +49,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const { formatPrice } = useCurrency();
   const catStr = (product?.product_category || product?.category || product?.category_id || '').toLowerCase();
   const nameStr = (product?.product_name || product?.name || '').toLowerCase();
-  const isRing = catStr.includes('ring') || nameStr.includes('ring');
-  const isTennisBracelet = catStr.includes('bracelet') || nameStr.includes('bracelet');
-  const isBangle = !isRing && !isTennisBracelet && (catStr.includes('bangle') || nameStr.includes('bangle'));
-  const isChain = catStr === 'chains' || catStr === 'chain' || nameStr.includes('chain');
-  const isMangalsutra = catStr === 'mangalsutra' || catStr === 'mangalsutras' || nameStr.includes('mangalsutra');
+  const isEarring = catStr.includes('earring') || nameStr.includes('earring');
+  const isRing = !isEarring && !catStr.includes('nose') && !nameStr.includes('nose') && (catStr.includes('ring') || nameStr.includes('ring'));
+  const isTennisBracelet = !isEarring && (catStr.includes('bracelet') || nameStr.includes('bracelet'));
+  const isBangle = !isEarring && !isRing && !isTennisBracelet && (catStr.includes('bangle') || nameStr.includes('bangle'));
+  const isChain = !isEarring && (catStr === 'chains' || catStr === 'chain' || nameStr.includes('chain'));
+  const isMangalsutra = !isEarring && (catStr === 'mangalsutra' || catStr === 'mangalsutras' || nameStr.includes('mangalsutra'));
 
   const isAanaSizeProduct = isChain || isMangalsutra || isTennisBracelet;
   const showSizing = isRing || isBangle || isAanaSizeProduct;

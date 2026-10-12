@@ -27,6 +27,7 @@ const staticPages = [
   { url: '/contact', priority: '0.8', changefreq: 'weekly' },
   { url: '/franchise', priority: '0.8', changefreq: 'weekly' },
   { url: '/sell-gold', priority: '0.8', changefreq: 'weekly' },
+  { url: '/explore-exchange', priority: '0.8', changefreq: 'weekly' },
   { url: '/buy-gold', priority: '0.8', changefreq: 'weekly' },
   { url: '/gold-mine', priority: '0.8', changefreq: 'weekly' },
   { url: '/loose-stones', priority: '0.8', changefreq: 'weekly' },

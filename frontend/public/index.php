@@ -154,7 +154,17 @@ $staticPages = [
     'sell-gold' => [
         'title' => 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
         'description' => 'Exchange your old gold jewellery with 100% computerized karatmeter purity testing in Alwar at Zoniraz. Get instant fair market valuation.',
-        'canonical' => $domain . '/sell-gold'
+        'canonical' => $domain . '/explore-exchange'
+    ],
+    'explore-exchange' => [
+        'title' => 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
+        'description' => 'Exchange your old gold jewellery with 100% computerized karatmeter purity testing in Alwar at Zoniraz. Get instant fair market valuation.',
+        'canonical' => $domain . '/explore-exchange'
+    ],
+    'old-gold-exchange' => [
+        'title' => 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
+        'description' => 'Exchange your old gold jewellery with 100% computerized karatmeter purity testing in Alwar at Zoniraz. Get instant fair market valuation.',
+        'canonical' => $domain . '/explore-exchange'
     ],
     'buy-gold' => [
         'title' => 'Buy 24K Digital & Physical Gold Online in Alwar | Zoniraz',

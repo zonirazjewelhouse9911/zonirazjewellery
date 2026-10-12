@@ -13,7 +13,7 @@ export default function ExchangeProgram() {
         <div className="ep-header">
           <h2 className="ep-title">Exchange Program</h2>
           <p className="ep-subtitle">Trusted by 2.8M+ families</p>
-          <a href="#explore-exchange" className="ep-cta-btn">
+          <a href="/explore-exchange" className="ep-cta-btn">
             EXPLORE NOW &rarr;
           </a>
         </div>
@@ -46,10 +46,10 @@ export default function ExchangeProgram() {
 
         {/* Banner Cards Row */}
         <div className="ep-banner-cards-row">
-          <a href="#gold-mine" className="ep-banner-card" style={{ display: 'block', textDecoration: 'none', cursor: 'pointer' }}>
+          <a href="/gold-mine" className="ep-banner-card" style={{ display: 'block', textDecoration: 'none', cursor: 'pointer' }}>
             <img src="https://media.zoniraz.com/uploads/zoniraz_frontend/zoniraz_banner_5_jpg.jpg" alt="Gold Mine 10+1 Monthly Installment Plan" className="ep-banner-img" loading="lazy" decoding="async" width="600" height="300" />
           </a>
-          <a href="#sell-gold" className="ep-banner-card" style={{ display: 'block', textDecoration: 'none', cursor: 'pointer' }}>
+          <a href="/explore-exchange" className="ep-banner-card" style={{ display: 'block', textDecoration: 'none', cursor: 'pointer' }}>
             <img src="https://media.zoniraz.com/uploads/zoniraz_frontend/gold_banner__jpg.jpg" alt="Sell & Exchange Old Gold" className="ep-banner-img" loading="lazy" decoding="async" width="600" height="300" />
           </a>
         </div>

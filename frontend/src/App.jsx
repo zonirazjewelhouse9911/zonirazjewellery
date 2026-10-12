@@ -40,8 +40,6 @@ const LooseStonesPage = lazy(() => import('./components/LooseStonesPage'));
 const ZonirazAlwarPage = lazy(() => import('./components/ZonirazAlwarPage'));
 const FAQPage = lazy(() => import('./components/FAQPage'));
 const ExportPage = lazy(() => import('./components/ExportPage'));
-const PendantPrototype = lazy(() => import('./components/PendantGenerator/PendantPrototype'));
-const PendantGenerator = lazy(() => import('./components/PendantGenerator/PendantGenerator'));
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -258,7 +256,7 @@ const getKeywordsForView = (currentView, queryParams, categoryName) => {
   }
   if (currentView === 'sell-gold') {
     return {
-      url: "https://zoniraz.com/exchange",
+      url: "https://zoniraz.com/explore-exchange",
       primary: "Old gold exchange in Alwar",
       secondary: ["old gold calculator alwar","gold valuation alwar"],
       lsi: ["sell old gold in alwar","gold purity testing alwar"]
@@ -437,7 +435,7 @@ const STATIC_PAGE_SEO = {
     robots: 'index, follow'
   },
   'sell-gold': {
-    url: 'https://zoniraz.com/sell-gold',
+    url: 'https://zoniraz.com/explore-exchange',
     title: 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
     description: 'Exchange your old gold jewellery with 100% computerized karatmeter purity testing in Alwar at Zoniraz. Get instant fair market valuation.',
     robots: 'index, follow'
@@ -553,7 +551,7 @@ function getInitialRouteState() {
   if (path === '/zoniraz-alwar' || path === '/zoniraz-alwar/') return { view: 'zoniraz-alwar', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/franchise') return { view: 'franchise', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/export' || path === '/exports' || path === '/jewellery-export' || path === '/global-export') return { view: 'export', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
-  if (path === '/sell-gold' || path === '/exchange') return { view: 'sell-gold', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
+  if (path === '/sell-gold' || path === '/exchange' || path === '/explore-exchange' || path === '/old-gold-exchange') return { view: 'sell-gold', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/buy-gold') return { view: 'buy-gold', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/gold-mine' || path === '/plans/gold-mine') return { view: 'gold-mine', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/loose-stones' || path === '/buy-loose-stones' || path === '/loose-diamonds') return { view: 'loose-stones', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
@@ -1144,11 +1142,7 @@ function AppContent() {
       } else if (path === '/export' || path === '/exports' || path === '/jewellery-export' || path === '/global-export') {
         setCurrentView('export');
         restoreOrScrollTop();
-      } else if (path === '/exchange') {
-        window.history.replaceState(null, '', '/sell-gold');
-        setCurrentView('sell-gold');
-        restoreOrScrollTop();
-      } else if (path === '/sell-gold') {
+      } else if (path === '/explore-exchange' || path === '/old-gold-exchange' || path === '/sell-gold' || path === '/exchange') {
         setCurrentView('sell-gold');
         restoreOrScrollTop();
       } else if (path === '/buy-gold') {

@@ -14,6 +14,8 @@ const staticPages = [
   "contact",
   "franchise",
   "sell-gold",
+  "explore-exchange",
+  "old-gold-exchange",
   "exchange",
   "buy-gold",
   "gold-mine",

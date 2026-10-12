@@ -26,7 +26,6 @@ const VideoCallPanel = lazy(() => import('./pages/VideoCallPanel'));
 const GoldMineWallets = lazy(() => import('./pages/GoldMineWallets'));
 const LooseStones = lazy(() => import('./pages/LooseStones'));
 const Blogs = lazy(() => import('./pages/Blogs'));
-const CustomPendants = lazy(() => import('./pages/CustomPendants'));
 
 const PageLoadingFallback = () => (
   <div className="py-20 flex flex-col items-center justify-center space-y-4">
@@ -46,7 +45,6 @@ import {
   Building2, 
   LogOut,
   SlidersHorizontal,
-  Sparkles,
   Search,
   Loader2,
   RefreshCw,
@@ -78,7 +76,6 @@ const MENU_ITEMS = [
   { id: 'exchange', label: 'Exchange Leads', icon: RefreshCw },
   { id: 'sellgold', label: 'Sell Gold Leads', icon: Coins },
   { id: 'pricing', label: 'Daily Pricing', icon: SlidersHorizontal },
-  { id: 'custompendants', label: 'Custom Pendants', icon: Sparkles },
   { id: 'videocall', label: 'Video Calls', icon: Video },
 ];
 
@@ -724,8 +721,6 @@ function App() {
             <Banners />
           ) : activeMenu === 'pricing' ? (
             <PricingSettings />
-          ) : activeMenu === 'custompendants' ? (
-            <CustomPendants />
           ) : activeMenu === 'videocall' ? (
             <VideoCallPanel />
           ) : (

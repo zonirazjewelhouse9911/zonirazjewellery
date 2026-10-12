@@ -62,10 +62,10 @@ async function uploadToMediaServer(file, subfolder = 'zoniraz') {
  * Upload base64 image data directly to media VPS server.
  * @param {string} base64String - Base64 encoded image
  * @param {string} filename - Target filename
- * @param {string} subfolder - Target subfolder (e.g. 'zoniraz/pendant_previews')
+ * @param {string} subfolder - Target subfolder (e.g. 'zoniraz/uploads')
  * @returns {Promise<{ url: string, filename: string }>}
  */
-async function uploadBase64ToMediaServer(base64String, filename, subfolder = 'zoniraz/pendant_previews') {
+async function uploadBase64ToMediaServer(base64String, filename, subfolder = 'zoniraz/uploads') {
   try {
     const base64Url = MEDIA_UPLOAD_URL.replace(/\/upload-asset$/, '/upload-base64');
     const response = await axios.post(base64Url, {

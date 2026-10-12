@@ -514,8 +514,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
 
     // Clean up category size values if sizing not applicable
     const categoryLower = (formData.category_id || '').toLowerCase();
-    const isRing = formData.category_id === '1' || categoryLower === 'rings' || categoryLower === 'ring' || categoryLower.includes('ring');
-    const isBangle = formData.category_id === '5' || categoryLower === 'bangles' || categoryLower === 'bangle' || categoryLower.includes('bangle');
+    const isEarring = categoryLower.includes('earring') || formData.category_id === '6';
+    const isRing = !isEarring && (formData.category_id === '1' || categoryLower === 'rings' || categoryLower === 'ring' || (categoryLower.includes('ring') && !categoryLower.includes('nose') && !categoryLower.includes('pendant') && !categoryLower.includes('necklace')));
+    const isBangle = formData.category_id === '4' || formData.category_id === '5' || categoryLower === 'bangles' || categoryLower === 'bangle' || categoryLower.includes('bangle');
     const isTennisBracelet = formData.category_id === '8' || categoryLower === 'tennis bracelets' || categoryLower === 'tennis bracelet' || categoryLower === 'bracelets' || categoryLower === 'bracelet' || categoryLower.includes('bracelet');
     const isChain = categoryLower === 'chains' || categoryLower === 'chain' || categoryLower.includes('chain');
     const isMangalsutra = categoryLower === 'mangalsutra' || categoryLower === 'mangalsutras' || categoryLower.includes('mangalsutra');
@@ -1840,8 +1841,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
             {/* Size Configurations */}
             {(() => {
               const categoryLower = (formData.category_id || '').toLowerCase();
-              const isRing = formData.category_id === '1' || categoryLower === 'rings' || categoryLower === 'ring' || categoryLower.includes('ring');
-              const isBangle = formData.category_id === '5' || categoryLower === 'bangles' || categoryLower === 'bangle' || categoryLower.includes('bangle');
+              const isEarring = categoryLower.includes('earring') || formData.category_id === '6';
+              const isRing = !isEarring && (formData.category_id === '1' || categoryLower === 'rings' || categoryLower === 'ring' || (categoryLower.includes('ring') && !categoryLower.includes('nose') && !categoryLower.includes('pendant') && !categoryLower.includes('necklace')));
+              const isBangle = formData.category_id === '4' || formData.category_id === '5' || categoryLower === 'bangles' || categoryLower === 'bangle' || categoryLower.includes('bangle');
               const isTennisBracelet = formData.category_id === '8' || categoryLower === 'tennis bracelets' || categoryLower === 'tennis bracelet' || categoryLower === 'bracelets' || categoryLower === 'bracelet' || categoryLower.includes('bracelet');
               const isChain = categoryLower === 'chains' || categoryLower === 'chain' || categoryLower.includes('chain');
               const isMangalsutra = categoryLower === 'mangalsutra' || categoryLower === 'mangalsutras' || categoryLower.includes('mangalsutra');

@@ -161,9 +161,10 @@ exports.productPricing = async (req, res) => {
         if ((rawSize !== undefined && rawSize !== null && rawSize !== '') || (!isNaN(size) && size > 0)) {
             const catStr = (product_data.category || product_data.product_category || product_data.category_id || '').toLowerCase();
             const nameStr = (product_data.product_title || product_data.product_name || product_data.name || '').toLowerCase();
-            const isRing = catStr.includes('ring') || nameStr.includes('ring');
-            const isTennisBracelet = catStr.includes('bracelet') || nameStr.includes('bracelet');
-            const isBangle = !isRing && !isTennisBracelet && (catStr.includes('bangle') || nameStr.includes('bangle') || product_data.category_id === '5' || product_data.category_id === '4');
+            const isEarring = catStr.includes('earring') || nameStr.includes('earring');
+            const isRing = !isEarring && !catStr.includes('nose') && !nameStr.includes('nose') && (catStr.includes('ring') || nameStr.includes('ring'));
+            const isTennisBracelet = !isEarring && (catStr.includes('bracelet') || nameStr.includes('bracelet'));
+            const isBangle = !isEarring && !isRing && !isTennisBracelet && (catStr.includes('bangle') || nameStr.includes('bangle') || product_data.category_id === '5' || product_data.category_id === '4');
 
             if (catStr === "chains" || catStr === "chain" || nameStr.includes("chain")) {
                 const baseLength = product_data.base_length || 20;

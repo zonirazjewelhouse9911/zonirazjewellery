@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename)
 function spa404Plugin() {
   const staticSlugs = new Set([
     '', 'about', 'contact', 'zoniraz-alwar', 'franchise', 'export', 'exports', 'jewellery-export', 'sell-gold',
+    'explore-exchange', 'old-gold-exchange', 'exchange',
     'buy-gold', 'gold-mine', 'loose-stones',
     'all-collections', 'delivery', 'privacy', 'terms', 'faq', 'cart',
     'checkout', 'wishlist', 'profile', 'admin-call', 'wallet',
@@ -134,6 +135,9 @@ function spa404Plugin() {
         franchise: 'Jewellery Franchise Opportunity | Partner with Zoniraz in Alwar',
         export: 'Global Jewellery Export & B2B Manufacturing | Zoniraz Jewels',
         'sell-gold': 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
+        'explore-exchange': 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
+        'old-gold-exchange': 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
+        exchange: 'Old Gold Exchange & Valuation in Alwar | Best Value at Zoniraz',
         'buy-gold': 'Buy 24K Digital & Physical Gold Online in Alwar | Zoniraz',
         'gold-mine': '10+1 Monthly Gold Savings Scheme in Alwar | Zoniraz Gold Mine',
         'loose-stones': 'Certified Loose Diamonds & Solitaires in Alwar | Zoniraz',
