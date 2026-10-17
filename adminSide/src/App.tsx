@@ -87,7 +87,8 @@ const CATEGORIES = [
   { id: '4', name: 'Bracelets' },
   { id: '5', name: 'Bangles' },
   { id: '6', name: 'Pendants' },
-  { id: '7', name: 'Chains' }
+  { id: '7', name: 'Chains' },
+  { id: '11', name: 'Jewellery Set' }
 ];
 
 function App() {

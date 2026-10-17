@@ -263,14 +263,6 @@
     "category": "Pendants",
     "name": "Aquarius Zodiac Gold Diamond Pendant | ZONIRAZ"
   },
-  "asdd": {
-    "title": "asdd | Rings in Alwar | Zoniraz",
-    "description": "efdewfvrwv fvfvrf",
-    "canonical": "https://zoniraz.com/product/asdd",
-    "image": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png",
-    "category": "Rings",
-    "name": "asdd"
-  },
   "toni-truelove-ring-elegant-diamond-ring-for-women": {
     "title": "Toni Truelove Ring | Elegant Diamond Ring for Women | Rings in Alwar | Zoniraz",
     "description": "Add a refined touch to your collection with a diamond ring for women, designed with graceful detailing and captivating sparkle for sophisticated styling.",
@@ -302,14 +294,6 @@
     "image": "https://media.zoniraz.com/uploads/zoniraz/qw45jczpv9nqfgtfjyy7.jpg",
     "category": "Rings",
     "name": "Sofian Ring | Stylish Diamond Ring for women"
-  },
-  "simone-earring-elegant-diamond-earrings-for-women": {
-    "title": "Simone Earring | Elegant Diamond Earrings for Women | Earrings in Alwar | Zoniraz",
-    "description": "Enhance your jewellery collection with diamond earrings for women featuring a refined design and radiant sparkle, ideal for effortless elegance.",
-    "canonical": "https://zoniraz.com/product/simone-earring-elegant-diamond-earrings-for-women",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/bufsefhuugg46teyylce.jpg",
-    "category": "Earrings",
-    "name": "Simone Earring | Elegant Diamond Earrings for Women"
   },
   "sharon-athey-ring-elegant-diamond-ring-for-women": {
     "title": "Sharon Athey Ring | Elegant Diamond Ring for Women | Rings in Alwar | Zoniraz",
@@ -1291,7 +1275,7 @@
     "title": "Eloise Diamond Nose Pin for Women | Zoniraz",
     "description": "Shop the elegant Eloise Diamond Nose Pin by Zoniraz. Crafted with certified diamonds, this delicate nose pin adds timeless sparkle and effortless elegance ",
     "canonical": "https://zoniraz.com/product/eloise-diamond-nose-pin-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/nuq5jrdte6gxvl48ladu.jpg",
+    "image": "https://media.zoniraz.com/uploads/zoniraz/bwkehor3w229kqnsmk8d.jpg",
     "category": "Nose Pins",
     "name": "Eloise Diamond Nose Pin for Women | Zoniraz"
   },
@@ -1315,7 +1299,7 @@
     "title": "Debra Diamond Nose Pin for Women | Zoniraz",
     "description": "Shop the elegant Debra Diamond Nose Pin by Zoniraz. Crafted with certified diamonds, this delicate nose pin adds timeless sparkle and effortless elegance t",
     "canonical": "https://zoniraz.com/product/debra-diamond-nose-pin-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/i9i5samqcpxkomuqqjiy.jpg",
+    "image": "https://media.zoniraz.com/uploads/zoniraz/mesyxfsdqhjkulqamprm.jpg",
     "category": "Nose Pins",
     "name": "Debra Diamond Nose Pin for Women | Zoniraz"
   },
@@ -1447,14 +1431,6 @@
     "category": "Rings",
     "name": "Alisa Diamond Ring for men | Zoniraz"
   },
-  "tinsley-diamond-earrings-for-women-zoniraz": {
-    "title": "Tinsley Diamond Earrings for Women | Zoniraz",
-    "description": "Shop the elegant Tinsley Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
-    "canonical": "https://zoniraz.com/product/tinsley-diamond-earrings-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/owwhtisndfqshojf3pwj.jpg",
-    "category": "Earrings",
-    "name": "Tinsley Diamond Earrings for Women | Zoniraz"
-  },
   "alina-diamond-nose-pin-for-women-zoniraz": {
     "title": "Alina Diamond Nose Pin for Women | Zoniraz",
     "description": "Shop the elegant Alina Diamond Nose Pin by Zoniraz. Crafted with certified diamonds, this delicate nose pin adds timeless sparkle and effortless elegance t",
@@ -1462,6 +1438,14 @@
     "image": "https://media.zoniraz.com/uploads/zoniraz/xca0nfjyp3weak5o8dcf.jpg",
     "category": "Nose Pins",
     "name": "Alina Diamond Nose Pin for Women | Zoniraz"
+  },
+  "tinsley-diamond-earrings-for-women-zoniraz": {
+    "title": "Tinsley Diamond Earrings for Women | Zoniraz",
+    "description": "Shop the elegant Tinsley Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
+    "canonical": "https://zoniraz.com/product/tinsley-diamond-earrings-for-women-zoniraz",
+    "image": "https://media.zoniraz.com/uploads/zoniraz/gxznlbzsorkohiqvyxn8.jpg",
+    "category": "Earrings",
+    "name": "Tinsley Diamond Earrings for Women | Zoniraz"
   },
   "adley-diamond-ring-for-men-zoniraz": {
     "title": "Adley Diamond Ring for men | Zoniraz",
@@ -1471,19 +1455,11 @@
     "category": "Rings",
     "name": "Adley Diamond Ring for men | Zoniraz"
   },
-  "thea-diamond-earrings-for-Girls-zoniraz": {
-    "title": "Thea Diamond Earrings for Girls | Zoniraz",
-    "description": "Shop the elegant Thea Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
-    "canonical": "https://zoniraz.com/product/thea-diamond-earrings-for-Girls-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/jzmalyj6w0htpml5muae.jpg",
-    "category": "Earrings",
-    "name": "Thea Diamond Earrings for Girls | Zoniraz"
-  },
   "sicily-diamond-earrings-for-Girls-zoniraz": {
     "title": "Sicily Diamond Earrings for Girls | Zoniraz",
     "description": "Shop the elegant Sicily Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
     "canonical": "https://zoniraz.com/product/sicily-diamond-earrings-for-Girls-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/byv0rgcv4okd9m2sxbqt.jpg",
+    "image": "https://media.zoniraz.com/uploads/zoniraz/zwqdanyjjbjdijpoffak.jpg",
     "category": "Earrings",
     "name": "Sicily Diamond Earrings for Girls | Zoniraz"
   },
@@ -1502,6 +1478,14 @@
     "image": "https://media.zoniraz.com/uploads/zoniraz/ocwd3l7xkfvzawallo1m.jpg",
     "category": "Nose Pins",
     "name": "Adalyn Diamond Nose Pin for Women | Zoniraz"
+  },
+  "thea-diamond-earrings-for-Girls-zoniraz": {
+    "title": "Thea Diamond Earrings for Girls | Zoniraz",
+    "description": "Shop the elegant Thea Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
+    "canonical": "https://zoniraz.com/product/thea-diamond-earrings-for-Girls-zoniraz",
+    "image": "https://media.zoniraz.com/uploads/zoniraz/jzmalyj6w0htpml5muae.jpg",
+    "category": "Earrings",
+    "name": "Thea Diamond Earrings for Girls | Zoniraz"
   },
   "rosemary-diamond-earrings-for-women-zoniraz": {
     "title": "Rosemary Diamond Earrings for Women | Zoniraz",
@@ -1591,46 +1575,6 @@
     "category": "Earrings",
     "name": "Kiera Diamond Earrings for Women | Zoniraz"
   },
-  "marilyn-earring": {
-    "title": "Marilyn Diamond Earrings for Women | Zoniraz",
-    "description": "Shop the elegant Marilyn Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
-    "canonical": "https://zoniraz.com/product/marilyn-earring",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/ftv1fpup7al2bjfr6zym.jpg",
-    "category": "Earrings",
-    "name": "Marilyn Diamond Earrings for Women | Zoniraz"
-  },
-  "rayne-earring": {
-    "title": "Rayne Diamond Earrings for Women | Zoniraz",
-    "description": "Shop the elegant Rayne Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
-    "canonical": "https://zoniraz.com/product/rayne-earring",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/d2zvzzg0hcby7tlmg3ir.jpg",
-    "category": "Earrings",
-    "name": "Rayne Diamond Earrings for Women | Zoniraz"
-  },
-  "Tinsley Earrings – Elegant Statement Earrings for Every Occasion": {
-    "title": "Tinsley Earrings – Elegant Statement Earrings for Every Occasion | Earrings in Alwar | Zoniraz",
-    "description": "Elegant Tinsley Earrings designed to add a subtle touch of sparkle to your everyday and special-occasion looks.",
-    "canonical": "https://zoniraz.com/product/Tinsley Earrings – Elegant Statement Earrings for Every Occasion",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/mlytz4qjjxnrirlnwban.jpg",
-    "category": "Earrings",
-    "name": "Tinsley Earrings – Elegant Statement Earrings for Every Occasion"
-  },
-  "venice-earring": {
-    "title": "Venice Diamond Earrings for Women | Zoniraz",
-    "description": "Shop the elegant Venice Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
-    "canonical": "https://zoniraz.com/product/venice-earring",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/xhk6ztnssgtqykyio2zr.jpg",
-    "category": "Earrings",
-    "name": "Venice Diamond Earrings for Women | Zoniraz"
-  },
-  "kensington-earring": {
-    "title": "Kensington  Earring | Earrings in Alwar | Zoniraz",
-    "description": "Kensington Earring",
-    "canonical": "https://zoniraz.com/product/kensington-earring",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/i1wizieo2l93dyzc97qj.jpg",
-    "category": "Earrings",
-    "name": "Kensington  Earring"
-  },
   "tinley-diamond-earrings-for-women-zoniraz": {
     "title": "Tinley Diamond Earrings for Women | Zoniraz",
     "description": "Shop the elegant Tinley Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
@@ -1678,14 +1622,6 @@
     "image": "https://media.zoniraz.com/uploads/zoniraz/g71lr127lxpn5aqif8o2.jpg",
     "category": "Earrings",
     "name": "Scarlett Diamond Earrings for Women | Zoniraz"
-  },
-  "kiera-diamond-earrings-for-women-zoniraz": {
-    "title": "Kiera Diamond Earrings for Women | Zoniraz",
-    "description": "Shop the elegant Kiera Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
-    "canonical": "https://zoniraz.com/product/kiera-diamond-earrings-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/tpmba7tgejnspd0ltd7h.jpg",
-    "category": "Earrings",
-    "name": "Kiera Diamond Earrings for Women | Zoniraz"
   },
   "reese-diamond-earrings-for-women-zoniraz": {
     "title": "Reese Diamond Earrings for Women | Zoniraz",
@@ -2111,14 +2047,6 @@
     "category": "Earrings",
     "name": "Aaliyah Diamond Earrings for Women | Zoniraz"
   },
-  "flora-diamond-earrings-for-women-zoniraz": {
-    "title": "Flora Diamond Earrings for Women | Zoniraz",
-    "description": "Shop the elegant Flora Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
-    "canonical": "https://zoniraz.com/product/flora-diamond-earrings-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/ryti35u4zuiuuznyhntc.jpg",
-    "category": "Earrings",
-    "name": "Flora Diamond Earrings for Women | Zoniraz"
-  },
   "zoe-diamond-pendant-for-women-zoniraz": {
     "title": "Zoe Diamond Pendant for Women | Zoniraz",
     "description": "Shop the elegant Zoe Diamond Pendant by Zoniraz. Crafted with certified diamonds, this timeless pendant adds effortless elegance to any occasion.",
@@ -2198,14 +2126,6 @@
     "image": "https://media.zoniraz.com/uploads/zoniraz/o5v1o7027cxb4khuzdm2.jpg",
     "category": "Earrings",
     "name": "Sara Diamond Earrings for Women | Zoniraz"
-  },
-  "eva-diamond-earrings-for-girl-zoniraz": {
-    "title": "Eva Diamond Earrings for Girl | Zoniraz",
-    "description": "Shop the elegant Eva Diamond Earrings by Zoniraz. Crafted with certified diamonds, these timeless earrings add effortless elegance to any occasion.",
-    "canonical": "https://zoniraz.com/product/eva-diamond-earrings-for-girl-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/jy24jipafn4juyot34d1.jpg",
-    "category": "Earrings",
-    "name": "Eva Diamond Earrings for Girl | Zoniraz"
   },
   "samantha-diamond-earrings-for-women-zoniraz": {
     "title": "Samantha Diamond Earrings for Women | Zoniraz",
@@ -3679,14 +3599,6 @@
     "category": "Rings",
     "name": "Senpai Diamond Engagement Ring for Women | Zoniraz"
   },
-  "buy-diamond-pendant-necklace-georgia-diamond-pendant-zoniraz": {
-    "title": "Buy diamond Pendant Necklace | Georgia Diamond Pendant | Zoniraz",
-    "description": "Buy the Georgia Diamond Pendant in BIS Hallmarked diamond. Shop an elegant diamond pendant necklace for women with timeless craftsmanship and premium quali",
-    "canonical": "https://zoniraz.com/product/buy-diamond-pendant-necklace-georgia-diamond-pendant-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/vq4qvihotsq1lhzqroxv.jpg",
-    "category": "Pendants",
-    "name": "Buy diamond Pendant Necklace | Georgia Diamond Pendant | Zoniraz"
-  },
   "buy-diamond-pendant-necklace-genesis-diamond-pendant-zoniraz": {
     "title": "Buy diamond Pendant Necklace | Genesis Diamond Pendant | Zoniraz",
     "description": "Buy the Genesis Diamond Pendant in BIS Hallmarked Gold. Shop an elegant diamond pendant necklace for women with premium craftsmanship and timeless elegance",
@@ -4051,7 +3963,7 @@
     "title": "Riley Diamond Ring | Buy Diamond Rings Online | Zoniraz",
     "description": "Shop the Riley Diamond Ring at Zoniraz, an elegant and diamond design for women. Discover stylish diamond ring designs perfect for daily wear, gifting, and",
     "canonical": "https://zoniraz.com/product/riley-diamond-ring-buy-diamond-rings-online-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/esqt3bpxzuflbzsvek3l.jpg",
+    "image": "https://media.zoniraz.com/uploads/zoniraz/bl94qhkinxocww0urcyt.jpg",
     "category": "Rings",
     "name": "Riley Diamond Ring | Buy Diamond Rings Online | Zoniraz"
   },
@@ -4278,134 +4190,6 @@
     "image": "https://media.zoniraz.com/uploads/zoniraz/wqi5lzbmfp98xkudixcv.jpg",
     "category": "Rings",
     "name": "Harleigh Diamond Engagement Ring for men | Zoniraz"
-  },
-  "hailee-diamond-engagement-ring-for-men-zoniraz": {
-    "title": "Hailee Diamond Engagement Ring for men | Zoniraz",
-    "description": "Shop the exquisite Hailee Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless elegance and exceptional craftsmanship.",
-    "canonical": "https://zoniraz.com/product/hailee-diamond-engagement-ring-for-men-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/cnmpj779g26hlsqonow4.jpg",
-    "category": "Rings",
-    "name": "Hailee Diamond Engagement Ring for men | Zoniraz"
-  },
-  "rhea-diamond-engagement-ring-for-men-zoniraz": {
-    "title": "Rhea Diamond Engagement Ring for men | Zoniraz",
-    "description": "Shop the elegant Rhea Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/rhea-diamond-engagement-ring-for-men-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/yytnkulpbt22tzxai1ij.jpg",
-    "category": "Rings",
-    "name": "Rhea Diamond Engagement Ring for men | Zoniraz"
-  },
-  "kina-arnett-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Kina Arnett Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Kina Arnett Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/kina-arnett-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/tahzuuat3lwynoy153ne.jpg",
-    "category": "Rings",
-    "name": "Kina Arnett Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "toni-truelove-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Toni Truelove Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Toni Truelove Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/toni-truelove-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/mhmfl3cgewy1sloge7g7.jpg",
-    "category": "Rings",
-    "name": "Toni Truelove Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "meg-ellis-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Meg Ellis Diamond Engagement Ring for Women Zoniraz",
-    "description": "Shop the elegant Meg Ellis Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/meg-ellis-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/runy9tognewzu4knur1j.jpg",
-    "category": "Rings",
-    "name": "Meg Ellis Diamond Engagement Ring for Women Zoniraz"
-  },
-  "ellie-henry-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Ellie Henry Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Ellie Henry Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/ellie-henry-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/n9mdklcycz612pl3oioy.jpg",
-    "category": "Rings",
-    "name": "Ellie Henry Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "hannah-rogers-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Hannah Rogers Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Hannah Rogers Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/hannah-rogers-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/lggcemcrdxvgk06gab86.jpg",
-    "category": "Rings",
-    "name": "Hannah Rogers Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "katrina-ann-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Katrina Ann Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Katrina Ann Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/katrina-ann-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/nepfwvojf22ltat1riot.jpg",
-    "category": "Rings",
-    "name": "Katrina Ann Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "molly-lappegaard-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Molly Lappegaard Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Molly Lappegaard Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/molly-lappegaard-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/f7ow9f4yvbg6tosgyvhr.jpg",
-    "category": "Rings",
-    "name": "Molly Lappegaard Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "sharon-athey-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Sharon Athey Diamond Engagement Ring for Women Zoniraz",
-    "description": "Shop the elegant Sharon Athey Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/sharon-athey-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/wkt9wc4kzyj04leugn8d.jpg",
-    "category": "Rings",
-    "name": "Sharon Athey Diamond Engagement Ring for Women Zoniraz"
-  },
-  "symone-redmond-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Symone Redmond Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Symone Redmond Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/symone-redmond-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/nah46pdwsnnup7hybhsy.jpg",
-    "category": "Rings",
-    "name": "Symone Redmond Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "aicha-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Aicha Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Aicha Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/aicha-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/aqjziqsnjseimvcikozi.jpg",
-    "category": "Rings",
-    "name": "Aicha Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "amelie-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Amelie Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Amelie Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/amelie-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/cdzpbzqxpls6gnmqlrdp.jpg",
-    "category": "Rings",
-    "name": "Amelie Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "chrissi-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Chrissi Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Chrissi Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/chrissi-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/c30agwj7npyvvnzjvf3x.jpg",
-    "category": "Rings",
-    "name": "Chrissi Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "daniel-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Daniel Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Daniel Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/daniel-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/zmvewqfcb2r8t4665qda.jpg",
-    "category": "Rings",
-    "name": "Daniel Diamond Engagement Ring for Women | Zoniraz"
-  },
-  "dominik-diamond-engagement-ring-for-women-zoniraz": {
-    "title": "Dominik Diamond Engagement Ring for Women | Zoniraz",
-    "description": "Shop the elegant Dominik Diamond Engagement Ring by Zoniraz. Certified diamonds with timeless craftsmanship.",
-    "canonical": "https://zoniraz.com/product/dominik-diamond-engagement-ring-for-women-zoniraz",
-    "image": "https://media.zoniraz.com/uploads/zoniraz/f8oobpn4bz4v5r5n1gh0.jpg",
-    "category": "Rings",
-    "name": "Dominik Diamond Engagement Ring for Women | Zoniraz"
   },
   "r-letter-diamond-initial-pendant-for-women-zoniraz": {
     "title": "Initial pendant R with full diamond for Women | Zoniraz",

@@ -568,43 +568,87 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
         if (!isKids) return false;
       }
     } else if (category && category !== 'All Products' && category !== 'Catalog' && category !== 'Trending Now' && category !== 'Trending' && category !== 'trending-now') {
-      // Standard product category filter (Rings, Earrings, Necklaces, Bangles, Bracelets, etc.)
+      // Standard product category filter (Rings, Earrings, Necklaces, Bangles, Bracelets, Solitaires, Zodiac, etc.)
       const prodCatClean = String(product.category || product.product_category || '').toLowerCase().replace(/[^a-z0-9]/g, '');
       const pageCatClean = String(category).toLowerCase().replace(/[^a-z0-9]/g, '');
+      const prodTitleClean = String(product.name || product.product_title || '').toLowerCase();
+      const prodSubClean = String(product.subcategory || product.product_subcategory || '').toLowerCase();
 
-      // Check if it's Bangles or Bracelets page/category
-      const isBanglesOrBraceletsPage = pageCatClean.includes('bangle') || pageCatClean.includes('bracelet');
-      const isBanglesOrBraceletsProd = prodCatClean.includes('bangle') || 
-                                       prodCatClean.includes('bracelet') || 
-                                       String(product.name || product.product_title || '').toLowerCase().includes('bangle') || 
-                                       String(product.name || product.product_title || '').toLowerCase().includes('bracelet') || 
-                                       String(product.name || product.product_title || '').toLowerCase().includes('kada') ||
-                                       String(product.subcategory || product.product_subcategory || '').toLowerCase().includes('bangle') ||
-                                       String(product.subcategory || product.product_subcategory || '').toLowerCase().includes('bracelet') ||
-                                       String(product.subcategory || product.product_subcategory || '').toLowerCase().includes('kada');
+      // STRICT GUARD: Rings vs Earrings (the word "earrings" contains "rings", which previously caused all earrings to match rings)
+      const isEarringProd = prodCatClean.includes('earring') || prodTitleClean.includes('earring');
+      const isRingPage = pageCatClean === 'rings' || pageCatClean === 'ring';
+      const isEarringPage = pageCatClean === 'earrings' || pageCatClean === 'earring';
 
-      // Check if it's Necklaces or Pendants combined category
-      const isNecklacesOrPendantsPage = pageCatClean.includes('necklace') || pageCatClean.includes('pendant');
-      const isNecklacesOrPendantsProd = prodCatClean.includes('necklace') || 
-                                        prodCatClean.includes('pendant') || 
-                                        String(product.name || product.product_title || '').toLowerCase().includes('necklace') || 
-                                        String(product.name || product.product_title || '').toLowerCase().includes('pendant');
-
-      let isMatch = false;
-      if (isBanglesOrBraceletsPage) {
-        isMatch = isBanglesOrBraceletsProd;
-      } else if (isNecklacesOrPendantsPage && (pageCatClean.includes('necklacespendants') || pageCatClean.includes('necklacesandpendants'))) {
-        isMatch = isNecklacesOrPendantsProd;
-      } else if (prodCatClean === pageCatClean) {
-        isMatch = true;
-      } else if (prodCatClean.endsWith('s') && prodCatClean.slice(0, -1) === pageCatClean) {
-        isMatch = true;
-      } else if (pageCatClean.endsWith('s') && pageCatClean.slice(0, -1) === prodCatClean) {
-        isMatch = true;
-      } else if (prodCatClean.includes(pageCatClean) || pageCatClean.includes(prodCatClean)) {
-        isMatch = true;
+      if (isRingPage) {
+        if (isEarringProd) return false;
+        // Product must be a ring (in category or title, and not an earring)
+        const isRingProd = prodCatClean === 'rings' || prodCatClean === 'ring' || (prodCatClean.includes('ring') && !prodCatClean.includes('earring')) || (prodTitleClean.includes('ring') && !isEarringProd);
+        if (!isRingProd) return false;
+      } else if (isEarringPage) {
+        if (!isEarringProd) return false;
+      } else if (pageCatClean.includes('solitaire')) {
+        // Solitaire category: match if category, subcategory, title, or stone specs mention solitaire
+        const isSolitaireProd = prodCatClean.includes('solitaire') || 
+                                prodSubClean.includes('solitaire') || 
+                                prodTitleClean.includes('solitaire') || 
+                                Number(product.solitaire_weight || product.solitaires_weight || 0) > 0;
+        if (!isSolitaireProd) return false;
+      } else if (pageCatClean.includes('zodiac')) {
+        // Zodiac category: match if subcategory or title includes zodiac
+        const isZodiacProd = prodCatClean.includes('zodiac') || 
+                             prodSubClean.includes('zodiac') || 
+                             prodTitleClean.includes('zodiac');
+        if (!isZodiacProd) return false;
+      } else if (pageCatClean.includes('bangle') || pageCatClean.includes('bracelet')) {
+        // Bangles or Bracelets page/category
+        const isBanglesOrBraceletsProd = prodCatClean.includes('bangle') || 
+                                         prodCatClean.includes('bracelet') || 
+                                         prodTitleClean.includes('bangle') || 
+                                         prodTitleClean.includes('bracelet') || 
+                                         prodTitleClean.includes('kada') ||
+                                         prodSubClean.includes('bangle') ||
+                                         prodSubClean.includes('bracelet') ||
+                                         prodSubClean.includes('kada');
+        if (!isBanglesOrBraceletsProd) return false;
+      } else if (pageCatClean.includes('necklace') || pageCatClean.includes('pendant')) {
+        if (pageCatClean.includes('necklacespendants') || pageCatClean.includes('necklacesandpendants')) {
+          const isNecklacesOrPendantsProd = prodCatClean.includes('necklace') || prodCatClean.includes('pendant') || prodTitleClean.includes('necklace') || prodTitleClean.includes('pendant');
+          if (!isNecklacesOrPendantsProd) return false;
+        } else if (pageCatClean.includes('necklace')) {
+          const isNecklaceProd = prodCatClean.includes('necklace') || prodTitleClean.includes('necklace');
+          if (!isNecklaceProd) return false;
+        } else if (pageCatClean.includes('pendant')) {
+          const isPendantProd = prodCatClean.includes('pendant') || prodTitleClean.includes('pendant');
+          if (!isPendantProd) return false;
+        }
+      } else if (pageCatClean.includes('nose')) {
+        const isNosePinProd = prodCatClean.includes('nose') || prodTitleClean.includes('nose');
+        if (!isNosePinProd) return false;
+      } else if (pageCatClean.includes('mangal')) {
+        const isMangalProd = prodCatClean.includes('mangal') || prodTitleClean.includes('mangal');
+        if (!isMangalProd) return false;
+      } else if (pageCatClean.includes('chain')) {
+        const isChainProd = prodCatClean.includes('chain') || prodTitleClean.includes('chain');
+        if (!isChainProd) return false;
+      } else if (pageCatClean.includes('set')) {
+        const isSetProd = Boolean(product.is_set) || prodCatClean.includes('set') || prodTitleClean.includes('set');
+        if (!isSetProd) return false;
+      } else {
+        // Standard exact or singular/plural comparison (SAFE from "earring" vs "ring" collision)
+        let isMatch = false;
+        if (prodCatClean === pageCatClean) {
+          isMatch = true;
+        } else if (prodCatClean.endsWith('s') && prodCatClean.slice(0, -1) === pageCatClean) {
+          isMatch = true;
+        } else if (prodCatClean.endsWith('es') && prodCatClean.slice(0, -2) === pageCatClean) {
+          isMatch = true;
+        } else if (pageCatClean.endsWith('s') && pageCatClean.slice(0, -1) === prodCatClean) {
+          isMatch = true;
+        } else if (pageCatClean.endsWith('es') && pageCatClean.slice(0, -2) === prodCatClean) {
+          isMatch = true;
+        }
+        if (!isMatch) return false;
       }
-      if (!isMatch) return false;
     }
 
     // Filter by URL subcategory or collection query param

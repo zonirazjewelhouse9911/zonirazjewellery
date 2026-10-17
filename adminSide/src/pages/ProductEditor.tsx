@@ -16,7 +16,14 @@ import {
   ExternalLink,
   FileText,
   Plus,
-  Trash2
+  Trash2,
+  Sparkles,
+  Gem,
+  Package,
+  RefreshCw,
+  ChevronDown,
+  ChevronUp,
+  Copy
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 
@@ -67,8 +74,140 @@ export const CATEGORIES = [
   { id: '7', name: 'Mangalsutra' },
   { id: '8', name: 'Tennis Bracelets' },
   { id: '9', name: 'Bracelets' },
-  { id: '10', name: 'Necklaces' }
+  { id: '10', name: 'Necklaces' },
+  { id: '11', name: 'Jewellery Set' }
 ];
+
+export interface SetItemPriceBreakup {
+  gold_cost: number;
+  diamond_cost: number;
+  solitaire_cost: number;
+  gemstone_cost: number;
+  color_stone_cost: number;
+  making_charges: number;
+  gst: number;
+  subtotal: number;
+  total: number;
+  net_gold_weight: number;
+}
+
+export interface SetItemData {
+  id: string;
+  name: string;
+  item_type: string;
+  product_weight: number;
+  gold_weight: number;
+  karat: string;
+  metal_type?: string;
+  height?: number;
+  width?: number;
+  size?: string;
+  includeMetal: boolean;
+  includeDiamond: boolean;
+  diamond_weight: number;
+  diamond_count: number;
+  diamond_quality: string;
+  diamond_rate?: number;
+  diamond_setting?: string;
+  includeSolitaire: boolean;
+  solitaire_weight: number;
+  solitaire_quality: string;
+  solitaire_price: number;
+  solitaire_setting?: string;
+  includeGemstone: boolean;
+  gemstone_info?: string;
+  gemstone_weight: number;
+  gemstone_price: number;
+  noof_gem: number;
+  includeColorStone: boolean;
+  color_stone?: string;
+  color_stone_weight: number;
+  color_stone_count: number;
+  color_stone_price: number;
+  making_charges: number;
+  calculated_price: number;
+  price_breakup?: SetItemPriceBreakup;
+}
+
+export const PREDEFINED_SET_ITEMS = [
+  { id: 'necklace', name: 'Necklace', icon: '📿' },
+  { id: 'earrings', name: 'Earrings', icon: '✨' },
+  { id: 'nosepin', name: 'Nose Pin', icon: '💎' },
+  { id: 'ring', name: 'Ring', icon: '💍' },
+  { id: 'bracelet', name: 'Bracelet', icon: '💫' },
+  { id: 'bangle', name: 'Bangle', icon: '🟡' },
+  { id: 'maang_tikka', name: 'Maang Tikka', icon: '👑' },
+  { id: 'mangalsutra', name: 'Mangalsutra', icon: '🪢' },
+  { id: 'pendant', name: 'Pendant', icon: '🪙' }
+];
+
+export const calculateSetItemPrice = (
+  item: Partial<SetItemData>,
+  rates: any,
+  defaultMakingPercent: number = 15
+): SetItemPriceBreakup => {
+  const gst_percent = rates?.gst_percent ?? 3;
+  const gold_rate_24k = rates?.gold_rate_24k || 7500;
+
+  const karatStr = String(item.karat || '14K').toUpperCase();
+  let goldRate = rates?.gold_rate_14k || Math.floor(gold_rate_24k * 0.585);
+  if (karatStr.includes('24')) {
+    goldRate = gold_rate_24k;
+  } else if (karatStr.includes('22')) {
+    goldRate = Math.floor(gold_rate_24k * 0.916);
+  } else if (karatStr.includes('18')) {
+    goldRate = Math.floor(gold_rate_24k * 0.75);
+  } else if (karatStr.includes('14')) {
+    goldRate = rates?.gold_rate_14k || Math.floor(gold_rate_24k * 0.585);
+  } else if (karatStr.includes('9')) {
+    goldRate = Math.floor(gold_rate_24k * 0.37);
+  }
+
+  const grossWeight = Number(item.product_weight || item.gold_weight || 0);
+  const diamondWeight = item.includeDiamond !== false ? Number(item.diamond_weight || 0) : 0;
+  const solitaireWeight = item.includeSolitaire ? Number(item.solitaire_weight || 0) : 0;
+  const gemstoneWeight = item.includeGemstone ? Number(item.gemstone_weight || 0) : 0;
+  const colorStoneWeight = item.includeColorStone ? Number(item.color_stone_weight || 0) : 0;
+
+  const netGoldWeight = Math.max(0, grossWeight - (diamondWeight * 0.2) - (solitaireWeight * 0.2) - (gemstoneWeight * 0.2) - (colorStoneWeight * 0.2));
+  const goldCost = item.includeMetal !== false ? Math.floor(netGoldWeight * goldRate) : 0;
+
+  let diamondRate = Number(item.diamond_rate || 0);
+  if (!diamondRate) {
+    const dq = String(item.diamond_quality || 'IJ-SI').toUpperCase();
+    if (dq === 'GH-VS' || dq === '2') diamondRate = rates?.diamond_rate_gh_vs || 95000;
+    else if (dq === 'EF-VVS' || dq === '3') diamondRate = rates?.diamond_rate_ef_vvs || 110000;
+    else if (dq === 'FG-SI' || dq === '4') diamondRate = rates?.diamond_rate_fg_si || 88000;
+    else diamondRate = rates?.diamond_rate_ij_si || rates?.diamond_rate || 80000;
+  }
+  const diamondCost = item.includeDiamond !== false ? Math.round(diamondWeight * diamondRate) : 0;
+  const solitaireCost = item.includeSolitaire ? Number(item.solitaire_price || 0) : 0;
+  const gemstoneCost = item.includeGemstone ? Number(item.gemstone_price || 0) : 0;
+  const colorStoneCost = item.includeColorStone ? Number(item.color_stone_price || 0) : 0;
+
+  const mcPercent = item.making_charges !== undefined && item.making_charges !== null && !isNaN(Number(item.making_charges))
+    ? Number(item.making_charges)
+    : defaultMakingPercent;
+  const goldCost24k = netGoldWeight * gold_rate_24k;
+  const makingCharges = Math.round(goldCost24k * mcPercent / 100);
+
+  const subtotal = goldCost + diamondCost + solitaireCost + gemstoneCost + colorStoneCost + makingCharges;
+  const gst = Math.round(subtotal * (gst_percent / 100));
+  const total = subtotal + gst;
+
+  return {
+    gold_cost: goldCost,
+    diamond_cost: diamondCost,
+    solitaire_cost: solitaireCost,
+    gemstone_cost: gemstoneCost,
+    color_stone_cost: colorStoneCost,
+    making_charges: makingCharges,
+    gst,
+    subtotal,
+    total,
+    net_gold_weight: Number(netGoldWeight.toFixed(3))
+  };
+};
 
 export const SUBCATEGORIES = [
   { id: '1', name: 'Engagement Rings' },
@@ -162,6 +301,8 @@ interface ProductFormData {
   meta_description: string;
   making_charges: number;
   makingCharges: number;
+  is_set?: boolean;
+  set_items?: SetItemData[];
 }
 
 export default function ProductEditor({ productId, onBack, onSaveSuccess }: ProductEditorProps) {
@@ -254,7 +395,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     meta_keyword: '',
     meta_description: '',
     making_charges: 0,
-    makingCharges: 0
+    makingCharges: 0,
+    is_set: false,
+    set_items: []
   });
 
   const sanitizeIncomingProduct = (product: any) => {
@@ -294,6 +437,19 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
         }
       } else if (typeof product.custom_diamond_rates === 'object') {
         parsedCustomDiamondRates = product.custom_diamond_rates;
+      }
+    }
+
+    let parsedSetItems: SetItemData[] = [];
+    if (product.set_items) {
+      if (typeof product.set_items === 'string') {
+        try {
+          parsedSetItems = JSON.parse(product.set_items);
+        } catch (e) {
+          console.error('Failed to parse set_items JSON string', e);
+        }
+      } else if (Array.isArray(product.set_items)) {
+        parsedSetItems = product.set_items;
       }
     }
 
@@ -373,7 +529,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       solitaires_setting: product.solitaires_setting || product.solitaire_setting || 'Prong Setting',
       banglesize_id: (product.banglesize_id && product.banglesize_id !== '0') ? String(product.banglesize_id).trim() : '2.6',
       making_charges: Number(product.making_charges || 0),
-      makingCharges: Number(product.makingCharges || 0)
+      makingCharges: Number(product.makingCharges || 0),
+      is_set: product.is_set === true || product.is_set === 'true' || (Array.isArray(parsedSetItems) && parsedSetItems.length > 0) || (product.category_id || '').toLowerCase().includes('set'),
+      set_items: parsedSetItems
     };
   };
 
@@ -435,6 +593,186 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
     return 'Gold Weight (14k) *';
   };
 
+  const isJewellerySet = (formData.category_id || '').toLowerCase().includes('set') ||
+    formData.category_id === '11' ||
+    formData.is_set === true ||
+    (Array.isArray(formData.set_items) && formData.set_items.length > 0);
+
+  const [selectedSetItemTab, setSelectedSetItemTab] = useState<string>('all');
+  const [customItemInput, setCustomItemInput] = useState<string>('');
+  const [expandedSetItems, setExpandedSetItems] = useState<Record<string, boolean>>({});
+
+  const isItemExpanded = (key: string) => expandedSetItems[key] !== false;
+  const toggleItemExpanded = (key: string) => {
+    setExpandedSetItems(prev => ({
+      ...prev,
+      [key]: prev[key] === false ? true : false
+    }));
+  };
+
+  const syncSetTotals = (items: SetItemData[]) => {
+    const updatedItems = items.map(item => {
+      const breakup = calculateSetItemPrice(item, dailyRates, formData.making_charges || 15);
+      return {
+        ...item,
+        calculated_price: breakup.total,
+        price_breakup: breakup
+      };
+    });
+
+    const totalPrice = updatedItems.reduce((sum, it) => sum + (it.calculated_price || 0), 0);
+    const totalProductWeight = updatedItems.reduce((sum, it) => sum + Number(it.product_weight || 0), 0);
+    const totalGoldWeight = updatedItems.reduce((sum, it) => sum + (it.includeMetal !== false ? Number(it.gold_weight || it.product_weight || 0) : 0), 0);
+    const totalDiamondWeight = updatedItems.reduce((sum, it) => sum + (it.includeDiamond !== false ? Number(it.diamond_weight || 0) : 0), 0);
+    const totalDiamondCount = updatedItems.reduce((sum, it) => sum + (it.includeDiamond !== false ? Number(it.diamond_count || 0) : 0), 0);
+    const totalGemstoneWeight = updatedItems.reduce((sum, it) => sum + (it.includeGemstone ? Number(it.gemstone_weight || 0) : 0), 0);
+    const totalSolitaireWeight = updatedItems.reduce((sum, it) => sum + (it.includeSolitaire ? Number(it.solitaire_weight || 0) : 0), 0);
+
+    setFormData(prev => ({
+      ...prev,
+      is_set: true,
+      set_items: updatedItems,
+      price: totalPrice > 0 ? totalPrice : prev.price,
+      product_weight: Number(totalProductWeight.toFixed(3)),
+      gold_weight: Number(totalGoldWeight.toFixed(3)),
+      diamond_weight: Number(totalDiamondWeight.toFixed(2)),
+      diamond_count: totalDiamondCount,
+      gemstone_weight: Number(totalGemstoneWeight.toFixed(2)),
+      solitaire_weight: Number(totalSolitaireWeight.toFixed(2)),
+      solitaires_weight: Number(totalSolitaireWeight.toFixed(2))
+    }));
+  };
+
+  const handleToggleSetItem = (preset: { id: string; name: string }) => {
+    const currentItems = formData.set_items || [];
+    const exists = currentItems.some(it => it.item_type === preset.id || it.name.toLowerCase() === preset.name.toLowerCase());
+
+    let newItems: SetItemData[];
+    if (exists) {
+      newItems = currentItems.filter(it => it.item_type !== preset.id && it.name.toLowerCase() !== preset.name.toLowerCase());
+    } else {
+      const defaultKaratName = formData.karat_id ? (KARATS.find(k => k.id === formData.karat_id)?.name || '14K') : '14K';
+      const newItemDraft: SetItemData = {
+        id: `${preset.id}_${Date.now()}`,
+        name: preset.name,
+        item_type: preset.id,
+        product_weight: 0,
+        gold_weight: 0,
+        karat: defaultKaratName,
+        includeMetal: true,
+        includeDiamond: formData.product_type !== 'gold',
+        diamond_weight: 0,
+        diamond_count: 0,
+        diamond_quality: formData.diamond_quality || 'IJ-SI',
+        diamond_rate: 0,
+        includeSolitaire: false,
+        solitaire_weight: 0,
+        solitaire_quality: 'IJ-SI',
+        solitaire_price: 0,
+        solitaire_setting: 'Prong Setting',
+        includeGemstone: false,
+        gemstone_info: '',
+        gemstone_weight: 0,
+        gemstone_price: 0,
+        noof_gem: 0,
+        includeColorStone: false,
+        color_stone: '',
+        color_stone_weight: 0,
+        color_stone_count: 0,
+        color_stone_price: 0,
+        making_charges: formData.making_charges || 15,
+        calculated_price: 0
+      };
+      const breakup = calculateSetItemPrice(newItemDraft, dailyRates, formData.making_charges || 15);
+      newItemDraft.calculated_price = breakup.total;
+      newItemDraft.price_breakup = breakup;
+      newItems = [...currentItems, newItemDraft];
+    }
+
+    syncSetTotals(newItems);
+  };
+
+  const handleAddCustomSetItem = (customName: string) => {
+    if (!customName.trim()) return;
+    const cleanName = customName.trim();
+    const currentItems = formData.set_items || [];
+    const defaultKaratName = formData.karat_id ? (KARATS.find(k => k.id === formData.karat_id)?.name || '14K') : '14K';
+    const customId = cleanName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+
+    const newItemDraft: SetItemData = {
+      id: `${customId}_${Date.now()}`,
+      name: cleanName,
+      item_type: customId,
+      product_weight: 0,
+      gold_weight: 0,
+      karat: defaultKaratName,
+      includeMetal: true,
+      includeDiamond: formData.product_type !== 'gold',
+      diamond_weight: 0,
+      diamond_count: 0,
+      diamond_quality: formData.diamond_quality || 'IJ-SI',
+      diamond_rate: 0,
+      includeSolitaire: false,
+      solitaire_weight: 0,
+      solitaire_quality: 'IJ-SI',
+      solitaire_price: 0,
+      solitaire_setting: 'Prong Setting',
+      includeGemstone: false,
+      gemstone_info: '',
+      gemstone_weight: 0,
+      gemstone_price: 0,
+      noof_gem: 0,
+      includeColorStone: false,
+      color_stone: '',
+      color_stone_weight: 0,
+      color_stone_count: 0,
+      color_stone_price: 0,
+      making_charges: formData.making_charges || 15,
+      calculated_price: 0
+    };
+    const breakup = calculateSetItemPrice(newItemDraft, dailyRates, formData.making_charges || 15);
+    newItemDraft.calculated_price = breakup.total;
+    newItemDraft.price_breakup = breakup;
+
+    syncSetTotals([...currentItems, newItemDraft]);
+    setCustomItemInput('');
+  };
+
+  const handleRemoveSetItem = (index: number) => {
+    const currentItems = [...(formData.set_items || [])];
+    currentItems.splice(index, 1);
+    syncSetTotals(currentItems);
+  };
+
+  const handleUpdateSetItem = (index: number, updates: Partial<SetItemData>) => {
+    const currentItems = [...(formData.set_items || [])];
+    if (!currentItems[index]) return;
+
+    const updatedItem = { ...currentItems[index], ...updates };
+    if ('product_weight' in updates && (!updatedItem.gold_weight || updatedItem.gold_weight === currentItems[index].product_weight)) {
+      updatedItem.gold_weight = Number(updates.product_weight || 0);
+    }
+    const breakup = calculateSetItemPrice(updatedItem, dailyRates, formData.making_charges || 15);
+    updatedItem.calculated_price = breakup.total;
+    updatedItem.price_breakup = breakup;
+    currentItems[index] = updatedItem;
+
+    syncSetTotals(currentItems);
+  };
+
+  const handleDuplicateSetItem = (index: number) => {
+    const currentItems = [...(formData.set_items || [])];
+    if (!currentItems[index]) return;
+    const source = currentItems[index];
+    const clone: SetItemData = {
+      ...source,
+      id: `${source.item_type}_${Date.now()}`,
+      name: `${source.name} (Copy)`
+    };
+    currentItems.splice(index + 1, 0, clone);
+    syncSetTotals(currentItems);
+  };
+
   const handleSave = async () => {
     setSaving(true);
     setError('');
@@ -465,42 +803,65 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       }
     }
 
+    if (isJewellerySet) {
+      if (!formData.set_items || formData.set_items.length === 0) {
+        setError('Please select at least one item included in this Jewellery Set (e.g. Necklace, Earrings, Nose Pin).');
+        setSaving(false);
+        return;
+      }
+      for (const item of formData.set_items) {
+        if (!item.name || !item.name.trim()) {
+          setError('All set items must have a valid name.');
+          setSaving(false);
+          return;
+        }
+        if (item.product_weight === undefined || item.product_weight === null || isNaN(Number(item.product_weight))) {
+          setError(`Item "${item.name}" must have a valid weight specified.`);
+          setSaving(false);
+          return;
+        }
+      }
+    }
+
     const numberFields = [
       { key: 'price', label: 'Price' },
       { key: 'discount', label: 'Enter Discount' },
       { key: 'stock', label: 'Enter Stock' },
-      { key: 'height', label: 'Height (mm)' },
-      { key: 'width', label: 'Width (mm)' },
       { key: 'product_weight', label: 'Product Weight' },
       { key: 'making_charges', label: 'Making Charges' }
     ];
 
-    if (includeMetal) {
-      numberFields.push({ key: 'gold_weight', label: getMetalWeightLabel().replace(' *', '') });
-    }
-
     const isPlainGoldType = formData.product_type === 'gold' || (formData.product_type || '').toLowerCase().includes('plain gold');
 
-    if (!isPlainGoldType && includeDiamond) {
-      numberFields.push({ key: 'diamond_weight', label: 'Diamond Weight' });
-      numberFields.push({ key: 'diamond_count', label: 'Diamond Count' });
-    }
+    if (!isJewellerySet) {
+      numberFields.push({ key: 'height', label: 'Height (mm)' });
+      numberFields.push({ key: 'width', label: 'Width (mm)' });
 
-    if (includeGemstone) {
-      numberFields.push({ key: 'gemstone_weight', label: 'Gemstone Weight' });
-      numberFields.push({ key: 'noof_gem', label: 'Total Number Of GEM' });
-      numberFields.push({ key: 'gemstone_price', label: 'Gemstone Price' });
-    }
+      if (includeMetal) {
+        numberFields.push({ key: 'gold_weight', label: getMetalWeightLabel().replace(' *', '') });
+      }
 
-    if (includeColorStone) {
-      numberFields.push({ key: 'color_stone_weight', label: 'Color Stone Weight' });
-      numberFields.push({ key: 'color_stone_count', label: 'Color Stone Count' });
-      numberFields.push({ key: 'color_stone_price', label: 'Color Stone Price' });
-    }
+      if (!isPlainGoldType && includeDiamond) {
+        numberFields.push({ key: 'diamond_weight', label: 'Diamond Weight' });
+        numberFields.push({ key: 'diamond_count', label: 'Diamond Count' });
+      }
 
-    if (includeSolitaire) {
-      numberFields.push({ key: 'solitaires_price', label: 'Solitaire Price' });
-      numberFields.push({ key: 'solitaires_weight', label: 'Solitaire Weight' });
+      if (includeGemstone) {
+        numberFields.push({ key: 'gemstone_weight', label: 'Gemstone Weight' });
+        numberFields.push({ key: 'noof_gem', label: 'Total Number Of GEM' });
+        numberFields.push({ key: 'gemstone_price', label: 'Gemstone Price' });
+      }
+
+      if (includeColorStone) {
+        numberFields.push({ key: 'color_stone_weight', label: 'Color Stone Weight' });
+        numberFields.push({ key: 'color_stone_count', label: 'Color Stone Count' });
+        numberFields.push({ key: 'color_stone_price', label: 'Color Stone Price' });
+      }
+
+      if (includeSolitaire) {
+        numberFields.push({ key: 'solitaires_price', label: 'Solitaire Price' });
+        numberFields.push({ key: 'solitaires_weight', label: 'Solitaire Weight' });
+      }
     }
 
     for (const f of numberFields) {
@@ -539,6 +900,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       product_id: computedProductId,
       size_id: cleanSizeId,
       banglesize_id: cleanBangleSizeId,
+      is_set: isJewellerySet,
+      set_items: isJewellerySet ? (formData.set_items || []) : [],
       // Handle solitaire presence
       solitaires_price: includeSolitaire ? Number(formData.solitaires_price || 0) : 0,
       solitaires_quality: includeSolitaire ? formData.solitaires_quality : '0',
@@ -832,7 +1195,12 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                       setFormData({ ...formData, category_id: '' });
                     } else {
                       setIsCustomCategory(false);
-                      setFormData({ ...formData, category_id: val });
+                      const isSet = val.toLowerCase().includes('set') || val === '11' || val === 'Jewellery Set';
+                      setFormData(prev => ({
+                        ...prev,
+                        category_id: val,
+                        is_set: isSet ? true : prev.is_set
+                      }));
                     }
                   }}
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
@@ -871,6 +1239,128 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                     onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                     className="w-full bg-white border border-amber-300 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
                   />
+                </div>
+              )}
+
+              {/* Jewellery Set Item Selection */}
+              {isJewellerySet && (
+                <div className="col-span-1 md:col-span-2 bg-[#5d463c]/5 border-2 border-[#5d463c]/20 rounded-3xl p-6 sm:p-8 space-y-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#5d463c]/15 pb-4">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Package className="w-5 h-5 text-[#5d463c]" />
+                        <h4 className="text-[15px] font-serif font-bold text-[#12100e] tracking-wide">
+                          Select Included Items in this Jewellery Set
+                        </h4>
+                      </div>
+                      <p className="text-[12px] text-[#12100e]/70 mt-1">
+                        Select which items are included in this set (e.g. Necklace, Earrings, Nose Pin). Each item will appear in the &ldquo;Jewellery Details&rdquo; tab to configure its individual specifications and price.
+                      </p>
+                    </div>
+                    <div className="inline-flex items-center gap-2 bg-[#5d463c]/10 px-4 py-2 rounded-xl text-[12px] font-bold text-[#5d463c] shrink-0">
+                      <span>{(formData.set_items || []).length} Item(s) Selected</span>
+                    </div>
+                  </div>
+
+                  {/* Predefined Quick-Select Chips */}
+                  <div className="space-y-3">
+                    <label className="text-[10px] uppercase tracking-[0.25em] font-black text-[#5d463c] block">
+                      Common Jewellery Pieces (Click to Include / Exclude)
+                    </label>
+                    <div className="flex flex-wrap gap-2.5">
+                      {PREDEFINED_SET_ITEMS.map(preset => {
+                        const isSelected = (formData.set_items || []).some(
+                          it => it.item_type === preset.id || it.name.toLowerCase() === preset.name.toLowerCase()
+                        );
+                        return (
+                          <button
+                            key={preset.id}
+                            type="button"
+                            onClick={() => handleToggleSetItem(preset)}
+                            className={cn(
+                              "px-4 py-2.5 rounded-2xl text-[13px] font-semibold transition-all duration-200 flex items-center gap-2 border cursor-pointer",
+                              isSelected
+                                ? "bg-[#5d463c] text-white border-[#5d463c] shadow-md shadow-[#5d463c]/20"
+                                : "bg-white text-[#12100e]/80 border-slate-200 hover:border-[#5d463c]/40 hover:bg-[#5d463c]/5"
+                            )}
+                          >
+                            <span className={cn(
+                              "w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold border transition-colors",
+                              isSelected ? "border-white bg-white/20 text-white" : "border-slate-300 text-slate-400"
+                            )}>
+                              {isSelected ? "✓" : "+"}
+                            </span>
+                            <span>{preset.icon}</span>
+                            <span>{preset.name}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Add Custom Piece */}
+                  <div className="pt-2 border-t border-[#5d463c]/10 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center">
+                    <div className="relative flex-1">
+                      <input
+                        type="text"
+                        placeholder="Add custom piece (e.g. Choker, Haathphool, Kamarbandh, Brooch)..."
+                        value={customItemInput}
+                        onChange={(e) => setCustomItemInput(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            handleAddCustomSetItem(customItemInput);
+                          }
+                        }}
+                        className="w-full bg-white border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 shadow-inner"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => handleAddCustomSetItem(customItemInput)}
+                      disabled={!customItemInput.trim()}
+                      className="px-6 py-3 bg-[#5d463c] hover:bg-[#4a372f] disabled:opacity-40 text-white text-[12px] font-bold uppercase tracking-wider rounded-2xl transition-all shadow-sm cursor-pointer"
+                    >
+                      + Add Custom Item
+                    </button>
+                  </div>
+
+                  {/* Current Selected Items summary tags */}
+                  {(formData.set_items || []).length > 0 ? (
+                    <div className="pt-4 border-t border-[#5d463c]/10 space-y-2">
+                      <label className="text-[10px] uppercase tracking-[0.25em] font-black text-[#5d463c] block">
+                        Included Set Pieces ({formData.set_items?.length})
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {(formData.set_items || []).map((it, idx) => (
+                          <div
+                            key={it.id || idx}
+                            className="inline-flex items-center gap-2 bg-white border border-[#5d463c]/30 rounded-xl px-3.5 py-2 text-[12px] font-medium text-[#12100e] shadow-sm"
+                          >
+                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            <span className="font-bold">{it.name}</span>
+                            {it.calculated_price && it.calculated_price > 0 ? (
+                              <span className="text-[11px] text-[#5d463c] font-semibold bg-[#5d463c]/10 px-2 py-0.5 rounded-md">
+                                ₹{Math.round(it.calculated_price).toLocaleString('en-IN')}
+                              </span>
+                            ) : null}
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSetItem(idx)}
+                              className="text-slate-400 hover:text-red-500 font-bold ml-1 transition-colors cursor-pointer"
+                              title="Remove this item"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="pt-3 text-[12px] text-amber-700 bg-amber-50/70 p-3.5 rounded-2xl border border-amber-200/60">
+                      💡 <strong>Notice:</strong> Please select at least one item (e.g. Necklace, Earrings) to configure details in this jewellery set.
+                    </div>
+                  )}
                 </div>
               )}
               <div className="space-y-4">
@@ -1041,9 +1531,33 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
 
         {activeTab === 'pricing' && (
           <div className="bg-white border border-slate-200/80 rounded-[40px] p-10 space-y-10 shadow-sm">
+            {isJewellerySet && (
+              <div className="bg-amber-50/80 border border-amber-200/80 rounded-3xl p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div>
+                  <h4 className="text-[13px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-amber-600" />
+                    Jewellery Set Price Calculation Active
+                  </h4>
+                  <p className="text-[12px] text-amber-800/80 mt-1">
+                    The total set price is automatically calculated as the sum of all individual item prices configured in the &ldquo;Jewellery Details&rdquo; tab.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => syncSetTotals(formData.set_items || [])}
+                  className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-[12px] font-bold uppercase tracking-wider transition-colors shrink-0 flex items-center gap-2 cursor-pointer shadow-sm"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Recalculate Set Prices
+                </button>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-5 gap-10">
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Price (₹)</label>
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">
+                  Price (₹) {isJewellerySet && <span className="text-amber-700 font-normal">(Auto Total)</span>}
+                </label>
                 <input
                   type="number"
                   value={formData.price || ''}
@@ -1070,7 +1584,9 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 />
               </div>
               <div className="space-y-4">
-                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Base Product Weight (g)</label>
+                <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">
+                  Total Product Weight (g) {isJewellerySet && <span className="text-amber-700 font-normal">(Sum)</span>}
+                </label>
                 <input
                   type="number"
                   step="0.01"
@@ -1092,6 +1608,87 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 />
               </div>
             </div>
+
+            {/* Set Items Price & Specification Breakdown Table */}
+            {isJewellerySet && (formData.set_items || []).length > 0 && (
+              <div className="space-y-4 pt-6 border-t border-slate-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <h4 className="text-[12px] uppercase tracking-[0.25em] font-black text-brand-gold">
+                    Individual Set Item Price Breakdown
+                  </h4>
+                  <span className="text-[13px] font-bold text-[#5d463c]">
+                    Grand Total Set Price: ₹{Math.round(formData.price || 0).toLocaleString('en-IN')}
+                  </span>
+                </div>
+                <div className="overflow-x-auto rounded-2xl border border-slate-200">
+                  <table className="w-full text-left text-[12px]">
+                    <thead className="bg-slate-50 text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 border-b border-slate-200">
+                      <tr>
+                        <th className="py-3.5 px-4">Item</th>
+                        <th className="py-3.5 px-4">Karat</th>
+                        <th className="py-3.5 px-4">Gross Wt</th>
+                        <th className="py-3.5 px-4">Net Gold Wt</th>
+                        <th className="py-3.5 px-4">Gold Price</th>
+                        <th className="py-3.5 px-4">Diamonds</th>
+                        <th className="py-3.5 px-4">Solitaires / Gems</th>
+                        <th className="py-3.5 px-4">Making Chg</th>
+                        <th className="py-3.5 px-4">GST (3%)</th>
+                        <th className="py-3.5 px-4 text-right">Individual Price</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {(formData.set_items || []).map((it, idx) => {
+                        const b = it.price_breakup || calculateSetItemPrice(it, dailyRates, formData.making_charges || 15);
+                        return (
+                          <tr key={it.id || idx} className="hover:bg-slate-50/50 transition-colors">
+                            <td className="py-3 px-4 font-bold text-[#12100e]">{it.name}</td>
+                            <td className="py-3 px-4 text-[#12100e]/80">{it.karat || '14K'}</td>
+                            <td className="py-3 px-4">{it.product_weight || 0} g</td>
+                            <td className="py-3 px-4">{b.net_gold_weight || it.gold_weight || 0} g</td>
+                            <td className="py-3 px-4 font-medium">₹{Math.round(b.gold_cost).toLocaleString('en-IN')}</td>
+                            <td className="py-3 px-4">
+                              {it.includeDiamond !== false && it.diamond_weight ? (
+                                <span>{it.diamond_weight} ct (₹{Math.round(b.diamond_cost).toLocaleString('en-IN')})</span>
+                              ) : (
+                                <span className="text-slate-400">—</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4">
+                              {(b.solitaire_cost || 0) + (b.gemstone_cost || 0) + (b.color_stone_cost || 0) > 0 ? (
+                                <span>₹{Math.round((b.solitaire_cost || 0) + (b.gemstone_cost || 0) + (b.color_stone_cost || 0)).toLocaleString('en-IN')}</span>
+                              ) : (
+                                <span className="text-slate-400">—</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4">₹{Math.round(b.making_charges).toLocaleString('en-IN')} ({it.making_charges ?? formData.making_charges ?? 15}%)</td>
+                            <td className="py-3 px-4">₹{Math.round(b.gst).toLocaleString('en-IN')}</td>
+                            <td className="py-3 px-4 text-right font-bold text-[#5d463c] text-[13px]">
+                              ₹{Math.round(b.total).toLocaleString('en-IN')}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                    <tfoot className="bg-[#5d463c]/5 border-t-2 border-[#5d463c]/20 font-bold text-[#12100e]">
+                      <tr>
+                        <td className="py-4 px-4 font-black">TOTAL SET</td>
+                        <td className="py-4 px-4">—</td>
+                        <td className="py-4 px-4">{formData.product_weight} g</td>
+                        <td className="py-4 px-4">{formData.gold_weight} g</td>
+                        <td className="py-4 px-4">—</td>
+                        <td className="py-4 px-4">{formData.diamond_weight} ct ({formData.diamond_count} pcs)</td>
+                        <td className="py-4 px-4">—</td>
+                        <td className="py-4 px-4">—</td>
+                        <td className="py-4 px-4">—</td>
+                        <td className="py-4 px-4 text-right text-[15px] font-black text-[#5d463c]">
+                          ₹{Math.round(formData.price || 0).toLocaleString('en-IN')}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -1138,8 +1735,729 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
         )}
 
         {activeTab === 'specs' && (
-          <div className="bg-white border border-slate-200/80 rounded-[40px] p-10 space-y-12 shadow-sm">
-            <div className="space-y-6">
+          isJewellerySet ? (
+            <div className="space-y-8">
+              {/* Grand Summary Banner */}
+              <div className="bg-gradient-to-br from-[#5d463c] via-[#4a372f] to-[#2c1810] text-[#efe7e5] rounded-[40px] p-8 sm:p-10 shadow-xl space-y-6">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 border-b border-white/10 pb-6">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-5 h-5 text-amber-300" />
+                      <span className="text-[11px] uppercase tracking-[0.3em] font-black text-amber-300">
+                        Jewellery Set Masterpieces
+                      </span>
+                    </div>
+                    <h3 className="text-2xl sm:text-3xl font-serif font-bold text-white mt-1">
+                      Section-Wise Item Details & Specifications
+                    </h3>
+                    <p className="text-[13px] text-white/70 max-w-2xl mt-1 leading-relaxed">
+                      Enter individual weights, metals, diamonds, and gemstones for each piece. Price is computed per piece and aggregated for total price breakdown.
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <button
+                      type="button"
+                      onClick={() => syncSetTotals(formData.set_items || [])}
+                      className="px-5 py-3 bg-white/15 hover:bg-white/25 border border-white/20 text-white rounded-2xl text-[12px] font-bold uppercase tracking-wider transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+                    >
+                      <RefreshCw className="w-4 h-4 text-amber-300" />
+                      Recalculate All Pieces
+                    </button>
+                  </div>
+                </div>
+
+                {/* Aggregate Metrics Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                  <div className="bg-black/25 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                    <span className="text-[10px] uppercase tracking-wider text-amber-300 block font-bold">Total Set Price</span>
+                    <span className="text-lg sm:text-xl font-bold font-serif text-white mt-1 block">
+                      ₹{Math.round(formData.price || 0).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                  <div className="bg-black/25 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                    <span className="text-[10px] uppercase tracking-wider text-white/60 block font-bold">Total Gross Wt</span>
+                    <span className="text-lg sm:text-xl font-bold font-serif text-white mt-1 block">
+                      {formData.product_weight || 0} g
+                    </span>
+                  </div>
+                  <div className="bg-black/25 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                    <span className="text-[10px] uppercase tracking-wider text-white/60 block font-bold">Total Gold Wt</span>
+                    <span className="text-lg sm:text-xl font-bold font-serif text-white mt-1 block">
+                      {formData.gold_weight || 0} g
+                    </span>
+                  </div>
+                  <div className="bg-black/25 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                    <span className="text-[10px] uppercase tracking-wider text-white/60 block font-bold">Total Diamonds</span>
+                    <span className="text-lg sm:text-xl font-bold font-serif text-white mt-1 block">
+                      {formData.diamond_weight || 0} ct
+                    </span>
+                  </div>
+                  <div className="bg-black/25 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                    <span className="text-[10px] uppercase tracking-wider text-white/60 block font-bold">Diamond Count</span>
+                    <span className="text-lg sm:text-xl font-bold font-serif text-white mt-1 block">
+                      {formData.diamond_count || 0} pcs
+                    </span>
+                  </div>
+                  <div className="bg-black/25 backdrop-blur-md rounded-2xl p-4 border border-white/10">
+                    <span className="text-[10px] uppercase tracking-wider text-white/60 block font-bold">Included Pieces</span>
+                    <span className="text-lg sm:text-xl font-bold font-serif text-white mt-1 block">
+                      {(formData.set_items || []).length} Items
+                    </span>
+                  </div>
+                </div>
+
+                {/* Sub-tab navigation to focus on a single piece or show all */}
+                {(formData.set_items || []).length > 0 && (
+                  <div className="pt-2 flex flex-wrap items-center gap-2 border-t border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedSetItemTab('all')}
+                      className={cn(
+                        "px-4 py-2 rounded-xl text-[12px] font-bold tracking-wider uppercase transition-all cursor-pointer border",
+                        selectedSetItemTab === 'all'
+                          ? "bg-amber-400 text-stone-900 border-amber-300 shadow-md"
+                          : "bg-white/10 text-white/80 border-white/10 hover:bg-white/20"
+                      )}
+                    >
+                      All Pieces ({(formData.set_items || []).length})
+                    </button>
+                    {(formData.set_items || []).map((it, idx) => (
+                      <button
+                        key={it.id || idx}
+                        type="button"
+                        onClick={() => setSelectedSetItemTab(it.id || String(idx))}
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-[12px] font-bold tracking-wider transition-all cursor-pointer border flex items-center gap-2",
+                          selectedSetItemTab === (it.id || String(idx))
+                            ? "bg-amber-400 text-stone-900 border-amber-300 shadow-md"
+                            : "bg-white/10 text-white/80 border-white/10 hover:bg-white/20"
+                        )}
+                      >
+                        <span>{it.name}</span>
+                        {it.calculated_price && it.calculated_price > 0 ? (
+                          <span className={cn(
+                            "text-[10px] px-2 py-0.5 rounded font-black",
+                            selectedSetItemTab === (it.id || String(idx)) ? "bg-stone-900/10 text-stone-900" : "bg-black/30 text-amber-300"
+                          )}>
+                            ₹{Math.round(it.calculated_price).toLocaleString('en-IN')}
+                          </span>
+                        ) : null}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Quick Add More Pieces Bar in Specs Tab */}
+              <div className="bg-white border border-slate-200/80 rounded-3xl p-6 shadow-sm flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+                <div className="flex items-center gap-2">
+                  <Package className="w-5 h-5 text-[#5d463c]" />
+                  <span className="text-[12px] font-bold text-[#12100e] uppercase tracking-wider">
+                    Quick Add / Toggle Piece:
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2 items-center">
+                  {PREDEFINED_SET_ITEMS.map(preset => {
+                    const isSelected = (formData.set_items || []).some(
+                      it => it.item_type === preset.id || it.name.toLowerCase() === preset.name.toLowerCase()
+                    );
+                    return (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        onClick={() => handleToggleSetItem(preset)}
+                        className={cn(
+                          "px-3 py-1.5 rounded-xl text-[11px] font-bold uppercase tracking-wider border transition-colors cursor-pointer flex items-center gap-1.5",
+                          isSelected
+                            ? "bg-[#5d463c] text-white border-[#5d463c]"
+                            : "bg-slate-50 text-[#12100e]/70 border-slate-200 hover:border-[#5d463c]/40"
+                        )}
+                      >
+                        <span>{isSelected ? "✓" : "+"}</span>
+                        <span>{preset.name}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Empty state if no set items yet */}
+              {(!formData.set_items || formData.set_items.length === 0) && (
+                <div className="bg-white border-2 border-dashed border-amber-300 rounded-[32px] p-12 text-center space-y-4">
+                  <div className="w-16 h-16 rounded-full bg-amber-100 text-[#5d463c] flex items-center justify-center mx-auto text-2xl">
+                    💎
+                  </div>
+                  <h4 className="text-xl font-serif font-bold text-[#12100e]">
+                    No Jewellery Set Items Selected Yet
+                  </h4>
+                  <p className="text-[13px] text-[#12100e]/60 max-w-md mx-auto leading-relaxed">
+                    Select which pieces are included in this set (e.g. Necklace, Earrings, Nose Pin) using the buttons above or in the &ldquo;Identity&rdquo; tab to configure each piece&rsquo;s details.
+                  </p>
+                </div>
+              )}
+
+              {/* Section-Wise Item Cards */}
+              <div className="space-y-8">
+                {(formData.set_items || []).map((item, index) => {
+                  const itemId = item.id || String(index);
+                  if (selectedSetItemTab !== 'all' && selectedSetItemTab !== itemId) {
+                    return null;
+                  }
+
+                  const breakup = item.price_breakup || calculateSetItemPrice(item, dailyRates, formData.making_charges || 15);
+                  const expanded = isItemExpanded(itemId);
+
+                  return (
+                    <div
+                      key={itemId}
+                      className="bg-white border-2 border-[#5d463c]/20 rounded-[36px] overflow-hidden shadow-sm transition-all hover:border-[#5d463c]/40"
+                    >
+                      {/* Section Card Header */}
+                      <div className="bg-gradient-to-r from-[#5d463c]/10 via-[#5d463c]/5 to-transparent p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200">
+                        <div className="flex items-center gap-4 flex-wrap flex-1">
+                          <span className="w-9 h-9 rounded-2xl bg-[#5d463c] text-white flex items-center justify-center font-bold text-[14px] shrink-0 shadow-sm">
+                            #{index + 1}
+                          </span>
+                          <div className="flex-1 min-w-[200px]">
+                            <div className="flex items-center gap-3">
+                              <input
+                                type="text"
+                                value={item.name}
+                                onChange={(e) => handleUpdateSetItem(index, { name: e.target.value })}
+                                placeholder="Item Name (e.g. Necklace)"
+                                className="font-serif font-bold text-xl text-[#12100e] bg-transparent border-b border-transparent hover:border-slate-300 focus:border-[#5d463c] focus:bg-white px-2 py-0.5 rounded-lg outline-none transition-all"
+                              />
+                              <span className="text-[11px] font-bold text-[#5d463c] uppercase tracking-wider bg-white/80 border border-[#5d463c]/20 px-2.5 py-1 rounded-lg">
+                                {item.item_type || 'piece'}
+                              </span>
+                            </div>
+                            <div className="flex flex-wrap items-center gap-3 text-[11px] text-[#12100e]/60 mt-1 px-2">
+                              <span>Gross Wt: <strong>{item.product_weight || 0}g</strong></span>
+                              <span>•</span>
+                              <span>Karat: <strong>{item.karat || '14K'}</strong></span>
+                              {item.includeDiamond !== false && (item.diamond_weight || 0) > 0 && (
+                                <>
+                                  <span>•</span>
+                                  <span>Diamonds: <strong>{item.diamond_weight}ct ({item.diamond_count || 0}pcs)</strong></span>
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right Header: Live Item Price & Actions */}
+                        <div className="flex items-center gap-3 shrink-0">
+                          <div className="bg-gradient-to-r from-amber-500/10 to-amber-600/15 border border-amber-500/30 px-5 py-2.5 rounded-2xl text-right">
+                            <span className="text-[9px] uppercase tracking-wider text-amber-900 block font-bold">Individual Price</span>
+                            <span className="text-lg font-bold font-serif text-[#5d463c]">
+                              ₹{Math.round(breakup.total).toLocaleString('en-IN')}
+                            </span>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleDuplicateSetItem(index)}
+                            title="Duplicate this item"
+                            className="p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[#12100e]/70 hover:text-[#12100e] rounded-2xl transition-colors cursor-pointer"
+                          >
+                            <Copy className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveSetItem(index)}
+                            title="Remove this item from set"
+                            className="p-3 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 rounded-2xl transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => toggleItemExpanded(itemId)}
+                            className="p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[#12100e]/70 rounded-2xl transition-colors cursor-pointer"
+                          >
+                            {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Section Card Body (Specs inputs) */}
+                      {expanded && (
+                        <div className="p-8 sm:p-10 space-y-10">
+                          {/* Feature Toggles for this specific piece */}
+                          <div className="bg-[#5d463c]/5 border border-[#5d463c]/15 rounded-3xl p-5 flex flex-wrap gap-6 justify-around">
+                            <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={item.includeMetal !== false}
+                                onChange={(e) => handleUpdateSetItem(index, { includeMetal: e.target.checked })}
+                                className="w-4 h-4 accent-[#5d463c] rounded"
+                              />
+                              <span className="text-[11px] uppercase tracking-wider font-bold text-[#12100e]">Includes Gold</span>
+                            </label>
+
+                            <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={item.includeDiamond !== false}
+                                onChange={(e) => handleUpdateSetItem(index, { includeDiamond: e.target.checked })}
+                                className="w-4 h-4 accent-[#5d463c] rounded"
+                              />
+                              <span className="text-[11px] uppercase tracking-wider font-bold text-[#12100e]">Includes Diamonds</span>
+                            </label>
+
+                            <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={!!item.includeSolitaire}
+                                onChange={(e) => handleUpdateSetItem(index, { includeSolitaire: e.target.checked })}
+                                className="w-4 h-4 accent-[#5d463c] rounded"
+                              />
+                              <span className="text-[11px] uppercase tracking-wider font-bold text-[#12100e]">Includes Solitaires</span>
+                            </label>
+
+                            <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={!!item.includeGemstone}
+                                onChange={(e) => handleUpdateSetItem(index, { includeGemstone: e.target.checked })}
+                                className="w-4 h-4 accent-[#5d463c] rounded"
+                              />
+                              <span className="text-[11px] uppercase tracking-wider font-bold text-[#12100e]">Includes Gemstones</span>
+                            </label>
+
+                            <label className="flex items-center space-x-2.5 cursor-pointer select-none">
+                              <input
+                                type="checkbox"
+                                checked={!!item.includeColorStone}
+                                onChange={(e) => handleUpdateSetItem(index, { includeColorStone: e.target.checked })}
+                                className="w-4 h-4 accent-[#5d463c] rounded"
+                              />
+                              <span className="text-[11px] uppercase tracking-wider font-bold text-[#12100e]">Includes Color Stones</span>
+                            </label>
+                          </div>
+
+                          {/* Core Weights & Metal Specifications */}
+                          <div className="space-y-4">
+                            <h4 className="text-[11px] uppercase tracking-[0.25em] font-black text-brand-gold">
+                              1. Metal & Physical Dimensions
+                            </h4>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                              <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                  Gross Item Weight (g) *
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.001"
+                                  placeholder="0.000"
+                                  value={item.product_weight ?? ''}
+                                  onChange={(e) => handleUpdateSetItem(index, { product_weight: parseFloat(e.target.value) || 0 })}
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                  Gold / Metal Karat *
+                                </label>
+                                <select
+                                  value={item.karat || '14K'}
+                                  onChange={(e) => handleUpdateSetItem(index, { karat: e.target.value })}
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                >
+                                  {KARATS.map(k => (
+                                    <option key={k.id} value={k.name}>{k.name} Gold</option>
+                                  ))}
+                                  <option value="24K">24K Pure Gold</option>
+                                  <option value="Platinum 950">Platinum 950</option>
+                                  <option value="925 Silver">925 Sterling Silver</option>
+                                </select>
+                              </div>
+
+                              <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                  Height (mm)
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="0.00"
+                                  value={item.height ?? ''}
+                                  onChange={(e) => handleUpdateSetItem(index, { height: parseFloat(e.target.value) || 0 })}
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] shadow-inner"
+                                />
+                              </div>
+
+                              <div className="space-y-2">
+                                <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                  Width (mm)
+                                </label>
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  placeholder="0.00"
+                                  value={item.width ?? ''}
+                                  onChange={(e) => handleUpdateSetItem(index, { width: parseFloat(e.target.value) || 0 })}
+                                  className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] shadow-inner"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Diamonds Configuration */}
+                          {item.includeDiamond !== false && (
+                            <div className="space-y-4 pt-4 border-t border-slate-100">
+                              <h4 className="text-[11px] uppercase tracking-[0.25em] font-black text-brand-gold flex items-center gap-2">
+                                <Sparkles className="w-3.5 h-3.5" />
+                                2. Diamond Specifications
+                              </h4>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Total Diamond Weight (ct)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    placeholder="0.00"
+                                    value={item.diamond_weight ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { diamond_weight: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Total Diamond Pieces
+                                  </label>
+                                  <input
+                                    type="number"
+                                    placeholder="0"
+                                    value={item.diamond_count ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { diamond_count: parseInt(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Diamond Quality
+                                  </label>
+                                  <select
+                                    value={item.diamond_quality || 'IJ-SI'}
+                                    onChange={(e) => handleUpdateSetItem(index, { diamond_quality: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  >
+                                    {DIAMOND_QUALITIES.map(q => (
+                                      <option key={q.id} value={q.name}>{q.name}</option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Diamond Rate (₹/ct, optional)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    placeholder="Use live rate"
+                                    value={item.diamond_rate ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { diamond_rate: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Setting Type
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="Prong, Bezel, Pave..."
+                                    value={item.diamond_setting || ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { diamond_setting: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Solitaires Configuration */}
+                          {item.includeSolitaire && (
+                            <div className="space-y-4 pt-4 border-t border-slate-100">
+                              <h4 className="text-[11px] uppercase tracking-[0.25em] font-black text-brand-gold flex items-center gap-2">
+                                <Gem className="w-3.5 h-3.5" />
+                                3. Solitaire Specifications
+                              </h4>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Solitaire Weight (ct)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    value={item.solitaire_weight ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { solitaire_weight: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Solitaire Quality
+                                  </label>
+                                  <select
+                                    value={item.solitaire_quality || 'IJ-SI'}
+                                    onChange={(e) => handleUpdateSetItem(index, { solitaire_quality: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  >
+                                    {SOLITAIRE_QUALITIES.map(q => (
+                                      <option key={q.id} value={q.name}>{q.name}</option>
+                                    ))}
+                                  </select>
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Solitaire Total Price (₹)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={item.solitaire_price ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { solitaire_price: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Solitaire Setting
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="Prong Setting"
+                                    value={item.solitaire_setting || ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { solitaire_setting: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Gemstones Configuration */}
+                          {item.includeGemstone && (
+                            <div className="space-y-4 pt-4 border-t border-slate-100">
+                              <h4 className="text-[11px] uppercase tracking-[0.25em] font-black text-brand-gold">
+                                4. Gemstone Specifications
+                              </h4>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Gemstone Name / Info
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. Natural Ruby, Emerald"
+                                    value={item.gemstone_info || ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { gemstone_info: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Gemstone Weight (ct)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    value={item.gemstone_weight ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { gemstone_weight: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Number of Gems
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={item.noof_gem ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { noof_gem: parseInt(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Total Gemstone Price (₹)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={item.gemstone_price ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { gemstone_price: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Color Stones Configuration */}
+                          {item.includeColorStone && (
+                            <div className="space-y-4 pt-4 border-t border-slate-100">
+                              <h4 className="text-[11px] uppercase tracking-[0.25em] font-black text-brand-gold">
+                                5. Color Stone Specifications
+                              </h4>
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Stone Name / Info
+                                  </label>
+                                  <input
+                                    type="text"
+                                    placeholder="e.g. Blue Topaz, Tourmaline"
+                                    value={item.color_stone || ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { color_stone: e.target.value })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Stone Weight (ct)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    step="0.01"
+                                    value={item.color_stone_weight ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { color_stone_weight: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Stone Count
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={item.color_stone_count ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { color_stone_count: parseInt(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+
+                                <div className="space-y-2">
+                                  <label className="text-[10px] uppercase tracking-wider font-bold text-[#12100e]/70 block">
+                                    Total Stone Price (₹)
+                                  </label>
+                                  <input
+                                    type="number"
+                                    value={item.color_stone_price ?? ''}
+                                    onChange={(e) => handleUpdateSetItem(index, { color_stone_price: parseFloat(e.target.value) || 0 })}
+                                    className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-3 px-5 text-[13px] font-bold text-[#12100e] shadow-inner"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Making Charges for this piece */}
+                          <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div className="space-y-1">
+                              <span className="text-[11px] font-bold text-[#12100e] uppercase tracking-wider block">
+                                Making Charges for {item.name} (%)
+                              </span>
+                              <span className="text-[12px] text-[#12100e]/60 block">
+                                Defaults to overall product making charge ({formData.making_charges || 15}%), or set a piece-specific percentage.
+                              </span>
+                            </div>
+                            <div className="w-36 shrink-0">
+                              <input
+                                type="number"
+                                placeholder={String(formData.making_charges || 15)}
+                                value={item.making_charges ?? ''}
+                                onChange={(e) => handleUpdateSetItem(index, { making_charges: parseFloat(e.target.value) || 0 })}
+                                className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-2.5 px-4 text-[13px] font-bold text-[#12100e] shadow-inner"
+                              />
+                            </div>
+                          </div>
+
+                          {/* LIVE INDIVIDUAL PRICE BREAKDOWN FOR THIS PIECE */}
+                          <div className="bg-gradient-to-br from-[#5d463c]/5 to-[#5d463c]/10 border-2 border-[#5d463c]/20 rounded-3xl p-6 sm:p-8 space-y-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[#5d463c]/15 pb-3">
+                              <div className="flex items-center gap-2">
+                                <Coins className="w-4 h-4 text-[#5d463c]" />
+                                <h5 className="text-[13px] font-bold text-[#12100e] uppercase tracking-wider">
+                                  {item.name} — Live Price Calculation Breakup
+                                </h5>
+                              </div>
+                              <span className="text-[12px] text-[#5d463c] font-bold">
+                                Net Gold Wt: {breakup.net_gold_weight}g
+                              </span>
+                            </div>
+
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 text-[12px]">
+                              <div className="bg-white/80 p-3 rounded-2xl border border-slate-200 shadow-xs">
+                                <span className="text-[10px] uppercase tracking-wider text-slate-500 block">Gold ({item.karat || '14K'})</span>
+                                <span className="font-bold text-[#12100e] text-[14px] mt-0.5 block">
+                                  ₹{Math.round(breakup.gold_cost).toLocaleString('en-IN')}
+                                </span>
+                              </div>
+
+                              <div className="bg-white/80 p-3 rounded-2xl border border-slate-200 shadow-xs">
+                                <span className="text-[10px] uppercase tracking-wider text-slate-500 block">Diamonds</span>
+                                <span className="font-bold text-[#12100e] text-[14px] mt-0.5 block">
+                                  ₹{Math.round(breakup.diamond_cost).toLocaleString('en-IN')}
+                                </span>
+                              </div>
+
+                              <div className="bg-white/80 p-3 rounded-2xl border border-slate-200 shadow-xs">
+                                <span className="text-[10px] uppercase tracking-wider text-slate-500 block">Solitaires & Gems</span>
+                                <span className="font-bold text-[#12100e] text-[14px] mt-0.5 block">
+                                  ₹{Math.round((breakup.solitaire_cost || 0) + (breakup.gemstone_cost || 0) + (breakup.color_stone_cost || 0)).toLocaleString('en-IN')}
+                                </span>
+                              </div>
+
+                              <div className="bg-white/80 p-3 rounded-2xl border border-slate-200 shadow-xs">
+                                <span className="text-[10px] uppercase tracking-wider text-slate-500 block">Making ({item.making_charges ?? formData.making_charges ?? 15}%)</span>
+                                <span className="font-bold text-[#12100e] text-[14px] mt-0.5 block">
+                                  ₹{Math.round(breakup.making_charges).toLocaleString('en-IN')}
+                                </span>
+                              </div>
+
+                              <div className="bg-white/80 p-3 rounded-2xl border border-slate-200 shadow-xs">
+                                <span className="text-[10px] uppercase tracking-wider text-slate-500 block">GST (3%)</span>
+                                <span className="font-bold text-[#12100e] text-[14px] mt-0.5 block">
+                                  ₹{Math.round(breakup.gst).toLocaleString('en-IN')}
+                                </span>
+                              </div>
+
+                              <div className="bg-[#5d463c] text-white p-3 rounded-2xl shadow-sm">
+                                <span className="text-[10px] uppercase tracking-wider text-white/70 block">Item Total</span>
+                                <span className="font-bold text-[15px] mt-0.5 block font-serif">
+                                  ₹{Math.round(breakup.total).toLocaleString('en-IN')}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white border border-slate-200/80 rounded-[40px] p-10 space-y-12 shadow-sm">
+              <div className="space-y-6">
               <label className="text-[10px] uppercase tracking-[0.3em] font-black text-brand-gold block">Jewellery Weights & Specifications</label>
 
               {/* Dynamic Feature Inclusion Toggles */}
@@ -1639,6 +2957,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
               </div>
             </div>
           </div>
+          )
         )}
 
         {activeTab === 'attributes' && (

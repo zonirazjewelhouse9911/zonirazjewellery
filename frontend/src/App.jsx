@@ -590,7 +590,8 @@ function getInitialRouteState() {
     const knownCategories = [
       "Rings", "Bracelets & Bangles", "Bracelets", "Brooches", "Chains", "Chain", "Bangles", "Anklets", 
       "Necklaces", "Pendants", "Pendant", "Mangalsutras", "Mangalsutra", "Nose Pins", "Nose pin", "Earrings", 
-      "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
+      "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery",
+      "Jewellery Set", "Jewellery Sets", "Jewelry Set"
     ];
     let matchedCategory = knownCategories.find(cat => 
       cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanPathSegment ||
@@ -607,7 +608,8 @@ function getInitialRouteState() {
     const knownCategories = [
       "Rings", "Bracelets & Bangles", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
       "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
-      "Gold Coins", "Solitaires", "Coins", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
+      "Gold Coins", "Solitaires", "Coins", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery",
+      "Jewellery Set", "Jewellery Sets", "Jewelry Set"
     ];
     const matched = knownCategories.find(k => k.toLowerCase() === (cat || '').toLowerCase());
     if (matched) {
@@ -1007,14 +1009,18 @@ function AppContent() {
           return;
         }
         const knownCategories = [
-          "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
-          "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
-          "Gold Coins", "Solitaires"
+          "Earrings", "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
+          "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", 
+          "Gold Coins", "Solitaires", "Jewellery Set", "Jewellery Sets"
         ];
-        const catMatch = knownCategories.find(c => 
-          lastSegment.includes(c.toLowerCase().replace(/[^a-z0-9]/g, '')) ||
-          rawSegments.some(seg => seg.includes(c.toLowerCase().replace(/[^a-z0-9]/g, '')))
-        );
+        const catMatch = knownCategories.find(c => {
+          const cClean = c.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const isRing = cClean === 'ring' || cClean === 'rings';
+          if (isRing && (lastSegment.includes('earring') || rawSegments.some(seg => seg.includes('earring')))) {
+            return false;
+          }
+          return lastSegment.includes(cClean) || rawSegments.some(seg => seg.includes(cClean));
+        });
         if (catMatch) {
           const cleanCatSlug = catMatch.toLowerCase().replace(/[^a-z0-9]/g, '-');
           window.history.replaceState(null, '', `/${cleanCatSlug}`);
@@ -1032,7 +1038,7 @@ function AppContent() {
         const knownCategories = [
           "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
           "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
-          "Gold Coins", "Solitaires"
+          "Gold Coins", "Solitaires", "Jewellery Set", "Jewellery Sets"
         ];
         const catMatch = knownCategories.find(c => 
           c.toLowerCase().replace(/[^a-z0-9]/g, '') === firstSegment.replace(/[^a-z0-9]/g, '')
@@ -1063,7 +1069,7 @@ function AppContent() {
         path === '/office' || path === '/office-wear' ||
         path === '/bridal' || path === '/bridal-collection' ||
         path === '/everyday' || path === '/everyday-wear' ||
-        path === '/solitaire' || path === '/solitaire-dream' ||
+        path === '/solitaire-dream' ||
         path === '/heritage' || path === '/heritage-gold'
       ) {
         const subSlugMap = {
@@ -1073,7 +1079,6 @@ function AppContent() {
           '/bridal-collection': 'bridal',
           '/everyday': 'everyday',
           '/everyday-wear': 'everyday',
-          '/solitaire': 'solitaire',
           '/solitaire-dream': 'solitaire',
           '/heritage': 'heritage',
           '/heritage-gold': 'heritage'
@@ -1215,7 +1220,8 @@ function AppContent() {
         const knownCategories = [
           "Rings", "Bracelets & Bangles", "Bracelets", "Brooches", "Chains", "Chain", "Bangles", "Anklets", 
           "Necklaces", "Pendants", "Pendant", "Mangalsutras", "Mangalsutra", "Nose Pins", "Nose pin", "Earrings", 
-          "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
+          "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery",
+          "Jewellery Set", "Jewellery Sets", "Jewelry Set"
         ];
         if (cleanPathSegment === 'women' || cleanPathSegment === 'womenjewellery' || cleanPathSegment === 'womensjewellery' || cleanPathSegment === 'womenjewelry' || cleanPathSegment === 'womensjewelry') {
           setSelectedCategoryName("Women's Jewellery");
@@ -1282,7 +1288,8 @@ function AppContent() {
           const knownCategories = [
             "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
             "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
-            "Gold Coins", "Solitaires", "Coins", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery"
+            "Gold Coins", "Solitaires", "Coins", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery",
+            "Jewellery Set", "Jewellery Sets", "Jewelry Set"
           ];
           const matched = knownCategories.find(k => k.toLowerCase() === cat.toLowerCase());
           if (matched) {

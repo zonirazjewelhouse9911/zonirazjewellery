@@ -418,17 +418,31 @@ export default function ProductDetailPage({ product, products: propProducts = []
     );
   }, [product]);
 
+  const isSetProduct = Boolean(
+    product?.is_set ||
+    (Array.isArray(product?.set_items) && product.set_items.length > 0) ||
+    String(product?.category_name || product?.category || product?.product_category || '').toLowerCase().includes('set')
+  );
+
   const [pricingDetails, setPricingDetails] = useState({
     price: product?.price || 0,
     goldCost: Math.round((product?.price || 0) * (isPlainGold ? 1.0 : 0.65)),
     diamondCost: isPlainGold ? 0 : Math.round((product?.price || 0) * 0.25),
     solitaireCost: initialSolitaireCost,
     gemstoneCost: 0,
+    colorStoneCost: 0,
     makingCharges: 0,
     gst: 0,
     subtotal: product?.price || 0,
-    goldWeight: product?.gold_weight || 0
+    goldWeight: product?.gold_weight || 0,
+    grossWeight: product?.product_weight || product?.gross_weight || 0,
+    isSet: Boolean(product?.is_set || (Array.isArray(product?.set_items) && product.set_items.length > 0)),
+    setItemsPricing: Array.isArray(product?.set_items) ? product.set_items : []
   });
+
+  const setPieces = (Array.isArray(pricingDetails?.setItemsPricing) && pricingDetails.setItemsPricing.length > 0)
+    ? pricingDetails.setItemsPricing
+    : (Array.isArray(product?.set_items) ? product.set_items : []);
 
   useEffect(() => {
     if (initialSolitaireCost > 0 && (!pricingDetails.solitaireCost || pricingDetails.solitaireCost === 0)) {
@@ -469,7 +483,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
               makingCharges: makingCharges,
               gst: gst,
               subtotal: subtotal,
-              goldWeight: matched.gold_weight !== undefined ? matched.gold_weight : (product?.gold_weight || 0)
+              goldWeight: matched.gold_weight !== undefined ? matched.gold_weight : (product?.gold_weight || 0),
+              grossWeight: matched.gross_weight || matched.product_weight || product?.product_weight || product?.gross_weight || 0,
+              isSet: matched.is_set ?? (product?.is_set || (Array.isArray(product?.set_items) && product.set_items.length > 0)),
+              setItemsPricing: matched.set_items_pricing || (Array.isArray(product?.set_items) ? product.set_items : [])
             });
           }
         }
@@ -640,7 +657,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
             gst: gst,
             subtotal: subtotal,
             grossWeight: data.gross_weight || data.gold_weight || product?.gross_weight || product?.gold_weight || 0,
-            goldWeight: data.gold_weight || data.net_gold_weight || product?.gold_weight || 0
+            goldWeight: data.gold_weight || data.net_gold_weight || product?.gold_weight || 0,
+            isSet: data.is_set ?? (product?.is_set || (Array.isArray(product?.set_items) && product.set_items.length > 0)),
+            setItemsPricing: data.set_items_pricing || (Array.isArray(product?.set_items) ? product.set_items : [])
           });
         }
       } catch (err) {
@@ -2198,6 +2217,39 @@ export default function ProductDetailPage({ product, products: propProducts = []
           <div className="pdp-tax-note">(MRP Inclusive of all taxes)</div>
 
           <h1 className="pdp-product-name" style={{ margin: 0, padding: 0, display: 'block', fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit', fontFamily: 'inherit', lineHeight: 'inherit' }}>{product.name}</h1>
+          {isSetProduct && setPieces.length > 0 && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', margin: '8px 0 10px 0' }}>
+              <span style={{
+                background: 'linear-gradient(135deg, #5d463c, #8c6d58)',
+                color: '#fff',
+                fontSize: '11px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+                padding: '4px 12px',
+                borderRadius: '20px',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '5px',
+                boxShadow: '0 2px 8px rgba(93,70,60,0.18)'
+              }}>
+                ✦ Jewellery Set ({setPieces.length} Pieces)
+              </span>
+              {setPieces.map((p, idx) => (
+                <span key={p.id || idx} style={{
+                  background: '#fbf9f6',
+                  border: '1px solid #e5dcce',
+                  color: '#5d463c',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  padding: '3px 10px',
+                  borderRadius: '12px'
+                }}>
+                  {p.name || p.item_type}
+                </span>
+              ))}
+            </div>
+          )}
           <div className="pdp-offer-tag">
             <Sparkles size={14} style={{ display: 'inline', color: '#A98E73', verticalAlign: '-2px', marginRight: '4px' }} />
             Flat {savingsPct}% off on Making Charges
@@ -2527,23 +2579,128 @@ export default function ProductDetailPage({ product, products: propProducts = []
             className={`pdp-tab-btn ${activeTab === 'details' ? 'active' : ''}`}
             onClick={() => setActiveTab('details')}
           >
-            Product Details
+            {isSetProduct && setPieces.length > 0 ? 'Set Details' : 'Product Details'}
           </button>
           <button
             className={`pdp-tab-btn ${activeTab === 'price' ? 'active' : ''}`}
             onClick={() => setActiveTab('price')}
           >
-            Price Breakup
+            {isSetProduct && setPieces.length > 0 ? 'Individual Price Breakup' : 'Price Breakup'}
           </button>
           <button
             className={`pdp-tab-btn ${activeTab === 'weight' ? 'active' : ''}`}
             onClick={() => setActiveTab('weight')}
           >
-            Weight Breakup
+            {isSetProduct && setPieces.length > 0 ? 'Set Weight Breakup' : 'Weight Breakup'}
           </button>
         </div>
 
         {activeTab === 'details' && (() => {
+          if (isSetProduct && setPieces.length > 0) {
+            const totalGross = setPieces.reduce((sum, p) => sum + Number(p.product_weight || p.gross_weight || 0), 0);
+            const totalGold = setPieces.reduce((sum, p) => sum + Number(p.net_gold_weight || p.gold_weight || p.product_weight || 0), 0);
+            const totalDiamonds = setPieces.reduce((sum, p) => sum + Number(p.diamond_weight || 0), 0);
+            const totalDiamondPcs = setPieces.reduce((sum, p) => sum + Number(p.diamond_count || 0), 0);
+
+            return (
+              <div className="pdp-details-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                {/* Overall Set Overview Card */}
+                <div className="pdp-detail-group" style={{ gridColumn: '1 / -1', background: 'linear-gradient(135deg, #FAF7F2, #FFF)', border: '1.5px solid #E5DCCE' }}>
+                  <div className="pdp-detail-group-title" style={{ color: '#5d463c' }}>
+                    <Sparkles size={15} style={{ color: '#A98E73' }} />
+                    <span>Complete Jewellery Set Overview ({setPieces.length} Pieces)</span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px', marginTop: '6px' }}>
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Included Pieces</span>
+                      <span className="pdp-detail-val">{setPieces.map(p => p.name || p.item_type).join(', ')}</span>
+                    </div>
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Total Set Gross Weight</span>
+                      <span className="pdp-detail-val">{totalGross > 0 ? totalGross.toFixed(3) : (product.product_weight || 0)} g</span>
+                    </div>
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Total Gold Weight</span>
+                      <span className="pdp-detail-val">{totalGold > 0 ? totalGold.toFixed(3) : (product.gold_weight || 0)} g</span>
+                    </div>
+                    {totalDiamonds > 0 && (
+                      <div className="pdp-detail-row">
+                        <span className="pdp-detail-key">Total Diamonds</span>
+                        <span className="pdp-detail-val">{totalDiamonds.toFixed(2)} ct {totalDiamondPcs > 0 ? `(${totalDiamondPcs} pcs)` : ''}</span>
+                      </div>
+                    )}
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">SKU / Code</span>
+                      <span className="pdp-detail-val">ZNR-{product.product_code || product._id || product.id}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Individual Piece Specification Cards */}
+                {setPieces.map((item, idx) => (
+                  <div key={item.id || idx} className="pdp-detail-group" style={{ border: '1px solid #EAE5E0' }}>
+                    <div className="pdp-detail-group-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 700, color: '#2C2520' }}>
+                        #{idx + 1} {item.name || item.item_type}
+                      </span>
+                      <span style={{ fontSize: '11px', background: '#5d463c', color: '#fff', padding: '2px 8px', borderRadius: '10px' }}>
+                        {item.karat || selectedKarat || '14K'}
+                      </span>
+                    </div>
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Gross Weight</span>
+                      <span className="pdp-detail-val">{item.product_weight || item.gross_weight || 0} g</span>
+                    </div>
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Gold / Metal Weight</span>
+                      <span className="pdp-detail-val">{item.net_gold_weight || item.gold_weight || item.product_weight || 0} g</span>
+                    </div>
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Gold Purity</span>
+                      <span className="pdp-detail-val">{item.karat || selectedKarat || '14K'}</span>
+                    </div>
+                    {item.includeDiamond !== false && (item.diamond_weight || 0) > 0 && (
+                      <>
+                        <div className="pdp-detail-row">
+                          <span className="pdp-detail-key">Diamond Weight</span>
+                          <span className="pdp-detail-val">{item.diamond_weight} ct</span>
+                        </div>
+                        {item.diamond_count > 0 && (
+                          <div className="pdp-detail-row">
+                            <span className="pdp-detail-key">Diamond Count</span>
+                            <span className="pdp-detail-val">{item.diamond_count} pcs</span>
+                          </div>
+                        )}
+                        <div className="pdp-detail-row">
+                          <span className="pdp-detail-key">Diamond Quality</span>
+                          <span className="pdp-detail-val">{item.diamond_quality || selectedDiamond || 'IJ-SI'}</span>
+                        </div>
+                      </>
+                    )}
+                    {item.includeSolitaire && item.solitaire_weight > 0 && (
+                      <div className="pdp-detail-row">
+                        <span className="pdp-detail-key">Solitaire Weight</span>
+                        <span className="pdp-detail-val">{item.solitaire_weight} ct</span>
+                      </div>
+                    )}
+                    {item.includeGemstone && (item.gemstone_weight > 0 || item.gemstone_info) && (
+                      <div className="pdp-detail-row">
+                        <span className="pdp-detail-key">Gemstone</span>
+                        <span className="pdp-detail-val">{item.gemstone_info || 'Natural'} ({item.gemstone_weight || 0} ct)</span>
+                      </div>
+                    )}
+                    {(item.height > 0 || item.width > 0) && (
+                      <div className="pdp-detail-row">
+                        <span className="pdp-detail-key">Dimensions (H × W)</span>
+                        <span className="pdp-detail-val">{item.height || '—'} mm × {item.width || '—'} mm</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            );
+          }
+
           const grossWeight = (pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
             ? pricingDetails.grossWeight
             : (product.gross_weight || product.gold_weight || product.weight || 0);
@@ -2684,56 +2841,243 @@ export default function ProductDetailPage({ product, products: propProducts = []
         })()}
 
         {activeTab === 'price' && (
-          <div className="pdp-details-grid">
-            <div className="pdp-detail-group">
-              <div className="pdp-detail-group-title">Price Breakup</div>
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Gold Value</span>
-                <span className="pdp-detail-val">{formatPrice(pricingDetails.goldCost)}</span>
+          isSetProduct && setPieces.length > 0 ? (
+            <div className="pdp-details-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+              {/* Grand Total Set Summary Card */}
+              <div className="pdp-detail-group" style={{ gridColumn: '1 / -1', background: 'linear-gradient(135deg, #FAF7F2, #FFF)', border: '2px solid #A98E73' }}>
+                <div className="pdp-detail-group-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#5d463c' }}>
+                  <span>✦ Complete Jewellery Set Total Price Breakup ({setPieces.length} Pieces)</span>
+                  <span style={{ fontSize: '16px', fontWeight: 800, color: '#5d463c' }}>
+                    {formatPrice(pricingDetails.price || product.price)}
+                  </span>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '14px', marginTop: '6px' }}>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Included Pieces</span>
+                    <span className="pdp-detail-val">{setPieces.map(p => p.name || p.item_type).join(', ')}</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Combined Gold Value</span>
+                    <span className="pdp-detail-val">
+                      {formatPrice(setPieces.reduce((sum, p) => sum + (p.gold_cost || (p.price_breakup?.gold_cost) || 0), 0) || pricingDetails.goldCost)}
+                    </span>
+                  </div>
+                  {pricingDetails.diamondCost > 0 && (
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Combined Diamond Value</span>
+                      <span className="pdp-detail-val">
+                        {formatPrice(setPieces.reduce((sum, p) => sum + (p.diamond_cost || (p.price_breakup?.diamond_cost) || 0), 0) || pricingDetails.diamondCost)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Total Making Charges</span>
+                    <span className="pdp-detail-val">
+                      {formatPrice(setPieces.reduce((sum, p) => sum + (p.making_charges || (p.price_breakup?.making_charges) || 0), 0) || pricingDetails.makingCharges)}
+                    </span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Total Taxes (GST 3%)</span>
+                    <span className="pdp-detail-val">
+                      {formatPrice(setPieces.reduce((sum, p) => sum + (p.gst || (p.price_breakup?.gst) || 0), 0) || pricingDetails.gst)}
+                    </span>
+                  </div>
+                </div>
+                <div className="pdp-detail-row" style={{ borderTop: '2px solid #5d463c', paddingTop: 12, marginTop: 8 }}>
+                  <span className="pdp-detail-key" style={{ fontWeight: 800, color: '#231535', fontSize: '15px' }}>
+                    Grand Total Set Price
+                  </span>
+                  <span className="pdp-detail-val" style={{ fontWeight: 800, color: '#5d463c', fontSize: '16px' }}>
+                    {formatPrice(pricingDetails.price || product.price)}
+                  </span>
+                </div>
               </div>
-              {!isPlainGold && pricingDetails.diamondCost > 0 && (
+
+              {/* Section-Wise Individual Price Breakdown Cards */}
+              {setPieces.map((item, idx) => {
+                const b = item.price_breakup || item;
+                const itemPrice = item.total_price || item.calculated_price || b.total || 0;
+                const goldCost = item.gold_cost !== undefined ? item.gold_cost : (b.gold_cost || 0);
+                const diamondCost = item.diamond_cost !== undefined ? item.diamond_cost : (b.diamond_cost || 0);
+                const solCost = (item.solitaire_cost || b.solitaire_cost || 0) + (item.gemstone_cost || b.gemstone_cost || 0) + (item.color_stone_cost || b.color_stone_cost || 0);
+                const mc = item.making_charges !== undefined ? item.making_charges : (b.making_charges || 0);
+                const gst = item.gst !== undefined ? item.gst : (b.gst || 0);
+
+                return (
+                  <div key={item.id || idx} className="pdp-detail-group" style={{ border: '1px solid #e8e2d8' }}>
+                    <div className="pdp-detail-group-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 700, color: '#2C2520' }}>
+                        #{idx + 1} {item.name || item.item_type}
+                      </span>
+                      <span style={{ fontWeight: 700, color: '#5d463c', fontSize: '14px' }}>
+                        {formatPrice(itemPrice)}
+                      </span>
+                    </div>
+
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Gold Value ({item.karat || selectedKarat || '14K'})</span>
+                      <span className="pdp-detail-val">{formatPrice(goldCost)}</span>
+                    </div>
+
+                    {item.includeDiamond !== false && (diamondCost > 0 || (item.diamond_weight || 0) > 0) && (
+                      <div className="pdp-detail-row">
+                        <span className="pdp-detail-key">Diamond Value ({item.diamond_weight || 0} ct)</span>
+                        <span className="pdp-detail-val">{formatPrice(diamondCost)}</span>
+                      </div>
+                    )}
+
+                    {solCost > 0 && (
+                      <div className="pdp-detail-row">
+                        <span className="pdp-detail-key">Solitaire & Gemstones</span>
+                        <span className="pdp-detail-val">{formatPrice(solCost)}</span>
+                      </div>
+                    )}
+
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Making Charges</span>
+                      <span className="pdp-detail-val">{formatPrice(mc)}</span>
+                    </div>
+
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">GST / Taxes (3%)</span>
+                      <span className="pdp-detail-val">{formatPrice(gst)}</span>
+                    </div>
+
+                    <div className="pdp-detail-row" style={{ borderTop: '1px solid #f0edf5', paddingTop: 10, marginTop: 4 }}>
+                      <span className="pdp-detail-key" style={{ fontWeight: 700, color: '#231535' }}>
+                        {item.name || item.item_type} Total
+                      </span>
+                      <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>
+                        {formatPrice(itemPrice)}
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="pdp-details-grid">
+              <div className="pdp-detail-group">
+                <div className="pdp-detail-group-title">Price Breakup</div>
                 <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Diamond Value</span>
-                  <span className="pdp-detail-val">{formatPrice(pricingDetails.diamondCost)}</span>
+                  <span className="pdp-detail-key">Gold Value</span>
+                  <span className="pdp-detail-val">{formatPrice(pricingDetails.goldCost)}</span>
                 </div>
-              )}
-              {(pricingDetails.solitaireCost > 0 || hasSolitaire) && (
+                {!isPlainGold && pricingDetails.diamondCost > 0 && (
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Diamond Value</span>
+                    <span className="pdp-detail-val">{formatPrice(pricingDetails.diamondCost)}</span>
+                  </div>
+                )}
+                {(pricingDetails.solitaireCost > 0 || hasSolitaire) && (
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Solitaire Value</span>
+                    <span className="pdp-detail-val">{formatPrice(pricingDetails.solitaireCost)}</span>
+                  </div>
+                )}
+                {pricingDetails.gemstoneCost > 0 && (
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Gemstone Value</span>
+                    <span className="pdp-detail-val">{formatPrice(pricingDetails.gemstoneCost)}</span>
+                  </div>
+                )}
+                {pricingDetails.colorStoneCost > 0 && (
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Color Stone Value</span>
+                    <span className="pdp-detail-val">{formatPrice(pricingDetails.colorStoneCost)}</span>
+                  </div>
+                )}
                 <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Solitaire Value</span>
-                  <span className="pdp-detail-val">{formatPrice(pricingDetails.solitaireCost)}</span>
+                  <span className="pdp-detail-key">Making Charges</span>
+                  <span className="pdp-detail-val">{formatPrice(pricingDetails.makingCharges)}</span>
                 </div>
-              )}
-              {pricingDetails.gemstoneCost > 0 && (
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Gemstone Value</span>
-                  <span className="pdp-detail-val">{formatPrice(pricingDetails.gemstoneCost)}</span>
+                {pricingDetails.gst > 0 && (
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">GST / Taxes</span>
+                    <span className="pdp-detail-val">{formatPrice(pricingDetails.gst)}</span>
+                  </div>
+                )}
+                <div className="pdp-detail-row" style={{ borderTop: '1px solid #f0edf5', paddingTop: 10, marginTop: 4 }}>
+                  <span className="pdp-detail-key" style={{ fontWeight: 700, color: '#231535' }}>Total</span>
+                  <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>{formatPrice(pricingDetails.price)}</span>
                 </div>
-              )}
-              {pricingDetails.colorStoneCost > 0 && (
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Color Stone Value</span>
-                  <span className="pdp-detail-val">{formatPrice(pricingDetails.colorStoneCost)}</span>
-                </div>
-              )}
-              <div className="pdp-detail-row">
-                <span className="pdp-detail-key">Making Charges</span>
-                <span className="pdp-detail-val">{formatPrice(pricingDetails.makingCharges)}</span>
-              </div>
-              {pricingDetails.gst > 0 && (
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">GST / Taxes</span>
-                  <span className="pdp-detail-val">{formatPrice(pricingDetails.gst)}</span>
-                </div>
-              )}
-              <div className="pdp-detail-row" style={{ borderTop: '1px solid #f0edf5', paddingTop: 10, marginTop: 4 }}>
-                <span className="pdp-detail-key" style={{ fontWeight: 700, color: '#231535' }}>Total</span>
-                <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>{formatPrice(pricingDetails.price)}</span>
               </div>
             </div>
-          </div>
+          )
         )}
 
         {activeTab === 'weight' && (() => {
+          if (isSetProduct && setPieces.length > 0) {
+            const totalGross = setPieces.reduce((sum, p) => sum + Number(p.product_weight || p.gross_weight || 0), 0);
+            const totalGold = setPieces.reduce((sum, p) => sum + Number(p.net_gold_weight || p.gold_weight || p.product_weight || 0), 0);
+            const totalDiamonds = setPieces.reduce((sum, p) => sum + Number(p.diamond_weight || 0), 0);
+
+            return (
+              <div className="pdp-details-grid animate-in fade-in duration-300" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                {/* Total Set Weight Summary Card */}
+                <div className="pdp-detail-group" style={{ gridColumn: '1 / -1', background: 'linear-gradient(135deg, #FAF7F2, #FFF)', border: '1.5px solid #E5DCCE' }}>
+                  <div className="pdp-detail-group-title" style={{ color: '#5d463c' }}>
+                    ✦ Complete Jewellery Set Weight Summary
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '14px', marginTop: '6px' }}>
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Total Set Gross Weight</span>
+                      <span className="pdp-detail-val">{totalGross.toFixed(3)} g</span>
+                    </div>
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Total Gold Weight</span>
+                      <span className="pdp-detail-val">{totalGold.toFixed(3)} g</span>
+                    </div>
+                    {totalDiamonds > 0 && (
+                      <div className="pdp-detail-row">
+                        <span className="pdp-detail-key">Total Diamond Carats</span>
+                        <span className="pdp-detail-val">{totalDiamonds.toFixed(2)} ct</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Individual Piece Weight Cards */}
+                {setPieces.map((item, idx) => (
+                  <div key={item.id || idx} className="pdp-detail-group" style={{ border: '1px solid #EAE5E0' }}>
+                    <div className="pdp-detail-group-title" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span style={{ fontWeight: 700, color: '#2C2520' }}>
+                        #{idx + 1} {item.name || item.item_type}
+                      </span>
+                      <span style={{ fontSize: '11px', color: '#5d463c', fontWeight: 600 }}>
+                        {item.karat || selectedKarat || '14K'}
+                      </span>
+                    </div>
+
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Gross Weight</span>
+                      <span className="pdp-detail-val">{Number(item.product_weight || item.gross_weight || 0).toFixed(3)} g</span>
+                    </div>
+
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Gold / Metal Weight</span>
+                      <span className="pdp-detail-val">{Number(item.net_gold_weight || item.gold_weight || item.product_weight || 0).toFixed(3)} g</span>
+                    </div>
+
+                    {item.includeDiamond !== false && Number(item.diamond_weight || 0) > 0 && (
+                      <div className="pdp-detail-row">
+                        <span className="pdp-detail-key">Diamond Weight</span>
+                        <span className="pdp-detail-val">{Number(item.diamond_weight).toFixed(2)} ct</span>
+                      </div>
+                    )}
+
+                    {item.includeGemstone && Number(item.gemstone_weight || 0) > 0 && (
+                      <div className="pdp-detail-row">
+                        <span className="pdp-detail-key">Gemstone Weight</span>
+                        <span className="pdp-detail-val">{Number(item.gemstone_weight).toFixed(2)} ct</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            );
+          }
+
           const diamondW_ct = isPlainGold ? 0 : (product.diamond_weight || 0);
           const diamondW_g = diamondW_ct * 0.2;
 

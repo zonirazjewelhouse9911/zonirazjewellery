@@ -253,6 +253,14 @@ const productSchema = new mongoose.Schema({
   meta_description: {
     type: String
   },
+  is_set: {
+    type: Boolean,
+    default: false
+  },
+  set_items: {
+    type: mongoose.Schema.Types.Mixed,
+    default: []
+  },
   create_date: {
     type: Date,
     default: Date.now

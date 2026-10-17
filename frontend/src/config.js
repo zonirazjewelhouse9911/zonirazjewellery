@@ -3,7 +3,7 @@ export const API_BASE_URL =
   import.meta.env.VITE_API_URL ||
   (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
     ? 'http://localhost:55000'
-    : 'https://zonirazjewellery.onrender.com');
+    : 'https://lightpink-locust-700517.hostingersite.com');
 
 // Base URL for the dedicated Media Server (Hostinger VPS)
 export const MEDIA_BASE_URL =

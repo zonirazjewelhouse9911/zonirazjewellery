@@ -8,7 +8,8 @@ const categoryMap = {
   '4': 'Bracelets',
   '5': 'Bangles',
   '6': 'Pendants',
-  '7': 'Chains'
+  '7': 'Chains',
+  '11': 'Jewellery Set'
 };
 
 const subcategoryMap = {
@@ -173,6 +174,19 @@ class ProductService {
       productData.solitaires_weight = weight;
     }
 
+    const isSetCategory = String(productData.product_category || '').toLowerCase().includes('set') ||
+      String(productData.category_id || '').toLowerCase().includes('set') ||
+      productData.category_id === '11' ||
+      productData.is_set === true ||
+      (Array.isArray(productData.set_items) && productData.set_items.length > 0);
+
+    if (isSetCategory) {
+      productData.is_set = true;
+      if (!Array.isArray(productData.set_items)) {
+        productData.set_items = [];
+      }
+    }
+
     if (!productData.create_date || !(productData.create_date instanceof Date) || isNaN(productData.create_date.getTime())) {
       if (typeof productData.create_date === 'string' && !isNaN(new Date(productData.create_date).getTime())) {
         productData.create_date = new Date(productData.create_date);
@@ -238,6 +252,23 @@ class ProductService {
       const weight = Number(updateData.solitaire_weight ?? updateData.solitaires_weight ?? 0);
       updateData.solitaire_weight = weight;
       updateData.solitaires_weight = weight;
+    }
+
+    const isSetCategory = String(updateData.product_category || '').toLowerCase().includes('set') ||
+      String(updateData.category_id || '').toLowerCase().includes('set') ||
+      updateData.category_id === '11' ||
+      updateData.is_set === true ||
+      product.is_set === true ||
+      (Array.isArray(updateData.set_items) && updateData.set_items.length > 0);
+
+    if (isSetCategory) {
+      updateData.is_set = true;
+      product.is_set = true;
+    }
+
+    if (updateData.set_items !== undefined) {
+      product.set_items = updateData.set_items;
+      product.markModified('set_items');
     }
 
     // Do not allow client payload to corrupt or change create_date on existing items
