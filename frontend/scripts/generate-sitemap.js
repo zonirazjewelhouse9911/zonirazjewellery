@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename);
 
 const DOMAIN = 'https://zoniraz.com';
 const API_ENDPOINTS = [
-  'https://zonirazjewellery.onrender.com/api/admin/products',
+  'https://lightpink-locust-700517.hostingersite.com/api/admin/products',
   'http://localhost:55000/api/admin/products',
   'http://localhost:5000/api/admin/products'
 ];
@@ -75,7 +75,7 @@ const fallbackBlogSlugs = [
 ];
 
 const BLOG_API_ENDPOINTS = [
-  'https://zonirazjewellery.onrender.com/api/blogs',
+  'https://lightpink-locust-700517.hostingersite.com/api/blogs',
   'http://localhost:55000/api/blogs',
   'http://localhost:5000/api/blogs'
 ];

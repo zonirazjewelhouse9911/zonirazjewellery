@@ -13,7 +13,7 @@ $allowedFiles = [
     'sitemap-static.xml' => true,
 ];
 
-$backendBase = 'https://zonirazjewellery.onrender.com';
+$backendBase = 'https://lightpink-locust-700517.hostingersite.com';
 
 // ── Refresh All Request (e.g. from backend webhook ping) ─────────────────────
 if (isset($_GET['refresh_all']) || isset($_GET['sync'])) {

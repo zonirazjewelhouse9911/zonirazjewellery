@@ -9,7 +9,7 @@ const DOMAIN = 'https://zoniraz.com';
 
 async function fetchProducts() {
   const endpoints = [
-    'https://zonirazjewellery.onrender.com/api/admin/products',
+    'https://lightpink-locust-700517.hostingersite.com/api/admin/products',
     'http://localhost:55000/api/admin/products',
     'http://localhost:5000/api/admin/products'
   ];
