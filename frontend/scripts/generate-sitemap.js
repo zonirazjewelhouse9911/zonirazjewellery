@@ -412,6 +412,47 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   ht += `  RewriteCond %{REQUEST_FILENAME} !-f\n`;
   ht += `  RewriteCond %{REQUEST_FILENAME} !-d\n`;
   ht += `  RewriteRule ^ - [R=404,L]\n`;
+  ht += `</IfModule>\n\n`;
+
+  ht += `# Gzip / Deflate Compression\n`;
+  ht += `<IfModule mod_deflate.c>\n`;
+  ht += `  AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css\n`;
+  ht += `  AddOutputFilterByType DEFLATE application/javascript application/x-javascript text/javascript\n`;
+  ht += `  AddOutputFilterByType DEFLATE application/json application/xml application/rss+xml\n`;
+  ht += `  AddOutputFilterByType DEFLATE image/svg+xml font/ttf font/otf font/woff font/woff2\n`;
+  ht += `</IfModule>\n\n`;
+
+  ht += `# Browser Caching via mod_expires\n`;
+  ht += `<IfModule mod_expires.c>\n`;
+  ht += `  ExpiresActive On\n`;
+  ht += `  ExpiresDefault "access plus 1 month"\n`;
+  ht += `  ExpiresByType image/webp "access plus 1 year"\n`;
+  ht += `  ExpiresByType image/jpeg "access plus 1 year"\n`;
+  ht += `  ExpiresByType image/png "access plus 1 year"\n`;
+  ht += `  ExpiresByType image/gif "access plus 1 year"\n`;
+  ht += `  ExpiresByType image/svg+xml "access plus 1 year"\n`;
+  ht += `  ExpiresByType image/x-icon "access plus 1 year"\n`;
+  ht += `  ExpiresByType video/mp4 "access plus 1 year"\n`;
+  ht += `  ExpiresByType video/webm "access plus 1 year"\n`;
+  ht += `  ExpiresByType font/woff2 "access plus 1 year"\n`;
+  ht += `  ExpiresByType font/woff "access plus 1 year"\n`;
+  ht += `  ExpiresByType font/ttf "access plus 1 year"\n`;
+  ht += `  ExpiresByType text/css "access plus 1 year"\n`;
+  ht += `  ExpiresByType application/javascript "access plus 1 year"\n`;
+  ht += `  ExpiresByType text/javascript "access plus 1 year"\n`;
+  ht += `  ExpiresByType application/xml "access plus 1 hour"\n`;
+  ht += `  ExpiresByType text/xml "access plus 1 hour"\n`;
+  ht += `  ExpiresByType application/json "access plus 1 hour"\n`;
+  ht += `</IfModule>\n\n`;
+
+  ht += `# Cache-Control Headers for Static Assets\n`;
+  ht += `<IfModule mod_headers.c>\n`;
+  ht += `  <FilesMatch "\\.(ico|jpe?g|png|gif|webp|svg|woff2?|ttf|otf|eot)$">\n`;
+  ht += `    Header set Cache-Control "public, max-age=31536000, immutable"\n`;
+  ht += `  </FilesMatch>\n`;
+  ht += `  <FilesMatch "\\.(css|js)$">\n`;
+  ht += `    Header set Cache-Control "public, max-age=31536000, immutable"\n`;
+  ht += `  </FilesMatch>\n`;
   ht += `</IfModule>\n`;
 
   const htaccessPath = path.join(publicDir, '.htaccess');
