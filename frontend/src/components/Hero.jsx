@@ -107,139 +107,110 @@ export default function Hero() {
     }
   }, [current, currentSlide]);
 
+  // Touch swipe handling for mobile & tablet responsiveness
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      goNext();
+    } else if (isRightSwipe) {
+      goPrev();
+    }
+  };
+
   return (
     <main
       className="hero-container hero-carousel"
-      style={{
-        position: 'relative',
-        overflow: 'hidden'
-      }}
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
     >
-      {/* Background Media (Video / Image / Custom) */}
-      <div
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          zIndex: 1
-        }}
-      >
+      {/* Active Slide Track */}
+      <div className="hero-slide-track">
         {currentSlide.type === 'video' ? (
-          <video
-            key={currentSlide.src}
-            src={currentSlide.src}
-            autoPlay
-            muted
-            playsInline
-            preload="metadata"
-            onEnded={goNext}
-            className="hero-slide-media"
-            style={{
-              width: '100%',
-              height: '100%',
-              pointerEvents: 'none'
-            }}
-          >
-            <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
-          </video>
-        ) : currentSlide.type === 'image' ? (
-          currentSlide.link ? (
-            <a 
-              href={currentSlide.link} 
-              target={currentSlide.link.startsWith('http') ? '_blank' : '_self'} 
-              rel="noreferrer"
-              style={{ display: 'block', width: '100%', height: '100%', position: 'relative' }}
+          <div className="hero-slide-item" key={currentSlide.src || `video-${current}`}>
+            <video
+              src={currentSlide.src}
+              autoPlay
+              muted
+              playsInline
+              preload="metadata"
+              onEnded={goNext}
+              className="hero-slide-media hero-slide-video"
             >
-              <picture style={{ width: '100%', height: '100%', display: 'block' }}>
-                <source srcSet={currentSlide.src800 || currentSlide.src1400} media="(max-width: 768px)" type="image/webp" />
-                <source srcSet={currentSlide.src1400} type="image/webp" />
-                <img
-                  src={currentSlide.src1400}
-                  alt={currentSlide.title || "Zoniraz Hero Banner"}
-                  className="hero-slide-media"
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  width="1310"
-                  height="485"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover'
-                  }}
-                />
-              </picture>
-              {currentSlide.title && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: '40px',
-                    left: '5%',
-                    zIndex: 5,
-                    background: 'rgba(18, 16, 14, 0.75)',
-                    backdropFilter: 'blur(12px)',
-                    padding: '12px 24px',
-                    borderRadius: '14px',
-                    color: '#ffffff',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    maxWidth: '80%'
-                  }}
-                >
-                  <h2 style={{ fontFamily: 'serif', fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>
-                    {currentSlide.title}
-                  </h2>
-                </div>
-              )}
-            </a>
-          ) : (
-            <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-              <picture style={{ width: '100%', height: '100%', display: 'block' }}>
-                <source srcSet={currentSlide.src800 || currentSlide.src1400} media="(max-width: 768px)" type="image/webp" />
-                <source srcSet={currentSlide.src1400} type="image/webp" />
-                <img
-                  src={currentSlide.src1400}
-                  alt={currentSlide.title || "Zoniraz Hero Banner"}
-                  className="hero-slide-media"
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  width="1310"
-                  height="485"
-                  style={{
-                    width: '100%',
-                    height: '100%',
-                    objectFit: 'cover',
-                    pointerEvents: 'none'
-                  }}
-                />
-              </picture>
-              {currentSlide.title && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    bottom: '40px',
-                    left: '5%',
-                    zIndex: 5,
-                    background: 'rgba(18, 16, 14, 0.75)',
-                    backdropFilter: 'blur(12px)',
-                    padding: '12px 24px',
-                    borderRadius: '14px',
-                    color: '#ffffff',
-                    border: '1px solid rgba(255, 255, 255, 0.2)',
-                    maxWidth: '80%'
-                  }}
-                >
-                  <h2 style={{ fontFamily: 'serif', fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>
-                    {currentSlide.title}
-                  </h2>
-                </div>
-              )}
-            </div>
-          )
+              <track kind="captions" src="/empty.vtt" srcLang="en" label="English" default />
+            </video>
+          </div>
+        ) : currentSlide.type === 'image' ? (
+          <div className="hero-slide-item" key={currentSlide.id || `image-${current}`}>
+            {currentSlide.link ? (
+              <a 
+                href={currentSlide.link} 
+                target={currentSlide.link.startsWith('http') ? '_blank' : '_self'} 
+                rel="noreferrer"
+                className="hero-slide-link"
+              >
+                <picture className="hero-slide-picture">
+                  {currentSlide.src800 && (
+                    <source srcSet={currentSlide.src800} media="(max-width: 768px)" type="image/webp" />
+                  )}
+                  <source srcSet={currentSlide.src1400} type="image/webp" />
+                  <img
+                    src={currentSlide.src1400}
+                    alt={currentSlide.title || "Zoniraz Hero Banner"}
+                    className="hero-slide-media"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                  />
+                </picture>
+                {currentSlide.title && (
+                  <div className="hero-banner-title-overlay">
+                    <h2>{currentSlide.title}</h2>
+                  </div>
+                )}
+              </a>
+            ) : (
+              <div className="hero-slide-wrapper">
+                <picture className="hero-slide-picture">
+                  {currentSlide.src800 && (
+                    <source srcSet={currentSlide.src800} media="(max-width: 768px)" type="image/webp" />
+                  )}
+                  <source srcSet={currentSlide.src1400} type="image/webp" />
+                  <img
+                    src={currentSlide.src1400}
+                    alt={currentSlide.title || "Zoniraz Hero Banner"}
+                    className="hero-slide-media"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                  />
+                </picture>
+                {currentSlide.title && (
+                  <div className="hero-banner-title-overlay">
+                    <h2>{currentSlide.title}</h2>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         ) : (
-          <div className="hero-custom-slide">
+          <div className="hero-custom-slide" key="custom-slide">
             <div className="hero-wave-bg-1" />
             <div className="hero-wave-bg-2" />
             <div className="hero-custom-text-container">
