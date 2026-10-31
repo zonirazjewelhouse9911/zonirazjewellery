@@ -197,6 +197,15 @@ class ProductService {
     productData.modify_date = new Date();
 
     const product = new Product(productData);
+    if (productData.gallery !== undefined) {
+      product.markModified('gallery');
+    }
+    if (productData.custom_diamond_rates !== undefined) {
+      product.markModified('custom_diamond_rates');
+    }
+    if (productData.custom_solitaire_prices !== undefined) {
+      product.markModified('custom_solitaire_prices');
+    }
     return await product.save();
   }
 
@@ -286,6 +295,22 @@ class ProductService {
     // Always refresh modify_date to current timestamp
     product.modify_date = new Date();
     delete updateData.modify_date;
+
+    // Explicitly handle and mark Mongoose Mixed schema fields as modified to ensure persistence
+    if (updateData.gallery !== undefined) {
+      product.gallery = updateData.gallery;
+      product.markModified('gallery');
+    }
+
+    if (updateData.custom_diamond_rates !== undefined) {
+      product.custom_diamond_rates = updateData.custom_diamond_rates;
+      product.markModified('custom_diamond_rates');
+    }
+
+    if (updateData.custom_solitaire_prices !== undefined) {
+      product.custom_solitaire_prices = updateData.custom_solitaire_prices;
+      product.markModified('custom_solitaire_prices');
+    }
 
     // Assign fields dynamically
     Object.keys(updateData).forEach(key => {

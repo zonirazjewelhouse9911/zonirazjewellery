@@ -472,11 +472,17 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
 
     // Normalize gallery keys to use metal IDs instead of metal names
     const normalizedGallery: Record<string, string[]> = {};
-    Object.keys(parsedGallery).forEach(key => {
-      const found = METAL_TYPES.find(m => m.name.toLowerCase() === key.toLowerCase() || m.id === key);
-      const targetKey = found ? found.id : key;
-      normalizedGallery[targetKey] = (parsedGallery as any)[key];
-    });
+    if (Array.isArray(parsedGallery)) {
+      const primaryMetal = resolvedMetalType.split(',')[0] || '2';
+      normalizedGallery[primaryMetal] = parsedGallery;
+    } else if (parsedGallery && typeof parsedGallery === 'object') {
+      Object.keys(parsedGallery).forEach(key => {
+        const found = METAL_TYPES.find(m => m.name.toLowerCase() === key.toLowerCase() || m.id === key);
+        const targetKey = found ? found.id : key;
+        const val = (parsedGallery as any)[key];
+        normalizedGallery[targetKey] = Array.isArray(val) ? val : (val ? [val] : []);
+      });
+    }
 
     // Omit server-managed timestamps and internal fields from form state
     const {

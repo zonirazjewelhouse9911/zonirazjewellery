@@ -21,28 +21,53 @@ export default function AdminImageUploader({ images = [], onChange, category }: 
     }
 
     const files = Array.from(e.target.files);
-    const formData = new FormData();
-    files.forEach(file => formData.append('file', file));
-    formData.append('category', category);
-    formData.append('type', 'product');
-
     setUploading(true);
+    const newUrls: string[] = [];
+    let uploadFailures = 0;
+
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData
-      });
-      const data = await res.json();
-      
-      if (data.success) {
-        const newUrls = data.data.map((file: any) => file.url);
+      // Upload files individually to avoid hitting Hostinger request payload limits
+      for (const file of files) {
+        try {
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('category', category);
+          formData.append('type', 'product');
+
+          const res = await fetch('/api/upload', {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          
+          if (data.success && Array.isArray(data.data)) {
+            data.data.forEach((item: any) => {
+              if (item && item.url) newUrls.push(item.url);
+            });
+          } else {
+            uploadFailures++;
+            console.error('Failed to upload file:', file.name, data.error);
+          }
+        } catch (fileErr) {
+          uploadFailures++;
+          console.error('Network error uploading file:', file.name, fileErr);
+        }
+      }
+
+      if (newUrls.length > 0) {
         onChange([...images, ...newUrls]);
-      } else {
-        alert(data.error || 'Upload failed');
+      }
+
+      if (uploadFailures > 0) {
+        if (newUrls.length === 0) {
+          alert('Upload failed. Please check your network connection or try smaller images.');
+        } else {
+          alert(`Uploaded ${newUrls.length} image(s). ${uploadFailures} image(s) encountered an issue.`);
+        }
       }
     } catch (error) {
-      console.error(error);
-      alert('Upload failed');
+      console.error('General upload error:', error);
+      alert('Upload failed. Please try again.');
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';

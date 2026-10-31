@@ -102,19 +102,43 @@ class ProductController {
       }
 
       const uploadedFiles = [];
+      const hostingerBaseUrl = (
+        process.env.BACKEND_PUBLIC_URL ||
+        'https://lightpink-locust-700517.hostingersite.com'
+      ).replace(/\/+$/, '');
 
       for (const file of req.files) {
-        // Stream directly to media.zoniraz.com VPS storage
-        const uploaded = await uploadToMediaServer(file, 'zoniraz');
-        uploadedFiles.push({
-          filename: uploaded.filename,
-          url: uploaded.url
-        });
+        try {
+          // 1. Attempt upload to dedicated media VPS server
+          const uploaded = await uploadToMediaServer(file, 'zoniraz');
+          uploadedFiles.push({
+            filename: uploaded.filename,
+            url: uploaded.url
+          });
+
+          // 2. Safe cleanup: Remove the local temporary file from Hostinger disk once VPS confirms storage
+          if (file.path && fs.existsSync(file.path)) {
+            try {
+              fs.unlinkSync(file.path);
+            } catch (cleanupErr) {
+              console.warn('[Upload Cleanup Warning] Could not remove temp file:', cleanupErr.message);
+            }
+          }
+        } catch (uploadError) {
+          console.error(`[Upload Fallback] Media VPS upload failed for ${file.filename}: ${uploadError.message}. Storing reliably on Hostinger.`);
+          // 3. Resilient Fallback: If media server VPS times out or is unreachable,
+          // KEEP the file locally in Hostinger's uploads directory and return its URL
+          // so the user NEVER encounters an upload failure or lost work!
+          uploadedFiles.push({
+            filename: file.filename,
+            url: `${hostingerBaseUrl}/uploads/zoniraz/${file.filename}`
+          });
+        }
       }
 
       return res.status(200).json({
         success: true,
-        message: 'Files uploaded successfully to media storage',
+        message: 'Files processed and uploaded successfully',
         data: uploadedFiles
       });
     } catch (error) {
