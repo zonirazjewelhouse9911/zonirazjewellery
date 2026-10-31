@@ -13,6 +13,7 @@ const initialSlides = [defaultImageSlide, customTextSlide];
 export default function Hero() {
   const [slides, setSlides] = useState(initialSlides);
   const [current, setCurrent] = useState(0);
+  // hii
 
   // Fetch dynamic banners from admin API and merge with default banners
   useEffect(() => {
