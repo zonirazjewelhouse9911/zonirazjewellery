@@ -5,7 +5,14 @@ import { cachedFetch } from '../utils/apiCache';
 const banner2_800 = "https://media.zoniraz.com/uploads/zoniraz_frontend/zZONIRAZ-800.webp";
 const banner2_1400 = "https://media.zoniraz.com/uploads/zoniraz_frontend/zZONIRAZ-1400.webp";
 
-const defaultImageSlide = { id: 'def-1', type: 'image', src800: banner2_800, src1400: banner2_1400, title: '' };
+const defaultImageSlide = { 
+  id: 'def-1', 
+  type: 'image', 
+  src800: banner2_800, 
+  src1400: banner2_1400, 
+  title: '', 
+  alt: 'Zoniraz Jewel House – Diamond Jewellery in Alwar' 
+};
 const customTextSlide = { id: 'custom-slide', type: 'custom' };
 
 const initialSlides = [defaultImageSlide, customTextSlide];
@@ -33,6 +40,7 @@ export default function Hero() {
               src1400: getUploadsUrl(b.imageUrl),
               src800: getUploadsUrl(b.imageUrl, 800),
               title: b.title || '',
+              alt: b.alt || b.title || 'Zoniraz Jewel House – Diamond Jewellery in Alwar',
               link: b.link || ''
             });
           });
@@ -173,7 +181,7 @@ export default function Hero() {
                   <source srcSet={currentSlide.src1400} type="image/webp" />
                   <img
                     src={currentSlide.src1400}
-                    alt={currentSlide.title || "Zoniraz Hero Banner"}
+                    alt={currentSlide.alt || currentSlide.title || "Zoniraz Jewel House – Diamond Jewellery in Alwar"}
                     className="hero-slide-media"
                     loading="eager"
                     fetchPriority="high"
@@ -195,7 +203,7 @@ export default function Hero() {
                   <source srcSet={currentSlide.src1400} type="image/webp" />
                   <img
                     src={currentSlide.src1400}
-                    alt={currentSlide.title || "Zoniraz Hero Banner"}
+                    alt={currentSlide.alt || currentSlide.title || "Zoniraz Jewel House – Diamond Jewellery in Alwar"}
                     className="hero-slide-media"
                     loading="eager"
                     fetchPriority="high"
