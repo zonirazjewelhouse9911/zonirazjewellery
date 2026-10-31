@@ -3878,6 +3878,13 @@ button {
     /* Hide profile icon on mobile to avoid overcrowding */
   }
 
+  /* Move Gold Wallet, Wishlist, and Cart into the mobile sidebar drawer on mobile screens */
+  .nav-wallet-wrapper,
+  .nav-wishlist-wrapper,
+  .nav-cart-wrapper {
+    display: none !important;
+  }
+
   .header-utilities {
     display: none !important;
     /* Hide top utility elements */
@@ -4148,6 +4155,81 @@ button {
 
 .flag-box {
   cursor: default;
+}
+
+/* Primary Mobile Drawer 3-Action Cards (Gold Wallet, Wishlist, Cart) */
+.drawer-primary-actions-bar {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 12px 16px;
+  background: #f7f3f1;
+  border-bottom: 1px solid #d5c8bf;
+}
+
+.drawer-primary-action-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 1px solid #dbcfcb;
+  border-radius: 12px;
+  padding: 10px 6px;
+  text-decoration: none;
+  color: #5d463c;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 6px rgba(99, 77, 64, 0.04);
+  cursor: pointer;
+}
+
+.drawer-primary-action-card:hover,
+.drawer-primary-action-card:active {
+  background-color: #faf5f3;
+  border-color: #c5a880;
+  transform: translateY(-1px);
+}
+
+.drawer-action-icon-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: #5d463c;
+  margin-bottom: 4px;
+}
+
+.drawer-action-icon-wrap svg {
+  width: 22px;
+  height: 22px;
+}
+
+.drawer-action-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #634d40;
+  text-align: center;
+}
+
+.drawer-badge-count {
+  position: absolute;
+  top: -5px;
+  right: -9px;
+  background: #de3581;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 800;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  box-shadow: 0 1px 3px rgba(222, 53, 129, 0.4);
 }
 
 /* Categories List inside Drawer */
@@ -4621,6 +4703,12 @@ button {
   .action-link-icon {
     color: #5d463c !important;
     /* Cocoa brown header icons */
+  }
+
+  .nav-wallet-wrapper,
+  .nav-wishlist-wrapper,
+  .nav-cart-wrapper {
+    display: none !important;
   }
 }
 

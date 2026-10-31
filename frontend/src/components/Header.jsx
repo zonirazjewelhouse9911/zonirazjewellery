@@ -1175,6 +1175,22 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                   <span className="box-label">Wallet</span>
                 </a>
 
+                <a href="/wishlist" className="drawer-action-box" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="box-icon">❤️</span>
+                  <span className="box-label">Wishlist</span>
+                  {Object.values(wishlist).filter(Boolean).length > 0 && (
+                    <span className="box-badge">{Object.values(wishlist).filter(Boolean).length}</span>
+                  )}
+                </a>
+
+                <a href="/cart" className="drawer-action-box" onClick={() => setMobileMenuOpen(false)}>
+                  <span className="box-icon">🛍️</span>
+                  <span className="box-label">Bag</span>
+                  {cartList.reduce((sum, item) => sum + item.quantity, 0) > 0 && (
+                    <span className="box-badge">{cartList.reduce((sum, item) => sum + item.quantity, 0)}</span>
+                  )}
+                </a>
+
                 <a href="#delivery-stores" className="drawer-action-box" onClick={() => setMobileMenuOpen(false)}>
                   <span className="box-icon">🏪</span>
                   <span className="box-label">Stores</span>
@@ -1190,6 +1206,71 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
                   <span className="box-label">ENG</span>
                 </div>
               </div>
+            </div>
+
+            {/* 3 Main Action Cards for Mobile Screen (Gold Wallet, Wishlist, Cart) */}
+            <div className="drawer-primary-actions-bar">
+              {/* 1. Gold Wallet */}
+              <a
+                href="#profile"
+                className="drawer-primary-action-card"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setMobileMenuOpen(false);
+                  if (!user) {
+                    setShowAuthModal(true);
+                  } else {
+                    window.history.pushState(null, '', '/profile#wallet');
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                    window.dispatchEvent(new HashChangeEvent('hashchange'));
+                  }
+                }}
+              >
+                <div className="drawer-action-icon-wrap" style={{ color: '#c8a359' }}>
+                  <Coins size={22} />
+                </div>
+                <span className="drawer-action-title">Gold Wallet</span>
+              </a>
+
+              {/* 2. Wishlist */}
+              <a
+                href="/wishlist"
+                className="drawer-primary-action-card"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div className="drawer-action-icon-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                  </svg>
+                  {Object.values(wishlist).filter(Boolean).length > 0 && (
+                    <span className="drawer-badge-count">
+                      {Object.values(wishlist).filter(Boolean).length}
+                    </span>
+                  )}
+                </div>
+                <span className="drawer-action-title">Wishlist</span>
+              </a>
+
+              {/* 3. Cart / Bag */}
+              <a
+                href="/cart"
+                className="drawer-primary-action-card"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <div className="drawer-action-icon-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="22" height="22">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                  </svg>
+                  {cartList.reduce((sum, item) => sum + item.quantity, 0) > 0 && (
+                    <span className="drawer-badge-count">
+                      {cartList.reduce((sum, item) => sum + item.quantity, 0)}
+                    </span>
+                  )}
+                </div>
+                <span className="drawer-action-title">Bag</span>
+              </a>
             </div>
 
             {/* Middle: Category list with arrows */}
