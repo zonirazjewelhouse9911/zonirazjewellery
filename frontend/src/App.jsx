@@ -18,28 +18,91 @@ import BottomRibbon from './components/BottomRibbon';
 import Footer from './components/Footer';
 import CategoryPage from './components/CategoryPage';
 
-// Step 7 — Code-splitting heavy page sections
-const WishlistPage = lazy(() => import('./components/WishlistPage'));
-const CartPage = lazy(() => import('./components/CartPage'));
-const ProductDetailPage = lazy(() => import('./components/ProductDetailPage'));
-const ContactPage = lazy(() => import('./components/ContactPage'));
-const BlogPage = lazy(() => import('./components/BlogPage'));
-const BlogDetailPage = lazy(() => import('./components/BlogDetailPage'));
-const AboutPage = lazy(() => import('./components/AboutPage'));
-const DeliveryPage = lazy(() => import('./components/DeliveryPage'));
-const UserDashboard = lazy(() => import('./components/UserDashboard'));
-const CheckoutPage = lazy(() => import('./components/CheckoutPage'));
-const AllCollectionsPage = lazy(() => import('./components/AllCollectionsPage'));
-const FranchisePage = lazy(() => import('./components/FranchisePage'));
-const TermsPage = lazy(() => import('./components/TermsPage'));
-const PrivacyPage = lazy(() => import('./components/PrivacyPage'));
-const SellGoldPage = lazy(() => import('./components/SellGoldPage'));
-const BuyGoldPage = lazy(() => import('./components/BuyGoldPage'));
-const GoldMinePage = lazy(() => import('./components/GoldMinePage'));
-const LooseStonesPage = lazy(() => import('./components/LooseStonesPage'));
-const ZonirazAlwarPage = lazy(() => import('./components/ZonirazAlwarPage'));
-const FAQPage = lazy(() => import('./components/FAQPage'));
-const ExportPage = lazy(() => import('./components/ExportPage'));
+// Resilient lazy loader: If a dynamic chunk 404s after a new build deployment, automatically refresh once to fetch the latest version
+function lazyWithRetry(componentImport) {
+  return lazy(async () => {
+    const pageHasBeenForceRefreshed = window.sessionStorage.getItem('chunk_retry_refreshed');
+    try {
+      const component = await componentImport();
+      window.sessionStorage.removeItem('chunk_retry_refreshed');
+      return component;
+    } catch (error) {
+      if (!pageHasBeenForceRefreshed) {
+        console.warn('[ChunkLoader] Dynamic module failed to load (version update detected). Auto-reloading to fetch latest version...', error);
+        window.sessionStorage.setItem('chunk_retry_refreshed', 'true');
+        window.location.reload();
+        return new Promise(() => {}); // hold promise while reload takes place
+      }
+      throw error;
+    }
+  });
+}
+
+class ChunkErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error) {
+    const isChunkLoadError = 
+      error?.message?.includes('dynamically imported module') ||
+      error?.message?.includes('Loading chunk') ||
+      error?.name === 'ChunkLoadError';
+
+    if (isChunkLoadError) {
+      const hasReloaded = window.sessionStorage.getItem('chunk_boundary_reloaded');
+      if (!hasReloaded) {
+        window.sessionStorage.setItem('chunk_boundary_reloaded', 'true');
+        window.location.reload();
+      }
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ minHeight: '60vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '16px', color: '#634d40', fontFamily: 'Inter, sans-serif' }}>
+          <p style={{ fontSize: '15px', fontWeight: '500' }}>Loading latest version...</p>
+          <button 
+            onClick={() => { window.sessionStorage.removeItem('chunk_boundary_reloaded'); window.location.reload(); }}
+            style={{ padding: '8px 24px', backgroundColor: '#c8a359', color: '#fff', border: 'none', borderRadius: '20px', cursor: 'pointer', fontWeight: '600' }}
+          >
+            Reload Page
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// Step 7 — Code-splitting heavy page sections with auto-retry resilience
+const WishlistPage = lazyWithRetry(() => import('./components/WishlistPage'));
+const CartPage = lazyWithRetry(() => import('./components/CartPage'));
+const ProductDetailPage = lazyWithRetry(() => import('./components/ProductDetailPage'));
+const ContactPage = lazyWithRetry(() => import('./components/ContactPage'));
+const BlogPage = lazyWithRetry(() => import('./components/BlogPage'));
+const BlogDetailPage = lazyWithRetry(() => import('./components/BlogDetailPage'));
+const AboutPage = lazyWithRetry(() => import('./components/AboutPage'));
+const DeliveryPage = lazyWithRetry(() => import('./components/DeliveryPage'));
+const UserDashboard = lazyWithRetry(() => import('./components/UserDashboard'));
+const CheckoutPage = lazyWithRetry(() => import('./components/CheckoutPage'));
+const AllCollectionsPage = lazyWithRetry(() => import('./components/AllCollectionsPage'));
+const FranchisePage = lazyWithRetry(() => import('./components/FranchisePage'));
+const TermsPage = lazyWithRetry(() => import('./components/TermsPage'));
+const PrivacyPage = lazyWithRetry(() => import('./components/PrivacyPage'));
+const SellGoldPage = lazyWithRetry(() => import('./components/SellGoldPage'));
+const BuyGoldPage = lazyWithRetry(() => import('./components/BuyGoldPage'));
+const GoldMinePage = lazyWithRetry(() => import('./components/GoldMinePage'));
+const LooseStonesPage = lazyWithRetry(() => import('./components/LooseStonesPage'));
+const ZonirazAlwarPage = lazyWithRetry(() => import('./components/ZonirazAlwarPage'));
+const FAQPage = lazyWithRetry(() => import('./components/FAQPage'));
+const ExportPage = lazyWithRetry(() => import('./components/ExportPage'));
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -1761,8 +1824,9 @@ function AppContent() {
   return (
     <>
       <Header wishlist={wishlist} setWishlist={setWishlist} cart={cart} setCart={setCart} allProducts={allProducts} />
-      <Suspense fallback={<div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#634d40', fontFamily: 'Inter, sans-serif' }}>Loading...</div>}>
-        {currentView === 'product' ? (
+      <ChunkErrorBoundary>
+        <Suspense fallback={<div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#634d40', fontFamily: 'Inter, sans-serif' }}>Loading...</div>}>
+          {currentView === 'product' ? (
           <ProductDetailPage
             product={selectedProduct}
             products={allProducts}
@@ -1848,7 +1912,8 @@ function AppContent() {
             <BottomRibbon />
           </>
         )}
-      </Suspense>
+        </Suspense>
+      </ChunkErrorBoundary>
       <Footer />
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       {/* Global Video Call Modal — renders on top of everything */}

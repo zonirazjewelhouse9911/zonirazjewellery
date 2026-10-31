@@ -87,8 +87,14 @@
   ExpiresByType application/json "access plus 1 hour"
 </IfModule>
 
-# Cache-Control Headers for Static Assets
+# Cache-Control Headers for Static Assets & HTML
 <IfModule mod_headers.c>
+  # HTML/PHP documents must revalidate so clients immediately get updated JS chunk hashes on new deployments
+  <FilesMatch "\.(html|htm|php)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+  </FilesMatch>
   <FilesMatch "\.(ico|jpe?g|png|gif|webp|svg|woff2?|ttf|otf|eot)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>

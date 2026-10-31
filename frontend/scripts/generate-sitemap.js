@@ -445,8 +445,13 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   ht += `  ExpiresByType application/json "access plus 1 hour"\n`;
   ht += `</IfModule>\n\n`;
 
-  ht += `# Cache-Control Headers for Static Assets\n`;
+  ht += `# Cache-Control Headers for Static Assets & HTML\n`;
   ht += `<IfModule mod_headers.c>\n`;
+  ht += `  <FilesMatch "\\.(html|htm|php)$">\n`;
+  ht += `    Header set Cache-Control "no-cache, no-store, must-revalidate"\n`;
+  ht += `    Header set Pragma "no-cache"\n`;
+  ht += `    Header set Expires 0\n`;
+  ht += `  </FilesMatch>\n`;
   ht += `  <FilesMatch "\\.(ico|jpe?g|png|gif|webp|svg|woff2?|ttf|otf|eot)$">\n`;
   ht += `    Header set Cache-Control "public, max-age=31536000, immutable"\n`;
   ht += `  </FilesMatch>\n`;
