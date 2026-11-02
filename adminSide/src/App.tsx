@@ -113,6 +113,32 @@ function App() {
 
   // Mobile sidebar state
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [dynamicCategories, setDynamicCategories] = useState<{ id: string; name: string }[]>(CATEGORIES);
+
+  useEffect(() => {
+    cachedFetch('/api/admin/categories')
+      .then(res => {
+        if (res && res.success && Array.isArray(res.data)) {
+          const mapped = res.data.map((c: any, i: number) => ({
+            id: String(c._id || c.id || i),
+            name: String(c.name || '').trim()
+          })).filter((c: any) => Boolean(c.name));
+          setDynamicCategories(() => {
+            const seen = new Set<string>();
+            const list: { id: string; name: string }[] = [];
+            for (const item of [...mapped, ...CATEGORIES]) {
+              const lower = item.name.toLowerCase();
+              if (!seen.has(lower)) {
+                seen.add(lower);
+                list.push(item);
+              }
+            }
+            return list;
+          });
+        }
+      })
+      .catch(err => console.error('Failed to load categories in admin App:', err));
+  }, []);
 
   const fetchProducts = async (forceRefresh = false) => {
     if (products.length === 0) setLoading(true);
@@ -209,8 +235,10 @@ function App() {
   };
 
   const getCategoryName = (catId: string) => {
-    const found = CATEGORIES.find(c => c.id === catId);
-    return found ? found.name : 'Jewelry';
+    if (!catId) return 'Jewelry';
+    const found = dynamicCategories.find(c => c.id === catId || c.name.toLowerCase() === catId.toLowerCase()) ||
+                  CATEGORIES.find(c => c.id === catId || c.name.toLowerCase() === catId.toLowerCase());
+    return found ? found.name : catId;
   };
 
   const getProductImage = (item: any): string => {

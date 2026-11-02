@@ -328,6 +328,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
   const [includeGemstone, setIncludeGemstone] = useState(false);
   const [includeColorStone, setIncludeColorStone] = useState(false);
   const [isCustomCategory, setIsCustomCategory] = useState(false);
+  const [availableCategories, setAvailableCategories] = useState<{ id: string; name: string }[]>(CATEGORIES);
 
   // Manual custom solitaire purity input states
   const [customPurityInput, setCustomPurityInput] = useState('');
@@ -555,6 +556,46 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
       }
     };
     fetchDailyRates();
+
+    const fetchAdminCategories = async () => {
+      try {
+        const res = await cachedFetch('/api/admin/categories', { forceRefresh: true });
+        if (res && res.success && Array.isArray(res.data) && res.data.length > 0) {
+          const dbCategories: { id: string; name: string }[] = res.data
+            .map((cat: any, idx: number) => ({
+              id: String(cat._id || cat.id || `db-${idx}`),
+              name: String(cat.name || cat.title || '').trim()
+            }))
+            .filter((c: any) => Boolean(c.name));
+
+          const seen = new Set<string>();
+          const merged: { id: string; name: string }[] = [];
+
+          // 1. Add DB categories first so newly created categories take priority
+          for (const c of dbCategories) {
+            const lower = c.name.toLowerCase();
+            if (!seen.has(lower)) {
+              seen.add(lower);
+              merged.push(c);
+            }
+          }
+
+          // 2. Add fallback defaults if missing from DB
+          for (const c of CATEGORIES) {
+            const lower = c.name.toLowerCase();
+            if (!seen.has(lower)) {
+              seen.add(lower);
+              merged.push(c);
+            }
+          }
+
+          setAvailableCategories(merged);
+        }
+      } catch (err) {
+        console.error('Failed to load dynamic categories in ProductEditor:', err);
+      }
+    };
+    fetchAdminCategories();
 
     const fetchProduct = async () => {
       try {
@@ -1190,8 +1231,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   value={
                     isCustomCategory
                       ? 'Other'
-                      : CATEGORIES.some(c => c.name.toLowerCase() === (formData.category_id || '').toLowerCase())
-                        ? CATEGORIES.find(c => c.name.toLowerCase() === (formData.category_id || '').toLowerCase())?.name
+                      : availableCategories.some(c => c.name.toLowerCase() === (formData.category_id || '').toLowerCase() || c.id === formData.category_id)
+                        ? (availableCategories.find(c => c.name.toLowerCase() === (formData.category_id || '').toLowerCase() || c.id === formData.category_id)?.name || formData.category_id)
                         : (formData.category_id ? 'Other' : '')
                   }
                   onChange={(e) => {
@@ -1212,8 +1253,8 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                   className="w-full bg-slate-50 border border-slate-200 rounded-2xl py-4 px-6 text-[14px] text-[#12100e] focus:ring-1 focus:ring-brand-gold/50 transition-all shadow-inner"
                 >
                   <option value="">-- Select Category --</option>
-                  {CATEGORIES.map(c => (
-                    <option key={c.id} value={c.name}>{c.name}</option>
+                  {availableCategories.map(c => (
+                    <option key={c.id || c.name} value={c.name}>{c.name}</option>
                   ))}
                   <option value="Other">Other / Custom Category...</option>
                 </select>
@@ -1235,7 +1276,7 @@ export default function ProductEditor({ productId, onBack, onSaveSuccess }: Prod
                 </datalist>
               </div>
 
-              {(isCustomCategory || (formData.category_id && !CATEGORIES.some(c => c.name.toLowerCase() === (formData.category_id || '').toLowerCase()))) && (
+              {(isCustomCategory || (formData.category_id && !availableCategories.some(c => c.name.toLowerCase() === (formData.category_id || '').toLowerCase() || c.id === formData.category_id))) && (
                 <div className="space-y-4 col-span-1 md:col-span-2 bg-amber-50/50 p-6 rounded-3xl border border-amber-200/80">
                   <label className="text-[10px] uppercase tracking-[0.3em] font-black text-amber-800 block">Custom / Extra Category Field*</label>
                   <input

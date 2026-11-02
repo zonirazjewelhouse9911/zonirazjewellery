@@ -203,6 +203,7 @@ class ProductService {
 
     if (productData.category_id) {
       productData.product_category = await getCategoryName(productData.category_id);
+      productData.category = productData.product_category || productData.category_id;
     }
 
     if (productData.subcategory_id) {
@@ -292,6 +293,7 @@ class ProductService {
 
     if (updateData.category_id) {
       updateData.product_category = await getCategoryName(updateData.category_id);
+      updateData.category = updateData.product_category || updateData.category_id;
     }
 
     if (updateData.subcategory_id) {
