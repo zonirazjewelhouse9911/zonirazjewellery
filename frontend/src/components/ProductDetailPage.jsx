@@ -85,6 +85,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
     return product?.metal_type || (product?.coin_type ? (product.coin_type.charAt(0).toUpperCase() + product.coin_type.slice(1)) : 'Gold');
   }, [isCoinProduct, product, nameStr, catStr]);
 
+  const isSilverCoin = isCoinProduct && coinMetal === 'Silver';
+
   const coinPurity = useMemo(() => {
     if (!isCoinProduct) return '';
     if (product?.purity && String(product.purity).trim()) {
@@ -3112,10 +3114,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
           ) : (
             <div className="pdp-details-grid">
               <div className="pdp-detail-group">
-                <div className="pdp-detail-group-title">Price Breakup</div>
+                <div className="pdp-detail-group-title">
+                  {isCoinProduct ? `${coinMetal} Coin Price Breakup` : 'Price Breakup'}
+                </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">
-                    {isCoinProduct ? (isSilverCoin ? 'Silver Metal Value' : 'Gold Metal Value') : 'Gold Value'}
+                    {isCoinProduct ? `${coinMetal} Metal Value` : 'Gold Value'}
                   </span>
                   <span className="pdp-detail-val">
                     {formatPrice(isCoinProduct ? (product?.price_breakup?.base_price ?? product?.basePrice ?? pricingDetails.goldCost) : pricingDetails.goldCost)}
@@ -3153,7 +3157,11 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
                 {(pricingDetails.gst > 0 || (isCoinProduct && (product?.price_breakup?.gst > 0 || product?.gst_amount > 0))) && (
                   <div className="pdp-detail-row">
-                    <span className="pdp-detail-key">GST / Taxes (3%)</span>
+                    <span className="pdp-detail-key">
+                      {isCoinProduct && (product?.gst_percent !== undefined || product?.price_breakup?.gst_percent !== undefined)
+                        ? `GST / Taxes (${product?.gst_percent ?? product?.price_breakup?.gst_percent}%)`
+                        : 'GST / Taxes (3%)'}
+                    </span>
                     <span className="pdp-detail-val">
                       {formatPrice(isCoinProduct ? (product?.price_breakup?.gst ?? product?.gst_amount ?? pricingDetails.gst) : pricingDetails.gst)}
                     </span>
@@ -3161,7 +3169,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 )}
                 {isCoinProduct && (product?.price_breakup?.discount > 0 || product?.discount > 0) && (
                   <div className="pdp-detail-row">
-                    <span className="pdp-detail-key">Discount</span>
+                    <span className="pdp-detail-key">
+                      Discount {product?.discount_percent ? `(${product.discount_percent}%)` : ''}
+                    </span>
                     <span className="pdp-detail-val" style={{ color: '#2e7d32', fontWeight: 600 }}>
                       - {formatPrice(product?.price_breakup?.discount || product?.discount)}
                     </span>
@@ -3170,7 +3180,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 <div className="pdp-detail-row" style={{ borderTop: '1px solid #f0edf5', paddingTop: 10, marginTop: 4 }}>
                   <span className="pdp-detail-key" style={{ fontWeight: 700, color: '#231535' }}>Total</span>
                   <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>
-                    {formatPrice(pricingDetails.price || product?.price)}
+                    {formatPrice(isCoinProduct ? (product?.price_breakup?.calculated_total ?? pricingDetails.price ?? product?.price) : (pricingDetails.price || product?.price))}
                   </span>
                 </div>
               </div>

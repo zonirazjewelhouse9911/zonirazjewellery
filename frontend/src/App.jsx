@@ -48,7 +48,8 @@ class ChunkErrorBoundary extends React.Component {
     return { hasError: true };
   }
 
-  componentDidCatch(error) {
+  componentDidCatch(error, info) {
+    console.error('App ErrorBoundary caught error:', error, info);
     const isChunkLoadError = 
       error?.message?.includes('dynamically imported module') ||
       error?.message?.includes('Loading chunk') ||
