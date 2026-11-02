@@ -60,6 +60,8 @@ const categorySlugs = [
   "anklets",
   "necklaces",
   "gold-coins",
+  "silver-coin",
+  "silver-coins",
   "coins",
   "mens-jewellery",
   "womens-jewellery",

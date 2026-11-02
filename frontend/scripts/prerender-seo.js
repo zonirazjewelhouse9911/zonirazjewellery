@@ -142,7 +142,7 @@ async function main() {
   // 3. Clean up physical route subdirectories from dist/ to avoid Apache mod_dir 301 trailing slash redirects
   const subDirsToClean = [
     'product', 'rings', 'earrings', 'pendants', 'necklaces', 'bangles',
-    'bracelets', 'mangalsutras', 'nose-pins', 'solitaires', 'gold-coins',
+    'bracelets', 'mangalsutras', 'nose-pins', 'solitaires', 'gold-coins', 'silver-coin', 'silver-coins', 'coins',
     'about', 'contact', 'zoniraz-alwar', 'franchise', 'sell-gold', 'buy-gold',
     'gold-mine', 'loose-stones', 'all-collections',
     'delivery', 'privacy', 'terms', 'cart', 'checkout', 'wishlist', 'profile',

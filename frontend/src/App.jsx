@@ -449,6 +449,21 @@ const CATEGORY_SEO_METADATA = {
     title: '24K 999 Purity Gold Coins in Alwar | Zoniraz',
     description: 'Buy 24K pure gold coins with tamper-proof certicard packaging in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, and gold investment.'
   },
+  'silver-coin': {
+    canonicalSlug: 'silver-coin',
+    title: '999 Pure Silver Coins in Alwar | Zoniraz',
+    description: 'Buy certified 999 pure fine silver coins in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, Diwali, and silver investment.'
+  },
+  'silver-coins': {
+    canonicalSlug: 'silver-coin',
+    title: '999 Pure Silver Coins in Alwar | Zoniraz',
+    description: 'Buy certified 999 pure fine silver coins in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, Diwali, and silver investment.'
+  },
+  coins: {
+    canonicalSlug: 'coins',
+    title: 'Gold & Pure Silver Coins in Alwar | Zoniraz',
+    description: 'Explore 24K pure gold and 999 fine silver coins with tamper-proof certicard packaging in Alwar at Zoniraz.'
+  },
   'women-jewellery': {
     canonicalSlug: 'women-jewellery',
     title: "Women's Jewellery Online in Alwar | Gold & Diamond Designs | Zoniraz",
@@ -848,6 +863,9 @@ function AppContent() {
             } else if (p.images) {
               if (Array.isArray(p.images)) images = p.images;
               else if (typeof p.images === 'string') images = p.images.split(',').map(s => s.trim());
+            }
+            if (images.length === 0 && p.image) {
+              images = [p.image];
             }
 
             const size = p.size_id || (p.specs && p.specs.size) || 'Free Size';
@@ -1283,8 +1301,9 @@ function AppContent() {
         const knownCategories = [
           "Rings", "Bracelets & Bangles", "Bracelets", "Brooches", "Chains", "Chain", "Bangles", "Anklets", 
           "Necklaces", "Pendants", "Pendant", "Mangalsutras", "Mangalsutra", "Nose Pins", "Nose pin", "Earrings", 
-          "Gold Coins", "Solitaires", "Solitaire", "Coins", "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery",
-          "Jewellery Set", "Jewellery Sets", "Jewelry Set"
+          "Gold Coins", "Gold Coin", "Silver Coins", "Silver Coin", "Coins", "Coin", "Solitaires", "Solitaire", 
+          "Zodiac", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery",
+          "Jewellery Set", "Jewellery Sets", "Jewelry Set", "Gold Tikka", "NATH", "Nath"
         ];
         if (cleanPathSegment === 'women' || cleanPathSegment === 'womenjewellery' || cleanPathSegment === 'womensjewellery' || cleanPathSegment === 'womenjewelry' || cleanPathSegment === 'womensjewelry') {
           setSelectedCategoryName("Women's Jewellery");
@@ -1304,15 +1323,53 @@ function AppContent() {
           restoreOrScrollTop();
           return;
         }
-        let matchedCategory = knownCategories.find(cat => 
+
+        // Dynamically extract categories from catalog/allProducts/sessionStorage
+        let catalogCategories = [];
+        try {
+          const catList = (allProducts.length > 0 ? allProducts : products).map(p => p.category || p.product_category).filter(Boolean);
+          catalogCategories = [...new Set(catList)];
+        } catch (e) {}
+
+        const allCategoriesPool = [...new Set([...knownCategories, ...catalogCategories])];
+
+        let matchedCategory = allCategoriesPool.find(cat => 
           cat.toLowerCase().replace(/[^a-z0-9]/g, '') === cleanPathSegment
         );
         if (!matchedCategory) {
-          // Check singular / plural match (e.g. 'ring' -> 'rings')
-          matchedCategory = knownCategories.find(cat => {
+          // Check singular / plural match (e.g. 'silver-coin' -> 'Silver Coins')
+          matchedCategory = allCategoriesPool.find(cat => {
             const cleanCat = cat.toLowerCase().replace(/[^a-z0-9]/g, '');
-            return cleanCat === cleanPathSegment + 's' || cleanCat === cleanPathSegment + 'es';
+            return cleanCat === cleanPathSegment + 's' || 
+                   cleanCat === cleanPathSegment + 'es' ||
+                   cleanPathSegment === cleanCat + 's' ||
+                   cleanPathSegment === cleanCat + 'es';
           });
+        }
+
+        // Dedicated resolution for coin routes (/silver-coin, /gold-coin, /coins, etc.)
+        if (!matchedCategory && cleanPathSegment.includes('coin')) {
+          if (cleanPathSegment.includes('silver')) matchedCategory = 'Silver Coin';
+          else if (cleanPathSegment.includes('gold')) matchedCategory = 'Gold Coins';
+          else matchedCategory = 'Coins';
+        }
+
+        // Fallback for custom dynamic categories added in Admin (e.g. "Gold Tikka", "Nath", etc.)
+        if (!matchedCategory && routeOnly.length > 2 && !routeOnly.includes('.')) {
+          const autoTitle = routeOnly
+            .split('-')
+            .filter(Boolean)
+            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
+          
+          const hasMatchingProducts = (allProducts.length > 0 ? allProducts : products).some(p => {
+            const pCat = String(p.category || p.product_category || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+            return pCat === cleanPathSegment || pCat.includes(cleanPathSegment) || cleanPathSegment.includes(pCat);
+          });
+
+          if (hasMatchingProducts || cleanPathSegment.includes('coin') || cleanPathSegment.includes('tikka') || cleanPathSegment.includes('nath')) {
+            matchedCategory = autoTitle;
+          }
         }
         if (matchedCategory) {
           setSelectedCategoryName(matchedCategory);
@@ -1351,10 +1408,10 @@ function AppContent() {
           const knownCategories = [
             "Rings", "Bracelets", "Brooches", "Chains", "Bangles", "Anklets", 
             "Necklaces", "Pendants", "Mangalsutras", "Nose Pins", "Earrings", 
-            "Gold Coins", "Solitaires", "Coins", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery",
+            "Gold Coins", "Gold Coin", "Silver Coins", "Silver Coin", "Solitaires", "Coins", "Coin", "Gold Tikka", "NATH", "Men's Jewellery", "Women's Jewellery", "Kids Jewellery",
             "Jewellery Set", "Jewellery Sets", "Jewelry Set"
           ];
-          const matched = knownCategories.find(k => k.toLowerCase() === cat.toLowerCase());
+          const matched = knownCategories.find(k => k.toLowerCase() === cat.toLowerCase()) || cat;
           if (matched) {
             setSelectedCategoryName(matched);
             setCurrentView('rings');
@@ -1539,7 +1596,9 @@ function AppContent() {
       else if (catKey.includes('mangalsutra')) canonSlug = 'mangalsutras';
       else if (catKey.includes('nose')) canonSlug = 'nose-pins';
       else if (catKey.includes('solitaire')) canonSlug = 'solitaires';
-      else if (catKey.includes('coin')) canonSlug = 'gold-coins';
+      else if (catKey.includes('silver') && catKey.includes('coin')) canonSlug = 'silver-coin';
+      else if (catKey.includes('gold') && catKey.includes('coin')) canonSlug = 'gold-coins';
+      else if (catKey.includes('coin')) canonSlug = 'coins';
       else if (catKey.includes('women')) canonSlug = 'women-jewellery';
       else if (catKey.includes('men')) canonSlug = 'men-jewellery';
       else if (catKey.includes('kid')) canonSlug = 'kids-jewellery';

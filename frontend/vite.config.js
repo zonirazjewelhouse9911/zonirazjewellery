@@ -16,8 +16,8 @@ function spa404Plugin() {
     'checkout', 'wishlist', 'profile', 'admin-call', 'wallet',
     'rings', 'earrings', 'pendants', 'pendant', 'necklaces', 'bangles',
     'bracelets', 'mangalsutras', 'mangalsutra', 'nose-pins', 'nose-pin',
-    'solitaires', 'solitaire', 'gold-coins', 'coins', 'chain', 'chains',
-    'zodiac', 'brooches', 'anklets', 'mens-jewellery', 'womens-jewellery', 'kids-jewellery',
+    'solitaires', 'solitaire', 'gold-coins', 'gold-coin', 'silver-coins', 'silver-coin', 'coins', 'coin', 'chain', 'chains',
+    'zodiac', 'brooches', 'anklets', 'gold-tikka', 'nath', 'mens-jewellery', 'womens-jewellery', 'kids-jewellery',
     'blog'
   ])
 
@@ -43,6 +43,7 @@ function spa404Plugin() {
   const isKnownRoute = (urlPath) => {
     const clean = urlPath.split('?')[0].replace(/^\/+|\/+$/g, '')
     if (staticSlugs.has(clean)) return true
+    if (clean.includes('coin')) return true
     if (clean.startsWith('blog/')) {
       const bSlug = clean.replace('blog/', '').trim()
       const sitemapPath = path.resolve(__dirname, 'public/sitemap-blogs.xml')
@@ -117,7 +118,13 @@ function spa404Plugin() {
         solitaires: 'Certified Solitaire Diamond Jewellery in Alwar | Zoniraz',
         solitaire: 'Certified Solitaire Diamond Jewellery in Alwar | Zoniraz',
         'gold-coins': '24K 999 Purity Gold Coins in Alwar | Zoniraz',
-        coins: '24K 999 Purity Gold Coins in Alwar | Zoniraz',
+        'gold-coin': '24K 999 Purity Gold Coins in Alwar | Zoniraz',
+        'silver-coin': '999 Pure Silver Coins in Alwar | Zoniraz',
+        'silver-coins': '999 Pure Silver Coins in Alwar | Zoniraz',
+        coins: '24K 999 Purity Gold & Silver Coins in Alwar | Zoniraz',
+        coin: '24K 999 Purity Gold & Silver Coins in Alwar | Zoniraz',
+        'gold-tikka': 'Gold Tikka & Maang Tikka Jewellery in Alwar | Zoniraz',
+        nath: 'Bridal Gold & Diamond Nath in Alwar | Zoniraz',
         chain: 'Gold & Diamond Chains Online in Alwar | Zoniraz',
         chains: 'Gold & Diamond Chains Online in Alwar | Zoniraz',
         zodiac: 'Zodiac Sign Gold & Diamond Jewellery in Alwar | Zoniraz',

@@ -92,10 +92,40 @@ $categories = [
         'description' => 'Buy 24K pure gold coins with tamper-proof certicard packaging in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, and gold investment.',
         'canonical' => $domain . '/gold-coins'
     ],
-    'coins' => [
+    'gold-coin' => [
         'title' => '24K 999 Purity Gold Coins in Alwar | Zoniraz',
         'description' => 'Buy 24K pure gold coins with tamper-proof certicard packaging in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, and gold investment.',
+        'canonical' => $domain . '/gold-coins'
+    ],
+    'silver-coin' => [
+        'title' => '999 Pure Silver Coins in Alwar | Zoniraz',
+        'description' => 'Buy certified 999 pure fine silver coins in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, Diwali, and silver investment.',
+        'canonical' => $domain . '/silver-coin'
+    ],
+    'silver-coins' => [
+        'title' => '999 Pure Silver Coins in Alwar | Zoniraz',
+        'description' => 'Buy certified 999 pure fine silver coins in Alwar at Zoniraz. Ideal for auspicious gifting, Dhanteras, Diwali, and silver investment.',
+        'canonical' => $domain . '/silver-coin'
+    ],
+    'coins' => [
+        'title' => '24K Gold & 999 Silver Coins in Alwar | Zoniraz',
+        'description' => 'Buy 24K pure gold and 999 fine silver coins with tamper-proof certicard packaging in Alwar at Zoniraz.',
         'canonical' => $domain . '/coins'
+    ],
+    'coin' => [
+        'title' => '24K Gold & 999 Silver Coins in Alwar | Zoniraz',
+        'description' => 'Buy 24K pure gold and 999 fine silver coins with tamper-proof certicard packaging in Alwar at Zoniraz.',
+        'canonical' => $domain . '/coins'
+    ],
+    'gold-tikka' => [
+        'title' => 'Gold Tikka & Maang Tikka Jewellery in Alwar | Zoniraz',
+        'description' => 'Explore exquisite gold tikka and bridal maang tikka collections at Zoniraz in Alwar.',
+        'canonical' => $domain . '/gold-tikka'
+    ],
+    'nath' => [
+        'title' => 'Bridal Gold & Diamond Nath in Alwar | Zoniraz',
+        'description' => 'Discover traditional and royal Rajasthani bridal nath and nose rings at Zoniraz in Alwar.',
+        'canonical' => $domain . '/nath'
     ],
     'zodiac' => [
         'title' => 'Zodiac Sign Gold & Diamond Jewellery in Alwar | Zoniraz',
@@ -313,11 +343,11 @@ if ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.ph
     $isMatchedRoute = true;
 } elseif (preg_match('/^[a-z0-9-]+$/i', $cleanPath)) {
     // Dynamic Fallback for any other valid category/collection slug
-    $categoryListPattern = '/^(rings|earrings|pendants|pendant|necklaces|bangles|bracelets|mangalsutras|mangalsutra|nose-pins|nose-pin|solitaires|solitaire|gold-coins|coins|chain|chains|zodiac|brooches|anklets|mens-jewellery|womens-jewellery|kids-jewellery)$/i';
-    if (preg_match($categoryListPattern, $cleanPath)) {
+    $categoryListPattern = '/^(rings|earrings|pendants|pendant|necklaces|bangles|bracelets|mangalsutras|mangalsutra|nose-pins|nose-pin|solitaires|solitaire|gold-coins|gold-coin|silver-coins|silver-coin|coins|coin|chain|chains|zodiac|brooches|anklets|gold-tikka|nath|mens-jewellery|womens-jewellery|kids-jewellery)$/i';
+    if (preg_match($categoryListPattern, $cleanPath) || preg_match('/^[a-z0-9-]+-coin[s]?$/i', $cleanPath)) {
         $catName = ucwords(str_replace('-', ' ', $cleanPath));
-        $title = $catName . ' | Gold & Diamond Jewellery in Alwar | Zoniraz';
-        $description = 'Explore luxury handcrafted ' . strtolower($catName) . ' in Alwar at Zoniraz Jewels. Certified diamonds and 100% BIS hallmarked gold.';
+        $title = $catName . ' in Alwar | Pure Coins & Fine Jewellery | Zoniraz';
+        $description = 'Explore certified ' . strtolower($catName) . ' with tamper-proof certicard in Alwar at Zoniraz Jewels.';
         $canonical = $domain . '/' . $cleanPath;
         $isMatchedRoute = true;
     }

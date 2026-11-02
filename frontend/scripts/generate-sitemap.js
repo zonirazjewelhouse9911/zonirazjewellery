@@ -49,6 +49,8 @@ const categories = [
   'nose-pins',
   'solitaires',
   'gold-coins',
+  'silver-coin',
+  'silver-coins',
   'chain',
   'zodiac',
   'brooches',
@@ -355,8 +357,8 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   const categorySlugs = [
     'rings', 'earrings', 'pendants', 'pendant', 'necklaces', 'bangles',
     'bracelets', 'mangalsutras', 'mangalsutra', 'nose-pins', 'nose-pin',
-    'solitaires', 'solitaire', 'gold-coins', 'coins', 'chain', 'chains',
-    'zodiac', 'brooches', 'anklets',
+    'solitaires', 'solitaire', 'gold-coins', 'gold-coin', 'silver-coins', 'silver-coin', 'coins', 'coin', 'chain', 'chains',
+    'zodiac', 'brooches', 'anklets', 'gold-tikka', 'nath',
     'women', 'women-jewellery', 'womens-jewellery', 'women-jewelry', 'womens-jewelry',
     'men', 'mens', 'men-jewellery', 'mens-jewellery', 'men-jewelry', 'mens-jewelry',
     'kids', 'kid', 'kids-jewellery', 'kid-jewellery', 'kids-jewelry', 'kid-jewelry'
@@ -398,7 +400,9 @@ function generateHtaccess(publicDir, validProductSlugs, validBlogSlugs) {
   ht += `  RewriteRule ^(${staticSlugs.join('|')})/?$ /index.php [L]\n\n`;
 
   ht += `  # 6. Whitelist Canonical Category Pages\n`;
-  ht += `  RewriteRule ^(${categorySlugs.join('|')})/?$ /index.php [L]\n\n`;
+  ht += `  RewriteRule ^(${categorySlugs.join('|')})/?$ /index.php [L]\n`;
+  ht += `  # Whitelist dynamic coin categories\n`;
+  ht += `  RewriteRule ^([a-z0-9]+-coin[s]?)/?$ /index.php [L]\n\n`;
 
   ht += `  # 7. Whitelist Blog Landing & Dynamic Blog Articles\n`;
   ht += `  RewriteRule ^blogs?(/.*)?$ /index.php [L]\n\n`;

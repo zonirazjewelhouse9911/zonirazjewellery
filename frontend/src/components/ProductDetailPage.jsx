@@ -424,18 +424,34 @@ export default function ProductDetailPage({ product, products: propProducts = []
     String(product?.category_name || product?.category || product?.product_category || '').toLowerCase().includes('set')
   );
 
+  const isCoinProduct = Boolean(
+    product?.is_coin ||
+    String(product?.category || product?.product_category || '').toLowerCase().includes('coin') ||
+    String(product?.product_type || '').toLowerCase() === 'coin'
+  );
+  const isSilverCoin = isCoinProduct && (
+    String(product?.coin_type || '').toLowerCase() === 'silver' ||
+    String(product?.metal_type || '').toLowerCase().includes('silver') ||
+    String(product?.category || product?.product_category || '').toLowerCase().includes('silver') ||
+    String(product?.title || product?.product_title || product?.name || '').toLowerCase().includes('silver')
+  );
+
   const [pricingDetails, setPricingDetails] = useState({
     price: product?.price || 0,
-    goldCost: Math.round((product?.price || 0) * (isPlainGold ? 1.0 : 0.65)),
-    diamondCost: isPlainGold ? 0 : Math.round((product?.price || 0) * 0.25),
-    solitaireCost: initialSolitaireCost,
+    goldCost: isCoinProduct
+      ? (product?.price_breakup?.base_price ?? product?.basePrice ?? product?.price ?? 0)
+      : Math.round((product?.price || 0) * (isPlainGold ? 1.0 : 0.65)),
+    diamondCost: (isPlainGold || isCoinProduct) ? 0 : Math.round((product?.price || 0) * 0.25),
+    solitaireCost: isCoinProduct ? 0 : initialSolitaireCost,
     gemstoneCost: 0,
     colorStoneCost: 0,
-    makingCharges: 0,
-    gst: 0,
+    makingCharges: isCoinProduct ? (product?.price_breakup?.making_charges ?? product?.making_charges ?? 0) : 0,
+    gst: isCoinProduct ? (product?.price_breakup?.gst ?? product?.gst_amount ?? 0) : 0,
+    discount: isCoinProduct ? (product?.price_breakup?.discount ?? product?.discount ?? 0) : 0,
     subtotal: product?.price || 0,
-    goldWeight: product?.gold_weight || 0,
-    grossWeight: product?.product_weight || product?.gross_weight || 0,
+    goldWeight: isCoinProduct ? (isSilverCoin ? 0 : (product?.weight || product?.product_weight || product?.gold_weight || 0)) : (product?.gold_weight || 0),
+    silverWeight: isSilverCoin ? (product?.weight || product?.product_weight || 0) : 0,
+    grossWeight: product?.weight || product?.product_weight || product?.gross_weight || 0,
     isSet: Boolean(product?.is_set || (Array.isArray(product?.set_items) && product.set_items.length > 0)),
     setItemsPricing: Array.isArray(product?.set_items) ? product.set_items : []
   });
@@ -2960,28 +2976,32 @@ export default function ProductDetailPage({ product, products: propProducts = []
               <div className="pdp-detail-group">
                 <div className="pdp-detail-group-title">Price Breakup</div>
                 <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Gold Value</span>
-                  <span className="pdp-detail-val">{formatPrice(pricingDetails.goldCost)}</span>
+                  <span className="pdp-detail-key">
+                    {isCoinProduct ? (isSilverCoin ? 'Silver Metal Value' : 'Gold Metal Value') : 'Gold Value'}
+                  </span>
+                  <span className="pdp-detail-val">
+                    {formatPrice(isCoinProduct ? (product?.price_breakup?.base_price ?? product?.basePrice ?? pricingDetails.goldCost) : pricingDetails.goldCost)}
+                  </span>
                 </div>
-                {!isPlainGold && pricingDetails.diamondCost > 0 && (
+                {!isCoinProduct && !isPlainGold && pricingDetails.diamondCost > 0 && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Diamond Value</span>
                     <span className="pdp-detail-val">{formatPrice(pricingDetails.diamondCost)}</span>
                   </div>
                 )}
-                {(pricingDetails.solitaireCost > 0 || hasSolitaire) && (
+                {!isCoinProduct && (pricingDetails.solitaireCost > 0 || hasSolitaire) && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Solitaire Value</span>
                     <span className="pdp-detail-val">{formatPrice(pricingDetails.solitaireCost)}</span>
                   </div>
                 )}
-                {pricingDetails.gemstoneCost > 0 && (
+                {!isCoinProduct && pricingDetails.gemstoneCost > 0 && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Gemstone Value</span>
                     <span className="pdp-detail-val">{formatPrice(pricingDetails.gemstoneCost)}</span>
                   </div>
                 )}
-                {pricingDetails.colorStoneCost > 0 && (
+                {!isCoinProduct && pricingDetails.colorStoneCost > 0 && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Color Stone Value</span>
                     <span className="pdp-detail-val">{formatPrice(pricingDetails.colorStoneCost)}</span>
@@ -2989,17 +3009,31 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 )}
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Making Charges</span>
-                  <span className="pdp-detail-val">{formatPrice(pricingDetails.makingCharges)}</span>
+                  <span className="pdp-detail-val">
+                    {formatPrice(isCoinProduct ? (product?.price_breakup?.making_charges ?? product?.making_charges ?? pricingDetails.makingCharges) : pricingDetails.makingCharges)}
+                  </span>
                 </div>
-                {pricingDetails.gst > 0 && (
+                {(pricingDetails.gst > 0 || (isCoinProduct && (product?.price_breakup?.gst > 0 || product?.gst_amount > 0))) && (
                   <div className="pdp-detail-row">
-                    <span className="pdp-detail-key">GST / Taxes</span>
-                    <span className="pdp-detail-val">{formatPrice(pricingDetails.gst)}</span>
+                    <span className="pdp-detail-key">GST / Taxes (3%)</span>
+                    <span className="pdp-detail-val">
+                      {formatPrice(isCoinProduct ? (product?.price_breakup?.gst ?? product?.gst_amount ?? pricingDetails.gst) : pricingDetails.gst)}
+                    </span>
+                  </div>
+                )}
+                {isCoinProduct && (product?.price_breakup?.discount > 0 || product?.discount > 0) && (
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Discount</span>
+                    <span className="pdp-detail-val" style={{ color: '#2e7d32', fontWeight: 600 }}>
+                      - {formatPrice(product?.price_breakup?.discount || product?.discount)}
+                    </span>
                   </div>
                 )}
                 <div className="pdp-detail-row" style={{ borderTop: '1px solid #f0edf5', paddingTop: 10, marginTop: 4 }}>
                   <span className="pdp-detail-key" style={{ fontWeight: 700, color: '#231535' }}>Total</span>
-                  <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>{formatPrice(pricingDetails.price)}</span>
+                  <span className="pdp-detail-val" style={{ fontWeight: 700, color: '#5d463c' }}>
+                    {formatPrice(pricingDetails.price || product?.price)}
+                  </span>
                 </div>
               </div>
             </div>

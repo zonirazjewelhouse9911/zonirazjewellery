@@ -62,8 +62,9 @@ function formatCoinForCatalog(coin) {
     ? coin.images 
     : (primaryImage ? [primaryImage] : []);
 
-  const coinTypeLabel = coin.coin_type ? coin.coin_type.charAt(0).toUpperCase() + coin.coin_type.slice(1) : 'Gold';
-  const categoryName = coin.coin_type === 'silver' ? 'Silver Coins' : 'Gold Coins';
+  const isSilver = String(coin.coin_type || '').toLowerCase() === 'silver' || String(coin.title || '').toLowerCase().includes('silver');
+  const coinTypeLabel = isSilver ? 'Silver' : (coin.coin_type ? coin.coin_type.charAt(0).toUpperCase() + coin.coin_type.slice(1) : 'Gold');
+  const categoryName = isSilver ? 'Silver Coin' : 'Gold Coins';
 
   return {
     _id: coin._id,
@@ -76,7 +77,10 @@ function formatCoinForCatalog(coin) {
     product_subcategory: `${coinTypeLabel} Coins`,
     subcategory: `${coinTypeLabel} Coins`,
     product_type: 'coin',
-    coin_type: coin.coin_type,
+    coin_type: isSilver ? 'silver' : (coin.coin_type || 'gold'),
+    metal_type: isSilver ? 'Silver' : 'Gold',
+    defaultMetal: isSilver ? 'Silver' : 'Yellow Gold',
+    tags: ['coin', 'coins', isSilver ? 'silver' : 'gold', isSilver ? 'silver coin' : 'gold coin', 'silver coins', 'gold coins'],
     weight: coin.weight_grams,
     product_weight: coin.weight_grams,
     gold_weight: coin.coin_type === 'gold' ? coin.weight_grams : 0,
@@ -90,6 +94,13 @@ function formatCoinForCatalog(coin) {
     gst_percent: coin.gst_percent,
     gst_amount: pricing.gst_amount,
     pricing_breakdown: pricing,
+    price_breakup: {
+      base_price: pricing.base_price,
+      making_charges: pricing.making_charges,
+      gst: pricing.gst_amount,
+      discount: pricing.discount_amount,
+      calculated_total: pricing.final_price
+    },
     image: primaryImage,
     images: images,
     gallery: images,

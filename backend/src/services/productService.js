@@ -126,11 +126,20 @@ class ProductService {
 
     if (isAllProducts || isCoinsCategory) {
       try {
-        const coinFilter = { status: '1' };
+        const coinFilter = {
+          $or: [
+            { status: '1' },
+            { status: 1 },
+            { status: { $exists: false } }
+          ]
+        };
         if (isCoinsCategory) {
           const catLower = String(category).toLowerCase();
-          if (catLower.includes('silver')) coinFilter.coin_type = 'silver';
-          else if (catLower.includes('gold')) coinFilter.coin_type = 'gold';
+          if (catLower.includes('silver')) {
+            coinFilter.coin_type = { $regex: /silver/i };
+          } else if (catLower.includes('gold')) {
+            coinFilter.coin_type = { $regex: /gold/i };
+          }
         }
         const activeCoins = await Coin.find(coinFilter).sort({ weight_grams: 1, createdAt: -1 }).lean();
         const formattedCoins = activeCoins.map(formatCoinForCatalog);

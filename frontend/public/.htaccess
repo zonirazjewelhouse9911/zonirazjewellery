@@ -40,7 +40,9 @@
   RewriteRule ^(about|contact|zoniraz-alwar|franchise|export|exports|jewellery-export|sell-gold|buy-gold|gold-mine|loose-stones|all-collections|delivery|privacy|terms|faq|cart|checkout|wishlist|profile|admin-call|wallet)/?$ /index.php [L]
 
   # 6. Whitelist Canonical Category Pages
-  RewriteRule ^(rings|earrings|pendants|pendant|necklaces|bangles|bracelets|mangalsutras|mangalsutra|nose-pins|nose-pin|solitaires|solitaire|gold-coins|coins|chain|chains|zodiac|brooches|anklets|women|women-jewellery|womens-jewellery|women-jewelry|womens-jewelry|men|mens|men-jewellery|mens-jewellery|men-jewelry|mens-jewelry|kids|kid|kids-jewellery|kid-jewellery|kids-jewelry|kid-jewelry)/?$ /index.php [L]
+  RewriteRule ^(rings|earrings|pendants|pendant|necklaces|bangles|bracelets|mangalsutras|mangalsutra|nose-pins|nose-pin|solitaires|solitaire|gold-coins|gold-coin|silver-coins|silver-coin|coins|coin|chain|chains|zodiac|brooches|anklets|gold-tikka|nath|women|women-jewellery|womens-jewellery|women-jewelry|womens-jewelry|men|mens|men-jewellery|mens-jewellery|men-jewelry|mens-jewelry|kids|kid|kids-jewellery|kid-jewellery|kids-jewelry|kid-jewelry)/?$ /index.php [L]
+  # Whitelist dynamic coin categories
+  RewriteRule ^([a-z0-9]+-coin[s]?)/?$ /index.php [L]
 
   # 7. Whitelist Blog Landing & Dynamic Blog Articles
   RewriteRule ^blogs?(/.*)?$ /index.php [L]
@@ -89,11 +91,10 @@
 
 # Cache-Control Headers for Static Assets & HTML
 <IfModule mod_headers.c>
-  # HTML/PHP documents must revalidate so clients immediately get updated JS chunk hashes on new deployments
   <FilesMatch "\.(html|htm|php)$">
     Header set Cache-Control "no-cache, no-store, must-revalidate"
     Header set Pragma "no-cache"
-    Header set Expires "0"
+    Header set Expires 0
   </FilesMatch>
   <FilesMatch "\.(ico|jpe?g|png|gif|webp|svg|woff2?|ttf|otf|eot)$">
     Header set Cache-Control "public, max-age=31536000, immutable"

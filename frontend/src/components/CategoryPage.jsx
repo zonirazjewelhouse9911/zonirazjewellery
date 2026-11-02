@@ -636,6 +636,24 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
       } else if (pageCatClean.includes('coin')) {
         const isCoinProd = Boolean(product.is_coin) || prodCatClean.includes('coin') || prodTitleClean.includes('coin');
         if (!isCoinProd) return false;
+
+        const isSilverPage = pageCatClean.includes('silver');
+        const isGoldPage = pageCatClean.includes('gold');
+
+        const prodTags = Array.isArray(product.tags) ? product.tags.map(t => String(t).toLowerCase()) : [];
+        const isSilverItem = String(product.coin_type || '').toLowerCase() === 'silver' ||
+                             String(product.metal_type || '').toLowerCase() === 'silver' ||
+                             prodCatClean.includes('silver') ||
+                             prodTitleClean.includes('silver') ||
+                             prodTags.includes('silver');
+        const isGoldItem = String(product.coin_type || '').toLowerCase() === 'gold' ||
+                           String(product.metal_type || '').toLowerCase() === 'gold' ||
+                           prodCatClean.includes('gold') ||
+                           prodTitleClean.includes('gold') ||
+                           prodTags.includes('gold');
+
+        if (isSilverPage && !isSilverItem) return false;
+        if (isGoldPage && !isGoldItem) return false;
       } else {
         // Standard exact or singular/plural comparison (SAFE from "earring" vs "ring" collision)
         let isMatch = false;
@@ -1861,11 +1879,13 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                       <div className="product-info">
                         <div className="price-row">
                           <span className="current-price">{formatPrice(product.price)}</span>
-                          <span className="original-price">{formatPrice(product.originalPrice)}</span>
                           {product.originalPrice > product.price && (
-                            <span className="discount-pct">
-                              ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF)
-                            </span>
+                            <>
+                              <span className="original-price">{formatPrice(product.originalPrice)}</span>
+                              <span className="discount-pct">
+                                ({Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)}% OFF)
+                              </span>
+                            </>
                           )}
                         </div>
 
