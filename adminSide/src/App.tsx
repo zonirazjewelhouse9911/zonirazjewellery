@@ -25,6 +25,7 @@ const PricingSettings = lazy(() => import('./pages/PricingSettings'));
 const VideoCallPanel = lazy(() => import('./pages/VideoCallPanel'));
 const GoldMineWallets = lazy(() => import('./pages/GoldMineWallets'));
 const LooseStones = lazy(() => import('./pages/LooseStones'));
+const CoinsPage = lazy(() => import('./pages/Coins'));
 const Blogs = lazy(() => import('./pages/Blogs'));
 
 const PageLoadingFallback = () => (
@@ -55,7 +56,8 @@ import {
   Trash2,
   FileText,
   Menu,
-  X
+  X,
+  CircleDollarSign
 } from 'lucide-react';
 import './App.css';
 
@@ -63,6 +65,7 @@ import './App.css';
 const MENU_ITEMS = [
   { id: 'overview', label: 'Overview', icon: Grid },
   { id: 'products', label: 'Products', icon: Package },
+  { id: 'coins', label: 'Coins', icon: CircleDollarSign },
   { id: 'blogs', label: 'Blogs & Journal', icon: FileText },
   { id: 'loosestones', label: 'Loose Stones', icon: Gem },
   { id: 'orders', label: 'Orders', icon: ShoppingBag },
@@ -696,6 +699,8 @@ function App() {
             </div>
           ) : activeMenu === 'overview' ? (
             <Dashboard onNavigate={(page) => setActiveMenu(page)} />
+          ) : activeMenu === 'coins' ? (
+            <CoinsPage />
           ) : activeMenu === 'blogs' ? (
             <Blogs userRole={userRole} />
           ) : activeMenu === 'loosestones' ? (

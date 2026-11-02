@@ -1,5 +1,7 @@
 const Product = require('../models/productModel');
 const Category = require('../models/categoryModel');
+const Coin = require('../models/coinModel');
+const { formatCoinForCatalog } = require('./coinService');
 
 const categoryMap = {
   '1': 'Rings',
@@ -116,7 +118,29 @@ class ProductService {
       };
     }
 
-    return await queryBuilder;
+    const products = await queryBuilder;
+
+    // If query is for all products or specifically for coins category, include active coins
+    const isCoinsCategory = category && String(category).toLowerCase().includes('coin');
+    const isAllProducts = !category && !subcategory && !page && !limit;
+
+    if (isAllProducts || isCoinsCategory) {
+      try {
+        const coinFilter = { status: '1' };
+        if (isCoinsCategory) {
+          const catLower = String(category).toLowerCase();
+          if (catLower.includes('silver')) coinFilter.coin_type = 'silver';
+          else if (catLower.includes('gold')) coinFilter.coin_type = 'gold';
+        }
+        const activeCoins = await Coin.find(coinFilter).sort({ weight_grams: 1, createdAt: -1 }).lean();
+        const formattedCoins = activeCoins.map(formatCoinForCatalog);
+        return [...products, ...formattedCoins];
+      } catch (coinErr) {
+        console.error('Error fetching coins in getAllProducts:', coinErr);
+      }
+    }
+
+    return products;
   }
 
   async getProductById(id) {
@@ -130,6 +154,22 @@ class ProductService {
     }
     if (!product) {
       product = await Product.findOne({ product_id: id }).lean();
+    }
+    if (!product) {
+      try {
+        let coin = null;
+        if (id.match(/^[0-9a-fA-F]{24}$/)) {
+          coin = await Coin.findById(id).lean();
+        }
+        if (!coin) {
+          coin = await Coin.findOne({ sku: id }).lean();
+        }
+        if (coin) {
+          return formatCoinForCatalog(coin);
+        }
+      } catch (coinErr) {
+        console.error('Error fetching coin in getProductById:', coinErr);
+      }
     }
     return product;
   }

@@ -633,6 +633,9 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
       } else if (pageCatClean.includes('set')) {
         const isSetProd = Boolean(product.is_set) || prodCatClean.includes('set') || prodTitleClean.includes('set');
         if (!isSetProd) return false;
+      } else if (pageCatClean.includes('coin')) {
+        const isCoinProd = Boolean(product.is_coin) || prodCatClean.includes('coin') || prodTitleClean.includes('coin');
+        if (!isCoinProd) return false;
       } else {
         // Standard exact or singular/plural comparison (SAFE from "earring" vs "ring" collision)
         let isMatch = false;

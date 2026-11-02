@@ -221,6 +221,10 @@ const looseStoneRoutes = require('./src/routes/looseStoneRoutes');
 app.use('/api/admin/loose-stones', looseStoneRoutes);
 app.use('/api/loose-stones', looseStoneRoutes);
 
+const coinRoutes = require('./src/routes/coinRoutes');
+app.use('/api', coinRoutes);
+app.use('/api/admin/coins', coinRoutes);
+
 const blogRoutes = require('./src/routes/blogRoutes');
 app.use('/api', blogRoutes);
 

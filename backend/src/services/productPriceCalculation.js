@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Product = require('../models/productModel');
+const Coin = require('../models/coinModel');
 const livePrice = require('../models/jewelleryPricingModel');
 
 // Maps request-facing purity grade strings to their corresponding
@@ -62,6 +63,34 @@ exports.productPricing = async (req, res) => {
         ]);
 
         if (!product_data) {
+            const coinQuery = mongoose.Types.ObjectId.isValid(product_id)
+                ? { $or: [{ _id: product_id }, { sku: product_id }] }
+                : { sku: product_id };
+            const coin = await Coin.findOne(coinQuery).lean();
+            if (coin) {
+                const { calculateCoinPricing } = require('./coinService');
+                const pricing = calculateCoinPricing({
+                    price: coin.price,
+                    making_charges: coin.making_charges,
+                    gst_percent: coin.gst_percent,
+                    discount_percent: coin.discount_percent
+                });
+                return res.status(200).json({
+                    success: true,
+                    product_id: coin._id,
+                    product_title: coin.title,
+                    is_coin: true,
+                    price: pricing.final_price,
+                    base_price: pricing.base_price,
+                    base_price_withGST: pricing.gross_total,
+                    making_charges: pricing.making_charges,
+                    gst_percent: pricing.gst_percent,
+                    gst_amount: pricing.gst_amount,
+                    discount: pricing.discount_amount,
+                    discount_percent: pricing.discount_percent,
+                    final_price: pricing.final_price
+                });
+            }
             return res.status(404).json({
                 success: false,
                 message: "Product not found",
