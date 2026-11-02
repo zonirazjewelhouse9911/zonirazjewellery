@@ -10,15 +10,11 @@ import {
   CheckCircle2, 
   RefreshCw,
   Upload,
-  Percent,
   Receipt,
-  Sparkles,
-  Scale,
   Star,
   ArrowLeft,
   ArrowRight,
-  Link as LinkIcon,
-  Image as ImageIcon
+  Link as LinkIcon
 } from 'lucide-react';
 import { resolveProductImage } from '../lib/imageResolver';
 import { cachedFetch, invalidateCache } from '../lib/apiCache';
