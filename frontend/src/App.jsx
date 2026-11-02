@@ -870,41 +870,49 @@ function AppContent() {
 
             const size = p.size_id || (p.specs && p.specs.size) || 'Free Size';
 
+            const pTypeLower = String(p.product_type || '').toLowerCase().trim();
+            const isCoin = Boolean(p.is_coin || pTypeLower === 'coin' || String(p.category || p.product_category || '').toLowerCase().includes('coin'));
+
             // Get material / stone / metal
             let matList = [];
-            if (p.material) matList.push(p.material);
-            if (p.product_type) matList.push(p.product_type);
-            if (p.stoneType) matList.push(p.stoneType);
-            if (p.defaultMetal) matList.push(p.defaultMetal);
-            if (p.metal_type) matList.push(String(p.metal_type));
-            if (p.specs) {
-              if (p.specs.metal) matList.push(p.specs.metal);
-              if (p.specs.stoneType) matList.push(p.specs.stoneType);
+            if (isCoin) {
+              const cMetal = String(p.metal_type || p.coin_type || (titleLower.includes('silver') ? 'Silver' : 'Gold'));
+              const cPurity = p.purity || (cMetal.toLowerCase().includes('silver') ? '999 Fine Silver' : '24K (999)');
+              matList = [`${cPurity} Pure ${cMetal}`];
+            } else {
+              if (p.material) matList.push(p.material);
+              if (p.product_type) matList.push(p.product_type);
+              if (p.stoneType) matList.push(p.stoneType);
+              if (p.defaultMetal) matList.push(p.defaultMetal);
+              if (p.metal_type) matList.push(String(p.metal_type));
+              if (p.specs) {
+                if (p.specs.metal) matList.push(p.specs.metal);
+                if (p.specs.stoneType) matList.push(p.specs.stoneType);
+              }
+              if (p.tags && Array.isArray(p.tags)) {
+                if (p.tags.includes('diamond')) matList.push('diamond');
+                if (p.tags.includes('gold')) matList.push('gold');
+                if (p.tags.includes('platinum')) matList.push('platinum');
+                if (p.tags.includes('gemstone') || p.tags.includes('gemstones')) matList.push('gemstone');
+                if (p.tags.includes('rose gold') || p.tags.includes('rose-gold')) matList.push('rose gold');
+                if (p.tags.includes('yellow gold') || p.tags.includes('yellow-gold')) matList.push('yellow gold');
+                if (p.tags.includes('white gold') || p.tags.includes('white-gold')) matList.push('white gold');
+              }
+
+              const isPG = pTypeLower === 'gold' || pTypeLower.includes('plain gold') || pTypeLower.includes('plan gold');
+
+              // Numeric weight & specification indications
+              if (Number(p.gold_weight) > 0 || isPG) matList.push('gold');
+              if (!isPG && (Number(p.diamond_weight) > 0 || Number(p.diamond_count) > 0 || p.diamond_quality)) matList.push('diamond');
+              if (Number(p.gemstone_weight) > 0 || Number(p.noof_gem) > 0 || p.color_stone || Number(p.gemstone_price) > 0) matList.push('gemstone');
+              if (!isPG && (Number(p.solitaires_weight) > 0 || Number(p.solitaire_weight) > 0 || Number(p.solitaires_price) > 0 || p.solitaires_quality)) matList.push('diamond');
+
+              // Product name / title keyword inspection
+              if (titleLower.includes('gold')) matList.push('gold');
+              if (!isPG && titleLower.includes('diamond')) matList.push('diamond');
+              if (titleLower.includes('platinum')) matList.push('platinum');
+              if (titleLower.includes('gemstone') || titleLower.includes('ruby') || titleLower.includes('emerald') || titleLower.includes('sapphire') || titleLower.includes('topaz') || titleLower.includes('pearl')) matList.push('gemstone');
             }
-            if (p.tags && Array.isArray(p.tags)) {
-              if (p.tags.includes('diamond')) matList.push('diamond');
-              if (p.tags.includes('gold')) matList.push('gold');
-              if (p.tags.includes('platinum')) matList.push('platinum');
-              if (p.tags.includes('gemstone') || p.tags.includes('gemstones')) matList.push('gemstone');
-              if (p.tags.includes('rose gold') || p.tags.includes('rose-gold')) matList.push('rose gold');
-              if (p.tags.includes('yellow gold') || p.tags.includes('yellow-gold')) matList.push('yellow gold');
-              if (p.tags.includes('white gold') || p.tags.includes('white-gold')) matList.push('white gold');
-            }
-
-            const pTypeLower = String(p.product_type || '').toLowerCase().trim();
-            const isPG = pTypeLower === 'gold' || pTypeLower.includes('plain gold') || pTypeLower.includes('plan gold');
-
-            // Numeric weight & specification indications
-            if (Number(p.gold_weight) > 0 || isPG) matList.push('gold');
-            if (!isPG && (Number(p.diamond_weight) > 0 || Number(p.diamond_count) > 0 || p.diamond_quality)) matList.push('diamond');
-            if (Number(p.gemstone_weight) > 0 || Number(p.noof_gem) > 0 || p.color_stone || Number(p.gemstone_price) > 0) matList.push('gemstone');
-            if (!isPG && (Number(p.solitaires_weight) > 0 || Number(p.solitaire_weight) > 0 || Number(p.solitaires_price) > 0 || p.solitaires_quality)) matList.push('diamond');
-
-            // Product name / title keyword inspection
-            if (titleLower.includes('gold')) matList.push('gold');
-            if (!isPG && titleLower.includes('diamond')) matList.push('diamond');
-            if (titleLower.includes('platinum')) matList.push('platinum');
-            if (titleLower.includes('gemstone') || titleLower.includes('ruby') || titleLower.includes('emerald') || titleLower.includes('sapphire') || titleLower.includes('topaz') || titleLower.includes('pearl')) matList.push('gemstone');
 
             const material = [...new Set(matList.map(s => String(s).toLowerCase()))].join(', ');
             

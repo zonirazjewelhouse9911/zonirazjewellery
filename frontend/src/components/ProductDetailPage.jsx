@@ -56,10 +56,59 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const isChain = !isEarring && (catStr === 'chains' || catStr === 'chain' || nameStr.includes('chain'));
   const isMangalsutra = !isEarring && (catStr === 'mangalsutra' || catStr === 'mangalsutras' || nameStr.includes('mangalsutra'));
 
-  const isAanaSizeProduct = isChain || isMangalsutra || isTennisBracelet;
-  const showSizing = isRing || isBangle || isAanaSizeProduct;
+  const isCoinProduct = useMemo(() => {
+    return Boolean(
+      product?.is_coin ||
+      String(product?.product_type || '').toLowerCase() === 'coin' ||
+      catStr.includes('coin') ||
+      nameStr.includes('coin') ||
+      String(product?.subcategory || product?.product_subcategory || '').toLowerCase().includes('coin') ||
+      (Array.isArray(product?.tags) && product.tags.some(t => String(t).toLowerCase().includes('coin')))
+    );
+  }, [product, catStr, nameStr]);
+
+  const coinMetal = useMemo(() => {
+    if (!isCoinProduct) return 'Gold';
+    const rawCoinType = String(product?.coin_type || '').toLowerCase();
+    const rawMetalType = String(product?.metal_type || '').toLowerCase();
+    const rawDefaultMetal = String(product?.defaultMetal || '').toLowerCase();
+
+    if (rawCoinType === 'silver' || rawMetalType.includes('silver') || rawDefaultMetal.includes('silver') || nameStr.includes('silver') || catStr.includes('silver')) {
+      return 'Silver';
+    }
+    if (rawCoinType === 'platinum' || rawMetalType.includes('platinum') || rawDefaultMetal.includes('platinum') || nameStr.includes('platinum')) {
+      return 'Platinum';
+    }
+    if (rawCoinType === 'gold' || rawMetalType.includes('gold') || rawDefaultMetal.includes('gold') || nameStr.includes('gold') || catStr.includes('gold')) {
+      return 'Gold';
+    }
+    return product?.metal_type || (product?.coin_type ? (product.coin_type.charAt(0).toUpperCase() + product.coin_type.slice(1)) : 'Gold');
+  }, [isCoinProduct, product, nameStr, catStr]);
+
+  const coinPurity = useMemo(() => {
+    if (!isCoinProduct) return '';
+    if (product?.purity && String(product.purity).trim()) {
+      const p = String(product.purity).trim();
+      if (coinMetal === 'Silver' && (p.includes('14') || p.includes('18') || p.includes('24'))) {
+        return '999 Fine Silver';
+      }
+      return p;
+    }
+    if (coinMetal === 'Silver') return '999 Fine Silver';
+    if (coinMetal === 'Platinum') return '950 Platinum';
+    return '24K (999)';
+  }, [isCoinProduct, product?.purity, coinMetal]);
+
+  const coinWeight = useMemo(() => {
+    if (!isCoinProduct) return 0;
+    return Number(product?.weight_grams || product?.weight || product?.product_weight || product?.gold_weight || 10);
+  }, [isCoinProduct, product]);
+
+  const isAanaSizeProduct = !isCoinProduct && (isChain || isMangalsutra || isTennisBracelet);
+  const showSizing = !isCoinProduct && (isRing || isBangle || isAanaSizeProduct);
 
   const isPlainGold = useMemo(() => {
+    if (isCoinProduct) return true;
     const pType = String(product?.product_type || '').toLowerCase().trim();
     const cType = String(product?.custom_type || '').toLowerCase().trim();
     return (
@@ -77,9 +126,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
       cType.includes('plain gold') ||
       cType.includes('plan gold')
     );
-  }, [product?.product_type, product?.custom_type]);
+  }, [isCoinProduct, product?.product_type, product?.custom_type]);
 
   const hasSolitaire = useMemo(() => {
+    if (isCoinProduct) return false;
     return Boolean(
       Number(product?.solitaires_weight || product?.solitaire_weight || 0) > 0 ||
       Number(product?.solitaires_price || 0) > 0 ||
@@ -89,7 +139,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
       Number(product?.solitaire_price_fg_si || 0) > 0 ||
       (product?.solitaires_quality && product?.solitaires_quality !== '0')
     );
-  }, [product]);
+  }, [isCoinProduct, product]);
 
   const solitaireOptions = useMemo(() => {
     if (!product?.solitaires_quality || product.solitaires_quality === '0') {
@@ -173,6 +223,15 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const [customSizeInput, setCustomSizeInput] = useState('');
   const getAvailableColors = () => {
     if (!product) return [];
+    if (isCoinProduct) {
+      if (coinMetal === 'Silver') {
+        return [{ id: 'Silver', name: 'Fine Silver', colorCode: '#E0E0E0' }];
+      }
+      if (coinMetal === 'Platinum') {
+        return [{ id: 'Platinum', name: 'Platinum', colorCode: '#E5E8EC' }];
+      }
+      return [{ id: 'Yellow', name: 'Pure Gold', colorCode: '#E5C158' }];
+    }
 
     // 1. Check if Admin explicitly configured metal_type for this product
     // (1 = White Gold, 2 = Yellow Gold, 3 = Rose Gold)
@@ -254,7 +313,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
   }, [product]);
 
   const diamondOptions = useMemo(() => {
-    if (isPlainGold) return [];
+    if (isPlainGold || isCoinProduct) return [];
     if (!product?.diamond_quality) {
       return ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
     }
@@ -277,9 +336,12 @@ export default function ProductDetailPage({ product, products: propProducts = []
     }
 
     return mapped.length > 0 ? mapped : ['IJ-SI', 'GH-VS', 'EF-VVS', 'FG-SI'];
-  }, [isPlainGold, product?.diamond_quality, product?.custom_diamond_rates]);
+  }, [isPlainGold, isCoinProduct, product?.diamond_quality, product?.custom_diamond_rates]);
 
   const karatOptions = useMemo(() => {
+    if (isCoinProduct) {
+      return [coinPurity || '999'];
+    }
     if (!product) return ['14 KT', '18 KT'];
 
     const rawKarat = product.karat_id ? String(product.karat_id) : '';
@@ -331,17 +393,22 @@ export default function ProductDetailPage({ product, products: propProducts = []
     options.sort((a, b) => order.indexOf(a) - order.indexOf(b));
 
     return options;
-  }, [isPlainGold, product?.karat_id, product?.metal_type, product?.product_type]);
+  }, [isCoinProduct, coinPurity, isPlainGold, product?.karat_id, product?.metal_type, product?.product_type]);
 
   const defaultKaratChoice = useMemo(() => {
+    if (isCoinProduct) {
+      return coinPurity || '999';
+    }
     if (isPlainGold && karatOptions.includes('22 KT')) {
       return '22 KT';
     }
     return karatOptions[0] || (isPlainGold ? '22 KT' : '14 KT');
-  }, [isPlainGold, karatOptions]);
+  }, [isCoinProduct, coinPurity, isPlainGold, karatOptions]);
 
   const [selectedKarat, setSelectedKarat] = useState(defaultKaratChoice);
-  const selectedMetal = selectedKarat === 'Platinum' ? 'Platinum' : `${selectedKarat} ${selectedColor}`;
+  const selectedMetal = isCoinProduct
+    ? `${coinPurity} ${coinMetal}`
+    : (selectedKarat === 'Platinum' ? 'Platinum' : `${selectedKarat} ${selectedColor}`);
 
   useEffect(() => {
     if (karatOptions && karatOptions.length > 0) {
@@ -424,18 +491,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
     String(product?.category_name || product?.category || product?.product_category || '').toLowerCase().includes('set')
   );
 
-  const isCoinProduct = Boolean(
-    product?.is_coin ||
-    String(product?.category || product?.product_category || '').toLowerCase().includes('coin') ||
-    String(product?.product_type || '').toLowerCase() === 'coin'
-  );
-  const isSilverCoin = isCoinProduct && (
-    String(product?.coin_type || '').toLowerCase() === 'silver' ||
-    String(product?.metal_type || '').toLowerCase().includes('silver') ||
-    String(product?.category || product?.product_category || '').toLowerCase().includes('silver') ||
-    String(product?.title || product?.product_title || product?.name || '').toLowerCase().includes('silver')
-  );
-
   const [pricingDetails, setPricingDetails] = useState({
     price: product?.price || 0,
     goldCost: isCoinProduct
@@ -449,9 +504,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
     gst: isCoinProduct ? (product?.price_breakup?.gst ?? product?.gst_amount ?? 0) : 0,
     discount: isCoinProduct ? (product?.price_breakup?.discount ?? product?.discount ?? 0) : 0,
     subtotal: product?.price || 0,
-    goldWeight: isCoinProduct ? (isSilverCoin ? 0 : (product?.weight || product?.product_weight || product?.gold_weight || 0)) : (product?.gold_weight || 0),
-    silverWeight: isSilverCoin ? (product?.weight || product?.product_weight || 0) : 0,
-    grossWeight: product?.weight || product?.product_weight || product?.gross_weight || 0,
+    goldWeight: isCoinProduct ? (coinMetal === 'Silver' ? 0 : coinWeight) : (product?.gold_weight || 0),
+    silverWeight: isCoinProduct && coinMetal === 'Silver' ? coinWeight : 0,
+    grossWeight: isCoinProduct ? coinWeight : (product?.weight || product?.product_weight || product?.gross_weight || 0),
     isSet: Boolean(product?.is_set || (Array.isArray(product?.set_items) && product.set_items.length > 0)),
     setItemsPricing: Array.isArray(product?.set_items) ? product.set_items : []
   });
@@ -473,6 +528,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
     let active = true;
     const fetchBasePricing = async () => {
       try {
+        if (isCoinProduct) return;
         const prodId = product?._id || product?.product_id || product?.id;
         if (!prodId) return;
 
@@ -519,6 +575,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
   }, [product?._id, product?.id]);
 
   useEffect(() => {
+    if (isCoinProduct) return;
     let active = true;
     const defaultSize = isChain
       ? '320'
@@ -806,7 +863,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
   let colorGalleryImages = null;
   const metalLower = (selectedColor || 'yellow').toLowerCase();
 
-  if (product.gallery) {
+  if (!isCoinProduct && product.gallery) {
     let galleryObj = {};
     if (typeof product.gallery === 'string') {
       try {
@@ -837,7 +894,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
   }
 
   // Fallback color image filtering if product.images array is present
-  if ((!colorGalleryImages || colorGalleryImages.length === 0) && product.images && product.images.length > 0) {
+  if (!isCoinProduct && (!colorGalleryImages || colorGalleryImages.length === 0) && product.images && product.images.length > 0) {
     const matchedByUrl = product.images.filter(imgUrl => {
       const urlLower = String(imgUrl).toLowerCase();
       if (metalLower.includes('rose')) return urlLower.includes('rose') || urlLower.includes('pink');
@@ -881,9 +938,11 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
 
   const handleAddToCart = () => {
-    addToCart(product, 1, selectedMetal, selectedSize, isPlainGold ? null : selectedDiamond, {
-      grossWeight: pricingDetails?.grossWeight || product?.gross_weight || product?.gold_weight || 0,
-      goldWeight: pricingDetails?.goldWeight || product?.gold_weight || 0
+    const finalMetal = isCoinProduct ? `${coinPurity} ${coinMetal}` : selectedMetal;
+    const finalSize = isCoinProduct ? `${coinWeight}g` : selectedSize;
+    addToCart(product, 1, finalMetal, finalSize, (isPlainGold || isCoinProduct) ? null : selectedDiamond, {
+      grossWeight: isCoinProduct ? coinWeight : (pricingDetails?.grossWeight || product?.gross_weight || product?.gold_weight || 0),
+      goldWeight: isCoinProduct ? (coinMetal === 'Silver' ? 0 : coinWeight) : (pricingDetails?.goldWeight || product?.gold_weight || 0)
     });
     setAddedToCart(true);
     setTimeout(() => setAddedToCart(false), 2500);
@@ -2272,75 +2331,112 @@ export default function ProductDetailPage({ product, products: propProducts = []
           </div>
 
           {/* Customise selectors */}
-          <div className="pdp-customise-box" style={{ flexWrap: 'wrap' }}>
-            {showSizing && (
-              <div className="pdp-custom-item">
-                <span className="pdp-custom-label">{isAanaSizeProduct ? 'Length' : isBangle ? 'Bangle Size' : 'Ring Size'}</span>
-                <select
-                  className="pdp-custom-select"
-                  value={isCustomSizeSelected ? 'Custom' : selectedSize}
-                  onChange={e => {
-                    const val = e.target.value;
-                    if (val === 'Custom') {
-                      setIsCustomSizeSelected(true);
-                    } else {
-                      setIsCustomSizeSelected(false);
-                      setSelectedSize(val);
-                    }
-                  }}
-                >
-                  {activeSizes.map(s => (
-                    <option key={s} value={s}>
-                      {isAanaSizeProduct
-                        ? `${s} Aana (${(Number(s) * 0.0625).toFixed(1).replace(/\.0$/, '')}")`
-                        : s}
-                    </option>
-                  ))}
-                  <option value="Custom">Custom Size...</option>
-                </select>
+          {isCoinProduct ? (
+            <div className="pdp-customise-box pdp-coin-meta-box" style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: '12px',
+              padding: '14px 16px',
+              backgroundColor: '#FAF8F5',
+              border: '1px solid #EBE4D8',
+              borderRadius: '10px'
+            }}>
+              <div>
+                <span className="pdp-custom-label" style={{ fontSize: '11px', textTransform: 'uppercase', color: '#8c7d75', fontWeight: 700, letterSpacing: '0.5px' }}>
+                  Metal Type
+                </span>
+                <div style={{ fontSize: '15px', fontWeight: 800, color: '#231535', marginTop: '3px' }}>
+                  {coinMetal}
+                </div>
               </div>
-            )}
-            <div className="pdp-custom-item">
-              <span className="pdp-custom-label">Purity</span>
-              <select
-                className="pdp-custom-select"
-                value={selectedKarat}
-                onChange={e => setSelectedKarat(e.target.value)}
-              >
-                {karatOptions.map(k => <option key={k} value={k}>{k}</option>)}
-              </select>
+              <div>
+                <span className="pdp-custom-label" style={{ fontSize: '11px', textTransform: 'uppercase', color: '#8c7d75', fontWeight: 700, letterSpacing: '0.5px' }}>
+                  Purity Standard
+                </span>
+                <div style={{ fontSize: '15px', fontWeight: 800, color: '#231535', marginTop: '3px' }}>
+                  {coinPurity}
+                </div>
+              </div>
+              <div>
+                <span className="pdp-custom-label" style={{ fontSize: '11px', textTransform: 'uppercase', color: '#8c7d75', fontWeight: 700, letterSpacing: '0.5px' }}>
+                  Net Weight
+                </span>
+                <div style={{ fontSize: '15px', fontWeight: 800, color: '#231535', marginTop: '3px' }}>
+                  {coinWeight} g
+                </div>
+              </div>
             </div>
-            {!isPlainGold && diamondOptions.length > 0 && (
+          ) : (
+            <div className="pdp-customise-box" style={{ flexWrap: 'wrap' }}>
+              {showSizing && (
+                <div className="pdp-custom-item">
+                  <span className="pdp-custom-label">{isAanaSizeProduct ? 'Length' : isBangle ? 'Bangle Size' : 'Ring Size'}</span>
+                  <select
+                    className="pdp-custom-select"
+                    value={isCustomSizeSelected ? 'Custom' : selectedSize}
+                    onChange={e => {
+                      const val = e.target.value;
+                      if (val === 'Custom') {
+                        setIsCustomSizeSelected(true);
+                      } else {
+                        setIsCustomSizeSelected(false);
+                        setSelectedSize(val);
+                      }
+                    }}
+                  >
+                    {activeSizes.map(s => (
+                      <option key={s} value={s}>
+                        {isAanaSizeProduct
+                          ? `${s} Aana (${(Number(s) * 0.0625).toFixed(1).replace(/\.0$/, '')}")`
+                          : s}
+                      </option>
+                    ))}
+                    <option value="Custom">Custom Size...</option>
+                  </select>
+                </div>
+              )}
               <div className="pdp-custom-item">
-                <span className="pdp-custom-label">Diamond</span>
+                <span className="pdp-custom-label">Purity</span>
                 <select
                   className="pdp-custom-select"
-                  value={selectedDiamond}
-                  onChange={e => setSelectedDiamond(e.target.value)}
+                  value={selectedKarat}
+                  onChange={e => setSelectedKarat(e.target.value)}
                 >
-                  {diamondOptions.map(d => <option key={d} value={d}>{d}</option>)}
+                  {karatOptions.map(k => <option key={k} value={k}>{k}</option>)}
                 </select>
               </div>
-            )}
-            {hasSolitaire && (
-              <div className="pdp-custom-item">
-                <span className="pdp-custom-label">Solitaire</span>
-                <select
-                  className="pdp-custom-select"
-                  value={selectedSolitaire}
-                  onChange={e => setSelectedSolitaire(e.target.value)}
-                >
-                  {solitaireOptions.map(s => <option key={s} value={s}>{s}</option>)}
-                </select>
-              </div>
-            )}
-            <button
-              className={`pdp-customise-btn ${isCustomizeOpen ? 'active' : ''}`}
-              onClick={() => setIsCustomizeOpen(prev => !prev)}
-            >
-              {isCustomizeOpen ? 'CLOSE' : 'CUSTOMISE'}
-            </button>
-          </div>
+              {!isPlainGold && diamondOptions.length > 0 && (
+                <div className="pdp-custom-item">
+                  <span className="pdp-custom-label">Diamond</span>
+                  <select
+                    className="pdp-custom-select"
+                    value={selectedDiamond}
+                    onChange={e => setSelectedDiamond(e.target.value)}
+                  >
+                    {diamondOptions.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+              )}
+              {hasSolitaire && (
+                <div className="pdp-custom-item">
+                  <span className="pdp-custom-label">Solitaire</span>
+                  <select
+                    className="pdp-custom-select"
+                    value={selectedSolitaire}
+                    onChange={e => setSelectedSolitaire(e.target.value)}
+                  >
+                    {solitaireOptions.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                </div>
+              )}
+              <button
+                className={`pdp-customise-btn ${isCustomizeOpen ? 'active' : ''}`}
+                onClick={() => setIsCustomizeOpen(prev => !prev)}
+              >
+                {isCustomizeOpen ? 'CLOSE' : 'CUSTOMISE'}
+              </button>
+            </div>
+          )}
 
           {/* Custom Size Input Box when Custom Size is chosen */}
           {showSizing && isCustomSizeSelected && (
@@ -2442,7 +2538,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
           )}
 
           {/* Dedicated Choose Color Card between Customise Card and Sizing Guide */}
-          {selectedKarat !== 'Platinum' && (
+          {!isCoinProduct && selectedKarat !== 'Platinum' && (
             <div className="pdp-color-picker-card" style={{
               margin: '14px 0',
               padding: '12px 16px',
@@ -2717,57 +2813,97 @@ export default function ProductDetailPage({ product, products: propProducts = []
             );
           }
 
-          const grossWeight = (pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
-            ? pricingDetails.grossWeight
-            : (product.gross_weight || product.gold_weight || product.weight || 0);
-          const diamondW_g = isPlainGold ? 0 : ((product.diamond_weight || 0) * 0.2);
-          const gemstoneW_g = (product.gemstone_weight || 0) * 0.2;
-          const netWeight = (pricingDetails.goldWeight && pricingDetails.goldWeight > 0)
-            ? pricingDetails.goldWeight
-            : Math.max(0, grossWeight - diamondW_g - gemstoneW_g);
+          const grossWeight = isCoinProduct
+            ? coinWeight
+            : ((pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
+                ? pricingDetails.grossWeight
+                : (product.gross_weight || product.gold_weight || product.weight || 0));
+          const diamondW_g = (isPlainGold || isCoinProduct) ? 0 : ((product.diamond_weight || 0) * 0.2);
+          const gemstoneW_g = isCoinProduct ? 0 : ((product.gemstone_weight || 0) * 0.2);
+          const netWeight = isCoinProduct
+            ? coinWeight
+            : ((pricingDetails.goldWeight && pricingDetails.goldWeight > 0)
+                ? pricingDetails.goldWeight
+                : Math.max(0, grossWeight - diamondW_g - gemstoneW_g));
 
-          const displayKarat = selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : `${selectedMetal.split(' ')[0]} KT`);
-          const displayColor = selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : (selectedMetal.includes('Yellow') ? 'Yellow' : selectedMetal.includes('Rose') ? 'Rose' : 'White'));
+          const displayKarat = isCoinProduct
+            ? coinPurity
+            : (selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : `${selectedMetal.split(' ')[0]} KT`));
+          const displayColor = isCoinProduct
+            ? coinMetal
+            : (selectedMetal.toLowerCase().includes("platinum") ? "Platinum" : (selectedMetal.toLowerCase().includes("silver") ? "Silver" : (selectedMetal.includes('Yellow') ? 'Yellow' : selectedMetal.includes('Rose') ? 'Rose' : 'White')));
 
-          const metalMaterial = selectedKarat === 'Platinum'
-            ? 'Platinum'
-            : `${displayKarat} ${displayColor} Gold`;
+          const metalMaterial = isCoinProduct
+            ? `${coinPurity} Pure ${coinMetal}`
+            : (selectedKarat === 'Platinum'
+                ? 'Platinum'
+                : `${displayKarat} ${displayColor} Gold`);
 
-          const hasDiamond = !isPlainGold && Number(product.diamond_weight || 0) > 0;
-          const hasGem = Number(product.gemstone_weight || 0) > 0;
+          const hasDiamond = !isCoinProduct && !isPlainGold && Number(product.diamond_weight || 0) > 0;
+          const hasGem = !isCoinProduct && Number(product.gemstone_weight || 0) > 0;
 
           let matParts = [metalMaterial];
           if (hasDiamond) matParts.push('Diamond');
           if (hasSolitaire) matParts.push('Solitaire');
           if (hasGem) matParts.push('Gemstone');
 
-          const selectedMaterialDisplay = matParts.join(' & ');
+          const selectedMaterialDisplay = isCoinProduct
+            ? `${coinPurity} Pure ${coinMetal}`
+            : matParts.join(' & ');
 
           return (
             <div className="pdp-details-grid">
-              <div className="pdp-detail-group">
-                <div className="pdp-detail-group-title">
-                  <Sparkles size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Gold
+              {isCoinProduct ? (
+                <div className="pdp-detail-group">
+                  <div className="pdp-detail-group-title">
+                    <Sparkles size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> {coinMetal} Coin Details
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Metal Type</span>
+                    <span className="pdp-detail-val">{coinMetal}</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Purity</span>
+                    <span className="pdp-detail-val">{coinPurity}</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Gross Weight</span>
+                    <span className="pdp-detail-val">{coinWeight.toFixed(3)} g</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Net Metal Weight</span>
+                    <span className="pdp-detail-val">{coinWeight.toFixed(3)} g</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Packaging</span>
+                    <span className="pdp-detail-val">Tamper-Evident Certicard</span>
+                  </div>
                 </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Karat</span>
-                  <span className="pdp-detail-val">{displayKarat}</span>
+              ) : (
+                <div className="pdp-detail-group">
+                  <div className="pdp-detail-group-title">
+                    <Sparkles size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Gold
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Karat</span>
+                    <span className="pdp-detail-val">{displayKarat}</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Colour</span>
+                    <span className="pdp-detail-val">{displayColor}</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Gross Weight</span>
+                    <span className="pdp-detail-val">{grossWeight.toFixed(3)} g</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Net Weight</span>
+                    <span className="pdp-detail-val">{netWeight.toFixed(3)} g</span>
+                  </div>
                 </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Colour</span>
-                  <span className="pdp-detail-val">{displayColor}</span>
-                </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Gross Weight</span>
-                  <span className="pdp-detail-val">{grossWeight.toFixed(3)} g</span>
-                </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Net Weight</span>
-                  <span className="pdp-detail-val">{netWeight.toFixed(3)} g</span>
-                </div>
-              </div>
+              )}
 
-              {!isPlainGold && (Number(product.diamond_weight || 0) > 0 || product.diamond_quality) && (
+              {!isCoinProduct && !isPlainGold && (Number(product.diamond_weight || 0) > 0 || product.diamond_quality) && (
                 <div className="pdp-detail-group">
                   <div className="pdp-detail-group-title">
                     <Gem size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Diamond
@@ -2791,7 +2927,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
               )}
 
-              {hasSolitaire && (
+              {!isCoinProduct && hasSolitaire && (
                 <div className="pdp-detail-group">
                   <div className="pdp-detail-group-title">
                     <Sparkles size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Solitaire
@@ -2811,29 +2947,31 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
               )}
 
-              <div className="pdp-detail-group">
-                <div className="pdp-detail-group-title">
-                  <Ruler size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Dimensions
+              {!isCoinProduct && (
+                <div className="pdp-detail-group">
+                  <div className="pdp-detail-group-title">
+                    <Ruler size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Dimensions
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">
+                      {isChain ? 'Chain Length' : isMangalsutra ? 'Mangalsutra Length' : isTennisBracelet ? 'Bracelet Length' : isBangle ? 'Bangle Size' : 'Ring Size'}
+                    </span>
+                    <span className="pdp-detail-val">
+                      {isAanaSizeProduct
+                        ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")`
+                        : selectedSize}
+                    </span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Width</span>
+                    <span className="pdp-detail-val">{product.width ? `${product.width} mm` : 'N/A'}</span>
+                  </div>
+                  <div className="pdp-detail-row">
+                    <span className="pdp-detail-key">Height</span>
+                    <span className="pdp-detail-val">{product.height ? `${product.height} mm` : 'N/A'}</span>
+                  </div>
                 </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">
-                    {isChain ? 'Chain Length' : isMangalsutra ? 'Mangalsutra Length' : isTennisBracelet ? 'Bracelet Length' : isBangle ? 'Bangle Size' : 'Ring Size'}
-                  </span>
-                  <span className="pdp-detail-val">
-                    {isAanaSizeProduct
-                      ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")`
-                      : selectedSize}
-                  </span>
-                </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Width</span>
-                  <span className="pdp-detail-val">{product.width ? `${product.width} mm` : 'N/A'}</span>
-                </div>
-                <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Height</span>
-                  <span className="pdp-detail-val">{product.height ? `${product.height} mm` : 'N/A'}</span>
-                </div>
-              </div>
+              )}
 
               <div className="pdp-detail-group">
                 <div className="pdp-detail-group-title">
@@ -2841,7 +2979,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">SKU</span>
-                  <span className="pdp-detail-val">ZNR-{product.product_code || product._id || product.id}</span>
+                  <span className="pdp-detail-val">ZNR-{product.sku || product.product_code || product._id || product.id}</span>
                 </div>
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Material</span>
@@ -3135,40 +3273,42 @@ export default function ProductDetailPage({ product, products: propProducts = []
           return (
             <div className="pdp-details-grid animate-in fade-in duration-300">
               <div className="pdp-detail-group">
-                <div className="pdp-detail-group-title text-[#231535]">Weight Breakup</div>
+                <div className="pdp-detail-group-title text-[#231535]">
+                  {isCoinProduct ? `${coinMetal} Coin Weight Summary` : 'Weight Breakup'}
+                </div>
 
                 <div className="pdp-detail-row">
                   <span className="pdp-detail-key">Gross Weight</span>
-                  <span className="pdp-detail-val">{grossW.toFixed(3)} g</span>
+                  <span className="pdp-detail-val">{(isCoinProduct ? coinWeight : grossW).toFixed(3)} g</span>
                 </div>
 
                 <div className="pdp-detail-row">
-                  <span className="pdp-detail-key">Gold Weight</span>
-                  <span className="pdp-detail-val">{goldW.toFixed(3)} g</span>
+                  <span className="pdp-detail-key">{isCoinProduct ? `${coinMetal} Weight` : 'Gold Weight'}</span>
+                  <span className="pdp-detail-val">{(isCoinProduct ? coinWeight : goldW).toFixed(3)} g</span>
                 </div>
 
-                {diamondW_ct > 0 && (
+                {!isCoinProduct && diamondW_ct > 0 && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Diamond Weight</span>
                     <span className="pdp-detail-val">{diamondW_ct.toFixed(2)} ct</span>
                   </div>
                 )}
 
-                {solitaireW_ct > 0 && (
+                {!isCoinProduct && solitaireW_ct > 0 && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Solitaire Weight</span>
                     <span className="pdp-detail-val">{solitaireW_ct.toFixed(2)} ct</span>
                   </div>
                 )}
 
-                {gemstoneW_ct > 0 && (
+                {!isCoinProduct && gemstoneW_ct > 0 && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Gemstone Weight</span>
                     <span className="pdp-detail-val">{gemstoneW_ct.toFixed(2)} ct</span>
                   </div>
                 )}
 
-                {colorStoneW_ct > 0 && (
+                {!isCoinProduct && colorStoneW_ct > 0 && (
                   <div className="pdp-detail-row">
                     <span className="pdp-detail-key">Color Stone Weight</span>
                     <span className="pdp-detail-val">{colorStoneW_ct.toFixed(2)} ct</span>

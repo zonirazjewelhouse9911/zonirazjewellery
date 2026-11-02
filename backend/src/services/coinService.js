@@ -62,9 +62,15 @@ function formatCoinForCatalog(coin) {
     ? coin.images 
     : (primaryImage ? [primaryImage] : []);
 
-  const isSilver = String(coin.coin_type || '').toLowerCase() === 'silver' || String(coin.title || '').toLowerCase().includes('silver');
-  const coinTypeLabel = isSilver ? 'Silver' : (coin.coin_type ? coin.coin_type.charAt(0).toUpperCase() + coin.coin_type.slice(1) : 'Gold');
-  const categoryName = isSilver ? 'Silver Coin' : 'Gold Coins';
+  const rawType = String(coin.coin_type || '').toLowerCase();
+  const rawTitle = String(coin.title || '').toLowerCase();
+  const isSilver = rawType === 'silver' || rawTitle.includes('silver');
+  const isPlatinum = rawType === 'platinum' || rawTitle.includes('platinum');
+
+  const coinTypeLabel = isSilver ? 'Silver' : (isPlatinum ? 'Platinum' : (coin.coin_type ? coin.coin_type.charAt(0).toUpperCase() + coin.coin_type.slice(1) : 'Gold'));
+  const categoryName = isSilver ? 'Silver Coin' : (isPlatinum ? 'Platinum Coin' : 'Gold Coins');
+  const defaultPurity = isSilver ? '999 Fine Silver' : (isPlatinum ? '950 Platinum' : '24K (999)');
+  const coinPurity = coin.purity && String(coin.purity).trim() ? String(coin.purity).trim() : defaultPurity;
 
   return {
     _id: coin._id,
@@ -77,14 +83,15 @@ function formatCoinForCatalog(coin) {
     product_subcategory: `${coinTypeLabel} Coins`,
     subcategory: `${coinTypeLabel} Coins`,
     product_type: 'coin',
-    coin_type: isSilver ? 'silver' : (coin.coin_type || 'gold'),
-    metal_type: isSilver ? 'Silver' : 'Gold',
-    defaultMetal: isSilver ? 'Silver' : 'Yellow Gold',
-    tags: ['coin', 'coins', isSilver ? 'silver' : 'gold', isSilver ? 'silver coin' : 'gold coin', 'silver coins', 'gold coins'],
+    coin_type: isSilver ? 'silver' : (isPlatinum ? 'platinum' : (coin.coin_type || 'gold')),
+    metal_type: coinTypeLabel,
+    defaultMetal: coinTypeLabel,
+    material: `${coinPurity} Pure ${coinTypeLabel}`,
+    tags: ['coin', 'coins', coinTypeLabel.toLowerCase(), `${coinTypeLabel.toLowerCase()} coin`, `${coinTypeLabel.toLowerCase()} coins`],
     weight: coin.weight_grams,
     product_weight: coin.weight_grams,
-    gold_weight: coin.coin_type === 'gold' ? coin.weight_grams : 0,
-    purity: coin.purity,
+    gold_weight: (!isSilver && !isPlatinum) ? coin.weight_grams : 0,
+    purity: coinPurity,
     price: pricing.final_price, // (price + gst + makking) - discount
     originalPrice: pricing.gross_total, // (price + gst + makking)
     basePrice: coin.price,
