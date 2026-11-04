@@ -308,8 +308,9 @@ exports.productPricing = async (req, res) => {
         const total_diamond_weight = isPlainGold ? 0 : (product_data.diamond_weight || 0);
         real_diamond_weight = total_diamond_weight;
 
-        let base_gold_weight = product_data.gold_weight || product_data.gross_weight || product_data.weight || 0;
-        let gross_gold_weight = base_gold_weight;
+        let base_gross_weight = Number(product_data.product_weight || product_data.gross_weight || product_data.weight || product_data.gold_weight || 0);
+        let base_gold_weight = Number(product_data.gold_weight || product_data.product_weight || product_data.gross_weight || product_data.weight || 0);
+        let gross_gold_weight = base_gross_weight;
 
         // Convert size from Aana to Inches (1 Aana = 0.0625 Inch)
         const sizeInInches = size * 0.0625;
@@ -417,7 +418,12 @@ exports.productPricing = async (req, res) => {
         const solitaire_weight_g = (product_data.solitaires_weight || product_data.solitaire_weight || 0) * 0.2;
         const gemstone_weight_g = (product_data.gemstone_weight || 0) * 0.2;
         const color_stone_weight_g = (product_data.color_stone_weight || 0) * 0.2;
-        const net_gold_weight = Math.max(0, gross_gold_weight - diamond_weight_g - solitaire_weight_g - gemstone_weight_g - color_stone_weight_g);
+        const total_non_metal_g = diamond_weight_g + solitaire_weight_g + gemstone_weight_g + color_stone_weight_g;
+
+        let net_gold_weight = Math.max(0, gross_gold_weight - total_non_metal_g);
+        if (total_non_metal_g === 0 && base_gross_weight > 0 && base_gold_weight > 0 && base_gold_weight < base_gross_weight) {
+            net_gold_weight = Math.max(0, gross_gold_weight - (base_gross_weight - base_gold_weight));
+        }
         real_gold_weight = net_gold_weight;
 
         // Diamond rate calculation (only if not plain gold)

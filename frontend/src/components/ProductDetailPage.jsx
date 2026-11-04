@@ -561,7 +561,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
     subtotal: product?.price || 0,
     goldWeight: isCoinProduct ? (coinMetal === 'Silver' ? 0 : coinWeight) : (product?.gold_weight || 0),
     silverWeight: isCoinProduct && coinMetal === 'Silver' ? coinWeight : 0,
-    grossWeight: isCoinProduct ? coinWeight : (product?.weight || product?.product_weight || product?.gross_weight || 0),
+    grossWeight: isCoinProduct ? coinWeight : (product?.product_weight || product?.gross_weight || product?.weight || product?.gold_weight || 0),
     isSet: Boolean(product?.is_set || (Array.isArray(product?.set_items) && product.set_items.length > 0)),
     setItemsPricing: Array.isArray(product?.set_items) ? product.set_items : []
   });
@@ -632,17 +632,23 @@ export default function ProductDetailPage({ product, products: propProducts = []
   useEffect(() => {
     if (isCoinProduct) return;
     let active = true;
-    const defaultSize = isChain
-      ? '320'
-      : isTennisBracelet
+    const defaultSize = !showSizing
+      ? selectedSize
+      : isChain
         ? '320'
-        : isMangalsutra
-          ? '288'
-          : isBangle
-            ? (product?.banglesize_id && product?.banglesize_id !== '0'
-                ? product.banglesize_id
-                : (activeSizes.includes('2.6') ? '2.6' : (activeSizes[0] || '2.6')))
-            : 12;
+        : isTennisBracelet
+          ? '320'
+          : isMangalsutra
+            ? '288'
+            : isBangle
+              ? (product?.banglesize_id && product?.banglesize_id !== '0'
+                  ? product.banglesize_id
+                  : (activeSizes.includes('2.6') ? '2.6' : (activeSizes[0] || '2.6')))
+              : isRing
+                ? (product?.size_id && String(product.size_id).trim() && product.size_id !== '0'
+                    ? String(product.size_id).split(',')[0].trim()
+                    : (activeSizes[0] || '12'))
+                : 'Standard';
     const defaultKarat = defaultKaratChoice;
     const defaultColor = availableColors[0]?.id || 'Yellow';
     const defaultDiamond = diamondOptions[0] || (isPlainGold ? '' : 'IJ-SI');
@@ -679,7 +685,10 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   makingCharges: makingCharges,
                   gst: gst,
                   subtotal: subtotal,
-                  goldWeight: matched.gold_weight !== undefined ? matched.gold_weight : (product?.gold_weight || 0)
+                  goldWeight: matched.gold_weight !== undefined ? matched.gold_weight : (product?.gold_weight || 0),
+                  grossWeight: matched.gross_weight || matched.product_weight || product?.product_weight || product?.gross_weight || product?.weight || product?.gold_weight || 0,
+                  isSet: matched.is_set ?? (product?.is_set || (Array.isArray(product?.set_items) && product.set_items.length > 0)),
+                  setItemsPricing: matched.set_items_pricing || (Array.isArray(product?.set_items) ? product.set_items : [])
                 });
               }
             }
@@ -784,7 +793,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
             makingCharges: makingCharges,
             gst: gst,
             subtotal: subtotal,
-            grossWeight: data.gross_weight || data.gold_weight || product?.gross_weight || product?.gold_weight || 0,
+            grossWeight: data.gross_weight || product?.product_weight || product?.gross_weight || product?.weight || data.gold_weight || product?.gold_weight || 0,
             goldWeight: data.gold_weight || data.net_gold_weight || product?.gold_weight || 0,
             isSet: data.is_set ?? (product?.is_set || (Array.isArray(product?.set_items) && product.set_items.length > 0)),
             setItemsPricing: data.set_items_pricing || (Array.isArray(product?.set_items) ? product.set_items : [])
@@ -2870,18 +2879,36 @@ export default function ProductDetailPage({ product, products: propProducts = []
             );
           }
 
+          const rawGross = Number(product.product_weight || product.gross_weight || product.weight || product.gold_weight || 0);
+          const rawNetGold = Number(product.gold_weight || 0);
+
+          const diamondW_g = (isPlainGold || isCoinProduct) ? 0 : ((product.diamond_weight || 0) * 0.2);
+          const solitaireW_g = isCoinProduct ? 0 : (((product.solitaires_weight || product.solitaire_weight || 0)) * 0.2);
+          const gemstoneW_g = isCoinProduct ? 0 : ((product.gemstone_weight || 0) * 0.2);
+          const colorStoneW_g = isCoinProduct ? 0 : ((product.color_stone_weight || 0) * 0.2);
+          const nonMetalW_g = diamondW_g + solitaireW_g + gemstoneW_g + colorStoneW_g;
+
           const grossWeight = isCoinProduct
             ? coinWeight
             : ((pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
                 ? pricingDetails.grossWeight
-                : (product.gross_weight || product.gold_weight || product.weight || 0));
-          const diamondW_g = (isPlainGold || isCoinProduct) ? 0 : ((product.diamond_weight || 0) * 0.2);
-          const gemstoneW_g = isCoinProduct ? 0 : ((product.gemstone_weight || 0) * 0.2);
-          const netWeight = isCoinProduct
+                : rawGross);
+
+          let netWeight = isCoinProduct
             ? coinWeight
-            : ((pricingDetails.goldWeight && pricingDetails.goldWeight > 0)
+            : ((pricingDetails.goldWeight && pricingDetails.goldWeight > 0 && Math.abs(pricingDetails.goldWeight - grossWeight) > 0.001)
                 ? pricingDetails.goldWeight
-                : Math.max(0, grossWeight - diamondW_g - gemstoneW_g));
+                : (rawNetGold > 0 && Math.abs(rawNetGold - rawGross) > 0.001)
+                    ? rawNetGold
+                    : Math.max(0, grossWeight - nonMetalW_g));
+
+          if (!isCoinProduct && grossWeight > 0) {
+            if (nonMetalW_g > 0 && Math.abs(grossWeight - netWeight) < 0.001) {
+              netWeight = Math.max(0, grossWeight - nonMetalW_g);
+            } else if (rawNetGold > 0 && rawGross > 0 && rawGross > rawNetGold && Math.abs(grossWeight - netWeight) < 0.001) {
+              netWeight = grossWeight - (rawGross - rawNetGold);
+            }
+          }
 
           const displayKarat = isCoinProduct
             ? coinPurity
@@ -3333,12 +3360,31 @@ export default function ProductDetailPage({ product, products: propProducts = []
           const colorStoneW_ct = product.color_stone_weight || 0;
           const colorStoneW_g = colorStoneW_ct * 0.2;
 
-          const grossW = (pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
-            ? pricingDetails.grossWeight
-            : (product.gross_weight || product.gold_weight || product.weight || 0);
-          const goldW = (pricingDetails.goldWeight && pricingDetails.goldWeight > 0)
-            ? pricingDetails.goldWeight
-            : (isPlainGold ? grossW : Math.max(0, grossW - diamondW_g - solitaireW_g - gemstoneW_g - colorStoneW_g));
+          const rawGrossW = Number(product.product_weight || product.gross_weight || product.weight || product.gold_weight || 0);
+          const rawNetGoldW = Number(product.gold_weight || 0);
+          const nonMetalW_g2 = diamondW_g + solitaireW_g + gemstoneW_g + colorStoneW_g;
+
+          const grossW = isCoinProduct
+            ? coinWeight
+            : ((pricingDetails.grossWeight && pricingDetails.grossWeight > 0)
+                ? pricingDetails.grossWeight
+                : rawGrossW);
+
+          let goldW = isCoinProduct
+            ? coinWeight
+            : ((pricingDetails.goldWeight && pricingDetails.goldWeight > 0 && Math.abs(pricingDetails.goldWeight - grossW) > 0.001)
+                ? pricingDetails.goldWeight
+                : (rawNetGoldW > 0 && Math.abs(rawNetGoldW - rawGrossW) > 0.001)
+                    ? rawNetGoldW
+                    : (isPlainGold ? (rawNetGoldW > 0 ? rawNetGoldW : grossW) : Math.max(0, grossW - nonMetalW_g2)));
+
+          if (!isCoinProduct && grossW > 0) {
+            if (nonMetalW_g2 > 0 && Math.abs(grossW - goldW) < 0.001) {
+              goldW = Math.max(0, grossW - nonMetalW_g2);
+            } else if (rawNetGoldW > 0 && rawGrossW > 0 && rawGrossW > rawNetGoldW && Math.abs(grossW - goldW) < 0.001) {
+              goldW = grossW - (rawGrossW - rawNetGoldW);
+            }
+          }
           const netW = goldW;
 
           return (

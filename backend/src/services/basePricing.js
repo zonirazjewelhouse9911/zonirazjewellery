@@ -251,7 +251,8 @@ exports.productBasePricing = async (req, res) => {
                     making_charges: Math.round(making_charges_amount),
                     gst_amount: gst_amount,
                     base_price_withGST: Math.round(item_base_price_withGST),
-                    gold_weight: net_gold_weight
+                    gold_weight: net_gold_weight,
+                    gross_weight: Number(item.product_weight || item.gross_weight || item.weight || raw_gold_weight)
                 };
             } else {
                 const gold_rate_22kt = Math.floor(current_price.gold_rate_24k * 91.6 / 100);
@@ -278,7 +279,8 @@ exports.productBasePricing = async (req, res) => {
                     making_charges: Math.round(making_charges_amount),
                     gst_amount: gst_amount,
                     base_price_withGST: Math.round(item_base_price_withGST),
-                    gold_weight: effectiveGoldWeight
+                    gold_weight: Number(item.gold_weight || effectiveGoldWeight),
+                    gross_weight: Number(item.product_weight || item.gross_weight || item.weight || effectiveGoldWeight)
                 };
             }
         });
