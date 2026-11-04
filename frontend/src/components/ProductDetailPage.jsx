@@ -74,8 +74,13 @@ export default function ProductDetailPage({ product, products: propProducts = []
     (catStr.includes('necklace') || nameStr.includes('necklace') || product?.category_id === '10') &&
     !catStr.includes('chain') && !nameStr.includes('chain');
 
-  const isSet = 
-    isSetProduct || catStr.includes('set') || nameStr.includes('set') || product?.category_id === '11';
+  const isSet = Boolean(
+    product?.is_set ||
+    (Array.isArray(product?.set_items) && product.set_items.length > 0) ||
+    catStr.includes('set') ||
+    nameStr.includes('set') ||
+    product?.category_id === '11'
+  );
 
   const isCoinProduct = useMemo(() => {
     return Boolean(
