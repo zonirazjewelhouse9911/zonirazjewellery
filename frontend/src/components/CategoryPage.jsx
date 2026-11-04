@@ -72,8 +72,8 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
     "Solitaires": ['Solitaire', 'Ring', 'Set'],
     "Mangalsutras": ['Mangalsutra', 'Earrings', 'Combo'],
     "Necklaces & Pendants": ['Necklace', 'Pendant', 'Choker'],
-    "Necklaces": ['Necklace', 'Pendant', 'Choker'],
-    "Pendants": ['Pendant', 'Necklace', 'Choker'],
+    "Necklaces": ['Necklace', 'Choker', 'Collar', 'Haar', 'Layered'],
+    "Pendants": ['Pendant', 'Solitaire', 'Locket', 'Alphabet'],
     "Collections": ['Set', 'Pendant', 'Iconics']
   };
 
@@ -610,24 +610,47 @@ export default function CategoryPage({ category, wishlist = {}, setWishlist, car
                                          prodSubClean.includes('bracelet') ||
                                          prodSubClean.includes('kada');
         if (!isBanglesOrBraceletsProd) return false;
-      } else if (pageCatClean.includes('necklace') || pageCatClean.includes('pendant')) {
-        if (pageCatClean.includes('necklacespendants') || pageCatClean.includes('necklacesandpendants')) {
-          const isNecklacesOrPendantsProd = prodCatClean.includes('necklace') || prodCatClean.includes('pendant') || prodTitleClean.includes('necklace') || prodTitleClean.includes('pendant');
-          if (!isNecklacesOrPendantsProd) return false;
-        } else if (pageCatClean.includes('necklace')) {
-          const isNecklaceProd = prodCatClean.includes('necklace') || prodTitleClean.includes('necklace');
+      } else if (pageCatClean.includes('necklace') || pageCatClean.includes('neckless') || pageCatClean.includes('pendant')) {
+        const isCombinedPage = pageCatClean.includes('necklacespendants') || pageCatClean.includes('necklacesandpendants');
+
+        // Check if item is definitively a Pendant:
+        const isPendantProd = prodCatClean.includes('pendant') || 
+                              prodSubClean.includes('pendant') || 
+                              String(product.category_id || '').toLowerCase() === 'pendant' ||
+                              String(product.category_id || '').toLowerCase() === 'pendants' ||
+                              String(product.category_id || '') === '2' ||
+                              prodTitleClean.includes('pendant');
+
+        // Check if item is definitively a Necklace:
+        const isNecklaceProd = prodCatClean.includes('necklace') || 
+                               prodCatClean.includes('neckless') || 
+                               prodCatClean.includes('choker') || 
+                               prodCatClean.includes('haar') || 
+                               String(product.category_id || '').toLowerCase() === 'necklace' ||
+                               String(product.category_id || '').toLowerCase() === 'necklaces' ||
+                               String(product.category_id || '') === '10' ||
+                               (!isPendantProd && (prodTitleClean.includes('necklace') || prodTitleClean.includes('neckless') || prodTitleClean.includes('choker') || prodTitleClean.includes('haar')));
+
+        if (isCombinedPage) {
+          if (!isNecklaceProd && !isPendantProd) return false;
+        } else if (pageCatClean.includes('necklace') || pageCatClean.includes('neckless')) {
+          // STRICT: On Necklace page, Pendants must NEVER be displayed
+          if (isPendantProd && !prodCatClean.includes('necklace') && !prodCatClean.includes('neckless')) return false;
+          if ((prodCatClean === 'chain' || prodCatClean === 'chains') && !prodCatClean.includes('necklace')) return false;
           if (!isNecklaceProd) return false;
         } else if (pageCatClean.includes('pendant')) {
-          const isPendantProd = prodCatClean.includes('pendant') || prodTitleClean.includes('pendant');
+          // STRICT: On Pendant page, pure Necklaces must NEVER be displayed
+          if ((prodCatClean.includes('necklace') || prodCatClean.includes('neckless')) && !prodCatClean.includes('pendant')) return false;
           if (!isPendantProd) return false;
         }
       } else if (pageCatClean.includes('nose')) {
-        const isNosePinProd = prodCatClean.includes('nose') || prodTitleClean.includes('nose');
+        const isNosePinProd = prodCatClean.includes('nose') || prodTitleClean.includes('nose') || prodCatClean.includes('nath') || prodTitleClean.includes('nath');
         if (!isNosePinProd) return false;
       } else if (pageCatClean.includes('mangal')) {
         const isMangalProd = prodCatClean.includes('mangal') || prodTitleClean.includes('mangal');
         if (!isMangalProd) return false;
       } else if (pageCatClean.includes('chain')) {
+        if (prodCatClean.includes('pendant') || (prodTitleClean.includes('pendant') && !prodCatClean.includes('chain'))) return false;
         const isChainProd = prodCatClean.includes('chain') || prodTitleClean.includes('chain');
         if (!isChainProd) return false;
       } else if (pageCatClean.includes('set')) {

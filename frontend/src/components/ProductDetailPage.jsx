@@ -62,8 +62,11 @@ export default function ProductDetailPage({ product, products: propProducts = []
     product?.category_id === '6';
 
   const isPendant = 
-    catStr.includes('pendant') || nameStr.includes('pendant') ||
-    product?.category_id === '2';
+    catStr.includes('pendant') ||
+    product?.category_id === '2' ||
+    String(product?.category_id || '').toLowerCase() === 'pendant' ||
+    String(product?.category_id || '').toLowerCase() === 'pendants' ||
+    (!catStr.includes('necklace') && !catStr.includes('neckless') && nameStr.includes('pendant'));
 
   const isNosePin = 
     catStr.includes('nose') || nameStr.includes('nose') ||
@@ -71,7 +74,8 @@ export default function ProductDetailPage({ product, products: propProducts = []
     product?.category_id === '3';
 
   const isNecklace = 
-    (catStr.includes('necklace') || nameStr.includes('necklace') || product?.category_id === '10') &&
+    !isPendant &&
+    (catStr.includes('necklace') || catStr.includes('neckless') || nameStr.includes('necklace') || nameStr.includes('neckless') || product?.category_id === '10' || String(product?.category_id || '').toLowerCase() === 'necklace' || String(product?.category_id || '').toLowerCase() === 'necklaces') &&
     !catStr.includes('chain') && !nameStr.includes('chain');
 
   const isSet = Boolean(
