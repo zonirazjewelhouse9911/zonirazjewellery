@@ -49,12 +49,33 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const { formatPrice } = useCurrency();
   const catStr = (product?.product_category || product?.category || product?.category_id || '').toLowerCase();
   const nameStr = (product?.product_name || product?.name || '').toLowerCase();
-  const isEarring = catStr.includes('earring') || nameStr.includes('earring');
-  const isRing = !isEarring && !catStr.includes('nose') && !nameStr.includes('nose') && (catStr.includes('ring') || nameStr.includes('ring'));
-  const isTennisBracelet = !isEarring && (catStr.includes('bracelet') || nameStr.includes('bracelet'));
-  const isBangle = !isEarring && !isRing && !isTennisBracelet && (catStr.includes('bangle') || nameStr.includes('bangle'));
-  const isChain = !isEarring && (catStr === 'chains' || catStr === 'chain' || nameStr.includes('chain'));
-  const isMangalsutra = !isEarring && (catStr === 'mangalsutra' || catStr === 'mangalsutras' || nameStr.includes('mangalsutra'));
+  
+  const isEarring = 
+    catStr.includes('earring') || nameStr.includes('earring') ||
+    catStr.includes('tops') || nameStr.includes('tops') ||
+    catStr.includes('stud') || nameStr.includes('stud') ||
+    catStr.includes('jhumk') || nameStr.includes('jhumk') ||
+    catStr.includes('bali') || nameStr.includes('bali') ||
+    catStr.includes('drop') || nameStr.includes('drop') ||
+    catStr.includes('hoop') || nameStr.includes('hoop') ||
+    catStr.includes('sui dhaga') || nameStr.includes('sui dhaga') ||
+    product?.category_id === '6';
+
+  const isPendant = 
+    catStr.includes('pendant') || nameStr.includes('pendant') ||
+    product?.category_id === '2';
+
+  const isNosePin = 
+    catStr.includes('nose') || nameStr.includes('nose') ||
+    catStr.includes('nath') || nameStr.includes('nath') ||
+    product?.category_id === '3';
+
+  const isNecklace = 
+    (catStr.includes('necklace') || nameStr.includes('necklace') || product?.category_id === '10') &&
+    !catStr.includes('chain') && !nameStr.includes('chain');
+
+  const isSet = 
+    isSetProduct || catStr.includes('set') || nameStr.includes('set') || product?.category_id === '11';
 
   const isCoinProduct = useMemo(() => {
     return Boolean(
@@ -66,6 +87,26 @@ export default function ProductDetailPage({ product, products: propProducts = []
       (Array.isArray(product?.tags) && product.tags.some(t => String(t).toLowerCase().includes('coin')))
     );
   }, [product, catStr, nameStr]);
+
+  const isRing = !isEarring && !isPendant && !isNosePin && !isNecklace && !isCoinProduct && !isSet &&
+    (catStr === 'rings' || catStr === 'ring' || catStr.includes('rings') ||
+     (catStr.includes('ring') && !catStr.includes('earring')) ||
+     nameStr.includes('ring') || product?.category_id === '1');
+
+  const isBangle = !isEarring && !isRing && !isSet && !isCoinProduct &&
+    (catStr.includes('bangle') || nameStr.includes('bangle') || product?.category_id === '4' || product?.category_id === '5');
+
+  const isChain = !isEarring && !isRing && !isSet && !isCoinProduct &&
+    (catStr === 'chains' || catStr === 'chain' || nameStr.includes('chain') || (catStr.includes('chain') && !catStr.includes('pendant')));
+
+  const isMangalsutra = !isEarring && !isRing && !isSet && !isCoinProduct &&
+    (catStr.includes('mangalsutra') || nameStr.includes('mangalsutra') || product?.category_id === '7');
+
+  const isTennisBracelet = !isEarring && !isRing && !isBangle && !isSet && !isCoinProduct &&
+    (catStr.includes('bracelet') || nameStr.includes('bracelet') || product?.category_id === '8' || product?.category_id === '9');
+
+  const isAanaSizeProduct = !isCoinProduct && (isChain || isMangalsutra || isTennisBracelet);
+  const showSizing = !isCoinProduct && (isRing || isBangle || isAanaSizeProduct || Boolean(product?.size_id && String(product?.size_id).trim() && product?.size_id !== '0'));
 
   const coinMetal = useMemo(() => {
     if (!isCoinProduct) return 'Gold';
@@ -105,9 +146,6 @@ export default function ProductDetailPage({ product, products: propProducts = []
     if (!isCoinProduct) return 0;
     return Number(product?.weight_grams || product?.weight || product?.product_weight || product?.gold_weight || 10);
   }, [isCoinProduct, product]);
-
-  const isAanaSizeProduct = !isCoinProduct && (isChain || isMangalsutra || isTennisBracelet);
-  const showSizing = !isCoinProduct && (isRing || isBangle || isAanaSizeProduct);
 
   const isPlainGold = useMemo(() => {
     if (isCoinProduct) return true;
@@ -219,7 +257,13 @@ export default function ProductDetailPage({ product, products: propProducts = []
             ? (product?.banglesize_id && product?.banglesize_id !== '0'
                 ? product.banglesize_id
                 : (activeSizes.includes('2.6') ? '2.6' : (activeSizes[0] || '2.6')))
-            : 12
+            : isRing
+              ? (product?.size_id && String(product.size_id).trim() && product.size_id !== '0'
+                  ? String(product.size_id).split(',')[0].trim()
+                  : (activeSizes[0] || '12'))
+              : (product?.size_id && String(product.size_id).trim() && product.size_id !== '0'
+                  ? String(product.size_id).split(',')[0].trim()
+                  : 'Standard')
   );
   const [isCustomSizeSelected, setIsCustomSizeSelected] = useState(false);
   const [customSizeInput, setCustomSizeInput] = useState('');
@@ -941,7 +985,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
 
   const handleAddToCart = () => {
     const finalMetal = isCoinProduct ? `${coinPurity} ${coinMetal}` : selectedMetal;
-    const finalSize = isCoinProduct ? `${coinWeight}g` : selectedSize;
+    const finalSize = isCoinProduct ? `${coinWeight}g` : (showSizing ? selectedSize : 'Standard');
     addToCart(product, 1, finalMetal, finalSize, (isPlainGold || isCoinProduct) ? null : selectedDiamond, {
       grossWeight: isCoinProduct ? coinWeight : (pricingDetails?.grossWeight || product?.gross_weight || product?.gold_weight || 0),
       goldWeight: isCoinProduct ? (coinMetal === 'Silver' ? 0 : coinWeight) : (pricingDetails?.goldWeight || product?.gold_weight || 0)
@@ -2499,14 +2543,16 @@ export default function ProductDetailPage({ product, products: propProducts = []
                   <div className="pdp-customise-preview-stone" style={{ background: currentMetalAccent }} />
                 </div>
                 <div className="pdp-customise-summary">
-                  <div>
-                    <strong>{isAanaSizeProduct ? 'Length' : 'Size'}</strong>
-                    <span>
-                      {isAanaSizeProduct
-                        ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")`
-                        : selectedSize}
-                    </span>
-                  </div>
+                  {showSizing && (
+                    <div>
+                      <strong>{isAanaSizeProduct ? 'Length' : isBangle ? 'Bangle Size' : 'Ring Size'}</strong>
+                      <span>
+                        {isAanaSizeProduct
+                          ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")`
+                          : selectedSize}
+                      </span>
+                    </div>
+                  )}
                   <div><strong>Purity</strong><span>{selectedKarat}</span></div>
                   {selectedKarat !== 'Platinum' && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -2949,29 +2995,35 @@ export default function ProductDetailPage({ product, products: propProducts = []
                 </div>
               )}
 
-              {!isCoinProduct && (
+              {!isCoinProduct && (showSizing || Boolean(product.width) || Boolean(product.height)) && (
                 <div className="pdp-detail-group">
                   <div className="pdp-detail-group-title">
                     <Ruler size={14} style={{ color: '#A98E73', marginRight: '6px' }} /> Dimensions
                   </div>
-                  <div className="pdp-detail-row">
-                    <span className="pdp-detail-key">
-                      {isChain ? 'Chain Length' : isMangalsutra ? 'Mangalsutra Length' : isTennisBracelet ? 'Bracelet Length' : isBangle ? 'Bangle Size' : 'Ring Size'}
-                    </span>
-                    <span className="pdp-detail-val">
-                      {isAanaSizeProduct
-                        ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")`
-                        : selectedSize}
-                    </span>
-                  </div>
-                  <div className="pdp-detail-row">
-                    <span className="pdp-detail-key">Width</span>
-                    <span className="pdp-detail-val">{product.width ? `${product.width} mm` : 'N/A'}</span>
-                  </div>
-                  <div className="pdp-detail-row">
-                    <span className="pdp-detail-key">Height</span>
-                    <span className="pdp-detail-val">{product.height ? `${product.height} mm` : 'N/A'}</span>
-                  </div>
+                  {showSizing && (
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">
+                        {isChain ? 'Chain Length' : isMangalsutra ? 'Mangalsutra Length' : isTennisBracelet ? 'Bracelet Length' : isBangle ? 'Bangle Size' : 'Ring Size'}
+                      </span>
+                      <span className="pdp-detail-val">
+                        {isAanaSizeProduct
+                          ? `${selectedSize} Aana (${(Number(selectedSize) * 0.0625).toFixed(2).replace(/\.00$/, '')}")`
+                          : selectedSize}
+                      </span>
+                    </div>
+                  )}
+                  {Boolean(product.width) && (
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Width</span>
+                      <span className="pdp-detail-val">{product.width} mm</span>
+                    </div>
+                  )}
+                  {Boolean(product.height) && (
+                    <div className="pdp-detail-row">
+                      <span className="pdp-detail-key">Height</span>
+                      <span className="pdp-detail-val">{product.height} mm</span>
+                    </div>
+                  )}
                 </div>
               )}
 
