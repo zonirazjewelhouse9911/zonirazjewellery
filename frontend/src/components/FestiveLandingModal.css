@@ -1,9 +1,11 @@
 /* ==========================================================================
-   ZONIRAZ 100% SEAMLESS FULL-SCREEN FESTIVE LANDING EXPERIENCE
-   Continuous Edge-to-Edge Pure Canvas (Zero Seams, Zero Cuts, Zero Overlap)
+   ZONIRAZ 100% SEAMLESS FESTIVE DIWALI LANDING ANIMATION
+   - Left jewellery glides in from Left side
+   - Right jewellery glides in from Right side
+   - Zero Buttons, Disappears Automatically after 3.8s
    ========================================================================== */
 
-/* Main Full-Screen Container */
+/* Main Full-Screen Canvas */
 .zoniraz-fullpage-festive-landing {
   position: fixed;
   inset: 0;
@@ -15,14 +17,14 @@
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 24px 24px 28px 24px;
+  overflow: hidden;
+  padding: 28px 24px 30px 24px;
   box-sizing: border-box;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
-  transform: translateY(0);
+  cursor: pointer; /* Allows clicking anywhere to enter immediately */
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(1);
 }
 
 .zoniraz-fullpage-festive-landing.active {
@@ -32,7 +34,7 @@
 
 .zoniraz-fullpage-festive-landing.exiting {
   opacity: 0;
-  transform: translateY(-24px);
+  transform: scale(1.035);
   pointer-events: none;
 }
 
@@ -79,15 +81,16 @@
   max-width: 1200px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0 12px;
+  justify-content: center;
+  text-align: center;
+  animation: fadeInTop 1s ease-out forwards;
 }
 
 .zoniraz-fullpage-logo-group {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 2px;
+  align-items: center;
+  gap: 3px;
 }
 
 .zoniraz-fullpage-logo {
@@ -100,42 +103,19 @@
 .zoniraz-fullpage-hallmark {
   font-family: 'Inter', sans-serif;
   font-size: 10px;
-  letter-spacing: 2.4px;
+  letter-spacing: 2.5px;
   text-transform: uppercase;
   color: #f7e6b5;
   font-weight: 500;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
 }
 
-.zoniraz-fullpage-skip-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-family: 'Inter', sans-serif;
-  font-size: 12.5px;
-  font-weight: 500;
-  letter-spacing: 1.2px;
-  text-transform: uppercase;
-  color: #f7e6b5;
-  background: rgba(30, 4, 10, 0.45);
-  border: 1px solid rgba(247, 230, 181, 0.4);
-  padding: 8px 18px;
-  border-radius: 999px;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+@keyframes fadeInTop {
+  0% { opacity: 0; transform: translateY(-12px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
-.zoniraz-fullpage-skip-btn:hover {
-  background: rgba(247, 230, 181, 0.25);
-  border-color: #ffd700;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 215, 0, 0.25);
-}
-
-/* Main Content Area */
+/* Main Central Content Area */
 .zoniraz-fullpage-content {
   position: relative;
   z-index: 5;
@@ -146,10 +126,9 @@
   align-items: center;
   text-align: center;
   margin: auto 0;
-  padding: 8px 0;
 }
 
-/* Festive Reminder Headline */
+/* Headline Reminder */
 .zoniraz-fullpage-reminder-pre {
   font-family: 'Inter', sans-serif;
   font-size: clamp(13px, 1.6vw, 16px);
@@ -159,6 +138,7 @@
   color: #f5dfcb;
   margin-bottom: 4px;
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.6);
+  animation: fadeInScale 1s ease-out 0.2s both;
 }
 
 .zoniraz-fullpage-reminder-main {
@@ -167,8 +147,9 @@
   font-weight: 500;
   color: #ffffff;
   line-height: 1.35;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
   text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+  animation: fadeInScale 1s ease-out 0.35s both;
 }
 
 .zoniraz-fullpage-reminder-you {
@@ -180,72 +161,149 @@
   filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.45));
 }
 
-/* Central Jewellery Diya Piece Stage */
+@keyframes fadeInScale {
+  0% { opacity: 0; transform: scale(0.96) translateY(8px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ==========================================================================
+   CENTRAL STAGE: ANIMATED SLIDING JEWELLERY PIECES
+   ========================================================================== */
 .zoniraz-landing-jewel-stage {
   position: relative;
   width: 100%;
-  max-width: 580px;
-  aspect-ratio: 736 / 400;
+  max-width: 600px;
+  aspect-ratio: 736 / 380;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: visible;
 }
 
-.zoniraz-landing-jewel-img {
+/* Background Floor Rangoli Mandala */
+.zoniraz-floor-rangoli-bg {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: contain;
   pointer-events: none;
-  filter: drop-shadow(0 15px 35px rgba(0, 0, 0, 0.7));
+  opacity: 0.85;
+  animation: rangoliBreathe 3s ease-in-out infinite alternate;
 }
 
-/* Pinpoint Live Animated Diya Flames */
-/* Flame 1 (Left Wick): left=45.34%, top=23.65% */
-.zoniraz-jewel-flame-1 {
+@keyframes rangoliBreathe {
+  0% { transform: scale(0.98); opacity: 0.75; }
+  100% { transform: scale(1.02); opacity: 0.95; }
+}
+
+/* 1. LEFT JEWELLERY PIECE (Slides in from Left Side) */
+.zoniraz-earring-left-wrapper {
   position: absolute;
-  left: 45.34%;
-  top: 23.65%;
+  left: 13.04%;
+  top: 9%;
+  width: 37.23%;
+  pointer-events: none;
+  animation: slideJewelleryFromLeft 1.25s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes slideJewelleryFromLeft {
+  0% {
+    transform: translateX(-160%) translateY(-20px) rotate(-8deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+/* 2. RIGHT JEWELLERY PIECE (Slides in from Right Side) */
+.zoniraz-earring-right-wrapper {
+  position: absolute;
+  left: 49.59%;
+  top: 21.5%;
+  width: 36.68%;
+  pointer-events: none;
+  animation: slideJewelleryFromRight 1.25s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+}
+
+@keyframes slideJewelleryFromRight {
+  0% {
+    transform: translateX(160%) translateY(20px) rotate(8deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.zoniraz-earring-piece-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.75));
+}
+
+/* ==========================================================================
+   LIVE DIYA FLAMES ON THE WICKS
+   ========================================================================== */
+
+/* Left Flame Wick: left=86.50%, top=30.69% in tight left earring */
+.zoniraz-wick-flame-left {
+  position: absolute;
+  left: 86.5%;
+  top: 30.7%;
   transform: translate(-50%, -85%);
   pointer-events: none;
   z-index: 8;
+  animation: flameIgnite 1.4s ease-out forwards;
 }
 
-/* Flame 2 (Right Wick): left=54.10%, top=36.59% */
-.zoniraz-jewel-flame-2 {
+/* Right Flame Wick: left=12.22%, top=31.75% in tight right earring */
+.zoniraz-wick-flame-right {
   position: absolute;
-  left: 54.10%;
-  top: 36.59%;
+  left: 12.2%;
+  top: 31.8%;
   transform: translate(-50%, -85%);
   pointer-events: none;
   z-index: 8;
+  animation: flameIgnite 1.4s ease-out 0.1s forwards;
 }
 
-/* Pulsing Amber Light Aura */
-.zoniraz-jewel-flame-aura {
+@keyframes flameIgnite {
+  0% { transform: translate(-50%, -85%) scale(0); opacity: 0; }
+  60% { transform: translate(-50%, -85%) scale(0.4); opacity: 0.5; }
+  100% { transform: translate(-50%, -85%) scale(1); opacity: 1; }
+}
+
+/* Flame Light Aura */
+.zoniraz-wick-flame-aura {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 85px;
-  height: 85px;
+  width: 80px;
+  height: 80px;
   transform: translate(-50%, -50%);
   background: radial-gradient(circle, rgba(255, 185, 50, 0.65) 0%, rgba(255, 110, 25, 0.28) 45%, transparent 75%);
   border-radius: 50%;
-  animation: jewelFlamePulse 2.2s ease-in-out infinite alternate;
+  animation: diyaFlamePulse 2.2s ease-in-out infinite alternate;
 }
 
-.zoniraz-jewel-flame-2 .zoniraz-jewel-flame-aura {
+.zoniraz-wick-flame-right .zoniraz-wick-flame-aura {
   animation-delay: -1.1s;
 }
 
-@keyframes jewelFlamePulse {
+@keyframes diyaFlamePulse {
   0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.55; }
   50% { transform: translate(-50%, -50%) scale(1.18); opacity: 0.95; }
   100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.65; }
 }
 
-/* Organic Flickering 3D Flame Shape */
-.zoniraz-jewel-flame {
+/* Organic 3D Flickering Flame */
+.zoniraz-wick-flame-body {
   position: relative;
   width: 14px;
   height: 28px;
@@ -254,16 +312,16 @@
   box-shadow: 
     0 0 16px 5px rgba(255, 145, 20, 0.75),
     0 0 32px 10px rgba(255, 80, 0, 0.4);
-  animation: jewelOrganicFlicker 1.8s ease-in-out infinite alternate;
+  animation: diyaOrganicFlicker 1.8s ease-in-out infinite alternate;
   transform-origin: center bottom;
 }
 
-.zoniraz-jewel-flame-2 .zoniraz-jewel-flame {
-  animation: jewelOrganicFlicker2 1.6s ease-in-out infinite alternate;
+.zoniraz-wick-flame-right .zoniraz-wick-flame-body {
+  animation: diyaOrganicFlicker2 1.6s ease-in-out infinite alternate;
   animation-delay: -0.5s;
 }
 
-@keyframes jewelOrganicFlicker {
+@keyframes diyaOrganicFlicker {
   0% { transform: scale(0.95, 0.96) rotate(-1.5deg); filter: brightness(1); }
   25% { transform: scale(1.06, 1.09) rotate(1deg); filter: brightness(1.15); }
   50% { transform: scale(0.92, 1.02) rotate(-2deg); filter: brightness(0.95); }
@@ -271,14 +329,14 @@
   100% { transform: scale(1, 1.05) rotate(0deg); filter: brightness(1.05); }
 }
 
-@keyframes jewelOrganicFlicker2 {
+@keyframes diyaOrganicFlicker2 {
   0% { transform: scale(1.02, 1.05) rotate(1.5deg); filter: brightness(1.08); }
   35% { transform: scale(0.94, 0.95) rotate(-1.5deg); filter: brightness(0.95); }
   70% { transform: scale(1.07, 1.08) rotate(2deg); filter: brightness(1.15); }
   100% { transform: scale(0.98, 1.01) rotate(-1deg); filter: brightness(1.02); }
 }
 
-.zoniraz-jewel-flame-core {
+.zoniraz-wick-flame-core {
   position: absolute;
   bottom: 2px;
   left: 50%;
@@ -298,7 +356,7 @@
   height: 14px;
   pointer-events: none;
   z-index: 9;
-  animation: jewelDiamondGlint 4.2s ease-in-out infinite;
+  animation: jewelDiamondGlint 3.6s ease-in-out infinite;
 }
 
 .zoniraz-jewel-glint::before,
@@ -321,7 +379,9 @@
   90% { opacity: 0; transform: scale(0.4) rotate(90deg); }
 }
 
-/* Happy Diwali Section */
+/* ==========================================================================
+   BOTTOM SECTION: WISHES MESSAGE (NO BUTTON)
+   ========================================================================== */
 .zoniraz-fullpage-diwali-title {
   font-family: 'Playfair Display', serif;
   font-size: clamp(28px, 4.4vw, 44px);
@@ -331,16 +391,17 @@
   margin-top: 6px;
   margin-bottom: 2px;
   text-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+  animation: fadeInScale 1s ease-out 0.6s both;
 }
 
-/* Golden Ornamental Filigree Divider */
 .zoniraz-fullpage-flourish {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
-  margin: 8px 0 14px 0;
+  margin: 6px 0 12px 0;
   color: #f7e6b5;
+  animation: fadeInScale 1s ease-out 0.7s both;
 }
 
 .zoniraz-fullpage-flourish-line {
@@ -354,7 +415,6 @@
   filter: drop-shadow(0 0 8px rgba(255, 215, 0, 0.6));
 }
 
-/* Heartfelt Diwali Wishes Message Text */
 .zoniraz-fullpage-wishes-quote {
   font-family: 'Playfair Display', serif;
   font-size: clamp(14px, 1.8vw, 17px);
@@ -365,6 +425,7 @@
   max-width: 680px;
   margin: 0 auto 10px auto;
   padding: 0 12px;
+  animation: fadeInScale 1s ease-out 0.8s both;
 }
 
 .zoniraz-fullpage-wishes-salutation {
@@ -375,94 +436,17 @@
   color: #ffd700;
   font-weight: 600;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
-  margin-bottom: 18px;
+  animation: fadeInScale 1s ease-out 0.9s both;
 }
 
-/* Luxury Enter Website Button */
-.zoniraz-fullpage-enter-button {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  padding: 14px 44px;
+/* Bottom Auto-Skip Prompt */
+.zoniraz-fullpage-auto-hint {
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
-  font-weight: 600;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: #2b060d;
-  background: linear-gradient(135deg, #f7e6b5 0%, #d4af37 50%, #b3822a 100%);
-  border: 1px solid #ffe8b5;
-  border-radius: 999px;
-  cursor: pointer;
-  box-shadow: 
-    0 10px 32px rgba(212, 175, 55, 0.45),
-    0 4px 12px rgba(0, 0, 0, 0.5),
-    inset 0 1px 1px rgba(255, 255, 255, 0.85);
-  overflow: hidden;
-  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.zoniraz-fullpage-enter-button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 60%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
-  transform: skewX(-25deg);
-  animation: enterButtonSheen 3.6s ease-in-out infinite;
-}
-
-@keyframes enterButtonSheen {
-  0%, 65% { left: -100%; }
-  85%, 100% { left: 200%; }
-}
-
-.zoniraz-fullpage-enter-button:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 
-    0 16px 40px rgba(212, 175, 55, 0.6),
-    0 6px 16px rgba(0, 0, 0, 0.5);
-  background: linear-gradient(135deg, #ffffff 0%, #e6c268 50%, #c49437 100%);
-  color: #160205;
-}
-
-.zoniraz-fullpage-enter-button:active {
-  transform: translateY(1px);
-}
-
-/* Reopen Badge in Bottom Left */
-.zoniraz-fullpage-reopen-badge {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  z-index: 9998;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 18px 10px 14px;
-  background: linear-gradient(135deg, rgba(65, 10, 23, 0.95) 0%, rgba(30, 4, 10, 0.98) 100%);
-  border: 1px solid rgba(247, 230, 181, 0.45);
-  border-radius: 999px;
-  color: #f7e6b5;
-  font-family: 'Inter', sans-serif;
-  font-size: 12.5px;
-  font-weight: 500;
-  letter-spacing: 0.8px;
-  cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), 0 0 16px rgba(212, 175, 55, 0.3);
-  backdrop-filter: blur(8px);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.zoniraz-fullpage-reopen-badge:hover {
-  transform: translateY(-2px) scale(1.04);
-  border-color: #ffd700;
-  color: #ffffff;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.6), 0 0 24px rgba(255, 215, 0, 0.45);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: rgba(247, 230, 181, 0.65);
+  margin-top: 10px;
+  animation: fadeInScale 1s ease-out 1.1s both;
 }
 
 /* ==========================================================================
@@ -470,7 +454,7 @@
    ========================================================================== */
 @media (max-width: 768px) {
   .zoniraz-fullpage-festive-landing {
-    padding: 20px 16px 24px 16px;
+    padding: 20px 16px 20px 16px;
   }
   .zoniraz-fullpage-logo {
     height: 36px;
@@ -479,14 +463,10 @@
     font-size: 8.5px;
     letter-spacing: 1.6px;
   }
-  .zoniraz-fullpage-skip-btn {
-    padding: 6px 14px;
-    font-size: 11px;
-  }
   .zoniraz-landing-jewel-stage {
-    max-width: 94vw;
+    max-width: 96vw;
   }
-  .zoniraz-jewel-flame {
+  .zoniraz-wick-flame-body {
     width: 12px;
     height: 24px;
   }
@@ -499,16 +479,5 @@
   }
   .zoniraz-fullpage-wishes-salutation {
     font-size: 11px;
-    margin-bottom: 14px;
-  }
-  .zoniraz-fullpage-enter-button {
-    padding: 12px 32px;
-    font-size: 12.5px;
-  }
-  .zoniraz-fullpage-reopen-badge {
-    bottom: 84px;
-    left: 16px;
-    font-size: 11px;
-    padding: 8px 14px;
   }
 }

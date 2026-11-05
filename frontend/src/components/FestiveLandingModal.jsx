@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './FestiveLandingModal.css';
 
 export default function FestiveLandingModal({ onEnter }) {
-  // Always true on reload as requested: "jb bhi site relode ho to ye aana chahiy"
+  // Always active on page reload as requested: "jb bhi site relode ho to ye aana chahiy"
   const [isOpen, setIsOpen] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -15,10 +15,22 @@ export default function FestiveLandingModal({ onEnter }) {
       if (typeof onEnter === 'function') {
         onEnter();
       }
-    }, 600);
+    }, 800);
   }, [onEnter]);
 
-  // Support closing with Escape key
+  // Automatic disappearance after 3 to 4 seconds (3800ms) as requested:
+  // "dont use any button disappre automaticaly after 3 to 4 second"
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const autoTimer = setTimeout(() => {
+      handleEnterWebsite();
+    }, 3800);
+
+    return () => clearTimeout(autoTimer);
+  }, [isOpen, handleEnterWebsite]);
+
+  // Support closing immediately on click or Escape key
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Escape' && isOpen) {
@@ -29,7 +41,7 @@ export default function FestiveLandingModal({ onEnter }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, handleEnterWebsite]);
 
-  // Floating background stardust particles across entire 100vw x 100vh page
+  // Floating ambient golden stardust particles
   const ambientParticles = useMemo(() => {
     return Array.from({ length: 28 }, (_, i) => ({
       id: i,
@@ -46,9 +58,10 @@ export default function FestiveLandingModal({ onEnter }) {
       {isOpen && (
         <div 
           className={`zoniraz-fullpage-festive-landing active ${isExiting ? 'exiting' : ''}`}
+          onClick={handleEnterWebsite}
           role="dialog"
           aria-modal="true"
-          aria-label="Happy Diwali Greetings - Zoniraz Jewel House"
+          aria-label="Happy Diwali - Zoniraz Jewel House"
         >
           {/* Full-Screen Ambient Golden Stardust Particles */}
           <div className="zoniraz-fullpage-particles-layer">
@@ -68,7 +81,7 @@ export default function FestiveLandingModal({ onEnter }) {
             ))}
           </div>
 
-          {/* Top Brand Navigation Header */}
+          {/* Top Brand Header (No button) */}
           <header className="zoniraz-fullpage-header">
             <div className="zoniraz-fullpage-logo-group">
               <img 
@@ -81,23 +94,11 @@ export default function FestiveLandingModal({ onEnter }) {
                 Crafting Brilliance for Generations
               </span>
             </div>
-
-            <button 
-              type="button" 
-              className="zoniraz-fullpage-skip-btn"
-              onClick={handleEnterWebsite}
-              aria-label="Enter Store"
-            >
-              <span>Enter Store</span>
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2.5 6H9.5M9.5 6L6.5 3M9.5 6L6.5 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
           </header>
 
-          {/* Main Central Content: Perfectly Stacked With No Overlap */}
+          {/* Main Central Content Area */}
           <main className="zoniraz-fullpage-content">
-            {/* 1. Festive Reminder Heading */}
+            {/* 1. Festive Reminder Headline */}
             <p className="zoniraz-fullpage-reminder-pre">
               Here’s a Reminder:
             </p>
@@ -106,38 +107,57 @@ export default function FestiveLandingModal({ onEnter }) {
               <span className="zoniraz-fullpage-reminder-you">YOU!</span>
             </h1>
 
-            {/* 2. Central Jewellery Diya Piece With Pinpoint Locked Flames */}
+            {/* 2. Central Jewellery Diya Piece: Left slides in from left, Right slides in from right */}
             <div className="zoniraz-landing-jewel-stage">
+              {/* Sacred Rangoli Floor Mandala */}
               <img 
-                src="/festive-earrings-diya.png" 
-                alt="Zoniraz Diamond Diya Earrings" 
-                className="zoniraz-landing-jewel-img"
-                loading="eager"
+                src="/festive-floor-rangoli.png" 
+                alt="Sacred Rangoli Mandala" 
+                className="zoniraz-floor-rangoli-bg"
               />
 
-              {/* Diamond Pavé Starburst Glints */}
-              <div className="zoniraz-jewel-glint" style={{ left: '38%', top: '51%', animationDelay: '1.2s' }} />
-              <div className="zoniraz-jewel-glint" style={{ left: '60%', top: '56%', animationDelay: '2.6s' }} />
-              <div className="zoniraz-jewel-glint" style={{ left: '32%', top: '58%', animationDelay: '3.8s' }} />
+              {/* Left Jewellery Piece (Slides in from Left Side) */}
+              <div className="zoniraz-earring-left-wrapper">
+                <img 
+                  src="/festive-earring-left-tight.png" 
+                  alt="Zoniraz Left Diamond Diya Earring" 
+                  className="zoniraz-earring-piece-img"
+                />
 
-              {/* Live Animated Diya Flame 1 (Left Wick: 45.34% left, 23.65% top) */}
-              <div className="zoniraz-jewel-flame-1">
-                <div className="zoniraz-jewel-flame-aura" />
-                <div className="zoniraz-jewel-flame">
-                  <div className="zoniraz-jewel-flame-core" />
+                {/* Left Flame Wick */}
+                <div className="zoniraz-wick-flame-left">
+                  <div className="zoniraz-wick-flame-aura" />
+                  <div className="zoniraz-wick-flame-body">
+                    <div className="zoniraz-wick-flame-core" />
+                  </div>
                 </div>
+
+                {/* Diamond Starburst Glint on Left Earring */}
+                <div className="zoniraz-jewel-glint" style={{ left: '46%', top: '48%', animationDelay: '1.2s' }} />
               </div>
 
-              {/* Live Animated Diya Flame 2 (Right Wick: 54.10% left, 36.59% top) */}
-              <div className="zoniraz-jewel-flame-2">
-                <div className="zoniraz-jewel-flame-aura" />
-                <div className="zoniraz-jewel-flame">
-                  <div className="zoniraz-jewel-flame-core" />
+              {/* Right Jewellery Piece (Slides in from Right Side) */}
+              <div className="zoniraz-earring-right-wrapper">
+                <img 
+                  src="/festive-earring-right-tight.png" 
+                  alt="Zoniraz Right Diamond Diya Earring" 
+                  className="zoniraz-earring-piece-img"
+                />
+
+                {/* Right Flame Wick */}
+                <div className="zoniraz-wick-flame-right">
+                  <div className="zoniraz-wick-flame-aura" />
+                  <div className="zoniraz-wick-flame-body">
+                    <div className="zoniraz-wick-flame-core" />
+                  </div>
                 </div>
+
+                {/* Diamond Starburst Glint on Right Earring */}
+                <div className="zoniraz-jewel-glint" style={{ left: '48%', top: '56%', animationDelay: '2.4s' }} />
               </div>
             </div>
 
-            {/* 3. Happy Diwali Section & Heartfelt Message */}
+            {/* 3. Happy Diwali Section & Heartfelt Wishes Message */}
             <h2 className="zoniraz-fullpage-diwali-title">
               Happy Diwali!
             </h2>
@@ -156,17 +176,10 @@ export default function FestiveLandingModal({ onEnter }) {
               ✨ Wishing You & Your Family a Blessed & Luminous Diwali ✨
             </div>
 
-            {/* 4. Luxury Enter Website Action Button */}
-            <button 
-              type="button" 
-              className="zoniraz-fullpage-enter-button"
-              onClick={handleEnterWebsite}
-            >
-              <span>Enter Website</span>
-              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3.333 8h9.334M8.667 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+            {/* Subtle auto-skip hint (No button) */}
+            <div className="zoniraz-fullpage-auto-hint">
+              Tap anywhere to enter website
+            </div>
           </main>
 
           {/* Footer Subtext */}
