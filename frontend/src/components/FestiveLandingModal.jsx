@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import './FestiveLandingModal.css';
 
-export default function FestiveLandingModal({ onEnter }) {
+export default function FestiveLandingModal({ onEnter, forceOpen = false }) {
   // Always active on page reload as requested: "jb bhi site relode ho to ye aana chahiy"
   const [isOpen, setIsOpen] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
@@ -15,20 +15,20 @@ export default function FestiveLandingModal({ onEnter }) {
       if (typeof onEnter === 'function') {
         onEnter();
       }
-    }, 800);
+    }, 900);
   }, [onEnter]);
 
-  // Automatic disappearance after 3 to 4 seconds (3800ms) as requested:
-  // "dont use any button disappre automaticaly after 3 to 4 second"
+  // Automatic disappearance after 5 to 7 seconds (6000ms = 6s) as requested:
+  // "landing page ke animation ko 5to7 second ka kro"
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen || forceOpen) return;
 
     const autoTimer = setTimeout(() => {
       handleEnterWebsite();
-    }, 3800);
+    }, 6000);
 
     return () => clearTimeout(autoTimer);
-  }, [isOpen, handleEnterWebsite]);
+  }, [isOpen, forceOpen, handleEnterWebsite]);
 
   // Support closing immediately on click or Escape key
   useEffect(() => {
@@ -188,6 +188,13 @@ export default function FestiveLandingModal({ onEnter }) {
               Zoniraz Jewel House • Certified Diamond & Gold Jewellery
             </span>
           </footer>
+
+          {/* Subtle Golden Ambient Progress Bar across Bottom (6s Duration) */}
+          {!forceOpen && (
+            <div className="zoniraz-landing-progress-track" aria-hidden="true">
+              <div className="zoniraz-landing-progress-bar" />
+            </div>
+          )}
         </div>
       )}
 
