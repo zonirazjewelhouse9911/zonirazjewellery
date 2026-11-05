@@ -29,13 +29,13 @@ export default function FestiveLandingModal({ onEnter }) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, handleEnterWebsite]);
 
-  // Floating background stardust particles across the entire 100vw x 100vh page
+  // Floating background stardust particles across entire 100vw x 100vh page
   const ambientParticles = useMemo(() => {
-    return Array.from({ length: 30 }, (_, i) => ({
+    return Array.from({ length: 28 }, (_, i) => ({
       id: i,
-      left: `${(i * 3.4 + 2) % 96}%`,
-      top: `${(i * 4.3 + 12) % 90}%`,
-      size: `${2 + (i % 3) * 1.6}px`,
+      left: `${(i * 3.6 + 2) % 96}%`,
+      top: `${(i * 4.2 + 10) % 90}%`,
+      size: `${2 + (i % 3) * 1.5}px`,
       duration: `${4 + (i % 5) * 1.1}s`,
       delay: `${(i * 0.28) % 3.5}s`
     }));
@@ -95,33 +95,53 @@ export default function FestiveLandingModal({ onEnter }) {
             </button>
           </header>
 
-          {/* Center Stage: Interactive Anchor for Live Glowing Diya Flames & Diamond Glints */}
-          <div className="zoniraz-fullpage-center-stage">
-            {/* Diamond Pavé Starburst Glints */}
-            <div className="zoniraz-fullpage-glint" style={{ left: '42%', top: '50%', animationDelay: '1.2s' }} />
-            <div className="zoniraz-fullpage-glint" style={{ left: '46%', top: '53%', animationDelay: '2.8s' }} />
-            <div className="zoniraz-fullpage-glint" style={{ left: '57%', top: '58%', animationDelay: '3.6s' }} />
-            <div className="zoniraz-fullpage-glint" style={{ left: '53%', top: '57%', animationDelay: '0.8s' }} />
+          {/* Main Central Content: Perfectly Stacked With No Overlap */}
+          <main className="zoniraz-fullpage-content">
+            {/* 1. Festive Reminder Heading */}
+            <p className="zoniraz-fullpage-reminder-pre">
+              Here’s a Reminder:
+            </p>
+            <h1 className="zoniraz-fullpage-reminder-main">
+              The true light of the festive season is{' '}
+              <span className="zoniraz-fullpage-reminder-you">YOU!</span>
+            </h1>
 
-            {/* Live Animated Diya Flame 1 (Left Wick) */}
-            <div className="zoniraz-flame-anchor-left">
-              <div className="zoniraz-diya-flame-aura" />
-              <div className="zoniraz-diya-flame">
-                <div className="zoniraz-diya-flame-core" />
+            {/* 2. Central Jewellery Diya Piece With Pinpoint Locked Flames */}
+            <div className="zoniraz-landing-jewel-stage">
+              <img 
+                src="/festive-earrings-diya.png" 
+                alt="Zoniraz Diamond Diya Earrings" 
+                className="zoniraz-landing-jewel-img"
+                loading="eager"
+              />
+
+              {/* Diamond Pavé Starburst Glints */}
+              <div className="zoniraz-jewel-glint" style={{ left: '38%', top: '51%', animationDelay: '1.2s' }} />
+              <div className="zoniraz-jewel-glint" style={{ left: '60%', top: '56%', animationDelay: '2.6s' }} />
+              <div className="zoniraz-jewel-glint" style={{ left: '32%', top: '58%', animationDelay: '3.8s' }} />
+
+              {/* Live Animated Diya Flame 1 (Left Wick: 45.34% left, 23.65% top) */}
+              <div className="zoniraz-jewel-flame-1">
+                <div className="zoniraz-jewel-flame-aura" />
+                <div className="zoniraz-jewel-flame">
+                  <div className="zoniraz-jewel-flame-core" />
+                </div>
+              </div>
+
+              {/* Live Animated Diya Flame 2 (Right Wick: 54.10% left, 36.59% top) */}
+              <div className="zoniraz-jewel-flame-2">
+                <div className="zoniraz-jewel-flame-aura" />
+                <div className="zoniraz-jewel-flame">
+                  <div className="zoniraz-jewel-flame-core" />
+                </div>
               </div>
             </div>
 
-            {/* Live Animated Diya Flame 2 (Right Wick) */}
-            <div className="zoniraz-flame-anchor-right">
-              <div className="zoniraz-diya-flame-aura" />
-              <div className="zoniraz-diya-flame">
-                <div className="zoniraz-diya-flame-core" />
-              </div>
-            </div>
-          </div>
+            {/* 3. Happy Diwali Section & Heartfelt Message */}
+            <h2 className="zoniraz-fullpage-diwali-title">
+              Happy Diwali!
+            </h2>
 
-          {/* Bottom Section: Heartfelt Diwali Wishes Message Written Directly ON The Page */}
-          <div className="zoniraz-fullpage-bottom-section">
             <div className="zoniraz-fullpage-flourish">
               <span className="zoniraz-fullpage-flourish-line" />
               <span className="zoniraz-fullpage-flourish-diya">🪔</span>
@@ -136,7 +156,7 @@ export default function FestiveLandingModal({ onEnter }) {
               ✨ Wishing You & Your Family a Blessed & Luminous Diwali ✨
             </div>
 
-            {/* Enter Website Luxury Action Button */}
+            {/* 4. Luxury Enter Website Action Button */}
             <button 
               type="button" 
               className="zoniraz-fullpage-enter-button"
@@ -147,10 +167,10 @@ export default function FestiveLandingModal({ onEnter }) {
                 <path d="M3.333 8h9.334M8.667 4l4 4-4 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-          </div>
+          </main>
 
           {/* Footer Subtext */}
-          <footer style={{ position: 'relative', zIndex: 10, textAlign: 'center', opacity: 0.8, marginTop: '8px' }}>
+          <footer style={{ position: 'relative', zIndex: 10, textAlign: 'center', opacity: 0.8 }}>
             <span style={{ fontSize: '11px', letterSpacing: '1.4px', textTransform: 'uppercase', color: '#e8cb9e' }}>
               Zoniraz Jewel House • Certified Diamond & Gold Jewellery
             </span>
