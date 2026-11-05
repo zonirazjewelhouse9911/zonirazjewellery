@@ -1995,13 +1995,8 @@ function AppContent() {
       {/* Global Video Call Modal — renders on top of everything */}
       <VideoCallModal />
 
-      {/* Festive Diwali Landing Animation Modal — Opens whenever user opens site */}
-      <FestiveLandingModal 
-        onExplore={() => {
-          window.history.pushState(null, '', '/festive');
-          window.dispatchEvent(new PopStateEvent('popstate'));
-        }} 
-      />
+      {/* Festive Diwali Full-Screen Landing Animation Screen — Displays on reload */}
+      <FestiveLandingModal />
 
       {/* Floating Call and WhatsApp widgets */}
       <div className="floating-contact-widgets">

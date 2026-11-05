@@ -1,301 +1,309 @@
 /* ==========================================================================
-   ZONIRAZ FESTIVE DIWALI LANDING ANIMATION MODAL
-   Luxury Handcrafted Festive Experience (Non-AI Bespoke Aesthetic)
+   ZONIRAZ FULL-SCREEN FESTIVE DIWALI LANDING EXPERIENCE
+   Proper 100% Full-Bleed Screen Coverage (Not a Popup Modal)
    ========================================================================== */
 
-/* Main Backdrop Overlay */
-.zoniraz-festive-overlay {
+/* Full Viewport Container covering 100% of all screen sizes */
+.zoniraz-festive-landing-screen {
   position: fixed;
   inset: 0;
-  z-index: 999999;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999999;
+  background: radial-gradient(ellipse at 50% 40%, #681427 0%, #4a0c1a 40%, #29040e 75%, #140106 100%);
   display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  padding: 16px;
-  background: radial-gradient(circle at center, rgba(38, 7, 14, 0.82) 0%, rgba(15, 3, 6, 0.94) 100%);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 30px 20px 40px 20px;
+  box-sizing: border-box;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  overflow-y: auto;
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: translateY(0);
 }
 
-.zoniraz-festive-overlay.active {
+.zoniraz-festive-landing-screen.active {
   opacity: 1;
   visibility: visible;
 }
 
-/* Card Container */
-.zoniraz-festive-card {
-  position: relative;
-  width: 100%;
-  max-width: 480px;
-  border-radius: 24px;
-  overflow: hidden;
-  background: #3c0915;
-  box-shadow: 
-    0 25px 70px rgba(0, 0, 0, 0.75),
-    0 0 50px rgba(212, 175, 55, 0.2),
-    inset 0 0 0 1px rgba(243, 220, 162, 0.3);
-  transform: scale(0.92) translateY(20px);
+.zoniraz-festive-landing-screen.exiting {
   opacity: 0;
-  transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.5s ease;
-  user-select: none;
+  transform: translateY(-20px);
+  pointer-events: none;
 }
 
-.zoniraz-festive-overlay.active .zoniraz-festive-card {
-  transform: scale(1) translateY(0);
-  opacity: 1;
-}
-
-/* Aspect Ratio Canvas */
-.zoniraz-festive-canvas {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 736 / 920;
-  background-color: #480c1b;
+/* Background Ambient Glow & Starry Particles */
+.zoniraz-festive-bg-stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  z-index: 1;
 }
 
-/* Base Reference Artwork Image */
-.zoniraz-festive-base-img {
+.zoniraz-landing-particle {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  pointer-events: none;
-  filter: contrast(1.03) saturate(1.05);
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff6d6 0%, #f7d070 60%, rgba(247, 208, 112, 0) 100%);
+  box-shadow: 0 0 8px 1.5px rgba(255, 215, 0, 0.5);
+  animation: floatUpwardLanding linear infinite;
 }
 
-/* Top Subtle Vignette Gradient */
-.zoniraz-festive-vignette {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 50% 50%, transparent 40%, rgba(30, 4, 9, 0.45) 90%);
+@keyframes floatUpwardLanding {
+  0% {
+    transform: translateY(0) scale(0.3);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.85;
+    transform: translateY(-30px) scale(1);
+  }
+  80% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-200px) scale(0.2);
+    opacity: 0;
+  }
 }
 
-/* Top Bar: Brand & Close Button */
-.zoniraz-festive-topbar {
+/* Header Top Bar */
+.zoniraz-landing-header {
   position: relative;
   z-index: 10;
+  width: 100%;
+  max-width: 1100px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px 10px 22px;
+  padding: 0 10px;
 }
 
-.zoniraz-festive-brand-link {
+.zoniraz-landing-logo-box {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
 }
 
-.zoniraz-festive-logo-img {
-  height: 38px;
+.zoniraz-landing-logo-img {
+  height: 44px;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.7));
 }
 
-.zoniraz-festive-close-btn {
-  background: rgba(45, 10, 18, 0.65);
-  border: 1px solid rgba(243, 220, 162, 0.4);
-  color: #f5dfba;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+.zoniraz-landing-hallmark-tag {
+  font-family: 'Inter', sans-serif;
+  font-size: 10px;
+  letter-spacing: 2.2px;
+  text-transform: uppercase;
+  color: #e8c992;
+  font-weight: 500;
+  opacity: 0.9;
+}
+
+.zoniraz-landing-skip-top {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #f7e6b5;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(247, 230, 181, 0.35);
+  padding: 8px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.zoniraz-landing-skip-top:hover {
+  background: rgba(247, 230, 181, 0.2);
+  border-color: #ffd700;
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Main Content Area */
+.zoniraz-landing-content-wrap {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin: auto 0;
+  padding: 20px 0;
+}
+
+/* Reminder Heading */
+.zoniraz-landing-reminder-tag {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #f3dfc8;
+  margin-bottom: 6px;
+  opacity: 0.95;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.zoniraz-landing-reminder-main {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(24px, 4vw, 38px);
+  font-weight: 500;
+  color: #ffffff;
+  line-height: 1.35;
+  margin-bottom: 18px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
+}
+
+.zoniraz-landing-reminder-you {
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff2cc 0%, #ffd700 60%, #e6a820 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  filter: drop-shadow(0 0 12px rgba(255, 215, 0, 0.45));
+}
+
+/* Central Festive Visual Showcase */
+.zoniraz-landing-visual-stage {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  aspect-ratio: 736 / 530;
+  margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  backdrop-filter: blur(6px);
-  transition: all 0.3s ease;
-  padding: 0;
 }
 
-.zoniraz-festive-close-btn:hover {
-  background: rgba(212, 175, 55, 0.25);
-  border-color: #ffd700;
-  color: #ffffff;
-  transform: rotate(90deg) scale(1.08);
+.zoniraz-landing-artwork-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 52%;
+  border-radius: 20px;
+  filter: drop-shadow(0 15px 40px rgba(0, 0, 0, 0.75));
+  mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 70%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 90% 85% at 50% 50%, black 70%, transparent 100%);
 }
 
-/* Interactive Animated Flames over Diya Lamp Wicks */
-.zoniraz-festive-flame-wrapper {
+/* Flame 1 (Left Diya Lamp) */
+.zoniraz-landing-flame-1 {
   position: absolute;
+  left: 45.3%;
+  top: 48.8%;
+  transform: translate(-50%, -85%);
   pointer-events: none;
   z-index: 8;
+}
+
+/* Flame 2 (Right Diya Lamp) */
+.zoniraz-landing-flame-2 {
+  position: absolute;
+  left: 54.2%;
+  top: 55.4%;
   transform: translate(-50%, -85%);
+  pointer-events: none;
+  z-index: 8;
 }
 
-/* Flame 1 (Left Diya) at ~45.2% X, 49.3% Y */
-.zoniraz-festive-flame-left {
-  left: 45.2%;
-  top: 49.3%;
-}
-
-/* Flame 2 (Right Diya) at ~54.1% X, 55.0% Y */
-.zoniraz-festive-flame-right {
-  left: 54.1%;
-  top: 55.0%;
-}
-
-/* Radial Light Aura Pulsing onto Jewellery and Rangoli */
-.zoniraz-festive-aura {
+/* Pulsing Radiant Amber Light Aura */
+.zoniraz-landing-flame-aura {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 80px;
-  height: 80px;
+  width: 90px;
+  height: 90px;
   transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(255, 175, 45, 0.55) 0%, rgba(255, 100, 20, 0.25) 45%, transparent 75%);
+  background: radial-gradient(circle, rgba(255, 185, 50, 0.6) 0%, rgba(255, 110, 25, 0.25) 45%, transparent 75%);
   border-radius: 50%;
-  animation: flameAuraPulse 2.4s ease-in-out infinite alternate;
-  pointer-events: none;
+  animation: landingFlameAura 2.2s ease-in-out infinite alternate;
 }
 
-.zoniraz-festive-flame-right .zoniraz-festive-aura {
-  animation-delay: -1.2s;
+.zoniraz-landing-flame-2 .zoniraz-landing-flame-aura {
+  animation-delay: -1.1s;
 }
 
-@keyframes flameAuraPulse {
-  0% {
-    transform: translate(-50%, -50%) scale(0.85);
-    opacity: 0.55;
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.15);
-    opacity: 0.9;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(0.95);
-    opacity: 0.65;
-  }
+@keyframes landingFlameAura {
+  0% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.55; }
+  50% { transform: translate(-50%, -50%) scale(1.18); opacity: 0.95; }
+  100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.65; }
 }
 
-/* The Organic Flickering Flame Shape */
-.zoniraz-festive-flame {
+/* Organic 3D Flickering Flame */
+.zoniraz-landing-flame {
   position: relative;
-  width: 14px;
-  height: 28px;
-  background: linear-gradient(to top, rgba(255, 80, 20, 0.95) 0%, rgba(255, 170, 30, 0.95) 45%, rgba(255, 250, 160, 1) 85%, #ffffff 100%);
+  width: 15px;
+  height: 30px;
+  background: linear-gradient(to top, rgba(255, 75, 15, 0.95) 0%, rgba(255, 175, 30, 0.95) 45%, rgba(255, 250, 160, 1) 85%, #ffffff 100%);
   border-radius: 50% 50% 35% 35% / 75% 75% 30% 30%;
   box-shadow: 
-    0 0 16px 5px rgba(255, 140, 20, 0.7),
-    0 0 32px 10px rgba(255, 80, 0, 0.35);
-  animation: organicFlameFlicker 1.8s ease-in-out infinite alternate;
+    0 0 18px 6px rgba(255, 145, 20, 0.75),
+    0 0 36px 12px rgba(255, 80, 0, 0.4);
+  animation: landingOrganicFlame 1.8s ease-in-out infinite alternate;
   transform-origin: center bottom;
 }
 
-.zoniraz-festive-flame-right .zoniraz-festive-flame {
-  animation: organicFlameFlickerRight 1.6s ease-in-out infinite alternate;
-  animation-delay: -0.6s;
+.zoniraz-landing-flame-2 .zoniraz-landing-flame {
+  animation: landingOrganicFlame2 1.6s ease-in-out infinite alternate;
+  animation-delay: -0.5s;
 }
 
-@keyframes organicFlameFlicker {
-  0% {
-    transform: scale(0.96, 0.96) rotate(-1.5deg);
-    filter: brightness(1);
-  }
-  25% {
-    transform: scale(1.05, 1.08) rotate(1deg);
-    filter: brightness(1.12);
-  }
-  50% {
-    transform: scale(0.92, 1.02) rotate(-2deg);
-    filter: brightness(0.95);
-  }
-  75% {
-    transform: scale(1.08, 0.97) rotate(2deg);
-    filter: brightness(1.15);
-  }
-  100% {
-    transform: scale(1, 1.04) rotate(0deg);
-    filter: brightness(1.05);
-  }
+@keyframes landingOrganicFlame {
+  0% { transform: scale(0.95, 0.96) rotate(-1.5deg); filter: brightness(1); }
+  25% { transform: scale(1.06, 1.09) rotate(1deg); filter: brightness(1.15); }
+  50% { transform: scale(0.92, 1.02) rotate(-2deg); filter: brightness(0.95); }
+  75% { transform: scale(1.08, 0.96) rotate(2deg); filter: brightness(1.18); }
+  100% { transform: scale(1, 1.05) rotate(0deg); filter: brightness(1.05); }
 }
 
-@keyframes organicFlameFlickerRight {
-  0% {
-    transform: scale(1.02, 1.04) rotate(1.5deg);
-    filter: brightness(1.08);
-  }
-  30% {
-    transform: scale(0.95, 0.95) rotate(-1.5deg);
-    filter: brightness(0.96);
-  }
-  60% {
-    transform: scale(1.06, 1.07) rotate(2deg);
-    filter: brightness(1.14);
-  }
-  100% {
-    transform: scale(0.98, 1.01) rotate(-1deg);
-    filter: brightness(1.02);
-  }
+@keyframes landingOrganicFlame2 {
+  0% { transform: scale(1.02, 1.05) rotate(1.5deg); filter: brightness(1.08); }
+  35% { transform: scale(0.94, 0.95) rotate(-1.5deg); filter: brightness(0.95); }
+  70% { transform: scale(1.07, 1.08) rotate(2deg); filter: brightness(1.15); }
+  100% { transform: scale(0.98, 1.01) rotate(-1deg); filter: brightness(1.02); }
 }
 
-/* Inner White-Hot Core */
-.zoniraz-festive-flame-core {
+.zoniraz-landing-flame-core {
   position: absolute;
   bottom: 2px;
   left: 50%;
   transform: translateX(-50%);
   width: 6px;
-  height: 12px;
+  height: 13px;
   background: #ffffff;
   border-radius: 50% 50% 40% 40% / 70% 70% 30% 30%;
   box-shadow: 0 0 6px 2px #fff6b0;
-  opacity: 0.9;
-}
-
-/* Floating Golden Stardust Particles */
-.zoniraz-festive-particle {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(circle, #fff3c4 10%, #f1c40f 60%, rgba(241, 196, 15, 0) 100%);
-  box-shadow: 0 0 6px 1px rgba(255, 215, 0, 0.6);
-  pointer-events: none;
-  z-index: 5;
-  animation: floatUpward linear infinite;
-}
-
-@keyframes floatUpward {
-  0% {
-    transform: translateY(0) scale(0.4);
-    opacity: 0;
-  }
-  20% {
-    opacity: 0.8;
-    transform: translateY(-20px) scale(1);
-  }
-  80% {
-    opacity: 0.8;
-  }
-  100% {
-    transform: translateY(-130px) scale(0.2);
-    opacity: 0;
-  }
+  opacity: 0.92;
 }
 
 /* Diamond Starburst Glints */
-.zoniraz-diamond-glint {
+.zoniraz-landing-glint {
   position: absolute;
   width: 14px;
   height: 14px;
   pointer-events: none;
   z-index: 9;
-  animation: diamondShimmer 4s ease-in-out infinite;
+  animation: landingGlintShimmer 4s ease-in-out infinite;
 }
 
-.zoniraz-diamond-glint::before,
-.zoniraz-diamond-glint::after {
+.zoniraz-landing-glint::before,
+.zoniraz-landing-glint::after {
   content: '';
   position: absolute;
   top: 50%;
@@ -305,128 +313,141 @@
   border-radius: 50%;
 }
 
-.zoniraz-diamond-glint::before {
-  width: 14px;
-  height: 2px;
+.zoniraz-landing-glint::before { width: 14px; height: 2px; }
+.zoniraz-landing-glint::after { width: 2px; height: 14px; }
+
+@keyframes landingGlintShimmer {
+  0%, 75%, 100% { opacity: 0; transform: scale(0.2) rotate(0deg); }
+  82% { opacity: 1; transform: scale(1.3) rotate(45deg); filter: drop-shadow(0 0 4px #ffffff); }
+  90% { opacity: 0; transform: scale(0.4) rotate(90deg); }
 }
 
-.zoniraz-diamond-glint::after {
-  width: 2px;
-  height: 14px;
+/* Happy Diwali Title & Heartfelt Message */
+.zoniraz-landing-diwali-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(30px, 4.8vw, 46px);
+  color: #ffffff;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  margin-top: 14px;
+  margin-bottom: 6px;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
 }
 
-@keyframes diamondShimmer {
-  0%, 75%, 100% {
-    opacity: 0;
-    transform: scale(0.2) rotate(0deg);
-  }
-  82% {
-    opacity: 1;
-    transform: scale(1.3) rotate(45deg);
-    filter: drop-shadow(0 0 4px #ffffff);
-  }
-  90% {
-    opacity: 0;
-    transform: scale(0.4) rotate(90deg);
-  }
+/* Golden Ornamental Filigree Divider */
+.zoniraz-landing-flourish {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 10px 0 18px 0;
+  color: #e5be75;
+  opacity: 0.9;
 }
 
-/* Bottom Actions Panel */
-.zoniraz-festive-bottom {
+.zoniraz-landing-flourish-line {
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #e5be75, transparent);
+}
+
+.zoniraz-landing-flourish-icon {
+  font-size: 16px;
+}
+
+/* Beautiful Heartfelt Diwali Wishes Message */
+.zoniraz-landing-wishes-box {
+  max-width: 640px;
+  margin: 0 auto 24px auto;
+  padding: 0 16px;
+}
+
+.zoniraz-landing-wishes-text {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(14px, 1.8vw, 17px);
+  font-style: italic;
+  line-height: 1.7;
+  color: #f7e6db;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+  margin-bottom: 10px;
+}
+
+.zoniraz-landing-wishes-sign {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #e6c587;
+  font-weight: 500;
+}
+
+/* Enter Website Luxury Action */
+.zoniraz-landing-bottom-action {
   position: relative;
   z-index: 10;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 10px 24px 24px 24px;
-  background: linear-gradient(to top, rgba(30, 4, 9, 0.95) 0%, rgba(30, 4, 9, 0.6) 70%, transparent 100%);
-  gap: 12px;
+  gap: 8px;
 }
 
-/* Main Luxury CTA Button */
-.zoniraz-festive-cta-btn {
+.zoniraz-landing-enter-btn {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
-  max-width: 340px;
-  padding: 13px 26px;
+  gap: 10px;
+  padding: 14px 40px;
   font-family: 'Inter', sans-serif;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: 1.2px;
+  letter-spacing: 1.6px;
   text-transform: uppercase;
   color: #2b060d;
   background: linear-gradient(135deg, #f7e6b5 0%, #d4af37 50%, #b3822a 100%);
   border: 1px solid #ffe8b5;
   border-radius: 999px;
   cursor: pointer;
-  text-decoration: none;
   box-shadow: 
-    0 8px 24px rgba(212, 175, 55, 0.35),
-    0 2px 6px rgba(0, 0, 0, 0.3),
-    inset 0 1px 1px rgba(255, 255, 255, 0.7);
+    0 10px 30px rgba(212, 175, 55, 0.4),
+    0 4px 10px rgba(0, 0, 0, 0.4),
+    inset 0 1px 1px rgba(255, 255, 255, 0.8);
   overflow: hidden;
   transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.zoniraz-festive-cta-btn::before {
+.zoniraz-landing-enter-btn::before {
   content: '';
   position: absolute;
   top: 0;
   left: -100%;
   width: 60%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.65), transparent);
   transform: skewX(-25deg);
-  animation: luxuryButtonSheen 3.6s ease-in-out infinite;
+  animation: landingSheen 3.6s ease-in-out infinite;
 }
 
-@keyframes luxuryButtonSheen {
-  0%, 65% {
-    left: -100%;
-  }
-  85%, 100% {
-    left: 200%;
-  }
+@keyframes landingSheen {
+  0%, 65% { left: -100%; }
+  85%, 100% { left: 200%; }
 }
 
-.zoniraz-festive-cta-btn:hover {
-  transform: translateY(-2px);
+.zoniraz-landing-enter-btn:hover {
+  transform: translateY(-2px) scale(1.02);
   box-shadow: 
-    0 12px 30px rgba(212, 175, 55, 0.5),
-    0 4px 10px rgba(0, 0, 0, 0.4);
+    0 14px 36px rgba(212, 175, 55, 0.55),
+    0 6px 14px rgba(0, 0, 0, 0.5);
   background: linear-gradient(135deg, #ffffff 0%, #e6c268 50%, #c49437 100%);
-  color: #1a0307;
+  color: #160205;
 }
 
-.zoniraz-festive-cta-btn:active {
+.zoniraz-landing-enter-btn:active {
   transform: translateY(1px);
 }
 
-/* Secondary Skip Link */
-.zoniraz-festive-skip-link {
-  font-family: 'Inter', sans-serif;
-  font-size: 11.5px;
-  letter-spacing: 0.8px;
-  color: rgba(245, 223, 186, 0.75);
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: color 0.25s ease;
-  padding: 4px 10px;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.zoniraz-festive-skip-link:hover {
-  color: #ffffff;
-}
-
-/* Floating Replay Badge on Site Corner */
-.zoniraz-festive-reopen-badge {
+/* Floating Corner Reopen Pill */
+.zoniraz-landing-reopen-pill {
   position: fixed;
   bottom: 24px;
   left: 24px;
@@ -435,8 +456,8 @@
   align-items: center;
   gap: 8px;
   padding: 9px 16px 9px 12px;
-  background: linear-gradient(135deg, rgba(50, 9, 18, 0.92) 0%, rgba(25, 4, 8, 0.95) 100%);
-  border: 1px solid rgba(243, 220, 162, 0.4);
+  background: linear-gradient(135deg, rgba(60, 9, 21, 0.94) 0%, rgba(30, 4, 10, 0.96) 100%);
+  border: 1px solid rgba(243, 220, 162, 0.45);
   border-radius: 999px;
   color: #f7e6b5;
   font-family: 'Inter', sans-serif;
@@ -444,65 +465,56 @@
   font-weight: 500;
   letter-spacing: 0.6px;
   cursor: pointer;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 16px rgba(212, 175, 55, 0.25);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 0 16px rgba(212, 175, 55, 0.25);
   backdrop-filter: blur(8px);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-  animation: gentleFestiveGlow 3s ease-in-out infinite alternate;
 }
 
-.zoniraz-festive-reopen-badge:hover {
+.zoniraz-landing-reopen-pill:hover {
   transform: translateY(-2px) scale(1.04);
   border-color: #ffd700;
   color: #ffffff;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5), 0 0 24px rgba(255, 215, 0, 0.4);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.55), 0 0 24px rgba(255, 215, 0, 0.45);
 }
 
-.zoniraz-festive-badge-diya-icon {
-  font-size: 15px;
-  animation: diyaIconWiggle 2s ease-in-out infinite alternate;
-}
-
-@keyframes gentleFestiveGlow {
-  0% {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 12px rgba(212, 175, 55, 0.2);
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .zoniraz-festive-landing-screen {
+    padding: 20px 16px 30px 16px;
   }
-  100% {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4), 0 0 22px rgba(241, 196, 15, 0.45);
+  .zoniraz-landing-logo-img {
+    height: 34px;
   }
-}
-
-@keyframes diyaIconWiggle {
-  0% { transform: rotate(-5deg) scale(0.95); }
-  100% { transform: rotate(5deg) scale(1.05); }
-}
-
-/* Responsive adjustments */
-@media (max-width: 520px) {
-  .zoniraz-festive-card {
-    max-width: 95vw;
-    border-radius: 18px;
+  .zoniraz-landing-hallmark-tag {
+    font-size: 8.5px;
+    letter-spacing: 1.6px;
   }
-  .zoniraz-festive-topbar {
-    padding: 14px 16px 6px 16px;
+  .zoniraz-landing-skip-top {
+    padding: 6px 14px;
+    font-size: 11.5px;
   }
-  .zoniraz-festive-logo-img {
-    height: 30px;
+  .zoniraz-landing-reminder-tag {
+    font-size: 13px;
+    letter-spacing: 2px;
   }
-  .zoniraz-festive-flame {
+  .zoniraz-landing-visual-stage {
+    max-width: 92vw;
+  }
+  .zoniraz-landing-flame {
     width: 12px;
     height: 24px;
   }
-  .zoniraz-festive-bottom {
-    padding: 8px 16px 18px 16px;
+  .zoniraz-landing-wishes-box {
+    margin-bottom: 18px;
   }
-  .zoniraz-festive-cta-btn {
-    padding: 11px 20px;
-    font-size: 12px;
+  .zoniraz-landing-enter-btn {
+    padding: 12px 32px;
+    font-size: 13px;
   }
-  .zoniraz-festive-reopen-badge {
+  .zoniraz-landing-reopen-pill {
     bottom: 84px;
     left: 16px;
-    padding: 7px 12px;
     font-size: 11px;
+    padding: 7px 12px;
   }
 }
