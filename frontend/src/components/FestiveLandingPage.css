@@ -1,0 +1,288 @@
+/* ==========================================================================
+   FESTIVE LANDING PAGE STYLES (Diwali / Festive Showcase)
+   ========================================================================== */
+
+.festive-page-container {
+  min-height: 100vh;
+  background-color: #fcf9f6;
+  color: #3b281c;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+}
+
+/* Immersive Festive Hero */
+.festive-hero-section {
+  position: relative;
+  background: radial-gradient(circle at center, #541020 0%, #29050d 100%);
+  padding: 60px 24px 80px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.25);
+}
+
+.festive-hero-card-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #3c0915;
+  box-shadow: 
+    0 25px 80px rgba(0, 0, 0, 0.8),
+    0 0 60px rgba(212, 175, 55, 0.25),
+    inset 0 0 0 1.5px rgba(243, 220, 162, 0.4);
+}
+
+/* Festive Collection Showcase Section */
+.festive-showcase-section {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 80px 24px 60px 24px;
+}
+
+.festive-section-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.festive-section-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #9e2a2b;
+  margin-bottom: 10px;
+  background: rgba(158, 42, 43, 0.08);
+  padding: 6px 16px;
+  border-radius: 20px;
+}
+
+.festive-section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 2.4rem;
+  color: #3b281c;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+
+.festive-section-desc {
+  font-size: 15px;
+  color: #7a6355;
+  max-width: 580px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* Category Filter Tabs */
+.festive-tabs-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.festive-tab-btn {
+  padding: 9px 20px;
+  border-radius: 999px;
+  border: 1px solid #e2d7d2;
+  background: #ffffff;
+  color: #5d463c;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.festive-tab-btn:hover {
+  border-color: #9e2a2b;
+  color: #9e2a2b;
+}
+
+.festive-tab-btn.active {
+  background: #9e2a2b;
+  border-color: #9e2a2b;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(158, 42, 43, 0.3);
+}
+
+/* Festive Product Grid */
+.festive-products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px;
+}
+
+/* Festive Product Card */
+.festive-product-card {
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid #ebdcd7;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+}
+
+.festive-product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 16px 36px rgba(93, 70, 60, 0.12);
+  border-color: #d8b8a8;
+}
+
+.festive-product-img-box {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #fbf7f4;
+  overflow: hidden;
+}
+
+.festive-product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.festive-product-card:hover .festive-product-img {
+  transform: scale(1.06);
+}
+
+.festive-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: linear-gradient(135deg, #a61c28 0%, #680e18 100%);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(104, 14, 24, 0.35);
+}
+
+.festive-product-info {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+}
+
+.festive-product-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 16px;
+  color: #3b281c;
+  margin-bottom: 8px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.festive-product-purity {
+  font-size: 12px;
+  color: #8c7365;
+  margin-bottom: 12px;
+}
+
+.festive-product-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.festive-product-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #3b281c;
+}
+
+.festive-view-btn {
+  width: 100%;
+  padding: 10px;
+  background: #3b281c;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+  text-align: center;
+  text-decoration: none;
+}
+
+.festive-view-btn:hover {
+  background: #9e2a2b;
+}
+
+/* Festive Privileges Section */
+.festive-perks-section {
+  background: #f4ede9;
+  padding: 60px 24px;
+  margin-top: 40px;
+}
+
+.festive-perks-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 32px;
+}
+
+.festive-perk-item {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.festive-perk-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.festive-perk-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 17px;
+  color: #3b281c;
+  margin-bottom: 6px;
+}
+
+.festive-perk-desc {
+  font-size: 13px;
+  color: #7a6355;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .festive-hero-section {
+    padding: 30px 16px 50px 16px;
+  }
+  .festive-section-title {
+    font-size: 1.8rem;
+  }
+  .festive-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .festive-product-info {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .festive-products-grid {
+    grid-template-columns: 1fr;
+  }
+}
