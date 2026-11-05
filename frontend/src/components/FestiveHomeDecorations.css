@@ -1,11 +1,80 @@
 /* ==========================================================================
-   ZONIRAZ HOMEPAGE DIWALI FESTIVE DECORATIONS
-   - Marigold Flowers (Genda Phool) & Mango Leaves on Card Corners
-   - Glowing Traditional Diyas & Twinkling Fairy Lights
-   - Subtle Gold Foil Borders & Festive Light Halos
+   ZONIRAZ HOMEPAGE DIWALI FESTIVE DECORATIONS (VIBRANT & RICH)
+   - Lush Marigold (Genda Phool) & Mango Leaf Toran (Bandanwar) on Navbar
+   - Hanging Fairy Lights with Twinkling Colorful/Gold Bulbs
+   - Large Auspicious Corner Flowers & Flickering Diyas on All Cards
+   - Hanging Garlands across Card Top Edges
    ========================================================================== */
 
-/* 1. Global Card Festive Styling */
+/* 1. NAVBAR FESTIVE DECORATIONS */
+.jaypore-header {
+  position: relative !important;
+  border-bottom: 2px solid rgba(212, 175, 55, 0.45) !important;
+  box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15) !important;
+}
+
+/* Hanging Phool Mala Toran & Fairy Lights across entire bottom of Navbar */
+.diwali-navbar-toran-strip {
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background-image: url('/diwali-navbar-toran.svg');
+  background-repeat: repeat-x;
+  background-size: 380px 36px;
+  background-position: top center;
+  z-index: 999;
+  pointer-events: none;
+  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.35));
+  animation: toranFairyGlow 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes toranFairyGlow {
+  0% {
+    filter: drop-shadow(0 2px 6px rgba(255, 170, 0, 0.4));
+    opacity: 0.92;
+  }
+  50% {
+    filter: drop-shadow(0 4px 14px rgba(255, 215, 0, 0.85));
+    opacity: 1;
+  }
+  100% {
+    filter: drop-shadow(0 2px 8px rgba(255, 140, 0, 0.6));
+    opacity: 0.95;
+  }
+}
+
+/* Auspicious Diyas Flanking the Navbar Logo */
+.header-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  position: relative !important;
+}
+
+.header-brand-festive-diya {
+  font-size: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 8px rgba(255, 170, 0, 0.85));
+  animation: headerDiyaPulse 2s ease-in-out infinite alternate;
+  user-select: none;
+}
+
+@keyframes headerDiyaPulse {
+  0% {
+    transform: scale(0.92) rotate(-3deg);
+    filter: drop-shadow(0 0 6px rgba(255, 150, 0, 0.7));
+  }
+  100% {
+    transform: scale(1.12) rotate(3deg);
+    filter: drop-shadow(0 0 12px rgba(255, 215, 0, 1));
+  }
+}
+
+/* 2. CARD DECORATIONS (VIBRANT & PROMINENT ACROSS ALL CARDS) */
 .collection-card,
 .fpm-card,
 .trending-card,
@@ -14,9 +83,14 @@
 .ze-card,
 .product-card,
 .subcat-card-item,
-.festive-product-card {
+.festive-product-card,
+.alwar-card {
   position: relative !important;
-  box-shadow: 0 4px 20px rgba(93, 70, 60, 0.08), 0 0 0 1px rgba(212, 175, 55, 0.22) !important;
+  border-radius: 18px !important;
+  border: 1px solid rgba(243, 200, 80, 0.5) !important;
+  box-shadow: 
+    0 6px 24px rgba(93, 70, 60, 0.1),
+    0 0 14px rgba(255, 180, 0, 0.16) !important;
   transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
@@ -28,81 +102,103 @@
 .ze-card:hover,
 .product-card:hover,
 .subcat-card-item:hover,
-.festive-product-card:hover {
-  box-shadow: 0 14px 36px rgba(184, 134, 11, 0.24), 0 0 18px rgba(255, 215, 0, 0.28), 0 0 0 1.5px rgba(255, 215, 0, 0.65) !important;
+.festive-product-card:hover,
+.alwar-card:hover {
+  transform: translateY(-6px) !important;
+  box-shadow: 
+    0 16px 42px rgba(184, 134, 11, 0.32),
+    0 0 24px rgba(255, 215, 0, 0.45),
+    0 0 0 2px rgba(255, 215, 0, 0.85) !important;
 }
 
-/* 2. Top-Right Corner Marigold Flower & Glowing Diya Ornament */
+/* Hanging Phool Mala & Fairy Light Garland along Top Border of Every Card */
+.collection-card::after,
+.fpm-card::after,
+.trending-card::after,
+.cfy-card::after,
+.zw-card::after,
+.ze-card::after,
+.product-card::after,
+.subcat-card-item::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  background-image: url('/diwali-card-garland.svg');
+  background-repeat: repeat-x;
+  background-size: 260px 20px;
+  background-position: top center;
+  z-index: 5;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* Large, Radiant Top-Right Corner Marigold Flower & Glowing Diya Ornament */
 .collection-card::before,
 .fpm-card::before,
 .trending-card::before,
 .cfy-card::before,
 .zw-card::before,
-.ze-card::before {
+.ze-card::before,
+.product-card::before,
+.subcat-card-item::before {
   content: '';
   position: absolute;
-  top: 0;
-  right: 0;
-  width: 58px;
-  height: 58px;
+  top: -2px;
+  right: -2px;
+  width: 76px;
+  height: 76px;
   background-image: url('/diwali-corner-decor.svg');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: top right;
-  z-index: 6;
+  z-index: 7;
   pointer-events: none;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
-  animation: diyaCornerGlow 2.5s ease-in-out infinite alternate;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.45));
+  animation: cardDiyaFlameGlow 2.4s ease-in-out infinite alternate;
 }
 
-/* 3. Top-Left Corner Marigold Flower & Leaf on Featured/Large Cards */
-.collection-card-large::after,
-.zw-card-featured::after {
+/* Mirrored Left Corner for Featured/Large Cards */
+.collection-card-large .collection-card-overlay::before,
+.zw-card-featured::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 58px;
-  height: 58px;
+  top: -2px;
+  left: -2px;
+  width: 76px;
+  height: 76px;
   background-image: url('/diwali-corner-left.svg');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: top left;
-  z-index: 6;
+  z-index: 7;
   pointer-events: none;
-  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
-  animation: diyaCornerGlow 2.8s ease-in-out infinite alternate 0.5s;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.45));
+  animation: cardDiyaFlameGlow 2.6s ease-in-out infinite alternate 0.4s;
 }
 
-@keyframes diyaCornerGlow {
+@keyframes cardDiyaFlameGlow {
   0% {
-    filter: drop-shadow(0 2px 5px rgba(255, 152, 0, 0.35));
-    transform: scale(0.98);
+    filter: drop-shadow(0 2px 6px rgba(255, 140, 0, 0.5));
+    transform: scale(0.97);
   }
   50% {
-    filter: drop-shadow(0 2px 10px rgba(255, 193, 7, 0.75));
-    transform: scale(1.02);
+    filter: drop-shadow(0 4px 14px rgba(255, 215, 0, 0.9));
+    transform: scale(1.03);
   }
   100% {
-    filter: drop-shadow(0 2px 6px rgba(255, 87, 34, 0.45));
+    filter: drop-shadow(0 2px 8px rgba(255, 87, 34, 0.6));
     transform: scale(1);
   }
 }
 
-/* 4. Twinkling Golden Fairy Lights on Card Top Borders */
-.collection-card,
-.fpm-card,
-.trending-card,
-.cfy-card,
-.zw-card,
-.ze-card {
-  border-top: 1px solid rgba(255, 215, 0, 0.45) !important;
-}
-
-/* 5. Hanging Festive Toran along the Main Hero Banner */
+/* 3. HERO BANNER FESTIVE TORAN & LIGHTS */
 .hero-slider,
 .hero-container {
   position: relative !important;
+  border-top: 2px solid rgba(255, 215, 0, 0.5) !important;
 }
 
 .hero-slider::before,
@@ -112,33 +208,18 @@
   top: 0;
   left: 0;
   right: 0;
-  height: 28px;
-  background-image: url('/diwali-hanging-toran.svg');
+  height: 36px;
+  background-image: url('/diwali-navbar-toran.svg');
   background-repeat: repeat-x;
-  background-size: 320px 28px;
+  background-size: 380px 36px;
   background-position: top center;
   z-index: 10;
   pointer-events: none;
-  filter: drop-shadow(0 3px 6px rgba(0, 0, 0, 0.45));
-  animation: fairyLightsTwinkle 3s ease-in-out infinite alternate;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
+  animation: toranFairyGlow 2.8s ease-in-out infinite alternate;
 }
 
-@keyframes fairyLightsTwinkle {
-  0% {
-    opacity: 0.85;
-    filter: drop-shadow(0 2px 6px rgba(255, 193, 7, 0.4));
-  }
-  50% {
-    opacity: 1;
-    filter: drop-shadow(0 4px 12px rgba(255, 152, 0, 0.8));
-  }
-  100% {
-    opacity: 0.9;
-    filter: drop-shadow(0 2px 7px rgba(255, 215, 0, 0.5));
-  }
-}
-
-/* 6. Festive Section Title Diya Flanks */
+/* 4. FESTIVE SECTION HEADINGS WITH AUSPICIOUS DIYAS */
 .shop-collection-title,
 .fpm-title,
 .trending-title,
@@ -147,7 +228,7 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .shop-collection-title::before,
@@ -159,46 +240,45 @@
 .cfy-title::before,
 .cfy-title::after {
   content: '🪔';
-  font-size: 16px;
-  filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.6));
+  font-size: 18px;
+  filter: drop-shadow(0 0 6px rgba(255, 193, 7, 0.8));
   animation: titleDiyaFlicker 2s ease-in-out infinite alternate;
 }
 
 @keyframes titleDiyaFlicker {
-  0% { transform: scale(0.92); opacity: 0.8; }
-  100% { transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 8px rgba(255, 152, 0, 0.85)); }
+  0% { transform: scale(0.92) rotate(-4deg); opacity: 0.85; }
+  100% { transform: scale(1.12) rotate(4deg); opacity: 1; filter: drop-shadow(0 0 10px rgba(255, 152, 0, 1)); }
 }
 
-/* 7. Mobile Adjustments for Card Corner Ornaments */
+/* 5. MOBILE RESPONSIVENESS */
 @media (max-width: 768px) {
+  .diwali-navbar-toran-strip {
+    height: 24px;
+    bottom: -15px;
+    background-size: 260px 24px;
+  }
+  .header-brand-festive-diya {
+    font-size: 15px;
+  }
   .collection-card::before,
   .fpm-card::before,
   .trending-card::before,
   .cfy-card::before,
   .zw-card::before,
-  .ze-card::before {
-    width: 44px;
-    height: 44px;
+  .ze-card::before,
+  .product-card::before,
+  .subcat-card-item::before {
+    width: 54px;
+    height: 54px;
   }
-  .collection-card-large::after,
-  .zw-card-featured::after {
-    width: 44px;
-    height: 44px;
+  .collection-card-large .collection-card-overlay::before,
+  .zw-card-featured::before {
+    width: 54px;
+    height: 54px;
   }
   .hero-slider::before,
   .hero-container::before {
-    height: 20px;
-    background-size: 240px 20px;
-  }
-  .shop-collection-title::before,
-  .shop-collection-title::after,
-  .fpm-title::before,
-  .fpm-title::after,
-  .trending-title::before,
-  .trending-title::after,
-  .cfy-title::before,
-  .cfy-title::after {
-    font-size: 13px;
-    gap: 8px;
+    height: 24px;
+    background-size: 260px 24px;
   }
 }
