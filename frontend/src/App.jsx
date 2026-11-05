@@ -3,6 +3,7 @@ import { API_BASE_URL, getUploadsUrl } from './config';
 import { cachedFetch } from './utils/apiCache';
 import Header from './components/Header';
 import Hero from './components/Hero';
+import './components/FestiveHomeDecorations.css';
 import ShopByCollection from './components/ShopByCollection';
 import FindPerfectMatch from './components/FindPerfectMatch';
 import TrendingNow from './components/TrendingNow';
