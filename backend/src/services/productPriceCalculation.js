@@ -324,9 +324,15 @@ exports.productPricing = async (req, res) => {
             const isBangle = !isEarring && !isRing && !isTennisBracelet && (catStr.includes('bangle') || nameStr.includes('bangle') || product_data.category_id === '5' || product_data.category_id === '4');
 
             if (catStr === "chains" || catStr === "chain" || nameStr.includes("chain")) {
-                const baseLength = product_data.base_length || 20;
+                const rawChainDefault = (product_data.chainsize_id && product_data.chainsize_id !== '0')
+                    ? String(product_data.chainsize_id).trim()
+                    : '384';
+                const chainDefaultNum = Number(rawChainDefault);
+                const defaultLengthInches = (!isNaN(chainDefaultNum) && chainDefaultNum >= 100)
+                    ? (chainDefaultNum * 0.0625)
+                    : (!isNaN(chainDefaultNum) && chainDefaultNum > 0 ? chainDefaultNum : (product_data.base_length || 24));
                 const weightPerInch = 0.5;
-                gross_gold_weight = base_gold_weight + ((sizeInInches - baseLength) * weightPerInch);
+                gross_gold_weight = base_gold_weight + ((sizeInInches - defaultLengthInches) * weightPerInch);
             } else if (catStr === "mangalsutra" || catStr === "mangalsutras" || nameStr.includes("mangalsutra")) {
                 const baseLength = product_data.base_length || 18;
                 const weightPerInch = 0.5;

@@ -257,7 +257,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(
     isChain
-      ? '320' // 20 Inches in Aana
+      ? (product?.chainsize_id && product?.chainsize_id !== '0'
+          ? String(product.chainsize_id).trim()
+          : (activeSizes.includes('384') ? '384' : (activeSizes[0] || '384')))
       : isMangalsutra
         ? '288' // Default 18 Inches in Aana (288 * 0.0625 = 18)
         : isTennisBracelet
@@ -511,15 +513,20 @@ export default function ProductDetailPage({ product, products: propProducts = []
     setSelectedImage(0);
   }, [selectedKarat, selectedColor]);
 
-  // Ensure default size (2.6 for bangles) is selected when product loads
+  // Ensure default size (2.6 for bangles, 384 for chains) is selected when product loads
   useEffect(() => {
     if (isBangle) {
       const def = (product?.banglesize_id && product?.banglesize_id !== '0')
         ? product.banglesize_id
         : (activeSizes.includes('2.6') ? '2.6' : (activeSizes[0] || '2.6'));
       setSelectedSize(def);
+    } else if (isChain) {
+      const def = (product?.chainsize_id && product?.chainsize_id !== '0')
+        ? String(product.chainsize_id).trim()
+        : (activeSizes.includes('384') ? '384' : (activeSizes[0] || '384'));
+      setSelectedSize(def);
     }
-  }, [product?.product_slug, product?.product_id, product?._id, isBangle]);
+  }, [product?.product_slug, product?.product_id, product?._id, isBangle, isChain]);
 
   const handleMouseMove = (e) => {
     const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
@@ -635,7 +642,9 @@ export default function ProductDetailPage({ product, products: propProducts = []
     const defaultSize = !showSizing
       ? selectedSize
       : isChain
-        ? '320'
+        ? (product?.chainsize_id && product?.chainsize_id !== '0'
+            ? String(product.chainsize_id).trim()
+            : (activeSizes.includes('384') ? '384' : (activeSizes[0] || '384')))
         : isTennisBracelet
           ? '320'
           : isMangalsutra
@@ -2520,7 +2529,7 @@ export default function ProductDetailPage({ product, products: propProducts = []
               <input
                 type="number"
                 step="any"
-                placeholder={isAanaSizeProduct ? (isMangalsutra ? "e.g. 288 for 18 inches, 256 for 16 inches" : "e.g. 320 for 20 inches, 288 for 18 inches") : "Enter size..."}
+                placeholder={isAanaSizeProduct ? (isChain ? "e.g. 384 for 24 inches, 320 for 20 inches" : isMangalsutra ? "e.g. 288 for 18 inches, 256 for 16 inches" : "e.g. 320 for 20 inches, 288 for 18 inches") : "Enter size..."}
                 value={customSizeInput}
                 onChange={e => {
                   const val = e.target.value;

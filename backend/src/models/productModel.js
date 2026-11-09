@@ -84,6 +84,10 @@ const productSchema = new mongoose.Schema({
   banglesize_id: {
     type: String
   },
+  chainsize_id: {
+    type: String,
+    default: "384"
+  },
   karat_id: {
     type: String // Comma-separated karats (e.g. "1,2")
   },
