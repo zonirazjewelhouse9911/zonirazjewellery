@@ -3,7 +3,6 @@ import { API_BASE_URL, getUploadsUrl } from './config';
 import { cachedFetch } from './utils/apiCache';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import './components/FestiveHomeDecorations.css';
 import ShopByCollection from './components/ShopByCollection';
 import FindPerfectMatch from './components/FindPerfectMatch';
 import TrendingNow from './components/TrendingNow';
@@ -105,7 +104,6 @@ const LooseStonesPage = lazyWithRetry(() => import('./components/LooseStonesPage
 const ZonirazAlwarPage = lazyWithRetry(() => import('./components/ZonirazAlwarPage'));
 const FAQPage = lazyWithRetry(() => import('./components/FAQPage'));
 const ExportPage = lazyWithRetry(() => import('./components/ExportPage'));
-const FestiveLandingPage = lazyWithRetry(() => import('./components/FestiveLandingPage'));
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { VideoCallProvider } from './context/VideoCallContext';
@@ -113,7 +111,6 @@ import { CurrencyProvider } from './context/CurrencyContext';
 import AuthModal from './components/AuthModal';
 import VideoCallModal from './components/VideoCallModal';
 import AdminVideoPanel from './components/AdminVideoPanel';
-import FestiveLandingModal from './components/FestiveLandingModal';
 import { products } from './data/products';
 
 const hashToCategoryMap = {
@@ -643,7 +640,6 @@ function getInitialRouteState() {
   if (path === '/faq' || path === '/faqs' || path === '/f-and-q' || path === '/f&q') return { view: 'faq', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/admin-call') return { view: 'admin-call', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/all-collections') return { view: 'all-collections', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
-  if (path === '/festive' || path === '/diwali') return { view: 'festive', productId: null, categoryName: 'Festive Collection', blogSlug: null, helpCategory: 'delivery' };
   if (path === '/women' || path === '/women-jewellery' || path === '/womens-jewellery' || path === '/women-jewelry' || path === '/womens-jewelry') {
     return { view: 'rings', productId: null, categoryName: "Women's Jewellery", blogSlug: null, helpCategory: 'delivery' };
   }
@@ -1285,9 +1281,6 @@ function AppContent() {
         restoreOrScrollTop();
       } else if (path === '/admin-call') {
         setCurrentView('admin-call');
-        restoreOrScrollTop();
-      } else if (path === '/festive' || path === '/diwali') {
-        setCurrentView('festive');
         restoreOrScrollTop();
       } else if (
         path === '/women' || path === '/women-jewellery' || path === '/womens-jewellery' ||
@@ -1956,8 +1949,6 @@ function AppContent() {
           <ZonirazAlwarPage />
         ) : currentView === 'admin-call' ? (
           <AdminVideoPanel />
-        ) : currentView === 'festive' ? (
-          <FestiveLandingPage products={allProducts} />
         ) : currentView === 'not-found' ? (
           <div style={{ minHeight: '65vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '80px 24px' }}>
             <h1 style={{ fontFamily: 'Playfair Display, serif', fontSize: '2.5rem', color: '#634d40', marginBottom: '16px' }}>Page Not Found (404)</h1>
@@ -1995,9 +1986,6 @@ function AppContent() {
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       {/* Global Video Call Modal — renders on top of everything */}
       <VideoCallModal />
-
-      {/* Festive Diwali Full-Screen Landing Animation Screen — Displays on reload */}
-      <FestiveLandingModal />
 
       {/* Floating Call and WhatsApp widgets */}
       <div className="floating-contact-widgets">

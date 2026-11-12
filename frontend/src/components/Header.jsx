@@ -497,11 +497,9 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
 
           {/* Center: Brand Logo */}
           <div className="header-brand">
-            <span className="header-brand-festive-diya" aria-hidden="true" title="Shubh Deepavali">🪔</span>
             <a href="/" className="brand-logo-text">
               <img src="https://media.zoniraz.com/uploads/zoniraz_frontend/zoni.png" alt="Zoniraz Logo" className="header-brand-logo-img" decoding="async" width="180" height="60" />
             </a>
-            <span className="header-brand-festive-diya" aria-hidden="true" title="Shubh Deepavali">🪔</span>
           </div>
 
           {/* Right Side: Pincode + Currency + Icon Actions */}
@@ -1028,8 +1026,6 @@ export default function Header({ wishlist = {}, setWishlist, cart = {}, setCart,
               })}
           </nav>
         </div>
-        {/* Festive Diwali Toran & Fairy Lights draped under Navbar */}
-        <div className="diwali-navbar-toran-strip" aria-hidden="true" />
       </header>
 
       {/* Digital Gold Modal */}
