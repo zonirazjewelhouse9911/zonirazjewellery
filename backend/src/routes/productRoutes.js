@@ -26,7 +26,11 @@ const upload = multer({ storage: storage });
 // Upload Endpoint
 router.post('/upload', upload.array('file'), productController.uploadImages);
 
-// Product REST endpoints
+// Public Product Catalog & Single Product Lookup (Slug, Product ID, or ObjectId)
+router.get('/products', productController.getProducts);
+router.get('/products/:id', productController.getProductById);
+
+// Product Admin REST endpoints
 router.get('/admin/products', productController.getProducts);
 router.get('/admin/products/:id', productController.getProductById);
 router.post('/admin/products', productController.createProduct);

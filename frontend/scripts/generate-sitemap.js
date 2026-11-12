@@ -19,6 +19,7 @@ const formatDate = (dateStr) => {
   return d.toISOString().split('T')[0];
 };
 
+
 // 1. Static Pages Definition
 const staticPages = [
   { url: '/', priority: '1.0', changefreq: 'daily' },

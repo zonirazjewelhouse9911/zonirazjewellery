@@ -699,6 +699,196 @@ function getInitialRouteState() {
   return { view: 'home', productId: null, categoryName: 'Rings', blogSlug: null, helpCategory: 'delivery' };
 }
 
+const mapImgUrl = (url, name) => {
+  if (!url) return 'https://placehold.co/600x600?text=' + encodeURIComponent(name);
+  return getUploadsUrl(url);
+};
+
+export const formatAppProduct = (p, pricingMap = {}) => {
+  if (!p) return null;
+  const id = p._id || p.product_id;
+  const name = p.product_title || p.name || 'Jewellery Item';
+  const price = (pricingMap && (pricingMap[p._id] || pricingMap[p.product_id])) || Number(p.price) || Number(p.basePrice) || 0;
+  const discount = Number(p.discount) || 0;
+
+  // Get category name
+  const category = p.product_category || p.category || 'Rings';
+
+  // Get subcategory (style / tag fallback)
+  let subcategory = p.product_subcategory || p.productSubCategory || p.subcategory || '';
+  if (!subcategory && p.specs && p.specs.style) {
+    subcategory = p.specs.style;
+  }
+  if (!subcategory && p.tags && Array.isArray(p.tags)) {
+    const excludedTags = ['rings', 'ring', 'earrings', 'earring', 'pendants', 'pendant', 'necklaces', 'necklace', 'bracelets', 'bracelet', 'bangles', 'bangle', 'women', 'men', 'kids', 'diamond', 'gold', 'silver', 'platinum'];
+    const subTag = p.tags.find(t => !excludedTags.includes(t.toLowerCase()));
+    if (subTag) subcategory = subTag;
+  }
+
+  // Get gender
+  let genderList = [];
+  const rawGender = p.gender || p.productgender || p.product_gender || p.target_audience || (p.specs && p.specs.gender) || '';
+  if (rawGender) {
+    const gLower = String(rawGender).toLowerCase().trim();
+    genderList.push(gLower);
+    if (gLower.includes('femail') || gLower.includes('female') || gLower.includes('women') || gLower.includes('woman') || gLower.includes('fem')) {
+      genderList.push('women', 'female', 'femail');
+    }
+    if ((gLower.includes('mail') || gLower.includes('male') || gLower.includes('men') || gLower.includes('man')) && !gLower.includes('femail') && !gLower.includes('female')) {
+      genderList.push('men', 'male', 'mail');
+    }
+    if (gLower.includes('kide') || gLower.includes('kids') || gLower.includes('kid') || gLower.includes('child')) {
+      genderList.push('kids', 'kide');
+    }
+  }
+  if (p.tags && Array.isArray(p.tags)) {
+    if (p.tags.includes('women') || p.tags.includes('femail') || p.tags.includes('female')) genderList.push('women', 'female', 'femail');
+    if (p.tags.includes('men') || p.tags.includes('mail') || p.tags.includes('male')) genderList.push('men', 'male', 'mail');
+    if (p.tags.includes('kids') || p.tags.includes('kide')) genderList.push('kids', 'kide');
+  }
+  const titleLower = String(p.product_title || p.name || '').toLowerCase();
+  const pCatLower = String(p.product_category || p.category || '').toLowerCase();
+  if (titleLower.includes('women') || titleLower.includes('femail') || titleLower.includes('female') || pCatLower.includes('women')) genderList.push('women', 'female', 'femail');
+  if ((titleLower.includes("men's") || titleLower.includes('mens') || titleLower.includes('mail') || pCatLower.includes('men')) && !titleLower.includes('femail')) genderList.push('men', 'male', 'mail');
+  if (titleLower.includes('kids') || titleLower.includes('kide') || titleLower.includes('child') || pCatLower.includes('kids')) genderList.push('kids', 'kide');
+  if (genderList.length === 0) {
+    genderList.push('women', 'female', 'femail');
+  }
+  const gender = [...new Set(genderList.map(s => s.toLowerCase()))].join(', ');
+
+  // Images
+  let images = [];
+  if (p.gallery) {
+    let parsed = p.gallery;
+    if (typeof p.gallery === 'string') {
+      try {
+        parsed = JSON.parse(p.gallery);
+      } catch (e) {
+        parsed = p.gallery.split(',').map(s => s.trim());
+      }
+    }
+    if (Array.isArray(parsed)) {
+      images = parsed;
+    } else if (typeof parsed === 'object' && parsed !== null) {
+      const yellowKeys = ['2', 'yellow', 'yellow gold', 'yellow-gold'];
+      const yellowGoldImages = [];
+      yellowKeys.forEach(k => {
+        const val = parsed[k];
+        if (Array.isArray(val)) yellowGoldImages.push(...val);
+        else if (typeof val === 'string') yellowGoldImages.push(val);
+      });
+      const otherImages = [];
+      Object.keys(parsed).forEach(key => {
+        if (!yellowKeys.includes(key)) {
+          const val = parsed[key];
+          if (Array.isArray(val)) otherImages.push(...val);
+          else if (typeof val === 'string') otherImages.push(val);
+        }
+      });
+      images = [...yellowGoldImages, ...otherImages];
+    }
+  } else if (p.images) {
+    if (Array.isArray(p.images)) images = p.images;
+    else if (typeof p.images === 'string') images = p.images.split(',').map(s => s.trim());
+  }
+  if (images.length === 0 && p.image) {
+    images = [p.image];
+  }
+
+  const clientImages = images.map(url => mapImgUrl(url, name));
+  if (clientImages.length === 0) {
+    clientImages.push(mapImgUrl('', name));
+  }
+
+  const size = p.size_id || (p.specs && p.specs.size) || 'Free Size';
+  const pTypeLower = String(p.product_type || '').toLowerCase().trim();
+  const isCoin = Boolean(p.is_coin || pTypeLower === 'coin' || String(p.category || p.product_category || '').toLowerCase().includes('coin'));
+
+  let matList = [];
+  if (isCoin) {
+    const cMetal = String(p.metal_type || p.coin_type || (titleLower.includes('silver') ? 'Silver' : 'Gold'));
+    const cPurity = p.purity || (cMetal.toLowerCase().includes('silver') ? '999 Fine Silver' : '24K (999)');
+    matList = [`${cPurity} Pure ${cMetal}`];
+  } else {
+    if (p.material) matList.push(p.material);
+    if (p.product_type) matList.push(p.product_type);
+    if (p.stoneType) matList.push(p.stoneType);
+    if (p.defaultMetal) matList.push(p.defaultMetal);
+    if (p.metal_type) matList.push(String(p.metal_type));
+    if (p.specs) {
+      if (p.specs.metal) matList.push(p.specs.metal);
+      if (p.specs.stoneType) matList.push(p.specs.stoneType);
+    }
+    if (p.tags && Array.isArray(p.tags)) {
+      if (p.tags.includes('diamond')) matList.push('diamond');
+      if (p.tags.includes('gold')) matList.push('gold');
+      if (p.tags.includes('platinum')) matList.push('platinum');
+      if (p.tags.includes('gemstone') || p.tags.includes('gemstones')) matList.push('gemstone');
+      if (p.tags.includes('rose gold') || p.tags.includes('rose-gold')) matList.push('rose gold');
+      if (p.tags.includes('yellow gold') || p.tags.includes('yellow-gold')) matList.push('yellow gold');
+      if (p.tags.includes('white gold') || p.tags.includes('white-gold')) matList.push('white gold');
+    }
+    const isPG = pTypeLower === 'gold' || pTypeLower.includes('plain gold') || pTypeLower.includes('plan gold');
+    if (Number(p.gold_weight) > 0 || isPG) matList.push('gold');
+    if (!isPG && (Number(p.diamond_weight) > 0 || Number(p.diamond_count) > 0 || p.diamond_quality)) matList.push('diamond');
+    if (Number(p.gemstone_weight) > 0 || Number(p.noof_gem) > 0 || p.color_stone || Number(p.gemstone_price) > 0) matList.push('gemstone');
+    if (!isPG && (Number(p.solitaires_weight) > 0 || Number(p.solitaire_weight) > 0 || Number(p.solitaires_price) > 0 || p.solitaires_quality)) matList.push('diamond');
+    if (titleLower.includes('gold')) matList.push('gold');
+    if (!isPG && titleLower.includes('diamond')) matList.push('diamond');
+    if (titleLower.includes('platinum')) matList.push('platinum');
+    if (titleLower.includes('gemstone') || titleLower.includes('ruby') || titleLower.includes('emerald') || titleLower.includes('sapphire') || titleLower.includes('topaz') || titleLower.includes('pearl')) matList.push('gemstone');
+  }
+
+  const material = [...new Set(matList.map(s => String(s).toLowerCase()))].join(', ');
+  const weight = p.product_weight || p.gold_weight || p.baseWeight || 0;
+  const fastDelivery = p.feature === '1';
+  const latest = p.sessional === '1';
+  const storePickup = p.topselling === '1';
+
+  return {
+    ...p,
+    id,
+    productId: p.product_id || String(id),
+    name,
+    price,
+    originalPrice: price + discount,
+    image: clientImages[0],
+    images: clientImages,
+    size,
+    material,
+    category,
+    weight,
+    fastDelivery,
+    latest,
+    storePickup,
+    tryAtHome: true,
+    subcategory,
+    gender,
+    diamond_weight: p.diamond_weight,
+    noof_gem: p.noof_gem,
+    diamond_count: p.diamond_count,
+    width: p.width,
+    height: p.height,
+    gold_weight: p.gold_weight,
+    gemstone_weight: p.gemstone_weight,
+    gemstone_price: p.gemstone_price,
+    making_charges: p.making_charges,
+    solitaires_price: p.solitaires_price,
+    solitaire_weight: p.solitaire_weight || p.solitaires_weight || 0,
+    solitaires_weight: p.solitaires_weight || p.solitaire_weight || 0,
+    solitaires_quality: p.solitaires_quality,
+    solitaire_price_ij_si: p.solitaire_price_ij_si,
+    solitaire_price_gh_vs: p.solitaire_price_gh_vs,
+    solitaire_price_ef_vvs: p.solitaire_price_ef_vvs,
+    solitaire_price_fg_si: p.solitaire_price_fg_si,
+    solitaire_setting: p.solitaire_setting || p.solitaires_setting || 'Prong Setting',
+    solitaires_setting: p.solitaires_setting || p.solitaire_setting || 'Prong Setting',
+    product_code: p.product_code,
+    gallery: p.gallery,
+    product_slug: p.product_slug || p.slug || ''
+  };
+};
+
 function AppContent() {
   const { isAuthModalOpen, setIsAuthModalOpen } = useContext(AuthContext);
   const initialRoute = React.useMemo(() => getInitialRouteState(), []);
@@ -746,6 +936,36 @@ function AppContent() {
     return true;
   });
 
+  const [fastProduct, setFastProduct] = React.useState(null);
+  const [isFastProductLoading, setIsFastProductLoading] = React.useState(false);
+
+  // Fast single-product lookup on direct URL navigation to /product/:slug
+  React.useEffect(() => {
+    if (currentView === 'product' && selectedProductId) {
+      const slugOrId = String(selectedProductId).replace(/\/+$/, '').trim();
+      const catalog = allProducts.length > 0 ? allProducts : products;
+      const exists = catalog.find(p => 
+        String(p.product_slug || p.slug || '').toLowerCase() === slugOrId.toLowerCase() ||
+        String(p.id || p._id || p.product_id || '').toLowerCase() === slugOrId.toLowerCase()
+      );
+      if (!exists && (!fastProduct || (String(fastProduct.product_slug || fastProduct.slug || '').toLowerCase() !== slugOrId.toLowerCase() && String(fastProduct.id || fastProduct.productId || '').toLowerCase() !== slugOrId.toLowerCase()))) {
+        setIsFastProductLoading(true);
+        fetch(`${API_BASE_URL}/api/products/${encodeURIComponent(slugOrId)}`)
+          .then(res => res.ok ? res.json() : null)
+          .then(json => {
+            if (json && json.success && json.data) {
+              const mapped = formatAppProduct(json.data);
+              setFastProduct(mapped);
+            }
+          })
+          .catch(() => {})
+          .finally(() => {
+            setIsFastProductLoading(false);
+          });
+      }
+    }
+  }, [currentView, selectedProductId, allProducts]);
+
   // Persist wishlist & cart to localStorage on every change
   React.useEffect(() => {
     localStorage.setItem('zoniraj_wishlist', JSON.stringify(wishlist));
@@ -772,216 +992,7 @@ function AppContent() {
             });
           }
 
-          const mapped = (resData.data || []).map(p => {
-            const id = p._id || p.product_id;
-            const name = p.product_title || p.name || 'Jewellery Item';
-            const price = pricingMap[p._id] || pricingMap[p.product_id] || Number(p.price) || Number(p.basePrice) || 0;
-            const discount = Number(p.discount) || 0;
-
-            // Get category name
-            const category = p.product_category || p.category || 'Rings';
-
-            // Get subcategory (style / tag fallback)
-            let subcategory = p.product_subcategory || p.productSubCategory || p.subcategory || '';
-            if (!subcategory && p.specs && p.specs.style) {
-              subcategory = p.specs.style;
-            }
-            if (!subcategory && p.tags && Array.isArray(p.tags)) {
-              const excludedTags = ['rings', 'ring', 'earrings', 'earring', 'pendants', 'pendant', 'necklaces', 'necklace', 'bracelets', 'bracelet', 'bangles', 'bangle', 'women', 'men', 'kids', 'diamond', 'gold', 'silver', 'platinum'];
-              const subTag = p.tags.find(t => !excludedTags.includes(t.toLowerCase()));
-              if (subTag) subcategory = subTag;
-            }
-
-            // Get gender (supporting database values: Femail, mail, kide, female, male, kids, women, men)
-            let genderList = [];
-            const rawGender = p.gender || p.productgender || p.product_gender || p.target_audience || (p.specs && p.specs.gender) || '';
-            if (rawGender) {
-              const gLower = String(rawGender).toLowerCase().trim();
-              genderList.push(gLower);
-              if (gLower.includes('femail') || gLower.includes('female') || gLower.includes('women') || gLower.includes('woman') || gLower.includes('fem')) {
-                genderList.push('women', 'female', 'femail');
-              }
-              if ((gLower.includes('mail') || gLower.includes('male') || gLower.includes('men') || gLower.includes('man')) && !gLower.includes('femail') && !gLower.includes('female')) {
-                genderList.push('men', 'male', 'mail');
-              }
-              if (gLower.includes('kide') || gLower.includes('kids') || gLower.includes('kid') || gLower.includes('child')) {
-                genderList.push('kids', 'kide');
-              }
-            }
-            if (p.tags && Array.isArray(p.tags)) {
-              if (p.tags.includes('women') || p.tags.includes('femail') || p.tags.includes('female')) genderList.push('women', 'female', 'femail');
-              if (p.tags.includes('men') || p.tags.includes('mail') || p.tags.includes('male')) genderList.push('men', 'male', 'mail');
-              if (p.tags.includes('kids') || p.tags.includes('kide')) genderList.push('kids', 'kide');
-            }
-            const titleLower = String(p.product_title || p.name || '').toLowerCase();
-            const pCatLower = String(p.product_category || p.category || '').toLowerCase();
-            if (titleLower.includes('women') || titleLower.includes('femail') || titleLower.includes('female') || pCatLower.includes('women')) genderList.push('women', 'female', 'femail');
-            if ((titleLower.includes("men's") || titleLower.includes('mens') || titleLower.includes('mail') || pCatLower.includes('men')) && !titleLower.includes('femail')) genderList.push('men', 'male', 'mail');
-            if (titleLower.includes('kids') || titleLower.includes('kide') || titleLower.includes('child') || pCatLower.includes('kids')) genderList.push('kids', 'kide');
-
-            // Default fallback for general jewellery without explicit gender
-            if (genderList.length === 0) {
-              genderList.push('women', 'female', 'femail');
-            }
-
-            const gender = [...new Set(genderList.map(s => s.toLowerCase()))].join(', ');
-            // Get images array
-            let images = [];
-            if (p.gallery) {
-              let parsed = p.gallery;
-              if (typeof p.gallery === 'string') {
-                try {
-                  parsed = JSON.parse(p.gallery);
-                } catch (e) {
-                  parsed = p.gallery.split(',').map(s => s.trim());
-                }
-              }
-
-              if (Array.isArray(parsed)) {
-                images = parsed;
-              } else if (typeof parsed === 'object' && parsed !== null) {
-                // Prioritize Yellow Gold (key '2' or equivalent name) first
-                const yellowKeys = ['2', 'yellow', 'yellow gold', 'yellow-gold'];
-                const yellowGoldImages = [];
-                yellowKeys.forEach(k => {
-                  const val = parsed[k];
-                  if (Array.isArray(val)) yellowGoldImages.push(...val);
-                  else if (typeof val === 'string') yellowGoldImages.push(val);
-                });
-
-                // Get other metals
-                const otherImages = [];
-                Object.keys(parsed).forEach(key => {
-                  if (!yellowKeys.includes(key)) {
-                    const val = parsed[key];
-                    if (Array.isArray(val)) otherImages.push(...val);
-                    else if (typeof val === 'string') otherImages.push(val);
-                  }
-                });
-
-                images = [...yellowGoldImages, ...otherImages];
-              }
-            } else if (p.images) {
-              if (Array.isArray(p.images)) images = p.images;
-              else if (typeof p.images === 'string') images = p.images.split(',').map(s => s.trim());
-            }
-            if (images.length === 0 && p.image) {
-              images = [p.image];
-            }
-
-            const size = p.size_id || (p.specs && p.specs.size) || 'Free Size';
-
-            const pTypeLower = String(p.product_type || '').toLowerCase().trim();
-            const isCoin = Boolean(p.is_coin || pTypeLower === 'coin' || String(p.category || p.product_category || '').toLowerCase().includes('coin'));
-
-            // Get material / stone / metal
-            let matList = [];
-            if (isCoin) {
-              const cMetal = String(p.metal_type || p.coin_type || (titleLower.includes('silver') ? 'Silver' : 'Gold'));
-              const cPurity = p.purity || (cMetal.toLowerCase().includes('silver') ? '999 Fine Silver' : '24K (999)');
-              matList = [`${cPurity} Pure ${cMetal}`];
-            } else {
-              if (p.material) matList.push(p.material);
-              if (p.product_type) matList.push(p.product_type);
-              if (p.stoneType) matList.push(p.stoneType);
-              if (p.defaultMetal) matList.push(p.defaultMetal);
-              if (p.metal_type) matList.push(String(p.metal_type));
-              if (p.specs) {
-                if (p.specs.metal) matList.push(p.specs.metal);
-                if (p.specs.stoneType) matList.push(p.specs.stoneType);
-              }
-              if (p.tags && Array.isArray(p.tags)) {
-                if (p.tags.includes('diamond')) matList.push('diamond');
-                if (p.tags.includes('gold')) matList.push('gold');
-                if (p.tags.includes('platinum')) matList.push('platinum');
-                if (p.tags.includes('gemstone') || p.tags.includes('gemstones')) matList.push('gemstone');
-                if (p.tags.includes('rose gold') || p.tags.includes('rose-gold')) matList.push('rose gold');
-                if (p.tags.includes('yellow gold') || p.tags.includes('yellow-gold')) matList.push('yellow gold');
-                if (p.tags.includes('white gold') || p.tags.includes('white-gold')) matList.push('white gold');
-              }
-
-              const isPG = pTypeLower === 'gold' || pTypeLower.includes('plain gold') || pTypeLower.includes('plan gold');
-
-              // Numeric weight & specification indications
-              if (Number(p.gold_weight) > 0 || isPG) matList.push('gold');
-              if (!isPG && (Number(p.diamond_weight) > 0 || Number(p.diamond_count) > 0 || p.diamond_quality)) matList.push('diamond');
-              if (Number(p.gemstone_weight) > 0 || Number(p.noof_gem) > 0 || p.color_stone || Number(p.gemstone_price) > 0) matList.push('gemstone');
-              if (!isPG && (Number(p.solitaires_weight) > 0 || Number(p.solitaire_weight) > 0 || Number(p.solitaires_price) > 0 || p.solitaires_quality)) matList.push('diamond');
-
-              // Product name / title keyword inspection
-              if (titleLower.includes('gold')) matList.push('gold');
-              if (!isPG && titleLower.includes('diamond')) matList.push('diamond');
-              if (titleLower.includes('platinum')) matList.push('platinum');
-              if (titleLower.includes('gemstone') || titleLower.includes('ruby') || titleLower.includes('emerald') || titleLower.includes('sapphire') || titleLower.includes('topaz') || titleLower.includes('pearl')) matList.push('gemstone');
-            }
-
-            const material = [...new Set(matList.map(s => String(s).toLowerCase()))].join(', ');
-            
-            const weight = p.product_weight || p.gold_weight || p.baseWeight || 0;
-            const fastDelivery = p.feature === '1';
-            const latest = p.sessional === '1';
-            const storePickup = p.topselling === '1';
-
-            return {
-              ...p,
-              id,
-              productId: p.product_id || String(id),
-              name,
-              price,
-              originalPrice: price + discount,
-              images,
-              size,
-              material,
-              category,
-              weight,
-              fastDelivery,
-              latest,
-              storePickup,
-              tryAtHome: true,
-              subcategory,
-              gender,
-              diamond_weight: p.diamond_weight,
-              noof_gem: p.noof_gem,
-              diamond_count: p.diamond_count,
-              width: p.width,
-              height: p.height,
-              gold_weight: p.gold_weight,
-              gemstone_weight: p.gemstone_weight,
-              gemstone_price: p.gemstone_price,
-              making_charges: p.making_charges,
-              solitaires_price: p.solitaires_price,
-              solitaire_weight: p.solitaire_weight || p.solitaires_weight || 0,
-              solitaires_weight: p.solitaires_weight || p.solitaire_weight || 0,
-              solitaires_quality: p.solitaires_quality,
-              solitaire_price_ij_si: p.solitaire_price_ij_si,
-              solitaire_price_gh_vs: p.solitaire_price_gh_vs,
-              solitaire_price_ef_vvs: p.solitaire_price_ef_vvs,
-              solitaire_price_fg_si: p.solitaire_price_fg_si,
-              solitaire_setting: p.solitaire_setting || p.solitaires_setting || 'Prong Setting',
-              solitaires_setting: p.solitaires_setting || p.solitaire_setting || 'Prong Setting',
-              product_code: p.product_code,
-              gallery: p.gallery,
-              product_slug: p.product_slug || p.slug || ''
-            };
-          });
-
-          const mapImgUrl = (url, name) => {
-            if (!url) return 'https://placehold.co/600x600?text=' + encodeURIComponent(name);
-            return getUploadsUrl(url);
-          };
-
-          const fullyMapped = mapped.map(item => {
-            const clientImages = item.images.map(url => mapImgUrl(url, item.name));
-            if (clientImages.length === 0) {
-              clientImages.push(mapImgUrl('', item.name));
-            }
-            return {
-              ...item,
-              image: clientImages[0],
-              images: clientImages
-            };
-          });
-
+          const fullyMapped = (resData.data || []).map(p => formatAppProduct(p, pricingMap));
           setAllProducts(fullyMapped);
           try {
             sessionStorage.setItem('zoniraz_cached_products', JSON.stringify(fullyMapped));
@@ -1518,7 +1529,10 @@ function AppContent() {
   const selectedProduct = (allProducts.length > 0 ? allProducts : products).find(p => 
     String(p.id || p._id || p.product_id).toLowerCase() === cleanSelectedId ||
     String(p.product_slug || p.slug || '').toLowerCase() === cleanSelectedId
-  ) || null;
+  ) || (fastProduct && (
+    String(fastProduct.id || fastProduct._id || fastProduct.productId || '').toLowerCase() === cleanSelectedId ||
+    String(fastProduct.product_slug || fastProduct.slug || '').toLowerCase() === cleanSelectedId
+  ) ? fastProduct : null);
 
   React.useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search || '');
@@ -1878,14 +1892,16 @@ function AppContent() {
     updateMeta('meta[name="twitter:url"]', 'content', canonical);
     updateMeta('meta[name="twitter:image"]', 'content', ogImage);
 
-    let scriptTag = document.getElementById('seo-dynamic-structured-data');
-    if (!scriptTag) {
-      scriptTag = document.createElement('script');
-      scriptTag.id = 'seo-dynamic-structured-data';
-      scriptTag.type = 'application/ld+json';
-      document.head.appendChild(scriptTag);
+    if (schemas && schemas.length > 0) {
+      let scriptTag = document.getElementById('seo-dynamic-structured-data');
+      if (!scriptTag) {
+        scriptTag = document.createElement('script');
+        scriptTag.id = 'seo-dynamic-structured-data';
+        scriptTag.type = 'application/ld+json';
+        document.head.appendChild(scriptTag);
+      }
+      scriptTag.textContent = JSON.stringify(schemas, null, 2);
     }
-    scriptTag.textContent = JSON.stringify(schemas, null, 2);
 
   }, [currentView, selectedProductId, selectedCategoryName, selectedProduct, allProducts]);
 
@@ -1898,7 +1914,7 @@ function AppContent() {
           <ProductDetailPage
             product={selectedProduct}
             products={allProducts}
-            isLoading={isProductsLoading}
+            isLoading={(isProductsLoading || isFastProductLoading) && !selectedProduct}
             wishlist={wishlist}
             setWishlist={setWishlist}
             cart={cart}

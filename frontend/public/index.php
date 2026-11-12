@@ -1,8 +1,9 @@
 <?php
 /**
- * index.php - Dynamic SEO Meta Injector for Zoniraz Single Page Application (SPA)
- * Ensures every page returns the correct title, OpenGraph, Canonical, and Meta Description
- * in raw HTML when "View Page Source" is opened or when crawled by search bots.
+ * index.php - Dynamic SEO Meta & Prerender Injector for Zoniraz Single Page Application (SPA)
+ * Ensures every page returns the correct title, OpenGraph, Canonical, Meta Description,
+ * Schema.org Product/Breadcrumb JSON-LD, and semantic HTML in raw HTTP responses
+ * when crawled by search bots (Googlebot, Bingbot) or viewed in raw source.
  */
 
 $domain = 'https://zoniraz.com';
@@ -284,6 +285,9 @@ $description = 'Zoniraz - Discover fine gold, diamond, and luxury jewellery onli
 $canonical = $domain . '/';
 $image = 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png';
 $isMatchedRoute = false;
+$isProductRoute = false;
+$isProductNotFound = false;
+$matchedProduct = null;
 
 if ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.php') {
     // Homepage
@@ -315,32 +319,80 @@ if ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.ph
     $productSlug = substr($cleanPath, 8);
     $cleanProductSlug = trim($productSlug, '/');
 
-    // Attempt to load from cached products_seo.json
+    // 1. Attempt to load from cached products_seo.json
     $seoFile = __DIR__ . '/products_seo.json';
     $found = false;
+    $pData = null;
 
     if (file_exists($seoFile)) {
         $json = @json_decode(@file_get_contents($seoFile), true);
-        if (is_array($json) && isset($json[$cleanProductSlug])) {
-            $pData = $json[$cleanProductSlug];
-            $title = $pData['title'];
-            $description = $pData['description'];
-            $canonical = $pData['canonical'];
-            if (!empty($pData['image'])) {
-                $image = $pData['image'];
+        if (is_array($json)) {
+            if (isset($json[$cleanProductSlug])) {
+                $pData = $json[$cleanProductSlug];
+                $found = true;
+            } elseif (isset($json[strtolower($cleanProductSlug)])) {
+                $pData = $json[strtolower($cleanProductSlug)];
+                $found = true;
             }
-            $found = true;
         }
     }
 
+    // 2. Dynamic backend fallback lookup if not present in products_seo.json
     if (!$found) {
-        // Human-friendly title derived from slug
-        $slugTitle = ucwords(str_replace('-', ' ', $cleanProductSlug));
-        $title = $slugTitle . ' | Fine Jewellery in Alwar | Zoniraz';
-        $description = 'Buy ' . $slugTitle . ' online in Alwar at Zoniraz Jewels. Crafted in premium gold and certified diamonds. Certificate of authenticity included.';
+        $backendUrl = 'https://lightpink-locust-700517.hostingersite.com/api/products/' . urlencode($cleanProductSlug);
+        $ctx = stream_context_create([
+            'http' => [
+                'timeout' => 1.5,
+                'ignore_errors' => true
+            ]
+        ]);
+        $resp = @file_get_contents($backendUrl, false, $ctx);
+        if ($resp) {
+            $apiJson = @json_decode($resp, true);
+            if (!empty($apiJson['success']) && !empty($apiJson['data'])) {
+                $rawP = $apiJson['data'];
+                $pName = trim(!empty($rawP['product_title']) ? $rawP['product_title'] : (!empty($rawP['name']) ? $rawP['name'] : ucwords(str_replace('-', ' ', $cleanProductSlug))));
+                $pCat = trim(!empty($rawP['product_category']) ? $rawP['product_category'] : (!empty($rawP['category']) ? $rawP['category'] : 'Fine Jewellery'));
+                $pPrice = (float)(!empty($rawP['price']) ? $rawP['price'] : (!empty($rawP['basePrice']) ? $rawP['basePrice'] : 0));
+                $pData = [
+                    'slug' => $cleanProductSlug,
+                    'name' => $pName,
+                    'category' => $pCat,
+                    'subcategory' => !empty($rawP['product_subcategory']) ? $rawP['product_subcategory'] : '',
+                    'title' => (stripos($pName, 'zoniraz') !== false) ? $pName : ($pName . ' | ' . $pCat . ' in Alwar | Zoniraz'),
+                    'description' => !empty($rawP['description']) ? mb_substr(trim(preg_replace('/\s+/', ' ', strip_tags($rawP['description']))), 0, 155) : ("Buy " . $pName . " online in Alwar at Zoniraz Jewels. Handcrafted in premium quality with exquisite design. Certificate of authenticity included."),
+                    'canonical' => $domain . '/product/' . $cleanProductSlug,
+                    'image' => !empty($rawP['image']) ? $rawP['image'] : 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png',
+                    'images' => !empty($rawP['images']) ? $rawP['images'] : (!empty($rawP['image']) ? [$rawP['image']] : []),
+                    'price' => $pPrice,
+                    'originalPrice' => $pPrice,
+                    'sku' => !empty($rawP['product_code']) ? $rawP['product_code'] : (!empty($rawP['product_id']) ? $rawP['product_id'] : $cleanProductSlug),
+                    'availability' => (isset($rawP['status']) && ($rawP['status'] === '0' || $rawP['status'] === 0)) ? 'https://schema.org/OutOfStock' : 'https://schema.org/InStock',
+                    'status' => isset($rawP['status']) ? (string)$rawP['status'] : '1'
+                ];
+                $found = true;
+            }
+        }
+    }
+
+    if ($found && is_array($pData)) {
+        $title = $pData['title'];
+        $description = $pData['description'];
+        $canonical = !empty($pData['canonical']) ? $pData['canonical'] : ($domain . '/product/' . $cleanProductSlug);
+        if (!empty($pData['image'])) {
+            $image = $pData['image'];
+        }
+        $isMatchedRoute = true;
+        $isProductRoute = true;
+        $matchedProduct = $pData;
+    } else {
+        // Genuine 404 for invalid/missing product
+        $isMatchedRoute = false;
+        $isProductNotFound = true;
+        $title = 'Product Not Found (404) | Zoniraz';
+        $description = 'The requested jewellery piece is unavailable, discontinued, or does not exist at Zoniraz Jewels.';
         $canonical = $domain . '/product/' . $cleanProductSlug;
     }
-    $isMatchedRoute = true;
 } elseif (preg_match('/^[a-z0-9-]+$/i', $cleanPath)) {
     // Dynamic Fallback for any other valid category/collection slug
     $categoryListPattern = '/^(rings|earrings|pendants|pendant|necklaces|bangles|bracelets|mangalsutras|mangalsutra|nose-pins|nose-pin|solitaires|solitaire|gold-coins|gold-coin|silver-coins|silver-coin|coins|coin|chain|chains|zodiac|brooches|anklets|gold-tikka|nath|mens-jewellery|womens-jewellery|kids-jewellery)$/i';
@@ -358,8 +410,10 @@ if ($isMatchedRoute) {
     http_response_code(200);
 } else {
     http_response_code(404);
-    $title = 'Page Not Found | Zoniraz';
-    $description = 'The page you requested could not be found at Zoniraz Jewels.';
+    if (!$isProductNotFound) {
+        $title = 'Page Not Found (404) | Zoniraz';
+        $description = 'The page you requested could not be found at Zoniraz Jewels.';
+    }
 }
 
 // Read index.html
@@ -377,10 +431,15 @@ function safeAttr($val) {
     return htmlspecialchars($val, ENT_QUOTES, 'UTF-8');
 }
 
-// Inject Dynamic Metadata into the HTML
+// 1. Inject Dynamic Metadata into the HTML
 $html = preg_replace('/<title>[\s\S]*?<\/title>/i', '<title>' . safeAttr($title) . '</title>', $html);
 $html = preg_replace('/<meta\s+name=["\']description["\'][\s\S]*?content=["\'][\s\S]*?["\']\s*\/?>/i', '<meta name="description" content="' . safeAttr($description) . '" />', $html);
 $html = preg_replace('/<link\s+id=["\']canonical-link["\']\s+rel=["\']canonical["\']\s+href=["\'][^"\']*["\']\s*\/?>/i', '<link id="canonical-link" rel="canonical" href="' . safeAttr($canonical) . '" />', $html);
+
+if (!$isMatchedRoute) {
+    // Add noindex for 404 pages
+    $html = preg_replace('/<meta\s+name=["\']robots["\'][\s\S]*?content=["\'][\s\S]*?["\']\s*\/?>/i', '<meta name="robots" content="noindex, follow" />', $html);
+}
 
 // OpenGraph
 $html = preg_replace('/<meta\s+property=["\']og:title["\']\s+content=["\'][^"\']*["\']\s*\/?>/i', '<meta property="og:title" content="' . safeAttr($title) . '" />', $html);
@@ -398,7 +457,164 @@ if (!empty($image)) {
     $html = preg_replace('/<meta\s+name=["\']twitter:image["\']\s+content=["\'][^"\']*["\']\s*\/?>/i', '<meta name="twitter:image" content="' . safeAttr($image) . '" />', $html);
 }
 
-// Send Response
+// 2. Build Structured Data (JSON-LD)
+$schemas = [];
+
+if ($isProductRoute && !empty($matchedProduct)) {
+    $prodPrice = isset($matchedProduct['price']) ? (float)$matchedProduct['price'] : 0;
+    $prodImages = !empty($matchedProduct['images']) && is_array($matchedProduct['images']) ? $matchedProduct['images'] : (!empty($matchedProduct['image']) ? [$matchedProduct['image']] : []);
+    $prodSku = !empty($matchedProduct['sku']) ? (string)$matchedProduct['sku'] : $cleanProductSlug;
+    $prodAvailability = !empty($matchedProduct['availability']) ? $matchedProduct['availability'] : 'https://schema.org/InStock';
+
+    $schemas[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Product',
+        'name' => $matchedProduct['name'],
+        'image' => $prodImages,
+        'description' => $matchedProduct['description'],
+        'sku' => $prodSku,
+        'brand' => [
+            '@type' => 'Brand',
+            'name' => 'Zoniraz'
+        ],
+        'offers' => [
+            '@type' => 'Offer',
+            'url' => $canonical,
+            'priceCurrency' => 'INR',
+            'price' => $prodPrice,
+            'priceValidUntil' => '2027-12-31',
+            'itemCondition' => 'https://schema.org/NewCondition',
+            'availability' => $prodAvailability
+        ]
+    ];
+
+    $catName = !empty($matchedProduct['category']) ? $matchedProduct['category'] : 'Jewellery';
+    $catSlug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $catName));
+    $catSlug = trim($catSlug, '-');
+
+    $schemas[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => $domain . '/'
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $catName,
+                'item' => $domain . '/' . $catSlug
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $matchedProduct['name'],
+                'item' => $canonical
+            ]
+        ]
+    ];
+} elseif ($isMatchedRoute && $cleanPath !== '') {
+    $schemas[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => $domain . '/'
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => $title,
+                'item' => $canonical
+            ]
+        ]
+    ];
+}
+
+// Inject JSON-LD into index.html
+if (!empty($schemas)) {
+    $jsonLdString = json_encode($schemas, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+    $jsonLdTag = '<script id="seo-dynamic-structured-data" type="application/ld+json">' . "\n" . $jsonLdString . "\n" . '  </script>';
+    $html = preg_replace('/<script id=["\']seo-dynamic-structured-data["\'][\s\S]*?<\/script>/i', $jsonLdTag, $html);
+}
+
+// 3. Build Semantic Server-Prerendered HTML Container (Safeguard 1: placed outside #root)
+$prerenderHtml = '';
+
+if ($isProductRoute && !empty($matchedProduct)) {
+    $formattedPrice = number_format((float)$matchedProduct['price'], 0, '.', ',');
+    $catName = htmlspecialchars(!empty($matchedProduct['category']) ? $matchedProduct['category'] : 'Fine Jewellery', ENT_QUOTES, 'UTF-8');
+    $catSlug = strtolower(preg_replace('/[^a-z0-9]+/i', '-', $catName));
+    $prodName = htmlspecialchars($matchedProduct['name'], ENT_QUOTES, 'UTF-8');
+    $prodDesc = htmlspecialchars($matchedProduct['description'], ENT_QUOTES, 'UTF-8');
+    $prodImg = htmlspecialchars(!empty($matchedProduct['image']) ? $matchedProduct['image'] : 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png', ENT_QUOTES, 'UTF-8');
+    $isAvailable = (!isset($matchedProduct['status']) || ($matchedProduct['status'] !== '0' && $matchedProduct['status'] !== 0));
+    $stockText = $isAvailable ? 'In Stock (Ready to Ship / Made to Order)' : 'Temporarily Out of Stock';
+    $stockColor = $isAvailable ? '#15803d' : '#b91c1c';
+
+    $prerenderHtml = '<div id="zoniraz-seo-prerender" style="max-width:1200px;margin:0 auto;padding:24px 16px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;color:#1c1917;">' .
+      '<nav aria-label="Breadcrumb" style="font-size:13px;margin-bottom:20px;color:#78716c;">' .
+        '<a href="' . $domain . '/" style="color:#634d40;text-decoration:none;">Home</a> &gt; ' .
+        '<a href="' . $domain . '/' . $catSlug . '" style="color:#634d40;text-decoration:none;">' . $catName . '</a> &gt; ' .
+        '<span>' . $prodName . '</span>' .
+      '</nav>' .
+      '<article style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:32px;align-items:start;">' .
+        '<div style="background:#faf8f5;border-radius:12px;padding:16px;text-align:center;">' .
+          '<img src="' . $prodImg . '" alt="' . $prodName . '" style="max-width:100%;height:auto;border-radius:8px;object-fit:contain;max-height:480px;" />' .
+        '</div>' .
+        '<div>' .
+          '<span style="display:inline-block;padding:4px 10px;background:#f5f0eb;color:#634d40;border-radius:4px;font-size:12px;font-weight:600;letter-spacing:0.5px;text-transform:uppercase;margin-bottom:8px;">' . $catName . '</span>' .
+          '<h1 style="font-size:28px;font-weight:700;line-height:1.3;color:#1c1917;margin:0 0 16px 0;">' . $prodName . '</h1>' .
+          '<div style="margin-bottom:20px;">' .
+            '<span style="font-size:26px;font-weight:700;color:#634d40;">₹' . $formattedPrice . '</span>' .
+            '<span style="display:block;font-size:13px;color:#78716c;margin-top:4px;">(Price inclusive of GST &amp; free insured delivery across India)</span>' .
+          </div>' .
+          '<div style="margin-bottom:20px;display:inline-block;padding:6px 12px;border-radius:6px;font-size:13px;font-weight:600;color:' . $stockColor . ';background:' . ($isAvailable ? '#f0fdf4' : '#fef2f2') . ';">' .
+            '● ' . $stockText .
+          '</div>' .
+          '<div style="margin-bottom:24px;">' .
+            '<h2 style="font-size:16px;font-weight:600;color:#292524;margin:0 0 8px 0;">Description</h2>' .
+            '<p style="font-size:14px;line-height:1.6;color:#57534e;margin:0;">' . $prodDesc . '</p>' .
+          '</div>' .
+          '<div style="background:#fff;border:1px solid #e7e5e4;border-radius:8px;overflow:hidden;">' .
+            '<table style="width:100%;border-collapse:collapse;font-size:13px;text-align:left;">' .
+              '<tbody>' .
+                '<tr style="border-bottom:1px solid #f5f5f4;"><th style="padding:10px 14px;color:#78716c;font-weight:500;">Product Category</th><td style="padding:10px 14px;color:#1c1917;font-weight:600;">' . $catName . '</td></tr>' .
+                '<tr style="border-bottom:1px solid #f5f5f4;"><th style="padding:10px 14px;color:#78716c;font-weight:500;">SKU / Code</th><td style="padding:10px 14px;color:#1c1917;font-weight:600;">' . htmlspecialchars(!empty($matchedProduct['sku']) ? $matchedProduct['sku'] : $cleanProductSlug, ENT_QUOTES, 'UTF-8') . '</td></tr>' .
+                '<tr style="border-bottom:1px solid #f5f5f4;"><th style="padding:10px 14px;color:#78716c;font-weight:500;">Availability</th><td style="padding:10px 14px;color:#1c1917;font-weight:600;">' . ($isAvailable ? 'In Stock' : 'Out of Stock') . '</td></tr>' .
+                '<tr><th style="padding:10px 14px;color:#78716c;font-weight:500;">Assurance</th><td style="padding:10px 14px;color:#1c1917;font-weight:600;">100% Certified Diamond &amp; Hallmarked Gold</td></tr>' .
+              '</tbody>' .
+            '</table>' .
+          '</div>' .
+        '</div>' .
+      '</article>' .
+    '</div>';
+} elseif (!empty($isProductNotFound)) {
+    $prerenderHtml = '<div id="zoniraz-seo-prerender" style="max-width:700px;margin:60px auto;padding:40px 24px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;color:#1c1917;">' .
+      '<h1 style="font-size:32px;font-weight:700;color:#634d40;margin-bottom:12px;">Product Not Found (404)</h1>' .
+      '<p style="font-size:16px;line-height:1.6;color:#666;margin-bottom:24px;">The jewellery piece you requested is unavailable, discontinued, or does not exist in the Zoniraz collection.</p>' .
+      '<a href="' . $domain . '/" style="display:inline-block;padding:12px 28px;background:#634d40;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:1px;">Return to Showcase</a>' .
+    '</div>';
+}
+
+// Inject prerender HTML into index.html
+if (!empty($prerenderHtml)) {
+    $html = preg_replace('/<div id=["\']zoniraz-seo-prerender["\']>[\s\S]*?<\/div>/i', $prerenderHtml, $html);
+}
+
+// 4. Send Anti-Cache Headers to eliminate cross-product proxy/LiteSpeed HTML caching
 header('Content-Type: text/html; charset=utf-8');
+header('X-LiteSpeed-Cache-Control: no-cache');
+header('Cache-Control: no-cache, no-store, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+header('Expires: 0');
+header('Vary: Accept-Encoding');
+
 echo $html;
 exit;

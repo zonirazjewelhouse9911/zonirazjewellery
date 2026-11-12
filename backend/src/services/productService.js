@@ -157,21 +157,39 @@ class ProductService {
       return null;
     }
 
+    const cleanId = id.trim();
     let product = null;
-    if (id.match(/^[0-9a-fA-F]{24}$/)) {
-      product = await Product.findById(id).lean();
+
+    if (cleanId.match(/^[0-9a-fA-F]{24}$/)) {
+      product = await Product.findById(cleanId).lean();
     }
     if (!product) {
-      product = await Product.findOne({ product_id: id }).lean();
+      product = await Product.findOne({
+        $or: [
+          { product_id: cleanId },
+          { product_slug: cleanId },
+          { slug: cleanId },
+          { product_slug: cleanId.toLowerCase() },
+          { slug: cleanId.toLowerCase() }
+        ]
+      }).lean();
     }
     if (!product) {
       try {
         let coin = null;
-        if (id.match(/^[0-9a-fA-F]{24}$/)) {
-          coin = await Coin.findById(id).lean();
+        if (cleanId.match(/^[0-9a-fA-F]{24}$/)) {
+          coin = await Coin.findById(cleanId).lean();
         }
         if (!coin) {
-          coin = await Coin.findOne({ sku: id }).lean();
+          coin = await Coin.findOne({
+            $or: [
+              { sku: cleanId },
+              { slug: cleanId },
+              { coin_slug: cleanId },
+              { sku: cleanId.toLowerCase() },
+              { slug: cleanId.toLowerCase() }
+            ]
+          }).lean();
         }
         if (coin) {
           return formatCoinForCatalog(coin);

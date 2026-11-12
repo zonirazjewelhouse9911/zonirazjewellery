@@ -60,9 +60,13 @@
     content="Discover fine gold, diamond, and luxury jewellery. Browse handcrafted rings, necklaces, bangles, and bridal collections online." />
   <meta name="twitter:image" content="https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png" />
 
+  <!-- Dynamic JSON-LD Structured Data Container -->
+  <script id="seo-dynamic-structured-data" type="application/ld+json"></script>
 </head>
 
 <body>
+  <!-- Server-side prerendered semantic container for search bots & fast initial paint -->
+  <div id="zoniraz-seo-prerender"></div>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>
