@@ -6,6 +6,7 @@
  * when crawled by search bots (Googlebot, Bingbot) or viewed in raw source.
  */
 
+try {
 $domain = 'https://zoniraz.com';
 $requestUri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
 $cleanUri = strtok($requestUri, '?');
@@ -618,3 +619,15 @@ header('Vary: Accept-Encoding');
 
 echo $html;
 exit;
+} catch (\Throwable $e) {
+    // Bulletproof fallback: Never show 500 Internal Server Error to customers
+    $fallbackIndex = __DIR__ . '/index.html';
+    if (file_exists($fallbackIndex)) {
+        header('Content-Type: text/html; charset=utf-8');
+        echo file_get_contents($fallbackIndex);
+        exit;
+    }
+    http_response_code(200);
+    echo '<!doctype html><html lang="en"><head><meta charset="UTF-8"><title>Best Diamond Jewellery in Alwar | Zoniraz</title></head><body><div id="root"></div></body></html>';
+    exit;
+}
