@@ -574,7 +574,7 @@ if ($isProductRoute && !empty($matchedProduct)) {
           '<div style="margin-bottom:20px;">' .
             '<span style="font-size:26px;font-weight:700;color:#634d40;">₹' . $formattedPrice . '</span>' .
             '<span style="display:block;font-size:13px;color:#78716c;margin-top:4px;">(Price inclusive of GST &amp; free insured delivery across India)</span>' .
-          </div>' .
+          '</div>' .
           '<div style="margin-bottom:20px;display:inline-block;padding:6px 12px;border-radius:6px;font-size:13px;font-weight:600;color:' . $stockColor . ';background:' . ($isAvailable ? '#f0fdf4' : '#fef2f2') . ';">' .
             '● ' . $stockText .
           '</div>' .
