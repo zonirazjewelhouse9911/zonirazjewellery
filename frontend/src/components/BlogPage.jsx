@@ -6,7 +6,7 @@ const diamondRingImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/infin
 const goldSavingImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/solitaire-sets.jpg";
 const pendantImg = "https://media.zoniraz.com/uploads/zoniraz_frontend/layered-necklaces.jpg";
 
-const categories = ["All Blogs", "Gold", "Diamond", "Earrings", "Rings", "Trending", "Bridal", "Daily Wear", "Styling", "Editor's Picks"];
+const defaultCategories = ["All Blogs", "Gold", "Diamond", "Earrings", "Rings", "Trending", "Bridal", "Daily Wear", "Styling", "Editor's Picks"];
 
 const blogPosts = [
   {
@@ -69,7 +69,10 @@ const BlogPage = () => {
   React.useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/blogs`);
+        const res = await fetch(`${API_BASE_URL}/api/blogs?_t=${Date.now()}`, {
+          cache: 'no-cache',
+          headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
+        });
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           const dbBlogs = data.data.filter(b => b.slug !== 'diamond-engagement-ring-complete-guide-2026');
@@ -93,14 +96,36 @@ const BlogPage = () => {
     fetchBlogs();
   }, []);
 
+  const allCategories = React.useMemo(() => {
+    const list = [...defaultCategories];
+    posts.forEach(post => {
+      if (post.category && typeof post.category === 'string') {
+        const cat = post.category.trim();
+        if (cat && !list.some(c => c.toLowerCase() === cat.toLowerCase())) {
+          list.push(cat);
+        }
+      }
+    });
+    return list;
+  }, [posts]);
+
   const filteredPosts = activeCategory === "All Blogs" 
     ? posts 
     : posts.filter(post => {
+        const actLower = activeCategory.toLowerCase();
         if (Array.isArray(post.tags)) {
-          return post.tags.some(tag => tag.toLowerCase() === activeCategory.toLowerCase());
+          if (post.tags.some(tag => {
+            const tLower = (tag || '').toLowerCase();
+            return tLower === actLower || tLower.includes(actLower) || actLower.includes(tLower);
+          })) {
+            return true;
+          }
         }
         if (post.category) {
-          return post.category.toLowerCase().includes(activeCategory.toLowerCase());
+          const catLower = post.category.toLowerCase();
+          if (catLower === actLower || catLower.includes(actLower) || actLower.includes(catLower)) {
+            return true;
+          }
         }
         return false;
       });
@@ -470,7 +495,7 @@ const BlogPage = () => {
 
         {/* Filters */}
         <div className="blog-filters">
-          {categories.map((cat, index) => (
+          {allCategories.map((cat, index) => (
             <button
               key={index}
               onClick={() => setActiveCategory(cat)}
@@ -503,7 +528,7 @@ const BlogPage = () => {
               {/* Content Below Image */}
               <div className="blog-card-content">
                 <div className="blog-card-date">
-                  {post.date}
+                  {post.date ? (post.date.includes('read') ? post.date : `${post.date}${post.readTime ? ` • ${post.readTime}` : ''}`) : ''}
                 </div>
                 
                 <h2 className="blog-card-title">
