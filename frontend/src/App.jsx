@@ -889,9 +889,35 @@ export const formatAppProduct = (p, pricingMap = {}) => {
   };
 };
 
+function getInitialEmbeddedProduct() {
+  if (typeof document !== 'undefined') {
+    const el = document.getElementById('zoniraz-initial-product');
+    if (el && el.textContent && el.textContent.trim()) {
+      try {
+        const raw = JSON.parse(el.textContent);
+        if (raw && (raw.slug || raw.product_slug || raw.name)) {
+          const item = {
+            ...raw,
+            id: raw.id || raw._id || raw.product_id || raw.sku || raw.slug,
+            product_id: raw.product_id || raw.id || raw._id || raw.sku || raw.slug,
+            product_slug: raw.product_slug || raw.slug,
+            product_title: raw.product_title || raw.name,
+            product_category: raw.product_category || raw.category
+          };
+          return formatAppProduct(item);
+        }
+      } catch (e) {
+        console.error('Failed to parse initial embedded product', e);
+      }
+    }
+  }
+  return null;
+}
+
 function AppContent() {
   const { isAuthModalOpen, setIsAuthModalOpen } = useContext(AuthContext);
   const initialRoute = React.useMemo(() => getInitialRouteState(), []);
+  const initialEmbeddedProduct = React.useMemo(() => getInitialEmbeddedProduct(), []);
   const [currentView, setCurrentView] = React.useState(initialRoute.view);
   const [wishlist, setWishlist] = React.useState(() => {
     try {
@@ -909,7 +935,12 @@ function AppContent() {
       return {};
     }
   });
-  const [selectedProductId, setSelectedProductId] = React.useState(initialRoute.productId);
+  const [selectedProductId, setSelectedProductId] = React.useState(() => {
+    if (initialEmbeddedProduct && (initialEmbeddedProduct.slug || initialEmbeddedProduct.product_slug)) {
+      return initialEmbeddedProduct.slug || initialEmbeddedProduct.product_slug;
+    }
+    return initialRoute.productId;
+  });
   const [helpCategory, setHelpCategory] = React.useState(initialRoute.helpCategory);
   const [selectedCategoryName, setSelectedCategoryName] = React.useState(initialRoute.categoryName);
   const [termsTab, setTermsTab] = React.useState('terms');
@@ -936,7 +967,7 @@ function AppContent() {
     return true;
   });
 
-  const [fastProduct, setFastProduct] = React.useState(null);
+  const [fastProduct, setFastProduct] = React.useState(initialEmbeddedProduct);
   const [isFastProductLoading, setIsFastProductLoading] = React.useState(false);
 
   // Fast single-product lookup on direct URL navigation to /product/:slug
@@ -965,6 +996,14 @@ function AppContent() {
       }
     }
   }, [currentView, selectedProductId, allProducts]);
+
+  // Gracefully clean up SSR prerender block once React client app is fully mounted
+  React.useEffect(() => {
+    const prerenderEl = document.getElementById('zoniraz-seo-prerender');
+    if (prerenderEl) {
+      prerenderEl.remove();
+    }
+  }, []);
 
   // Persist wishlist & cart to localStorage on every change
   React.useEffect(() => {
@@ -1560,7 +1599,13 @@ function AppContent() {
       const cleanSlugTitle = decodeURIComponent(rawProductSlug).replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
 
       if (selectedProduct) {
-        title = `${selectedProduct.name} | ${selectedProduct.category || 'Fine Jewellery'} in Alwar | Zoniraz`;
+        const prodName = selectedProduct.name || '';
+        const catName = selectedProduct.category || 'Fine Jewellery';
+        if (prodName.toLowerCase().includes('zoniraz')) {
+          title = `${prodName} | ${catName} in Alwar`;
+        } else {
+          title = `${prodName} | ${catName} in Alwar | Zoniraz`;
+        }
         description = selectedProduct.description 
           ? selectedProduct.description.slice(0, 155) 
           : `Buy ${selectedProduct.name} online in Alwar at Zoniraz Jewels. Crafted in premium ${selectedProduct.material || 'metal'} with exquisite design. Lifetime maintenance and certificate of authenticity included.`;
@@ -1603,7 +1648,10 @@ function AppContent() {
         });
       } else {
         // Reliable fallback for product pages (e.g. while API is cold-starting or loading)
-        title = cleanSlugTitle ? `${cleanSlugTitle} | Zoniraz` : 'Buy Fine Jewellery Online in Alwar | Zoniraz';
+        const hasBrand = cleanSlugTitle.toLowerCase().includes('zoniraz');
+        title = cleanSlugTitle 
+          ? (hasBrand ? `${cleanSlugTitle}` : `${cleanSlugTitle} | Zoniraz`) 
+          : 'Buy Fine Jewellery Online in Alwar | Zoniraz';
         description = `Discover handcrafted ${cleanSlugTitle || 'fine jewellery'} in Alwar at Zoniraz. Explore premium gold, diamond, and luxury jewellery designs.`;
         canonical = `https://zoniraz.com/product/${rawProductSlug || ''}`;
         robotsValue = 'index, follow';

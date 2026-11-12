@@ -545,6 +545,13 @@ if (!empty($schemas)) {
     $html = preg_replace('/<script id=["\']seo-dynamic-structured-data["\'][\s\S]*?<\/script>/i', $jsonLdTag, $html);
 }
 
+// Inject Initial Embedded Product Data for 0ms Client Hydration
+if ($isProductRoute && !empty($matchedProduct)) {
+    $embeddedJson = json_encode($matchedProduct, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $embeddedTag = '<script id="zoniraz-initial-product" type="application/json">' . $embeddedJson . '</script>';
+    $html = preg_replace('/<script id=["\']zoniraz-initial-product["\'][\s\S]*?<\/script>/i', $embeddedTag, $html);
+}
+
 // 3. Build Semantic Server-Prerendered HTML Container (Safeguard 1: placed outside #root)
 $prerenderHtml = '';
 

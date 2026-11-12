@@ -193,6 +193,9 @@ function computeProductMetadata(p) {
   const availability = isAvailable ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock';
 
   return {
+    id: String(p._id || p.product_id || p.id || slug),
+    product_id: String(p.product_id || p._id || p.id || slug),
+    product_slug: slug,
     slug,
     name,
     category,
