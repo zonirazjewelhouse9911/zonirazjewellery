@@ -69,10 +69,7 @@ const BlogPage = () => {
   React.useEffect(() => {
     const fetchBlogs = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/blogs?_t=${Date.now()}`, {
-          cache: 'no-cache',
-          headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
-        });
+        const res = await fetch(`${API_BASE_URL}/api/blogs?_t=${Date.now()}`);
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           const dbBlogs = data.data.filter(b => b.slug !== 'diamond-engagement-ring-complete-guide-2026');
@@ -82,11 +79,23 @@ const BlogPage = () => {
               merged.push(staticPost);
             }
           });
-          const sorted = merged.sort((a, b) => {
-            const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-            const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
-            return dateB - dateA;
-          });
+          const getBlogTimestamp = (item) => {
+            if (item.createdAt) {
+              const t = new Date(item.createdAt).getTime();
+              if (!isNaN(t) && t > 0) return t;
+            }
+            if (item.updatedAt) {
+              const t = new Date(item.updatedAt).getTime();
+              if (!isNaN(t) && t > 0) return t;
+            }
+            if (item.date) {
+              const clean = String(item.date).replace(/•.*$/, '').trim();
+              const t = new Date(clean).getTime();
+              if (!isNaN(t) && t > 0) return t;
+            }
+            return 0;
+          };
+          const sorted = merged.sort((a, b) => getBlogTimestamp(b) - getBlogTimestamp(a));
           setPosts(sorted);
         }
       } catch (err) {

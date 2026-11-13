@@ -134,10 +134,7 @@ const BlogDetailPage = ({ slug, onBack }) => {
     const fetchSingleBlog = async () => {
       if (!slug) return;
       try {
-        const res = await fetch(`${API_BASE_URL}/api/blogs/${slug}?_t=${Date.now()}`, {
-          cache: 'no-cache',
-          headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
-        });
+        const res = await fetch(`${API_BASE_URL}/api/blogs/${slug}?_t=${Date.now()}`);
         const data = await res.json();
         if (isMounted) {
           if (data && data.success && data.data) {
