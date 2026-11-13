@@ -117,6 +117,35 @@ async function getAllProducts() {
   return fetchFromBackups();
 }
 
+async function getAllBlogs() {
+  const endpoints = [
+    'https://lightpink-locust-700517.hostingersite.com/api/blogs',
+    'http://localhost:55000/api/blogs',
+    'http://localhost:5000/api/blogs'
+  ];
+
+  for (const ep of endpoints) {
+    try {
+      console.log(`[SEO Generator] Fetching blogs from ${ep}...`);
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 8000);
+      const res = await fetch(ep, { signal: ctrl.signal });
+      clearTimeout(timer);
+
+      if (!res.ok) continue;
+      const json = await res.json();
+      const list = json?.data || (Array.isArray(json) ? json : []);
+      if (list.length > 0) {
+        console.log(`[SEO Generator] Fetched ${list.length} blogs from ${ep}.`);
+        return list;
+      }
+    } catch (e) {
+      console.warn(`[SEO Generator] Warning fetching blogs from ${ep}: ${e.message}`);
+    }
+  }
+  return [];
+}
+
 function extractImages(p) {
   const images = [];
 
@@ -255,6 +284,23 @@ async function main() {
     fs.writeFileSync(path.join(distDir, 'products_seo.json'), jsonContent, 'utf-8');
   }
   console.log(`[SEO Generator] Successfully generated products_seo.json with ${Object.keys(productsSeoMap).length} indexed entries.`);
+
+  const blogs = await getAllBlogs();
+  const blogsSeoMap = {};
+  for (const b of blogs) {
+    if (!b || !b.slug) continue;
+    blogsSeoMap[b.slug] = b;
+    const lower = b.slug.toLowerCase();
+    if (lower !== b.slug) {
+      blogsSeoMap[lower] = b;
+    }
+  }
+  const blogsJsonContent = JSON.stringify(blogsSeoMap, null, 2);
+  fs.writeFileSync(path.join(publicDir, 'blogs_seo.json'), blogsJsonContent, 'utf-8');
+  if (fs.existsSync(distDir)) {
+    fs.writeFileSync(path.join(distDir, 'blogs_seo.json'), blogsJsonContent, 'utf-8');
+  }
+  console.log(`[SEO Generator] Successfully generated blogs_seo.json with ${Object.keys(blogsSeoMap).length} indexed entries.`);
 
   // Clean up physical route subdirectories to avoid Apache mod_dir 301 trailing slash redirects
   const subDirsToClean = [

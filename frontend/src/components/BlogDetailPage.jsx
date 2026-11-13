@@ -115,37 +115,65 @@ const allBlogContent = [
   }
 ];
 
+function getInitialEmbeddedBlog(targetSlug) {
+  if (typeof document === 'undefined') return null;
+  const scriptEl = document.getElementById('zoniraz-initial-blog');
+  if (scriptEl && scriptEl.textContent && scriptEl.textContent.trim()) {
+    try {
+      const parsed = JSON.parse(scriptEl.textContent);
+      if (parsed && (parsed.slug === targetSlug || !targetSlug)) {
+        return parsed;
+      }
+    } catch (e) {
+      console.error('Failed to parse initial embedded blog', e);
+    }
+  }
+  return null;
+}
+
 const BlogDetailPage = ({ slug, onBack }) => {
-  const initialMatch = React.useMemo(() => allBlogContent.find(b => b.slug === slug), [slug]);
-  const [blog, setBlog] = React.useState(initialMatch || null);
-  const [loading, setLoading] = React.useState(!initialMatch);
+  const initialEmbedded = React.useMemo(() => getInitialEmbeddedBlog(slug), [slug]);
+  const initialStatic = React.useMemo(() => allBlogContent.find(b => b.slug === slug), [slug]);
+  const initialData = initialEmbedded || initialStatic || null;
+
+  const [blog, setBlog] = React.useState(initialData);
+  const [loading, setLoading] = React.useState(!initialData);
 
   React.useEffect(() => {
     let isMounted = true;
+    const currentEmbedded = getInitialEmbeddedBlog(slug);
     const staticMatch = allBlogContent.find(b => b.slug === slug);
-    if (staticMatch) {
-      setBlog(staticMatch);
+    const existing = currentEmbedded || staticMatch;
+
+    if (existing) {
+      setBlog(existing);
       setLoading(false);
     } else {
-      setBlog(null);
       setLoading(true);
     }
 
     const fetchSingleBlog = async () => {
       if (!slug) return;
       try {
-        const res = await fetch(`${API_BASE_URL}/api/blogs/${slug}?_t=${Date.now()}`);
+        const res = await fetch(`${API_BASE_URL}/api/blogs/${encodeURIComponent(slug)}?_t=${Date.now()}`);
+        if (res.status === 404) {
+          if (isMounted) {
+            setBlog(null);
+          }
+          return;
+        }
         const data = await res.json();
         if (isMounted) {
           if (data && data.success && data.data) {
             setBlog(data.data);
-          } else if (!staticMatch) {
+          } else if (!existing) {
             setBlog(null);
           }
         }
       } catch (err) {
         console.error("Error fetching single blog from API:", err);
-        if (isMounted && !staticMatch) {
+        // Do not wipe out existing embedded or cached blog on fetch error or crawl timeout
+        if (isMounted && !existing) {
           setBlog(null);
         }
       } finally {

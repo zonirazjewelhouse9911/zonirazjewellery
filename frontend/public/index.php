@@ -289,6 +289,9 @@ $isMatchedRoute = false;
 $isProductRoute = false;
 $isProductNotFound = false;
 $matchedProduct = null;
+$isBlogRoute = false;
+$isBlogNotFound = false;
+$matchedBlog = null;
 
 if ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.php') {
     // Homepage
@@ -308,13 +311,91 @@ if ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.ph
     $canonical = $staticPages[$cleanPath]['canonical'];
     $isMatchedRoute = true;
 } elseif (strpos($cleanPath, 'blog/') === 0) {
-    // Single Blog Article
+    // Single Blog Article - Live Dynamic Backend Lookup + Local SEO Cache
     $blogSlug = substr($cleanPath, 5);
-    $cleanBlog = ucwords(str_replace('-', ' ', $blogSlug));
-    $title = $cleanBlog . ' | Zoniraz Blog';
-    $description = 'Read our latest fine jewellery insights, diamond buying guides, and styling tips on the Zoniraz blog.';
-    $canonical = $domain . '/blog/' . $blogSlug;
-    $isMatchedRoute = true;
+    $cleanBlogSlug = trim($blogSlug, '/');
+    $isBlogRoute = true;
+    $matchedBlog = null;
+
+    // 1. Check cached blogs_seo.json if present
+    $blogsSeoFile = __DIR__ . '/blogs_seo.json';
+    $blogsSeoMap = null;
+    if (file_exists($blogsSeoFile)) {
+        $blogsSeoMap = @json_decode(@file_get_contents($blogsSeoFile), true);
+        if (is_array($blogsSeoMap)) {
+            if (isset($blogsSeoMap[$cleanBlogSlug])) {
+                $matchedBlog = $blogsSeoMap[$cleanBlogSlug];
+            } elseif (isset($blogsSeoMap[strtolower($cleanBlogSlug)])) {
+                $matchedBlog = $blogsSeoMap[strtolower($cleanBlogSlug)];
+            }
+        }
+    }
+
+    // 2. Dynamic live API lookup if not found in local cache
+    if (!$matchedBlog) {
+        $backendBlogUrl = 'https://lightpink-locust-700517.hostingersite.com/api/blogs/' . urlencode($cleanBlogSlug);
+        $resp = false;
+        if (function_exists('curl_init')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $backendBlogUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 3);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 2);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_USERAGENT, 'ZonirazBlogProxy/1.0');
+            $data = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+            if ($httpCode === 200 && $data) {
+                $resp = $data;
+            }
+        }
+        if (!$resp) {
+            $ctx = stream_context_create([
+                'http' => [
+                    'timeout' => 3.0,
+                    'ignore_errors' => true
+                ]
+            ]);
+            $resp = @file_get_contents($backendBlogUrl, false, $ctx);
+        }
+
+        if ($resp) {
+            $apiJson = @json_decode($resp, true);
+            if (!empty($apiJson['success']) && !empty($apiJson['data'])) {
+                $matchedBlog = $apiJson['data'];
+
+                // Automatically update local blogs_seo.json cache so future crawls are instant
+                if (!is_array($blogsSeoMap)) {
+                    $blogsSeoMap = [];
+                }
+                $blogsSeoMap[$cleanBlogSlug] = $matchedBlog;
+                @file_put_contents($blogsSeoFile, json_encode($blogsSeoMap, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
+            }
+        }
+    }
+
+    if ($matchedBlog) {
+        $title = (!empty($matchedBlog['title']) ? $matchedBlog['title'] : ucwords(str_replace('-', ' ', $cleanBlogSlug))) . ' | Zoniraz Blog';
+        if (!empty($matchedBlog['excerpt'])) {
+            $description = mb_substr(trim(preg_replace('/\s+/', ' ', strip_tags($matchedBlog['excerpt']))), 0, 160);
+        } else {
+            $description = 'Read our latest fine jewellery insights, diamond buying guides, and styling tips on the Zoniraz blog.';
+        }
+        if (!empty($matchedBlog['image'])) {
+            $image = $matchedBlog['image'];
+        }
+        $canonical = $domain . '/blog/' . $cleanBlogSlug;
+        $isMatchedRoute = true;
+    } else {
+        // Genuine 404: The requested blog slug does not exist
+        $isMatchedRoute = false;
+        $isBlogNotFound = true;
+        $title = 'Article Not Found (404) | Zoniraz';
+        $description = 'The requested blog article is unavailable, has been deleted, or does not exist at Zoniraz.';
+        $canonical = $domain . '/blog/' . $cleanBlogSlug;
+    }
 } elseif (strpos($cleanPath, 'product/') === 0) {
     // Product Page
     $productSlug = substr($cleanPath, 8);
@@ -411,7 +492,7 @@ if ($isMatchedRoute) {
     http_response_code(200);
 } else {
     http_response_code(404);
-    if (!$isProductNotFound) {
+    if (!$isProductNotFound && !$isBlogNotFound) {
         $title = 'Page Not Found (404) | Zoniraz';
         $description = 'The page you requested could not be found at Zoniraz Jewels.';
     }
@@ -517,6 +598,64 @@ if ($isProductRoute && !empty($matchedProduct)) {
             ]
         ]
     ];
+} elseif ($isBlogRoute && !empty($matchedBlog)) {
+    $blogTitle = !empty($matchedBlog['title']) ? $matchedBlog['title'] : ucwords(str_replace('-', ' ', $cleanBlogSlug));
+    $blogImage = !empty($matchedBlog['image']) ? $matchedBlog['image'] : 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png';
+    $blogDate = !empty($matchedBlog['createdAt']) ? date('c', strtotime($matchedBlog['createdAt'])) : date('c');
+    $blogModified = !empty($matchedBlog['updatedAt']) ? date('c', strtotime($matchedBlog['updatedAt'])) : $blogDate;
+    $blogAuthor = !empty($matchedBlog['author']) ? $matchedBlog['author'] : 'Zoniraz Editorial Team';
+    $blogDesc = !empty($matchedBlog['excerpt']) ? trim(preg_replace('/\s+/', ' ', strip_tags($matchedBlog['excerpt']))) : $description;
+
+    $schemas[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BlogPosting',
+        'mainEntityOfPage' => [
+            '@type' => 'WebPage',
+            '@id' => $canonical
+        ],
+        'headline' => $blogTitle,
+        'description' => $blogDesc,
+        'image' => [$blogImage],
+        'datePublished' => $blogDate,
+        'dateModified' => $blogModified,
+        'author' => [
+            '@type' => 'Organization',
+            'name' => $blogAuthor
+        ],
+        'publisher' => [
+            '@type' => 'Organization',
+            'name' => 'Zoniraz',
+            'logo' => [
+                '@type' => 'ImageObject',
+                'url' => 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png'
+            ]
+        ]
+    ];
+
+    $schemas[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'BreadcrumbList',
+        'itemListElement' => [
+            [
+                '@type' => 'ListItem',
+                'position' => 1,
+                'name' => 'Home',
+                'item' => $domain . '/'
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 2,
+                'name' => 'Blog',
+                'item' => $domain . '/blog'
+            ],
+            [
+                '@type' => 'ListItem',
+                'position' => 3,
+                'name' => $blogTitle,
+                'item' => $canonical
+            ]
+        ]
+    ];
 } elseif ($isMatchedRoute && $cleanPath !== '') {
     $schemas[] = [
         '@context' => 'https://schema.org',
@@ -550,6 +689,13 @@ if ($isProductRoute && !empty($matchedProduct)) {
     $embeddedJson = json_encode($matchedProduct, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     $embeddedTag = '<script id="zoniraz-initial-product" type="application/json">' . $embeddedJson . '</script>';
     $html = preg_replace('/<script id=["\']zoniraz-initial-product["\'][\s\S]*?<\/script>/i', $embeddedTag, $html);
+}
+
+// Inject Initial Embedded Blog Data for 0ms Client Hydration
+if ($isBlogRoute && !empty($matchedBlog)) {
+    $embeddedBlogJson = json_encode($matchedBlog, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+    $embeddedBlogTag = '<script id="zoniraz-initial-blog" type="application/json">' . $embeddedBlogJson . '</script>';
+    $html = preg_replace('/<script id=["\']zoniraz-initial-blog["\'][\s\S]*?<\/script>/i', $embeddedBlogTag, $html);
 }
 
 // 3. Build Semantic Server-Prerendered HTML Container (Safeguard 1: placed outside #root)
@@ -602,6 +748,64 @@ if ($isProductRoute && !empty($matchedProduct)) {
           '</div>' .
         '</div>' .
       '</article>' .
+    '</div>';
+} elseif ($isBlogRoute && !empty($matchedBlog)) {
+    $bTitle = htmlspecialchars(!empty($matchedBlog['title']) ? $matchedBlog['title'] : ucwords(str_replace('-', ' ', $cleanBlogSlug)), ENT_QUOTES, 'UTF-8');
+    $bCat = htmlspecialchars(!empty($matchedBlog['category']) ? $matchedBlog['category'] : 'Gold & Diamond', ENT_QUOTES, 'UTF-8');
+    $bDate = htmlspecialchars(!empty($matchedBlog['date']) ? $matchedBlog['date'] : 'Recent Article', ENT_QUOTES, 'UTF-8');
+    $bReadTime = htmlspecialchars(!empty($matchedBlog['readTime']) ? $matchedBlog['readTime'] : '5 min read', ENT_QUOTES, 'UTF-8');
+    $bAuthor = htmlspecialchars(!empty($matchedBlog['author']) ? $matchedBlog['author'] : 'Zoniraz Editorial Team', ENT_QUOTES, 'UTF-8');
+    $bImg = htmlspecialchars(!empty($matchedBlog['image']) ? $matchedBlog['image'] : 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png', ENT_QUOTES, 'UTF-8');
+    $bExcerpt = htmlspecialchars(!empty($matchedBlog['excerpt']) ? $matchedBlog['excerpt'] : '', ENT_QUOTES, 'UTF-8');
+
+    $rawContent = !empty($matchedBlog['content']) ? $matchedBlog['content'] : '';
+    $renderedBody = '';
+    if (is_array($rawContent)) {
+        foreach ($rawContent as $block) {
+            $bType = isset($block['type']) ? $block['type'] : 'para';
+            $bText = htmlspecialchars(isset($block['text']) ? $block['text'] : '', ENT_QUOTES, 'UTF-8');
+            if ($bType === 'heading') {
+                $renderedBody .= '<h2 style="font-size:22px;font-weight:700;color:#2a221b;margin:28px 0 12px 0;">' . $bText . '</h2>';
+            } elseif ($bType === 'intro') {
+                $renderedBody .= '<p style="font-size:16px;line-height:1.8;color:#443a32;font-style:italic;margin-bottom:20px;">' . $bText . '</p>';
+            } elseif ($bType === 'tip') {
+                $renderedBody .= '<div style="background:#faf5f0;border-left:4px solid #c5a880;padding:16px;border-radius:4px;margin:24px 0;"><strong style="color:#634d40;">Note:</strong> <span style="font-size:14px;color:#57534e;">' . $bText . '</span></div>';
+            } else {
+                $renderedBody .= '<p style="font-size:15px;line-height:1.75;color:#4a423a;margin-bottom:18px;">' . $bText . '</p>';
+            }
+        }
+    } elseif (is_string($rawContent)) {
+        $renderedBody = strip_tags($rawContent, '<p><h2><h3><h4><strong><em><b><i><ul><ol><li><a><br>');
+    }
+
+    $prerenderHtml = '<div id="zoniraz-seo-prerender" style="max-width:860px;margin:0 auto;padding:32px 16px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,Helvetica,Arial,sans-serif;color:#2a221b;">' .
+      '<nav aria-label="Breadcrumb" style="font-size:12px;text-transform:uppercase;letter-spacing:2px;margin-bottom:24px;color:#78716c;">' .
+        '<a href="' . $domain . '/" style="color:#634d40;text-decoration:none;">Home</a> &gt; ' .
+        '<a href="' . $domain . '/blog" style="color:#634d40;text-decoration:none;">Blog</a> &gt; ' .
+        '<span>' . $bTitle . '</span>' .
+      '</nav>' .
+      '<article>' .
+        '<header style="margin-bottom:28px;">' .
+          '<span style="display:inline-block;padding:5px 12px;background:#f5eee6;color:#634d40;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;">' . $bCat . '</span>' .
+          '<h1 style="font-size:32px;font-weight:700;line-height:1.3;color:#2a221b;margin:0 0 16px 0;">' . $bTitle . '</h1>' .
+          '<div style="font-size:13px;color:#78716c;display:flex;gap:16px;align-items:center;">' .
+            '<span>' . $bDate . '</span>' .
+            '<span>•</span>' .
+            '<span>' . $bReadTime . '</span>' .
+            '<span>•</span>' .
+            '<span>By ' . $bAuthor . '</span>' .
+          '</div>' .
+        '</header>' .
+        (!empty($bImg) ? ('<div style="margin-bottom:32px;border-radius:16px;overflow:hidden;background:#faf8f5;text-align:center;"><img src="' . $bImg . '" alt="' . $bTitle . '" style="max-width:100%;height:auto;border-radius:12px;" /></div>') : '') .
+        (!empty($bExcerpt) ? ('<div style="font-size:17px;line-height:1.7;color:#57534e;font-weight:500;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid #e7e5e4;">' . $bExcerpt . '</div>') : '') .
+        '<div style="font-size:15px;line-height:1.8;color:#332a24;">' . $renderedBody . '</div>' .
+      '</article>' .
+    '</div>';
+} elseif (!empty($isBlogNotFound)) {
+    $prerenderHtml = '<div id="zoniraz-seo-prerender" style="max-width:700px;margin:60px auto;padding:40px 24px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;color:#1c1917;">' .
+      '<h1 style="font-size:32px;font-weight:700;color:#634d40;margin-bottom:12px;">Article Not Found (404)</h1>' .
+      '<p style="font-size:16px;line-height:1.6;color:#666;margin-bottom:24px;">The blog article you requested does not exist or may have been moved.</p>' .
+      '<a href="' . $domain . '/blog" style="display:inline-block;padding:12px 28px;background:#634d40;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:600;font-size:14px;text-transform:uppercase;letter-spacing:1px;">Explore All Blogs</a>' .
     '</div>';
 } elseif (!empty($isProductNotFound)) {
     $prerenderHtml = '<div id="zoniraz-seo-prerender" style="max-width:700px;margin:60px auto;padding:40px 24px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Roboto,sans-serif;color:#1c1917;">' .
