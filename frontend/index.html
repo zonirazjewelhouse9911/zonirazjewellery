@@ -60,8 +60,81 @@
     content="Discover fine gold, diamond, and luxury jewellery. Browse handcrafted rings, necklaces, bangles, and bridal collections online." />
   <meta name="twitter:image" content="https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png" />
 
-  <!-- Dynamic JSON-LD Structured Data Container -->
-  <script id="seo-dynamic-structured-data" type="application/ld+json"></script>
+  <!-- Dynamic JSON-LD Structured Data Container (Pre-filled with Valid Schema to Prevent Audit Parse Errors) -->
+  <script id="seo-dynamic-structured-data" type="application/ld+json">
+[
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": "https://zoniraz.com/#organization",
+    "name": "Zoniraz Jewels",
+    "url": "https://zoniraz.com/",
+    "logo": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png",
+    "description": "Zoniraz Jewels is a premium luxury jewellery brand in Alwar specializing in fine gold, diamond, and designer jewellery collections.",
+    "sameAs": [
+      "https://www.facebook.com/zonirazjewel/",
+      "https://www.instagram.com/zonirazjewel/",
+      "https://www.youtube.com/@zonirazjewel",
+      "https://x.com/zonirazjewel",
+      "https://www.linkedin.com/company/zonirazjewel/",
+      "https://pin.it/4wDWdW6Nr",
+      "https://www.threads.com/@zonirazjewel/"
+    ]
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": "https://zoniraz.com/#website",
+    "name": "Zoniraz Jewels",
+    "url": "https://zoniraz.com/",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://zoniraz.com/products?search={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "JewelryStore",
+    "@id": "https://zoniraz.com/#jewelrystore",
+    "name": "Zoniraz Jewel House",
+    "image": "https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png",
+    "telephone": "+91 97848 36060",
+    "email": "zonirazjewelhouse@gmail.com",
+    "url": "https://zoniraz.com/",
+    "priceRange": "₹₹₹₹",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Shop No 1, 2, Tilak Market",
+      "addressLocality": "Alwar",
+      "addressRegion": "Rajasthan",
+      "postalCode": "301001",
+      "addressCountry": "IN"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 27.5530,
+      "longitude": 76.6346
+    },
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "10:30",
+        "closes": "20:30"
+      }
+    ]
+  }
+]
+  </script>
   <!-- Synchronous Embedded Product Data for 0ms Hydration -->
   <script id="zoniraz-initial-product" type="application/json"></script>
   <!-- Synchronous Embedded Blog Data for 0ms Hydration -->

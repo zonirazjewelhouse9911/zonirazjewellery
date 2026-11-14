@@ -656,6 +656,70 @@ if ($isProductRoute && !empty($matchedProduct)) {
             ]
         ]
     ];
+} elseif ($cleanPath === '' || $cleanPath === 'index.html' || $cleanPath === 'index.php') {
+    // Homepage Schemas
+    $schemas[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'Organization',
+        'name' => 'Zoniraz Jewels',
+        'url' => 'https://zoniraz.com/',
+        'logo' => 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png',
+        'description' => 'Zoniraz Jewels is a premium luxury jewellery brand in Alwar specializing in fine gold, diamond, and designer jewellery collections.',
+        'sameAs' => [
+            'https://www.facebook.com/zonirazjewel/',
+            'https://www.instagram.com/zonirazjewel/',
+            'https://www.youtube.com/@zonirazjewel',
+            'https://x.com/zonirazjewel',
+            'https://www.linkedin.com/company/zonirazjewel/',
+            'https://pin.it/4wDWdW6Nr',
+            'https://www.threads.com/@zonirazjewel/'
+        ]
+    ];
+
+    $schemas[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'WebSite',
+        'name' => 'Zoniraz Jewels',
+        'url' => 'https://zoniraz.com/',
+        'potentialAction' => [
+            '@type' => 'SearchAction',
+            'target' => 'https://zoniraz.com/products?search={search_term_string}',
+            'query-input' => 'required name=search_term_string'
+        ]
+    ];
+
+    $schemas[] = [
+        '@context' => 'https://schema.org',
+        '@type' => 'JewelryStore',
+        '@id' => 'https://zoniraz.com/#jewelrystore',
+        'name' => 'Zoniraz Jewel House',
+        'image' => 'https://media.zoniraz.com/uploads/zoniraz_frontend/zoni1.png',
+        'telephone' => '+91 97848 36060',
+        'email' => 'zonirazjewelhouse@gmail.com',
+        'url' => 'https://zoniraz.com/',
+        'priceRange' => '₹₹₹₹',
+        'address' => [
+            '@type' => 'PostalAddress',
+            'streetAddress' => 'Shop No 1, 2, Tilak Market',
+            'addressLocality' => 'Alwar',
+            'addressRegion' => 'Rajasthan',
+            'postalCode' => '301001',
+            'addressCountry' => 'IN'
+        ],
+        'geo' => [
+            '@type' => 'GeoCoordinates',
+            'latitude' => 27.5530,
+            'longitude' => 76.6346
+        ],
+        'openingHoursSpecification' => [
+            [
+                '@type' => 'OpeningHoursSpecification',
+                'dayOfWeek' => ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+                'opens' => '10:30',
+                'closes' => '20:30'
+            ]
+        ]
+    ];
 } elseif ($isMatchedRoute && $cleanPath !== '') {
     $schemas[] = [
         '@context' => 'https://schema.org',
